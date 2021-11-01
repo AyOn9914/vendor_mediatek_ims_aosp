@@ -26,7 +26,10 @@
 #include <utils/Trace.h>
 
 #include <arpa/inet.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
+
+# include <fcntl.h>
 
 #include <cutils/properties.h>
 #undef LOG_TAG

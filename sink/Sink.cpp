@@ -38,7 +38,7 @@
 #include <binder/IServiceManager.h>
 #include <gui/ISurfaceComposer.h>
 //#include <gui/SurfaceComposerClient.h>
-#include <ui/DisplayInfo.h>
+#include <ui/StaticDisplayInfo.h>
 #include <OMX_Core.h> //for avpf index
 
 namespace android

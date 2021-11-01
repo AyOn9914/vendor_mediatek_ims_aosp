@@ -243,13 +243,13 @@ status_t Recorder::setParameters(const sp<AMessage> &parameters)
 status_t Recorder::addAudioSource(bool usePCMAudio)
 {
     usePCMAudio = true; // for build error
-#if (PLATFORM_VERSION == 11)
+#if (PLATFORM_VERSION == 12)
     audio_attributes_t attr = AUDIO_ATTRIBUTES_INITIALIZER;
     attr.source = AUDIO_SOURCE_MIC;
 #endif
 
     sp<AudioSource> mAudioSource = new AudioSource(
-#if !(PLATFORM_VERSION == 11)
+#if !(PLATFORM_VERSION == 12)
         AUDIO_SOURCE_MIC,
 #else
         &attr,

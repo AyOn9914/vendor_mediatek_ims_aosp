@@ -15,7 +15,7 @@
 #include <media/stagefright/MediaExtractor.h>
 #include <media/stagefright/foundation/ADebug.h>
 #include <media/stagefright/foundation/AMessage.h>
-#include <ui/DisplayInfo.h>
+#include <ui/StaticDisplayInfo.h>
 #include <media/stagefright/NuMediaExtractor.h>
 #include <sys/types.h>
 #include <unistd.h>

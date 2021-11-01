@@ -22,7 +22,7 @@
 #include <gui/ISurfaceComposer.h>
 #include <gui/SurfaceComposerClient.h>
 #include <gui/SurfaceControl.h>
-#include <ui/DisplayInfo.h>
+#include <ui/StaticDisplayInfo.h>
 #include <gui/Surface.h>
 
 

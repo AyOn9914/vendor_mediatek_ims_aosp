@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <grp.h>
 #include <sys/prctl.h>
-#include <android_filesystem_config.h>
+#include <private/android_filesystem_config.h>
 
 #include <binder/IPCThreadState.h>
 #include <binder/ProcessState.h>

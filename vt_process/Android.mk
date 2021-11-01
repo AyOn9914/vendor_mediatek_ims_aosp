@@ -16,10 +16,12 @@ LOCAL_SHARED_LIBRARIES:= \
 
 LOCAL_C_INCLUDES := \
     frameworks/base/include\
-    system/core/include/private\
+    system/core/libcutils/include\
     $(PROCESS_INC_PATH)
 
 LOCAL_SHARED_LIBRARIES += libmtk_vt_service
+
+LOCAL_HEADER_LIBRARIES := libcutils_headers
 
 LOCAL_MODULE:= vtservice
 LOCAL_INIT_RC := init.vtservice.rc

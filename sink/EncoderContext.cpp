@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include <cutils/properties.h>
 #include <gui/Surface.h>
-#if !(PLATFORM_VERSION == 11)
+#if !(PLATFORM_VERSION == 12)
 #include <mediadrm/ICrypto.h>
 #else
 #include <mediadrm/ICrypto.h>

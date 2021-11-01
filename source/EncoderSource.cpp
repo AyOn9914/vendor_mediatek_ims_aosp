@@ -21,7 +21,7 @@
 
 #include <gui/IGraphicBufferProducer.h>
 #include <gui/Surface.h>
-#if !(PLATFORM_VERSION == 11)
+#if !(PLATFORM_VERSION == 12)
 #include <media/ICrypto.h>
 #else
 #include <mediadrm/ICrypto.h>
