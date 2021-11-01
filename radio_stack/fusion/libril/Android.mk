@@ -63,7 +63,7 @@ LOCAL_CFLAGS += -DMTK_MUX_CHANNEL_64
 LOCAL_CFLAGS += -DMTK_IMS_CHANNEL_SUPPORT
 
 LOCAL_C_INCLUDES += external/nanopb-c \
-    vendor/mediatek/opensource/external/aee/binary/inc \
+    vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc \
     vendor/mediatek/ims/radio_stack/platformlib/include/log \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include \

@@ -17,7 +17,7 @@ LOCAL_C_INCLUDES += vendor/mediatek/ims/include/ril/include \
     vendor/mediatek/ims/radio_stack/fusion/mtk-ril/ \
     vendor/mediatek/ims/radio_stack/fusion/mtk-ril/telcore \
     vendor/mediatek/ims/radio_stack/fusion/mtk-ril/mdcomm \
-    vendor/mediatek/opensource/hardware/ccci/include \
+    vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include/log \
     vendor/mediatek/ims/radio_stack/platformlib/include \

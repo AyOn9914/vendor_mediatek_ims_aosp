@@ -23,7 +23,7 @@ LOCAL_CFLAGS            += -D __ANDROID__ -O0 -g -Wno-address -Wno-unused-value 
 LOCAL_SHARED_LIBRARIES  := libc libmtkcutils libnetutils libmtkrillog liblog libcutils libmtkares
 LOCAL_PRELINK_MODULE    := false
 
-LOCAL_C_INCLUDES := vendor/mediatek/opensource/hardware/ccci/include
+LOCAL_C_INCLUDES := vendor/mediatek/ims/radio_stack/common_headers/ccci/include
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/log
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/utils

@@ -92,7 +92,7 @@ endif
 LOCAL_CFLAGS += -DMTK_OPERATOR_ADDON
 
 LOCAL_C_INCLUDES += external/nanopb-c \
-        vendor/mediatek/opensource/external/aee/binary/inc \
+        vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc \
         frameworks/native/include/binder \
         vendor/mediatek/ims/radio_stack/include \
         vendor/mediatek/ims/radio_stack/fusion/include \
@@ -130,7 +130,7 @@ LOCAL_C_INCLUDES += external/nanopb-c \
         vendor/mediatek/ims/radio_stack/fusion/mtk-ril/mdcomm/cc \
         vendor/mediatek/ims/radio_stack/fusion/mtk-ril/telcore/ss \
         vendor/mediatek/ims/radio_stack/fusion/mtk-ril/mdcomm/ss \
-        vendor/mediatek/opensource/hardware/ccci/include \
+        vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
         vendor/mediatek/ims/radio_stack/platformlib/include/mtkrilutils \
         vendor/mediatek/ims/radio_stack/platformlib/include/log \
         vendor/mediatek/ims/radio_stack/platformlib/include/property \

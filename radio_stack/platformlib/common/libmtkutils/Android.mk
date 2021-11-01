@@ -53,6 +53,8 @@ LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/utils
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/log
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/property
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/iop
+
+# Move libladder uses from here
 LOCAL_C_INCLUDES += vendor/mediatek/opensource/external/libudf/libladder
 
 include $(BUILD_STATIC_LIBRARY)
@@ -76,6 +78,8 @@ LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/utils
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/log
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/property
 LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/platformlib/include/iop
+
+# Move libladder uses from here
 LOCAL_C_INCLUDES += vendor/mediatek/opensource/external/libudf/libladder
 
 # If not declare LOCAL_MULTILIB, it will build both 32/64 bit lib.

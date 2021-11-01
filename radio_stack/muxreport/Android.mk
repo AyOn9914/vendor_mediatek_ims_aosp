@@ -16,7 +16,7 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_CFLAGS := -DANDROID
 
 LOCAL_C_INCLUDES := \
-    vendor/mediatek/opensource/hardware/ccci/include \
+    vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
     vendor/mediatek/ims/radio_stack/platformlib/include \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include/log

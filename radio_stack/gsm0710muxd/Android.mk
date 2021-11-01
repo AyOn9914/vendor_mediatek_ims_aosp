@@ -45,7 +45,8 @@ ifeq ($(MTK_RIL_MODE), c6m_1rild)
     LOCAL_CFLAGS += -DFUSION_RILD
 endif
 
-LOCAL_C_INCLUDES := vendor/mediatek/opensource/hardware/ccci/include \
+LOCAL_C_INCLUDES := \
+    vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
     vendor/mediatek/ims/radio_stack/platformlib/include \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include/log
@@ -53,7 +54,7 @@ LOCAL_C_INCLUDES := vendor/mediatek/opensource/hardware/ccci/include \
 ifeq ($(HAVE_AEE_FEATURE),yes)
 LOCAL_SHARED_LIBRARIES += libaedv
 LOCAL_CFLAGS += -DHAVE_AEE_FEATURE
-LOCAL_C_INCLUDES += vendor/mediatek/opensource/external/aee/binary/inc
+LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc
 endif
 
 include $(BUILD_EXECUTABLE)

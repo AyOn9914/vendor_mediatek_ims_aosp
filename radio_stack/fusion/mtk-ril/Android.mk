@@ -424,8 +424,8 @@ LOCAL_C_INCLUDES += vendor/mediatek/ims/include/ril/include \
     frameworks/native/include/binder \
     vendor/mediatek/ims/include/volte_header/volte_imcb/sap \
     vendor/mediatek/ims/include/volte_header/volte_core/public_header \
-    vendor/mediatek/opensource/external/aee/binary/inc \
-    vendor/mediatek/opensource/hardware/ccci/include \
+    vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc \
+    vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
     vendor/mediatek/ims/include/libsysenv \
     vendor/mediatek/ims/radio_stack/netdagent/include \
     vendor/mediatek/ims/radio_stack/platformlib/include \
