@@ -21,43 +21,22 @@
 #include <android/hardware/radio/1.4/IRadioIndication.h>
 #include <android/hardware/radio/1.4/types.h>
 
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IMtkRadioExIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IImsRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IImsRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IMwiRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IMwiRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IEmRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IEmRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IAssistRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IRcsRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/IRcsRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/ICapRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.0/types.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.1/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.1/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.2/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.2/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.3/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.3/IMtkRadioExIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.4/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.4/ISmartRatSwitchRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.4/ISmartRatSwitchRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.5/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.5/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.6/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.6/IImsRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.6/IImsRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.7/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.7/IImsRadioIndication.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.7/IImsRadioResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.8/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.8/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.9/types.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.9/IMtkRadioEx.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.9/IMtkRadioExResponse.h>
-#include <vendor/mediatek/hardware/mtkradioex/1.9/IMtkRadioExIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IMtkRadioEx.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IMtkRadioExResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IMtkRadioExIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IImsRadioIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IImsRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IMwiRadioIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IMwiRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IEmRadioIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IEmRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IAssistRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IRcsRadioIndication.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/IRcsRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/ICapRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/types.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/ISmartRatSwitchRadioResponse.h>
+#include <vendor/mediatek/hardware/mtkradioex/2.0/ISmartRatSwitchRadioIndication.h>
 
 #include <hwbinder/IPCThreadState.h>
 #include <hwbinder/ProcessState.h>
@@ -83,32 +62,14 @@
 using namespace android::hardware::radio;
 using namespace android::hardware::radio::V1_0;
 using namespace vendor::mediatek::hardware::mtkradioex;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_0;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_1;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_2;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_3;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_4;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_5;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_6;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_7;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_8;
-using namespace vendor::mediatek::hardware::mtkradioex::V1_9;
+using namespace vendor::mediatek::hardware::mtkradioex::V2_0;
 
 namespace AOSP_V1_0 = android::hardware::radio::V1_0;
 namespace AOSP_V1_1 = android::hardware::radio::V1_1;
 namespace AOSP_V1_2 = android::hardware::radio::V1_2;
 namespace AOSP_V1_3 = android::hardware::radio::V1_3;
 namespace AOSP_V1_4 = android::hardware::radio::V1_4;
-namespace VENDOR_V1_0 = vendor::mediatek::hardware::mtkradioex::V1_0;
-namespace VENDOR_V1_1 = vendor::mediatek::hardware::mtkradioex::V1_1;
-namespace VENDOR_V1_2 = vendor::mediatek::hardware::mtkradioex::V1_2;
-namespace VENDOR_V1_3 = vendor::mediatek::hardware::mtkradioex::V1_3;
-namespace VENDOR_V1_4 = vendor::mediatek::hardware::mtkradioex::V1_4;
-namespace VENDOR_V1_5 = vendor::mediatek::hardware::mtkradioex::V1_5;
-namespace VENDOR_V1_6 = vendor::mediatek::hardware::mtkradioex::V1_6;
-namespace VENDOR_V1_7 = vendor::mediatek::hardware::mtkradioex::V1_7;
-namespace VENDOR_V1_8 = vendor::mediatek::hardware::mtkradioex::V1_8;
-namespace VENDOR_V1_9 = vendor::mediatek::hardware::mtkradioex::V1_9;
+namespace VENDOR_V2_0 = vendor::mediatek::hardware::mtkradioex::V2_0;
 
 using ::android::hardware::configureRpcThreadpool;
 using ::android::hardware::joinRpcThreadpool;
@@ -659,30 +620,18 @@ struct RadioImpl : public AOSP_V1_4::IRadio {
     void checkReturnStatus(Return<void>& ret, int32_t origSlot);
 };
 
-struct MtkRadioExImpl : public VENDOR_V1_9::IMtkRadioEx {
+struct MtkRadioExImpl : public VENDOR_V2_0::IMtkRadioEx {
     int32_t mSlotId;
     int32_t mClientId;
-    sp<VENDOR_V1_0::IMtkRadioExResponse> mRadioResponseMtk;
-    sp<VENDOR_V1_1::IMtkRadioExResponse> mRadioResponseMtkV1_1;
-    sp<VENDOR_V1_2::IMtkRadioExResponse> mRadioResponseMtkV1_2;
-    sp<VENDOR_V1_0::IMtkRadioExIndication> mRadioIndicationMtk;
-    sp<VENDOR_V1_3::IMtkRadioExIndication> mRadioIndicationMtkV1_3;
-    sp<VENDOR_V1_9::IMtkRadioExIndication> mRadioIndicationMtkV1_9;
-    sp<VENDOR_V1_5::IMtkRadioExResponse> mRadioResponseMtkV1_5;
-    sp<VENDOR_V1_8::IMtkRadioExResponse> mRadioResponseMtkV1_8;
-    sp<VENDOR_V1_9::IMtkRadioExResponse> mRadioResponseMtkV1_9;
-    sp<VENDOR_V1_0::IImsRadioResponse> mRadioResponseIms;
-    sp<VENDOR_V1_0::IImsRadioIndication> mRadioIndicationIms;
-    sp<VENDOR_V1_6::IImsRadioResponse> mRadioResponseImsV1_6;
-    sp<VENDOR_V1_6::IImsRadioIndication> mRadioIndicationImsV1_6;
-    sp<VENDOR_V1_7::IImsRadioResponse> mRadioResponseImsV1_7;
-    sp<VENDOR_V1_7::IImsRadioIndication> mRadioIndicationImsV1_7;
-
-    sp<VENDOR_V1_0::IMwiRadioResponse> mRadioResponseMwi;
-    sp<VENDOR_V1_0::ISubsidyLockResponse> mRadioResponseSubsidy;
-    sp<VENDOR_V1_0::ISubsidyLockIndication> mRadioIndicationSubsidy;
+    sp<VENDOR_V2_0::IMtkRadioExResponse> mRadioResponseMtk;
+    sp<VENDOR_V2_0::IMtkRadioExIndication> mRadioIndicationMtk;
+    sp<VENDOR_V2_0::IImsRadioResponse> mRadioResponseIms;
+    sp<VENDOR_V2_0::IImsRadioIndication> mRadioIndicationIms;
+    sp<VENDOR_V2_0::IMwiRadioResponse> mRadioResponseMwi;
+    sp<VENDOR_V2_0::ISubsidyLockResponse> mRadioResponseSubsidy;
+    sp<VENDOR_V2_0::ISubsidyLockIndication> mRadioIndicationSubsidy;
     sp<IRcsRadioResponse> mRadioResponseRcs;
-    sp<VENDOR_V1_0::IRcsRadioIndication> mRadioIndicationRcs;
+    sp<VENDOR_V2_0::IRcsRadioIndication> mRadioIndicationRcs;
     sp<IMwiRadioIndication> mRadioIndicationMwi;
     sp<ISERadioResponse> mRadioResponseSE;
     sp<ISERadioIndication> mRadioIndicationSE;
@@ -695,24 +644,24 @@ struct MtkRadioExImpl : public VENDOR_V1_9::IMtkRadioEx {
     char* clientTypeToString(android::ClientType type);
     Return<void> responseAcknowledgementMtk();
     Return<void> setResponseFunctionsMtk(
-            const ::android::sp<VENDOR_V1_0::IMtkRadioExResponse>& radioResponse,
-            const ::android::sp<VENDOR_V1_0::IMtkRadioExIndication>& radioIndication);
+            const ::android::sp<VENDOR_V2_0::IMtkRadioExResponse>& radioResponse,
+            const ::android::sp<VENDOR_V2_0::IMtkRadioExIndication>& radioIndication);
 
     Return<void> setResponseFunctionsIms(
-            const ::android::sp<VENDOR_V1_0::IImsRadioResponse>& radioResponse,
-            const ::android::sp<VENDOR_V1_0::IImsRadioIndication>& radioIndication);
+            const ::android::sp<VENDOR_V2_0::IImsRadioResponse>& radioResponse,
+            const ::android::sp<VENDOR_V2_0::IImsRadioIndication>& radioIndication);
 
     Return<void> setResponseFunctionsMwi(
-            const ::android::sp<VENDOR_V1_0::IMwiRadioResponse>& radioResponse,
+            const ::android::sp<VENDOR_V2_0::IMwiRadioResponse>& radioResponse,
             const ::android::sp<IMwiRadioIndication>& radioIndication);
 
     Return<void> setResponseFunctionsSubsidyLock(
-            const ::android::sp<VENDOR_V1_0::ISubsidyLockResponse>& sublockResponse,
-            const ::android::sp<VENDOR_V1_0::ISubsidyLockIndication>& sublockIndication);
+            const ::android::sp<VENDOR_V2_0::ISubsidyLockResponse>& sublockResponse,
+            const ::android::sp<VENDOR_V2_0::ISubsidyLockIndication>& sublockIndication);
 
     Return<void> setResponseFunctionsRcs(
         const ::android::sp<IRcsRadioResponse>& radioResponseParam,
-        const ::android::sp<VENDOR_V1_0::IRcsRadioIndication>& radioIndicationParam);
+        const ::android::sp<VENDOR_V2_0::IRcsRadioIndication>& radioIndicationParam);
 
     Return<void> sendSubsidyLockRequest(int32_t serial, int32_t reqType,
             const ::android::hardware::hidl_vec<uint8_t>& data);
@@ -1656,8 +1605,6 @@ void checkReturnStatusMtk(int32_t slotId, Return<void>& ret, bool isRadioService
                 if (type == android::IMS_MTK) {
                     mtkRadioExService[slotId]->mRadioResponseIms = NULL;
                     mtkRadioExService[slotId]->mRadioIndicationIms = NULL;
-                    mtkRadioExService[slotId]->mRadioResponseImsV1_6 = NULL;
-                    mtkRadioExService[slotId]->mRadioIndicationImsV1_6 = NULL;
                 } else if (type == android::IMS_WFC) {
                     mtkRadioExService[slotId]->mRadioResponseMwi = NULL;
                     mtkRadioExService[slotId]->mRadioIndicationMwi = NULL;
@@ -1757,8 +1704,8 @@ Return<void> RadioImpl::setResponseFunctions(
 }
 
 Return<void> MtkRadioExImpl::setResponseFunctionsMtk(
-        const ::android::sp<VENDOR_V1_0::IMtkRadioExResponse>& radioResponseParam,
-        const ::android::sp<VENDOR_V1_0::IMtkRadioExIndication>& radioIndicationParam) {
+        const ::android::sp<VENDOR_V2_0::IMtkRadioExResponse>& radioResponseParam,
+        const ::android::sp<VENDOR_V2_0::IMtkRadioExIndication>& radioIndicationParam) {
     mtkLogI(LOG_TAG, "setResponseFunctionsMtk, slotId = %d", mSlotId);
 
     pthread_rwlock_t *radioServiceRwlockPtr = radio::getRadioServiceRwlock(mSlotId);
@@ -1767,41 +1714,10 @@ Return<void> MtkRadioExImpl::setResponseFunctionsMtk(
     mRadioResponseMtk = radioResponseParam;
     mRadioIndicationMtk = radioIndicationParam;
 
-    mRadioResponseMtkV1_1 = VENDOR_V1_1::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
+    mRadioResponseMtk = VENDOR_V2_0::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
             .withDefault(nullptr);
-    if (mRadioResponseMtkV1_1 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioResponseMtkV1_1: got nullptr");
-    }
-    mRadioResponseMtkV1_2 = VENDOR_V1_2::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
-            .withDefault(nullptr);
-    if (mRadioResponseMtkV1_2 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioResponseMtkV1_2: got nullptr");
-    }
-    mRadioIndicationMtkV1_3 = VENDOR_V1_3::IMtkRadioExIndication::castFrom(mRadioIndicationMtk)
-            .withDefault(nullptr);
-    if (mRadioIndicationMtkV1_3 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioIndicationMtkV1_3: got nullptr");
-    }
-    mRadioIndicationMtkV1_9 = VENDOR_V1_9::IMtkRadioExIndication::castFrom(mRadioIndicationMtk)
-            .withDefault(nullptr);
-    if (mRadioIndicationMtkV1_9 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioIndicationMtkV1_9: got nullptr");
-    }
-    mRadioResponseMtkV1_5 = VENDOR_V1_5::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
-            .withDefault(nullptr);
-    if (mRadioResponseMtkV1_5 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioResponseMtkV1_5: got nullptr");
-    }
-
-    mRadioResponseMtkV1_8 = VENDOR_V1_8::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
-            .withDefault(nullptr);
-    if (mRadioResponseMtkV1_8 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioResponseMtkV1_8: got nullptr");
-    }
-    mRadioResponseMtkV1_9 = VENDOR_V1_9::IMtkRadioExResponse::castFrom(mRadioResponseMtk)
-            .withDefault(nullptr);
-    if (mRadioResponseMtkV1_9 == nullptr) {
-        mtkLogE(LOG_TAG, "mRadioResponseMtkV1_9: got nullptr");
+    if (mRadioResponseMtk == nullptr) {
+        mtkLogE(LOG_TAG, "mRadioResponseMtk: got nullptr");
     }
 
     mCounterMtkRadioEx[mSlotId]++;
@@ -1817,8 +1733,8 @@ Return<void> MtkRadioExImpl::setResponseFunctionsMtk(
 }
 
 Return<void> MtkRadioExImpl::setResponseFunctionsIms(
-        const ::android::sp<VENDOR_V1_0::IImsRadioResponse>& radioResponseParam,
-        const ::android::sp<VENDOR_V1_0::IImsRadioIndication>& radioIndicationParam) {
+        const ::android::sp<VENDOR_V2_0::IImsRadioResponse>& radioResponseParam,
+        const ::android::sp<VENDOR_V2_0::IImsRadioIndication>& radioIndicationParam) {
     mtkLogI(LOG_TAG, "setResponseFunctionsIms, slotId = %d", mSlotId);
 
     pthread_rwlock_t *radioServiceRwlockPtr = radio::getRadioServiceRwlock(mSlotId);
@@ -1827,13 +1743,13 @@ Return<void> MtkRadioExImpl::setResponseFunctionsIms(
     mRadioResponseIms = radioResponseParam;
     mRadioIndicationIms = radioIndicationParam;
 
-    mRadioResponseImsV1_6 =
-            VENDOR_V1_6::IImsRadioResponse::castFrom(mRadioResponseIms).withDefault(nullptr);
-    mRadioIndicationImsV1_6 =
-            VENDOR_V1_6::IImsRadioIndication::castFrom(mRadioIndicationIms).withDefault(nullptr);
-    if (mRadioResponseImsV1_6 == nullptr || mRadioIndicationImsV1_6 == nullptr) {
-        mRadioResponseImsV1_6 = nullptr;
-        mRadioIndicationImsV1_6 = nullptr;
+    mRadioResponseIms =
+            VENDOR_V2_0::IImsRadioResponse::castFrom(mRadioResponseIms).withDefault(nullptr);
+    mRadioIndicationIms =
+            VENDOR_V2_0::IImsRadioIndication::castFrom(mRadioIndicationIms).withDefault(nullptr);
+    if (mRadioResponseIms == nullptr || mRadioIndicationIms == nullptr) {
+        mRadioResponseIms = nullptr;
+        mRadioIndicationIms = nullptr;
     }
 
     radio::unlockRadioServiceWlock(radioServiceRwlockPtr, (int)mSlotId);
@@ -1845,7 +1761,7 @@ Return<void> MtkRadioExImpl::setResponseFunctionsIms(
 }
 
 Return<void> MtkRadioExImpl::setResponseFunctionsMwi(
-        const ::android::sp<VENDOR_V1_0::IMwiRadioResponse>& radioResponseParam,
+        const ::android::sp<VENDOR_V2_0::IMwiRadioResponse>& radioResponseParam,
         const ::android::sp<IMwiRadioIndication>& radioIndicationParam) {
     mtkLogD(LOG_TAG, "setResponseFunctionsMwi");
 
@@ -6197,8 +6113,8 @@ Return<void> MtkRadioExImpl::sendAtciRequest(int32_t serial, const hidl_vec<uint
 
 // SUBSIDYLOCK Start
 Return<void> MtkRadioExImpl::setResponseFunctionsSubsidyLock(
-        const ::android::sp<VENDOR_V1_0::ISubsidyLockResponse>& sublockResponseParam,
-        const ::android::sp<VENDOR_V1_0::ISubsidyLockIndication>& sublockIndicationParam) {
+        const ::android::sp<VENDOR_V2_0::ISubsidyLockResponse>& sublockResponseParam,
+        const ::android::sp<VENDOR_V2_0::ISubsidyLockIndication>& sublockIndicationParam) {
    // RLOGD("setResponseFunctionsSubsidyLock");
     mRadioResponseSubsidy = sublockResponseParam;
     mRadioIndicationSubsidy = sublockIndicationParam;
@@ -22347,15 +22263,15 @@ int mtkRadioEx::setCallAdditionalInfoResponse(int slotId,
         void *response, size_t responseLen) {
     mtkLogI(LOG_TAG, "setCallAdditionalInfoResponse: serial %d", serial);
 
-    if (mtkRadioExService[slotId]->mRadioResponseImsV1_6 != NULL) {
+    if (mtkRadioExService[slotId]->mRadioResponseIms != NULL) {
         RadioResponseInfo responseInfo = {};
         populateResponseInfo(responseInfo, serial, responseType, e);
-        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseImsV1_6->
+        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseIms->
                 setCallAdditionalInfoResponse(responseInfo);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus,  android::IMS_MTK, slotId);
     } else {
         mtkLogE(LOG_TAG,
-                "setCallAdditionalInfoResponse: mtkRadioExService[%d]->mRadioResponseImsV1_6"
+                "setCallAdditionalInfoResponse: mtkRadioExService[%d]->mRadioResponseIms"
                 " == NULL", slotId);
     }
 
@@ -22372,15 +22288,15 @@ int mtkRadioEx::setCallSubAddressResponse(int slotId,
         android::ClientId clientId __unused, int responseType, int serial, RIL_Errno e,
         const void *response, size_t responseLen) {
     if (mtkRadioExService[slotId] != NULL &&
-        mtkRadioExService[slotId]->mRadioResponseMtkV1_8 != NULL) {
+        mtkRadioExService[slotId]->mRadioResponseMtk != NULL) {
         RadioResponseInfo responseInfo = {};
         populateResponseInfo(responseInfo, serial, responseType, e);
-        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtkV1_8->
+        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtk->
                 setCallSubAddressResponse(responseInfo);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);
     } else {
         mtkLogE(LOG_TAG, "setCallSubAddressResponse: "
-                "mtkRadioExService[%d]->mRadioIndicationMtkV1_8 == NULL", slotId);
+                "mtkRadioExService[%d]->mRadioIndicationMtk == NULL", slotId);
     }
     return 0;
 }
@@ -22394,7 +22310,7 @@ int mtkRadioEx::getCallSubAddressResponse(int slotId,
         android::ClientId clientId __unused, int responseType, int serial, RIL_Errno e,
         const void *response, size_t responseLen) {
     if (mtkRadioExService[slotId] != NULL &&
-        mtkRadioExService[slotId]->mRadioResponseMtkV1_8 != NULL) {
+        mtkRadioExService[slotId]->mRadioResponseMtk != NULL) {
         int enabled = 0;
         int *resp = (int *) response;
         int numInts = responseLen / sizeof(int);
@@ -22406,19 +22322,19 @@ int mtkRadioEx::getCallSubAddressResponse(int slotId,
         }
         RadioResponseInfo responseInfo = {};
         populateResponseInfo(responseInfo, serial, responseType, e);
-        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtkV1_8->
+        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtk->
                 getCallSubAddressResponse(responseInfo, enabled);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);
     } else {
         mtkLogE(LOG_TAG, "getCallSubAddress: "
-                "mtkRadioExService[%d]->mRadioIndicationMtkV1_8 == NULL", slotId);
+                "mtkRadioExService[%d]->mRadioIndicationMtk == NULL", slotId);
     }
     return 0;
 }
 
 int mtkRadioEx::onNwLimitInd(int slotId, int indicationType, int token,
         RIL_Errno err, void *response, size_t responseLen) {
-    if (mtkRadioExService[slotId] != NULL && mtkRadioExService[slotId]->mRadioIndicationMtkV1_3!= NULL) {
+    if (mtkRadioExService[slotId] != NULL && mtkRadioExService[slotId]->mRadioIndicationMtk!= NULL) {
         hidl_vec<int32_t> data;
 
         int numInts = responseLen / sizeof(int);
@@ -22433,11 +22349,11 @@ int mtkRadioEx::onNwLimitInd(int slotId, int indicationType, int token,
             }
         }
         Return<void> retStatus
-                = mtkRadioExService[slotId]->mRadioIndicationMtkV1_3->onNwLimitInd(
+                = mtkRadioExService[slotId]->mRadioIndicationMtk->onNwLimitInd(
                 convertIntToRadioIndicationType(indicationType), data);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);
     } else {
-        mtkLogE(LOG_TAG, "onNwLimitInd: mtkRadioExService[%d]->mRadioIndicationMtkV1_3 == NULL",
+        mtkLogE(LOG_TAG, "onNwLimitInd: mtkRadioExService[%d]->mRadioIndicationMtk == NULL",
                 slotId);
     }
     return 0;
@@ -22489,15 +22405,15 @@ int mtkRadioEx::sendSarIndicatorResponse(int slotId, android::ClientId clientId 
     mtkLogD(LOG_TAG, "sendSarIndicatorResponse: serial %d", serial);
 
     if (mtkRadioExService[slotId] != NULL &&
-            mtkRadioExService[slotId]->mRadioResponseMtkV1_5 != NULL) {
+            mtkRadioExService[slotId]->mRadioResponseMtk != NULL) {
         RadioResponseInfo responseInfo = {};
         populateResponseInfo(responseInfo, serial, responseType, e);
         Return<void> retStatus
-                = mtkRadioExService[slotId]->mRadioResponseMtkV1_5->sendSarIndicatorResponse(
+                = mtkRadioExService[slotId]->mRadioResponseMtk->sendSarIndicatorResponse(
                 responseInfo);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);
     } else {
-        mtkLogE(LOG_TAG, "sendSarIndicatorResponse: mtkRadioExService[%d]->mRadioResponseMtkV1_5"
+        mtkLogE(LOG_TAG, "sendSarIndicatorResponse: mtkRadioExService[%d]->mRadioResponseMtk"
                 "== NULL", slotId);
     }
 
@@ -22540,7 +22456,7 @@ int mtkRadioEx::sendRsuRequestResponse(int slotId, android::ClientId clientId __
     mtkLogD(LOG_TAG, "sendRsuRequestResponse: serial %d", serial);
 
     if (mtkRadioExService[slotId] != NULL
-            && mtkRadioExService[slotId]->mRadioResponseMtkV1_9 != NULL) {
+            && mtkRadioExService[slotId]->mRadioResponseMtk != NULL) {
         RadioResponseInfo responseInfo = {};
         populateResponseInfo(responseInfo, serial, responseType, e);
 
@@ -22561,11 +22477,11 @@ int mtkRadioEx::sendRsuRequestResponse(int slotId, android::ClientId clientId __
                     convertCharPtrToHidlString(((RIL_RsuResponse*)(response))->reserveString1);
         }
 
-        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtkV1_9->
+        Return<void> retStatus = mtkRadioExService[slotId]->mRadioResponseMtk->
                         sendRsuRequestResponse(responseInfo, result);
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);;
     } else {
-        mtkLogE(LOG_TAG, "sendRsuRequestResponse: mtkRadioExService[%d]->mRadioResponseMtkV1_9"
+        mtkLogE(LOG_TAG, "sendRsuRequestResponse: mtkRadioExService[%d]->mRadioResponseMtk"
                 "==NULL", slotId);
     }
 
@@ -22575,16 +22491,16 @@ int mtkRadioEx::sendRsuRequestResponse(int slotId, android::ClientId clientId __
 int mtkRadioEx::onRsuEvent(int slotId, int indicationType, int token,
         RIL_Errno e, void *response, size_t responseLen) {
     if (mtkRadioExService[slotId] != NULL
-            && mtkRadioExService[slotId]->mRadioIndicationMtkV1_9 != NULL) {
+            && mtkRadioExService[slotId]->mRadioIndicationMtk != NULL) {
          // It's for 93 and later RILD now.
          mtkLogD(LOG_TAG,"[RSU-SIMLOCK] onRsuEvent");
          char** strings = (char**)response;
-         Return<void> retStatus = mtkRadioExService[slotId]->mRadioIndicationMtkV1_9->onRsuEvent(
+         Return<void> retStatus = mtkRadioExService[slotId]->mRadioIndicationMtk->onRsuEvent(
                  convertIntToRadioIndicationType(indicationType),
                  atoi(strings[0]), convertCharPtrToHidlString(strings[1]));
         mtkRadioExService[slotId]->checkReturnStatusMtk(retStatus, android::RADIO_MTK, slotId);
     } else {
-         mtkLogE(LOG_TAG,"onRsuEvent: radioService[%d]->mRadioIndicationMtkV1_9 == NULL", slotId);
+         mtkLogE(LOG_TAG,"onRsuEvent: radioService[%d]->mRadioIndicationMtk == NULL", slotId);
     }
 
     return 0;
