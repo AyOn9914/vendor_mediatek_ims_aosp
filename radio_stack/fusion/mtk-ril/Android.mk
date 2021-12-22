@@ -461,9 +461,6 @@ LOCAL_STATIC_LIBRARIES := \
 # for vilte & imcb needed
 LOCAL_CFLAGS += -D __IMCF_MTK_VA__=1 -D __IMCF_NO_UA__=1
 
-# for ss & xcap needed
-LOCAL_REQUIRED_MODULES := libutinterface_md
-
 # External SIM
 #ifeq ($(strip $(MTK_EXTERNAL_SIM_SUPPORT)), yes)
 #    LOCAL_STATIC_LIBRARIES += libmtk-fusion-ril-prop-vsim
