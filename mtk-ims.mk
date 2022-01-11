@@ -44,7 +44,3 @@ PRODUCT_PACKAGES += \
     vtservice_hidl \
     vendor.mediatek.hardware.videotelephony@1.0 \
     vendor.mediatek.hardware.videotelephony@1.0-impl
-
-# Permissions
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/permissions/privapp-permissions-mediatek-ims.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/permissions/privapp-permissions-mediatek-ims.xml
