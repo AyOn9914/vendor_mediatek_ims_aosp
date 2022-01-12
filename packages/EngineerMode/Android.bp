@@ -7,4 +7,11 @@ android_app_import {
 		enabled: false,
 	},
 	privileged: true,
+	required: ["com.mediatek.engineermode.xml"],
+}
+
+prebuilt_etc {
+	name: "com.mediatek.engineermode.xml",
+	src: "com.mediatek.engineermode.xml",
+	sub_dir: "permissions",
 }
