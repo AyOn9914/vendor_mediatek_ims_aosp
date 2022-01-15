@@ -19,5 +19,6 @@ cc_library_shared {
         "libc",
         "liblog",
     ],
+
     static_libs: ["libcutils"],
 }

@@ -1,25 +1,26 @@
 cc_prebuilt_library_shared {
-    name: "libmtk_drvb",
+    name: "libmtklimiter_vendor",
     vendor: true,
     compile_multilib: "both",
 
     shared_libs: [
+        "liblog",
         "libcutils",
+        "libmtk_drvb",
         "libutils",
         "libm",
-        "liblog",
-        "libdl",
-        "libc",
         "libc++",
+        "libc",
+        "libdl",
     ],
 
     arch: {
         arm: {
-            srcs: ["arm/libmtk_drvb.so"],
+            srcs: ["libmtklimiter_vendor.so"],
         },
 
         arm64: {
-            srcs: ["arm64/libmtk_drvb.so"],
+            srcs: ["lib64mtklimiter_vendor.so"],
         },
     },
 }

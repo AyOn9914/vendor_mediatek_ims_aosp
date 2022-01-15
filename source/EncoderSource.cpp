@@ -21,11 +21,7 @@
 
 #include <gui/IGraphicBufferProducer.h>
 #include <gui/Surface.h>
-#if !(PLATFORM_VERSION == 12)
-#include <media/ICrypto.h>
-#else
 #include <mediadrm/ICrypto.h>
-#endif
 #include <media/stagefright/foundation/ABuffer.h>
 #include <media/stagefright/foundation/ADebug.h>
 #include <media/stagefright/foundation/ALooper.h>

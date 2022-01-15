@@ -24,11 +24,7 @@
 #include <unistd.h>
 #include <cutils/properties.h>
 #include <gui/Surface.h>
-#if !(PLATFORM_VERSION == 12)
 #include <mediadrm/ICrypto.h>
-#else
-#include <mediadrm/ICrypto.h>
-#endif
 #include <media/stagefright/foundation/ABuffer.h>
 #include <media/stagefright/foundation/ADebug.h>
 #include <media/stagefright/foundation/AMessage.h>

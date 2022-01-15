@@ -17,8 +17,6 @@
 #ifndef __IMSVT_IMCB_STRUCT_H__
 #define __IMSVT_IMCB_STRUCT_H__
 
-#if __IMCF_NO_UA__
-
 #define VOLTE_MAX_SDP_PARAMETER_SET_LENGTH              (256) // H.264, Spros parameter sets, must align with LTE_VT_SRV_UA_PARAMETER_SIZE_MAX.
 #define VOLTE_MAX_SUB_PARAM_LENGTH  (128)
 #define VOLTE_MAX_SDP_FMTP_TOT_VALUE_LENGTH             (32)// The maximum length of total fmtp specific parameter key and value, must align with LTE_VT_SRV_UA_FMTP_SIZE_MAX.
@@ -85,11 +83,6 @@ typedef enum imsvt_imcb_msg_id_e {
   MSG_ID_WRAP_IMSVT_IMCB_END,
   /* } Type4: IMSVT-IMCB TV */
 } imsvt_imcb_msg_id_t;
-
-#else
-#include "volte_vt_event.h"
-#include "volte_def.h"
-#endif
 
 #define VT_MAX_SDP_PARAMETER_SET_LENGTH             VOLTE_MAX_SDP_PARAMETER_SET_LENGTH
 #define VT_MAX_SUB_SDP_PARAMETER_SET_LENGTH         VOLTE_MAX_SUB_PARAM_LENGTH
