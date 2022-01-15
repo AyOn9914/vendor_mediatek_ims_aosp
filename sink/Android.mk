@@ -46,28 +46,3 @@ LOCAL_CFLAGS += -Werror -Wno-error=deprecated-declarations -Wall
 LOCAL_MODULE:= libsink
 
 include $(BUILD_SHARED_LIBRARY)
-
-################################################################################
-
- include $(CLEAR_VARS)
-
-LOCAL_SRC_FILES:= \
-        main.cpp
-
-LOCAL_SHARED_LIBRARIES:= \
-        libbinder \
-        libcutils \
-        libgui \
-        libmedia \
-        libstagefright \
-        libstagefright_foundation \
-        libui \
-        libutils\
-        libsink\
-        liblog \
-        libmedia\
-        libaudioclient
-
-LOCAL_MODULE:= sink
-
-include $(BUILD_EXECUTABLE)

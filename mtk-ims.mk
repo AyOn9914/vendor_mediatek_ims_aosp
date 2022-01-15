@@ -5,8 +5,7 @@ PRODUCT_PACKAGES += \
 # Extra Libs
 PRODUCT_PACKAGES += \
     libsysenv \
-    libmtk_drvb \
-    libsysenv_system
+    libmtk_drvb
 
 # Radio IMS
 PRODUCT_PACKAGES += \
@@ -19,8 +18,6 @@ PRODUCT_PACKAGES += \
     libvt_avsync \
     libimsma_rtp \
     libvcodec_cap \
-    libmtkshifter \
-    libmtklimiter \
     libimsma_adapt \
     libvcodec_capenc \
     libmtk_vt_service \
