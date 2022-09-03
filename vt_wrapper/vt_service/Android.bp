@@ -1,6 +1,6 @@
 cc_library_shared {
     name: "libmtk_vt_service",
-    compile_multilib: "32",
+    compile_multilib: "first",
 
     host_ldlibs: ["-llog"],
 

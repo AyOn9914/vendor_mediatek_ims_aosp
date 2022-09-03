@@ -1,7 +1,7 @@
 cc_binary {
     name: "vtservice",
     init_rc: ["init.vtservice.rc"],
-    compile_multilib: "32",
+    compile_multilib: "first",
 
     srcs: ["src/main_vtservice.cpp"],
 

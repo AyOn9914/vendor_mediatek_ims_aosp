@@ -3,7 +3,7 @@ cc_binary {
     vendor: true,
     relative_install_path: "hw",
     init_rc: ["init.vtservice_hidl.rc"],
-    compile_multilib: "32",
+    compile_multilib: "first",
 
     srcs: ["src/main_vtservice_hidl.cpp"],
 
