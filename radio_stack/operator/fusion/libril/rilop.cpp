@@ -60,10 +60,6 @@
 #include <mtk-ril/mdcomm/data/RmcOpDcImsReqHandler.h>
 #include <RmcDcPdnManager.h>
 
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
-
 #undef LOG_TAG
 #define LOG_TAG "RILC-OP"
 

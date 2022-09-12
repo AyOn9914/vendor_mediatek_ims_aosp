@@ -37,10 +37,6 @@
 #include <mtk_properties.h>
 #include <mtkconfigutils.h>
 
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
-
 #define LIB_PATH_PROPERTY   "vendor.rild.libpath"
 #define LIB_ARGS_PROPERTY   "vendor.rild.libargs"
 #define MAX_LIB_ARGS        16
@@ -137,13 +133,6 @@ void signal_treatment(int param)
         case SIGFPE:
             if (!isReseted) {
                 mtkLogD(LOG_TAG, "trigger TRM");
-            #ifdef HAVE_AEE_FEATURE
-                char prop_value[MTK_PROPERTY_VALUE_MAX] = { 0 };
-                mtk_property_get("persist.log.tag.tel_dbg", prop_value, "0");
-                if(prop_value[0] == '1') {
-                    aee_system_exception("mtkrild", NULL, DB_OPT_DEFAULT, "fusion rild NE");
-                }
-            #endif
                 mtk_property_set("vendor.ril.mux.report.case","2");
                 mtk_property_set("vendor.ril.muxreport", "1");
                 isReseted = 1;

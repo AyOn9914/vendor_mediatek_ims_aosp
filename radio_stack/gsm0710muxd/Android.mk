@@ -51,10 +51,4 @@ LOCAL_C_INCLUDES := \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include/log
 
-ifeq ($(HAVE_AEE_FEATURE),yes)
-LOCAL_SHARED_LIBRARIES += libaedv
-LOCAL_CFLAGS += -DHAVE_AEE_FEATURE
-LOCAL_C_INCLUDES += vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc
-endif
-
 include $(BUILD_EXECUTABLE)

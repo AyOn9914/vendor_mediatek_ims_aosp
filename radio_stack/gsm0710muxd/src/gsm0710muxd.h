@@ -17,12 +17,6 @@
 #ifndef __GSM0710MUXD_H
 #define __GSM0710MUXD_H
 
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
-
-/******************************************************************************/
-
 #if defined(ANDROID_SIM_COUNT_2)
 #define SIM_COUNT 2
 #elif defined(ANDROID_SIM_COUNT_3)
@@ -193,19 +187,11 @@
 /* Add by LS to test by local define compile option */
 #ifndef __PRODUCTION_RELEASE__
 // for dump ccci information change log assert to aee API
-#ifdef HAVE_AEE_FEATURE
-#define Gsm0710Muxd_Assert(index)                       \
-{                                                       \
-    aee_system_exception("Gsm0710Muxd", NULL, DB_OPT_DEFAULT, "ASSERT!!!!");  \
-    exit(0);                                            \
-}
-#else
 #define Gsm0710Muxd_Assert(index)                       \
 {                                                       \
     LOGMUX(LOG_ERR, "ASSERT : ERROR_CODE=%d", index);   \
     mtkAssert("ASSERT!!!!");                     \
 }
-#endif
 #else
 static int g_set_force_assert_flag = 0;
 static int g_set_alarm_flag = 0;

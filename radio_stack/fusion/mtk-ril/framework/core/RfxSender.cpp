@@ -25,10 +25,6 @@
 
 using namespace std;
 
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
-
 #define DEFAULT_AT_TIMEOUT_MIN "5" // 5 mins
 
 static const char *s_atcmd_log_reduction[] = {
@@ -313,12 +309,7 @@ timer: %lldms\nCRDISPATCH_KEY:ATTO=%s", key, timeoutMsec, key);
                     printLog(ERROR, String8::format("AT command pending too long, assert!!!\
 on channel %d, tid:%lu, AT cmd: %s, AT command timeout: %lldms", m_channel_id, m_threadId,
 pPrintCmd, timeoutMsec));
-                    #ifdef HAVE_AEE_FEATURE
-                    aee_system_exception("mtkrild", NULL, DB_OPT_DEFAULT, pErrMsg);
-                    exit(2);
-                    #else
                     mtkAssert(pErrMsg);
-                    #endif
                 } else {
                     snprintf(pErrMsg, 200, "Modem already exception, assert!!!  AT cmd: %s, timer:\
 %lldms\nCRDISPATCH_KEY:ATTO=%s", key, timeoutMsec, key);

@@ -51,11 +51,6 @@ ifeq ($(MTK_NUM_MODEM_PROTOCOL), 4)
     LOCAL_CFLAGS += -DANDROID_SIM_COUNT_4
 endif
 
-ifeq ($(HAVE_AEE_FEATURE),yes)
-      LOCAL_SHARED_LIBRARIES += libaedv
-      LOCAL_CFLAGS += -DHAVE_AEE_FEATURE
-endif
-
 ifeq ($(MTK_TC1_FEATURE),yes)
       LOCAL_CFLAGS += -DMTK_TC1_FEATURE
 endif
@@ -63,7 +58,6 @@ LOCAL_CFLAGS += -DMTK_MUX_CHANNEL_64
 LOCAL_CFLAGS += -DMTK_IMS_CHANNEL_SUPPORT
 
 LOCAL_C_INCLUDES += external/nanopb-c \
-    vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc \
     vendor/mediatek/ims/radio_stack/platformlib/include/log \
     vendor/mediatek/ims/radio_stack/platformlib/include/property \
     vendor/mediatek/ims/radio_stack/platformlib/include \

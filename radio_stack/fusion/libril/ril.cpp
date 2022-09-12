@@ -48,10 +48,6 @@
 #include <mtk_log.h>
 #include <mtk_properties.h>
 
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
-
 #include "RilOpProxy.h"
 #include "radioConfig_service.h"
 
@@ -177,10 +173,6 @@ static pthread_mutex_t s_state_mutex[MAX_SIM_COUNT];
 static void grabPartialWakeLock();
 void releaseWakeLock();
 static void wakeTimeoutCallback(void *);
-
-#ifdef HAVE_AEE_FEATURE
-void triggerWarning(char *pErrMsg);
-#endif
 
 #ifdef RIL_SHLIB
 #if defined(ANDROID_MULTI_SIM)
@@ -1554,17 +1546,6 @@ void sendPendedUrcs(RIL_SOCKET_ID socket_id, android::ClientType clientType) {
             rilSocketIdToString(socket_id), clientType);
     sendUrc(socket_id, &(pendedUrcList[socket_id][clientType]), clientType);
 }
-
-#ifdef HAVE_AEE_FEATURE
-void triggerWarning(char *pErrMsg) {
-    if (pErrMsg != NULL) {
-        aee_system_warning("ril-proxy", NULL, DB_OPT_DEFAULT, pErrMsg);
-        exit(0);
-    } else {
-        assert(0);
-    }
-}
-#endif
 
 /**
  * Convert divisions' slot Id to real SIM slot

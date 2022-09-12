@@ -26,9 +26,6 @@
 #include <libmtkrilutils.h>
 #include "utils/String8.h"
 #include <mtkconfigutils.h>
-#ifdef HAVE_AEE_FEATURE
-#include "aee.h"
-#endif
 #include <unistd.h>
 
 #define RFX_LOG_TAG "RfxRilUtils"
@@ -442,15 +439,10 @@ bool RfxRilUtils::isInLogReductionList(int reqId) {
 }
 
 int RfxRilUtils::handleAee(const char *modem_warning, const char *modem_version) {
-#ifdef HAVE_AEE_FEATURE
-    return aee_modem_warning("Modem Warning", NULL, DB_OPT_DUMMY_DUMP, modem_warning,
-            modem_version);
-#else
     RFX_UNUSED(modem_warning);
     RFX_UNUSED(modem_version);
     RFX_LOG_D(RFX_LOG_TAG, "[handleOemUnsolicited]HAVE_AEE_FEATURE is not defined");
     return 1;
-#endif
 }
 
 // External SIM [Start]

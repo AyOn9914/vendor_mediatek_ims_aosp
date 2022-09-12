@@ -398,11 +398,6 @@ ifeq ($(MTK_TC1_FEATURE),yes)
     LOCAL_CFLAGS += -DMTK_TC1_FEATURE
 endif
 
-ifeq ($(HAVE_AEE_FEATURE),yes)
-LOCAL_SHARED_LIBRARIES += libaedv
-LOCAL_CFLAGS += -DHAVE_AEE_FEATURE
-endif
-
 LOCAL_C_INCLUDES += vendor/mediatek/ims/include/ril/include \
     vendor/mediatek/ims/radio_stack/fusion/mtk-ril/framework/include \
     vendor/mediatek/ims/radio_stack/fusion/mtk-ril/framework/include/base \
@@ -424,7 +419,6 @@ LOCAL_C_INCLUDES += vendor/mediatek/ims/include/ril/include \
     frameworks/native/include/binder \
     vendor/mediatek/ims/include/volte_header/volte_imcb/sap \
     vendor/mediatek/ims/include/volte_header/volte_core/public_header \
-    vendor/mediatek/ims/radio_stack/common_headers/aee/binary/inc \
     vendor/mediatek/ims/radio_stack/common_headers/ccci/include \
     vendor/mediatek/ims/include/libsysenv \
     vendor/mediatek/ims/radio_stack/netdagent/include \
