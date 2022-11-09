@@ -23,9 +23,10 @@
 class RfxEmbmsDisableRespData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsDisableRespData);
 
-    public:
-        RfxEmbmsDisableRespData(RIL_EMBMS_DisableResp* data, int length);
-    private:
-        void copyData(RIL_EMBMS_DisableResp *data, int length);
+  public:
+    RfxEmbmsDisableRespData(RIL_EMBMS_DisableResp* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_DisableResp* data, int length);
 };
 #endif /*RFX_EMBMS_DISABLE_RESP_DATA__H*/

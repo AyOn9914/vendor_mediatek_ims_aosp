@@ -33,7 +33,7 @@
  *
  * @return 0 on success or -1 on failure
  */
-int socket_make_sockaddr_un(const char *name, int namespaceId,
-        struct sockaddr_un *p_addr, socklen_t *alen);
+int socket_make_sockaddr_un(const char* name, int namespaceId, struct sockaddr_un* p_addr,
+                            socklen_t* alen);
 
 #endif

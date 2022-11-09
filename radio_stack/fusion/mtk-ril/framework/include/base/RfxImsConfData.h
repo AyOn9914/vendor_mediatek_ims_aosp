@@ -23,6 +23,5 @@
 
 class RfxImsConfData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxImsConfData);
-
 };
 #endif

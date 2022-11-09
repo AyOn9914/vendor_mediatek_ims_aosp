@@ -56,18 +56,14 @@ RmcRcsSharedMemory::~RmcRcsSharedMemory() {
 }
 
 void RmcRcsSharedMemory::setState(int state) {
-
     RFX_LOG_I(RFX_LOG_TAG, "[MEM SET ST] state = %d\n", state);
 
     mDataReadyCount = state;
 }
 
-int RmcRcsSharedMemory::getState() {
-    return mDataReadyCount;
-}
+int RmcRcsSharedMemory::getState() { return mDataReadyCount; }
 
 bool RmcRcsSharedMemory::checkState(int want_state) {
-
     if (mDataReadyCount == want_state) {
         if (RmcRcsDataThreadController::isLogEnable()) {
             RFX_LOG_I(RFX_LOG_TAG, "[MEM  CHECK] state = %d success \n", mDataReadyCount);
@@ -77,31 +73,22 @@ bool RmcRcsSharedMemory::checkState(int want_state) {
     return false;
 }
 
-void RmcRcsSharedMemory::setSize(int size) {
-    mDatalen = size;
-}
+void RmcRcsSharedMemory::setSize(int size) { mDatalen = size; }
 
 void RmcRcsSharedMemory::setData(char* data, int len) {
-    mData = (char*) calloc(len, sizeof(char));
+    mData = (char*)calloc(len, sizeof(char));
     if (mData != NULL) {
         memcpy(mData, data, len);
     }
 }
 
-int RmcRcsSharedMemory::getSize(void) {
-    return mDatalen;
-}
+int RmcRcsSharedMemory::getSize(void) { return mDatalen; }
 
-void RmcRcsSharedMemory::getData(char** data) {
-    (*data) = mData;
-}
+void RmcRcsSharedMemory::getData(char** data) { (*data) = mData; }
 
-void RmcRcsSharedMemory::clearData() {
-    free(mData);
-}
+void RmcRcsSharedMemory::clearData() { free(mData); }
 
 void RmcRcsSharedMemory::lock(const char* user) {
-
     pthread_mutex_lock(mPLock);
 
     if (RmcRcsDataThreadController::isLogEnable()) {
@@ -110,7 +97,6 @@ void RmcRcsSharedMemory::lock(const char* user) {
 }
 
 void RmcRcsSharedMemory::unlock(const char* user) {
-
     pthread_mutex_unlock(mPLock);
     if (RmcRcsDataThreadController::isLogEnable()) {
         RFX_LOG_I(RFX_LOG_TAG, "[MEM UNLOCK] unlock success (%s)", user);
@@ -118,7 +104,6 @@ void RmcRcsSharedMemory::unlock(const char* user) {
 }
 
 void RmcRcsSharedMemory::wait(const char* user, int stay_state) {
-
     while (mDataReadyCount == stay_state) {
         pthread_cond_wait(&mCond, mPLock);
     }
@@ -129,7 +114,6 @@ void RmcRcsSharedMemory::wait(const char* user, int stay_state) {
 }
 
 void RmcRcsSharedMemory::signal(const char* user) {
-
     pthread_cond_signal(&mCond);
     if (RmcRcsDataThreadController::isLogEnable()) {
         RFX_LOG_I(RFX_LOG_TAG, "[MEM SIGNAL] signal success (%s)", user);
@@ -137,21 +121,17 @@ void RmcRcsSharedMemory::signal(const char* user) {
 }
 
 sp<RmcRcsSharedMemory> RmcRcsDataThreadController::sShareMemory = new RmcRcsSharedMemory();
-pthread_t  RmcRcsDataThreadController::sShareMemoryThd = 0;
-pthread_t  RmcRcsDataThreadController::sRilServerThd = 0;
+pthread_t RmcRcsDataThreadController::sShareMemoryThd = 0;
+pthread_t RmcRcsDataThreadController::sRilServerThd = 0;
 pthread_mutex_t RmcRcsDataThreadController::sMutex = PTHREAD_MUTEX_INITIALIZER;
-Ril_Channel_Obj_t *RmcRcsDataThreadController::sChannelObj = NULL;
-RmcRcsDataThreadController *RmcRcsDataThreadController::sInstance = NULL;
+Ril_Channel_Obj_t* RmcRcsDataThreadController::sChannelObj = NULL;
+RmcRcsDataThreadController* RmcRcsDataThreadController::sInstance = NULL;
 
-RmcRcsDataThreadController::RmcRcsDataThreadController() {
-}
+RmcRcsDataThreadController::RmcRcsDataThreadController() {}
 
-RmcRcsDataThreadController:: ~RmcRcsDataThreadController() {
-}
+RmcRcsDataThreadController::~RmcRcsDataThreadController() {}
 
-sp<RmcRcsSharedMemory> RmcRcsDataThreadController::getSharedMem(void) {
-    return sShareMemory;
-}
+sp<RmcRcsSharedMemory> RmcRcsDataThreadController::getSharedMem(void) { return sShareMemory; }
 
 void RmcRcsDataThreadController::init() {
     pthread_mutex_lock(&sMutex);
@@ -164,8 +144,7 @@ void RmcRcsDataThreadController::init() {
 }
 
 void RmcRcsDataThreadController::startThread() {
-
-    pthread_attr_t  attr;
+    pthread_attr_t attr;
     int ret;
 
     pthread_attr_init(&attr);
@@ -185,14 +164,13 @@ void RmcRcsDataThreadController::startThread() {
     }
 }
 
-void* RmcRcsDataThreadController::rilServerThread(void *arg) {
-
+void* RmcRcsDataThreadController::rilServerThread(void* arg) {
     RFX_LOG_I(RFX_LOG_TAG, "[Ril Srv Thd] rilServerThread Start");
     RFX_UNUSED(arg);
     int ret = 0;
 
-    //allocate memory
-    sChannelObj = (Ril_Channel_Obj_t *)malloc(sizeof(Ril_Channel_Obj_t));
+    // allocate memory
+    sChannelObj = (Ril_Channel_Obj_t*)malloc(sizeof(Ril_Channel_Obj_t));
     if (!sChannelObj) {
         RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Can't allocate the memory");
         goto free_mem;
@@ -201,22 +179,23 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
 
     sChannelObj->channels_size = MAX_CLIENT;
 
-    sChannelObj->channels = (Ril_Channel_Client_t *)malloc(sizeof(Ril_Channel_Client_t) * sChannelObj->channels_size);
+    sChannelObj->channels = (Ril_Channel_Client_t*)malloc(sizeof(Ril_Channel_Client_t) *
+                                                          sChannelObj->channels_size);
     if (!sChannelObj->channels) {
         RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Can't allocate the memory");
         goto free_mem;
     }
     memset(sChannelObj->channels, 0, sizeof(Ril_Channel_Client_t) * sChannelObj->channels_size);
-    //set fd as initial value -1
+    // set fd as initial value -1
     for (int i = 0; i < sChannelObj->channels_size; ++i) {
-        Ril_Channel_Client_t *clients = (Ril_Channel_Client_t *)sChannelObj->channels;
+        Ril_Channel_Client_t* clients = (Ril_Channel_Client_t*)sChannelObj->channels;
         clients[i].channel.fd = -1;
     }
 
     // create server FD
     sChannelObj->fd = android_get_control_socket(RCS_RIL_SOCKET_NAME);
 
-    //do retry if init.rc didn't define socket
+    // do retry if init.rc didn't define socket
     if (sChannelObj->fd < 0) {
         struct sockaddr_un my_addr;
         RFX_LOG_D(RFX_LOG_TAG, "init.rc didn't define, create socket manually");
@@ -233,17 +212,18 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
             goto free_mem;
         }
 
-        int ret = ::bind(sChannelObj->fd, (struct sockaddr *) &my_addr,
-                sizeof(struct sockaddr_un));
+        int ret = ::bind(sChannelObj->fd, (struct sockaddr*)&my_addr, sizeof(struct sockaddr_un));
         if (ret < 0) {
-            RFX_LOG_E(RFX_LOG_TAG, "bind fail, ret = %d, errno = %d, set state to close", ret, errno);
+            RFX_LOG_E(RFX_LOG_TAG, "bind fail, ret = %d, errno = %d, set state to close", ret,
+                      errno);
             close(sChannelObj->fd);
             sChannelObj->fd = -1;
         }
     }
 
     if (sChannelObj->fd < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] failed to get socket, errno: %d, %s", errno, strerror(errno));
+        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] failed to get socket, errno: %d, %s", errno,
+                  strerror(errno));
         goto free_mem;
     }
 
@@ -252,7 +232,8 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
     // listen client
     ret = listen(sChannelObj->fd, sChannelObj->channels_size);
     if (ret < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] failed to listen, errno: %d, %s", errno, strerror(errno));
+        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] failed to listen, errno: %d, %s", errno,
+                  strerror(errno));
         goto free_mem;
     }
 
@@ -260,18 +241,18 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
 
     // accept client and start looper to read/write data
     while (1) {
-        fd_set  iofds;
+        fd_set iofds;
         int i = 0;
         int ret = 0;
         int max_fd = sChannelObj->fd;
         int local_errno;
         int bad_fd_handle = 0;
-        Ril_Channel_Client_t *clients = (Ril_Channel_Client_t *)sChannelObj->channels;
+        Ril_Channel_Client_t* clients = (Ril_Channel_Client_t*)sChannelObj->channels;
 
         FD_ZERO(&iofds);
         FD_SET(sChannelObj->fd, &iofds);
 
-        //set client fd
+        // set client fd
         for (i = 0; i < sChannelObj->channels_size; ++i) {
             if (clients[i].channel.fd >= 0) {
                 if (clients[i].channel.fd > max_fd) {
@@ -289,16 +270,19 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
                 continue;
             }
 
-            RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Select fail, ret = %d, errno: %d, %s", ret, errno, strerror(errno));
+            RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Select fail, ret = %d, errno: %d, %s", ret, errno,
+                      strerror(errno));
 
             if (local_errno == 9) {
-                //Bad file descriptor(9)
+                // Bad file descriptor(9)
                 for (i = 0; i < sChannelObj->channels_size; ++i) {
-                    Ril_Channel_Client_t *ccc = &(clients[i]);
+                    Ril_Channel_Client_t* ccc = &(clients[i]);
                     if (ccc->channel.fd >= 0) {
                         if (FD_ISSET(ccc->channel.fd, &iofds)) {
                             int tmp_client_fd = ccc->channel.fd;
-                            RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Bad file descriptor [fd:%d, idx:%d]", ccc->channel.fd, i);
+                            RFX_LOG_E(RFX_LOG_TAG,
+                                      "[Ril Srv Thd] Bad file descriptor [fd:%d, idx:%d]",
+                                      ccc->channel.fd, i);
                             ccc->channel.fd = -1;
                             shutdown(tmp_client_fd, SHUT_RDWR);
                             close(tmp_client_fd);
@@ -325,13 +309,14 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
             struct sockaddr_in tmp_addr;
             socklen_t tmp_addrlen = sizeof(struct sockaddr);
 
-            tmp_fd = accept(sChannelObj->fd, (sockaddr *)&tmp_addr, (socklen_t *)&tmp_addrlen);
+            tmp_fd = accept(sChannelObj->fd, (sockaddr*)&tmp_addr, (socklen_t*)&tmp_addrlen);
             if (tmp_fd < 0) {
-                RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] accept error, errno = %s(%d)", strerror(errno), errno);
+                RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] accept error, errno = %s(%d)",
+                          strerror(errno), errno);
                 continue;
             }
 
-            for (i = 0 ; i < sChannelObj->channels_size; ++i) {
+            for (i = 0; i < sChannelObj->channels_size; ++i) {
                 if (clients[i].channel.fd < 0) {
                     pthread_mutex_init(&(clients[i].channel.mutex), 0);
                     clients[i].channel.fd = tmp_fd;
@@ -346,40 +331,47 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
                 RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Connection pool is full");
             } else {
                 RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Connection from %s:%d [fd:%d, idx:%d]",
-                    inet_ntoa(tmp_addr.sin_addr), ntohs(tmp_addr.sin_port), tmp_fd, tmp_index);
+                          inet_ntoa(tmp_addr.sin_addr), ntohs(tmp_addr.sin_port), tmp_fd,
+                          tmp_index);
             }
         }
 
-        for (i = 0 ; i < sChannelObj->channels_size; ++i) {
-            Ril_Channel_Client_t *ccc = &(clients[i]);
+        for (i = 0; i < sChannelObj->channels_size; ++i) {
+            Ril_Channel_Client_t* ccc = &(clients[i]);
 
             if (ccc->channel.fd >= 0) {
                 if (FD_ISSET(ccc->channel.fd, &iofds)) {
-                    ret = recv(ccc->channel.fd, ccc->buf + ccc->buf_len, sizeof(ccc->buf) - ccc->buf_len, 0);
+                    ret = recv(ccc->channel.fd, ccc->buf + ccc->buf_len,
+                               sizeof(ccc->buf) - ccc->buf_len, 0);
                     if (ret > 0) {
                         ccc->buf_len += ret;
                         while (ccc->buf_len >= (int)UA_CHANNEL_HEADER_LEN) {
                             Channel_Data_t recv_data;
 
                             memcpy(&recv_data, ccc->buf, UA_CHANNEL_HEADER_LEN);
-                            RFX_LOG_I(RFX_LOG_TAG, "[Ril Srv Thd] data->type = %d, data->len = %d, data->flag = %d, ccc->buf_len = %d",
-                                recv_data.type, recv_data.len, recv_data.flag, ccc->buf_len);
+                            RFX_LOG_I(RFX_LOG_TAG,
+                                      "[Ril Srv Thd] data->type = %d, data->len = %d, data->flag = "
+                                      "%d, ccc->buf_len = %d",
+                                      recv_data.type, recv_data.len, recv_data.flag, ccc->buf_len);
                             if (recv_data.len == 0) {
                                 recv_data.data = 0;
                                 rilServerRead(&recv_data, &(ccc->channel));
                                 ccc->buf_len -= (UA_CHANNEL_HEADER_LEN);
                                 memmove(ccc->buf, ccc->buf + UA_CHANNEL_HEADER_LEN, ccc->buf_len);
-                            } else if (recv_data.len <= (int)(ccc->buf_len - UA_CHANNEL_HEADER_LEN)) {
-                                recv_data.data = (char *)calloc(recv_data.len + 1, sizeof(char));
+                            } else if (recv_data.len <=
+                                       (int)(ccc->buf_len - UA_CHANNEL_HEADER_LEN)) {
+                                recv_data.data = (char*)calloc(recv_data.len + 1, sizeof(char));
                                 if (recv_data.data) {
-                                    memcpy(recv_data.data, ccc->buf + UA_CHANNEL_HEADER_LEN, recv_data.len);
+                                    memcpy(recv_data.data, ccc->buf + UA_CHANNEL_HEADER_LEN,
+                                           recv_data.len);
                                     rilServerRead(&recv_data, &(ccc->channel));
                                     free(recv_data.data);
                                 } else {
                                     RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Can't allocate memory");
                                 }
                                 ccc->buf_len -= (UA_CHANNEL_HEADER_LEN + recv_data.len);
-                                memmove(ccc->buf, ccc->buf + UA_CHANNEL_HEADER_LEN+recv_data.len, ccc->buf_len);
+                                memmove(ccc->buf, ccc->buf + UA_CHANNEL_HEADER_LEN + recv_data.len,
+                                        ccc->buf_len);
                             } else {
                                 break;
                             }
@@ -388,9 +380,11 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
                         int tmp_client_fd = ccc->channel.fd;
 
                         if (sizeof(ccc->buf) - ccc->buf_len == 0) {
-                            RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] ****** channel buffer full ******");
+                            RFX_LOG_E(RFX_LOG_TAG,
+                                      "[Ril Srv Thd] ****** channel buffer full ******");
                         }
-                        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Client disconnect [fd:%d, idx:%d]", ccc->channel.fd, i);
+                        RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Client disconnect [fd:%d, idx:%d]",
+                                  ccc->channel.fd, i);
                         ccc->channel.fd = -1;
                         shutdown(tmp_client_fd, SHUT_RDWR);
                         close(tmp_client_fd);
@@ -399,8 +393,10 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
                         if (errno != EINTR) {
                             int tmp_client_fd = ccc->channel.fd;
 
-                            RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] Read data errorm [fd:%d, idx:%d], ret = %d, errno = %s(%d)",
-                                ccc->channel.fd, i, ret, strerror(errno), errno);
+                            RFX_LOG_E(RFX_LOG_TAG,
+                                      "[Ril Srv Thd] Read data errorm [fd:%d, idx:%d], ret = %d, "
+                                      "errno = %s(%d)",
+                                      ccc->channel.fd, i, ret, strerror(errno), errno);
                             ccc->channel.fd = -1;
                             shutdown(tmp_client_fd, SHUT_RDWR);
                             close(tmp_client_fd);
@@ -414,11 +410,11 @@ void* RmcRcsDataThreadController::rilServerThread(void *arg) {
 
     RFX_LOG_E(RFX_LOG_TAG, "[Ril Srv Thd] rilServerThread exit");
 
-    //close server fd
+    // close server fd
     close(sChannelObj->fd);
     sChannelObj->fd = -1;
 
-free_mem :
+free_mem:
     if (sChannelObj && sChannelObj->channels) free(sChannelObj->channels);
     if (sChannelObj) {
         if (sChannelObj->fd >= 0) close(sChannelObj->fd);
@@ -429,40 +425,41 @@ free_mem :
     return 0;
 }
 
-
-void RmcRcsDataThreadController::rilServerRead(Channel_Data_t *msgData, Ril_Channel_Obj_t *channel) {
+void RmcRcsDataThreadController::rilServerRead(Channel_Data_t* msgData,
+                                               Ril_Channel_Obj_t* channel) {
     if (!channel) {
         return;
     }
     if (!msgData) {
         RFX_LOG_I(RFX_LOG_TAG, "UA (%d - %p) is disconnected", channel->type, channel);
-        //reset type
-        channel->type = 0; //unknown type
+        // reset type
+        channel->type = 0;  // unknown type
         return;
     } else {
-        if(msgData->type == VOLTE_REQ_SIPTX_CREATE) {
-            VoLTE_Stack_Channel_Info_t *info = (VoLTE_Stack_Channel_Info_t *)msgData->data;
-            if (info->type == (VoLTE_Stack_UA_RCS_Proxy | VoLTE_UA_MAGIC_NUMBER)) {//rcs
+        if (msgData->type == VOLTE_REQ_SIPTX_CREATE) {
+            VoLTE_Stack_Channel_Info_t* info = (VoLTE_Stack_Channel_Info_t*)msgData->data;
+            if (info->type == (VoLTE_Stack_UA_RCS_Proxy | VoLTE_UA_MAGIC_NUMBER)) {  // rcs
                 channel->type = VoLTE_Stack_UA_RCS_Proxy;
-            } else if (info->type == (VoLTE_Stack_UA_RCS_Proxy_Sip | VoLTE_UA_MAGIC_NUMBER)) {//rcs_sip
+            } else if (info->type ==
+                       (VoLTE_Stack_UA_RCS_Proxy_Sip | VoLTE_UA_MAGIC_NUMBER)) {  // rcs_sip
                 channel->type = VoLTE_Stack_UA_RCS_Proxy_Sip;
             } else {
                 RFX_LOG_E(RFX_LOG_TAG, "wrong type(%d) for VOLTE_REQ_SIPTX_CREATE", info->type);
                 return;
             }
         }
-        //dispatch to md
+        // dispatch to md
         switch (channel->type) {
             case VoLTE_Stack_UA_RCS_Proxy:
-            case VoLTE_Stack_UA_RCS_Proxy_Sip:
-            {
+            case VoLTE_Stack_UA_RCS_Proxy_Sip: {
                 // send to RIL FWK
-                void *rawData = NULL;
+                void* rawData = NULL;
                 int rawDataLen = msgData->len + MD_CHANNEL_HEADER_LEN;
-                rawData = convertUAData(msgData, channel->type, 0);//default acct_id
+                rawData = convertUAData(msgData, channel->type, 0);  // default acct_id
                 if (rawData) {
-                    sp<RfxMclMessage> rcsmsg = RfxMclMessage::obtainEvent(RFX_MSG_EVENT_RCS_SEND_MSG,
-                            RfxRcsSendMsgData(rawData, rawDataLen), RIL_CMD_PROXY_2, 0);//todo for slot id
+                    sp<RfxMclMessage> rcsmsg = RfxMclMessage::obtainEvent(
+                            RFX_MSG_EVENT_RCS_SEND_MSG, RfxRcsSendMsgData(rawData, rawDataLen),
+                            RIL_CMD_PROXY_2, 0);  // todo for slot id
                     RfxMclDispatcherThread::enqueueMclMessage(rcsmsg);
                     free(rawData);
                 }
@@ -474,31 +471,30 @@ void RmcRcsDataThreadController::rilServerRead(Channel_Data_t *msgData, Ril_Chan
     }
 }
 
-//for Ims Submarine data structure change
-void *RmcRcsDataThreadController::convertUAData(Channel_Data_t *_data, int uaType, int acctId){
-
-    Channel_Data_t *data = (Channel_Data_t *)_data;
+// for Ims Submarine data structure change
+void* RmcRcsDataThreadController::convertUAData(Channel_Data_t* _data, int uaType, int acctId) {
+    Channel_Data_t* data = (Channel_Data_t*)_data;
     char* sendData = NULL;
 
-    sendData = (char* ) calloc(data->len + MD_CHANNEL_HEADER_LEN, sizeof(char));
+    sendData = (char*)calloc(data->len + MD_CHANNEL_HEADER_LEN, sizeof(char));
     if (!sendData) {
         RFX_LOG_E(RFX_LOG_TAG, "convertUAData can't allocate the memory");
         return NULL;
     }
 
-    (* ((int*)sendData)) = data->type;
-    (* ((int*)sendData + 1)) = data->len;
-    (* ((int*)sendData + 2)) = data->flag;
-    (* ((int*)sendData + 3)) = acctId; //acct_id default vaule 0
-    (* ((int*)sendData + 4)) = uaType;
+    (*((int*)sendData)) = data->type;
+    (*((int*)sendData + 1)) = data->len;
+    (*((int*)sendData + 2)) = data->flag;
+    (*((int*)sendData + 3)) = acctId;  // acct_id default vaule 0
+    (*((int*)sendData + 4)) = uaType;
 
-    //data.data
+    // data.data
     memcpy((sendData + MD_CHANNEL_HEADER_LEN), data->data, data->len);
     return (void*)sendData;
 }
 
-//return client channel obj
-Ril_Channel_Obj_t *RmcRcsDataThreadController::getClientObjbyUaType(int uaType) {
+// return client channel obj
+Ril_Channel_Obj_t* RmcRcsDataThreadController::getClientObjbyUaType(int uaType) {
     int i;
     if (!sChannelObj) {
         return 0;
@@ -506,9 +502,9 @@ Ril_Channel_Obj_t *RmcRcsDataThreadController::getClientObjbyUaType(int uaType) 
     if (!sChannelObj->channels) {
         return 0;
     }
-    Ril_Channel_Client_t *clients = (Ril_Channel_Client_t *)sChannelObj->channels;
+    Ril_Channel_Client_t* clients = (Ril_Channel_Client_t*)sChannelObj->channels;
     for (i = 0; i < sChannelObj->channels_size; ++i) {
-        Ril_Channel_Client_t *ccc = &(clients[i]);
+        Ril_Channel_Client_t* ccc = &(clients[i]);
         if (ccc->channel.fd >= 0 && ccc->channel.type == uaType) {
             return &(ccc->channel);
         }
@@ -516,25 +512,23 @@ Ril_Channel_Obj_t *RmcRcsDataThreadController::getClientObjbyUaType(int uaType) 
     return 0;
 }
 
-void * RmcRcsDataThreadController::shareMemoryThread(void *arg) {
-
+void* RmcRcsDataThreadController::shareMemoryThread(void* arg) {
     RFX_LOG_I(RFX_LOG_TAG, "[Share Mem Thd] Start");
 
     RFX_UNUSED(arg);
 
-    while(1) {
-
-        //if (sIsVtConnected == 0) {
-            //RFX_LOG_D(RFX_LOG_TAG, "[RIL IMCB THD] sIsVtConnected : %d", sIsVtConnected);
-            //usleep(500 * 1000);
-            //continue;
+    while (1) {
+        // if (sIsVtConnected == 0) {
+        // RFX_LOG_D(RFX_LOG_TAG, "[RIL IMCB THD] sIsVtConnected : %d", sIsVtConnected);
+        // usleep(500 * 1000);
+        // continue;
         //}
 
         sShareMemory->lock("ril-md thread");
 
         sShareMemory->wait("ril-md thread", RCS_RIL_SHARE_DATA_STATUS_RECV_NONE);
 
-        char *pRecvMsg;
+        char* pRecvMsg;
         int size;
         Channel_Data_t recvData;
         int uaType; /* VoLTE_Stack_UA_Type_e */
@@ -542,18 +536,18 @@ void * RmcRcsDataThreadController::shareMemoryThread(void *arg) {
         memset(&recvData, 0, sizeof(Channel_Data_t));
         sShareMemory->getData(&pRecvMsg);
         size = sShareMemory->getSize();
-        recvData.type = (* ((int*)pRecvMsg));
-        recvData.len = (* ((int*)pRecvMsg + 1));
-        recvData.flag = (* ((int*)pRecvMsg + 2));
-        //don't care acct_id
-        uaType = (* ((int*)pRecvMsg + 4));
+        recvData.type = (*((int*)pRecvMsg));
+        recvData.len = (*((int*)pRecvMsg + 1));
+        recvData.flag = (*((int*)pRecvMsg + 2));
+        // don't care acct_id
+        uaType = (*((int*)pRecvMsg + 4));
 
         RFX_LOG_I(RFX_LOG_TAG, "[Share Mem Thd] recv data length = %d, msgId = %d, uaType = %d\n",
-            size, recvData.type, uaType);
+                  size, recvData.type, uaType);
 
         if (size != (recvData.len + (int)(MD_CHANNEL_HEADER_LEN))) {
-
-            RFX_LOG_E(RFX_LOG_TAG, "[Share Mem Thd] recv data length is wrong, recvData.type = %d", recvData.type);
+            RFX_LOG_E(RFX_LOG_TAG, "[Share Mem Thd] recv data length is wrong, recvData.type = %d",
+                      recvData.type);
 
             sShareMemory->clearData();
             sShareMemory->setState(RCS_RIL_SHARE_DATA_STATUS_RECV_NONE);
@@ -562,7 +556,7 @@ void * RmcRcsDataThreadController::shareMemoryThread(void *arg) {
         }
 
         if (recvData.len > 0) {
-            recvData.data = (char* )calloc(recvData.len, sizeof(char));
+            recvData.data = (char*)calloc(recvData.len, sizeof(char));
             if (!recvData.data) {
                 RFX_LOG_E(RFX_LOG_TAG, "[Share Mem Thd] Can't allocate the memory");
 
@@ -584,16 +578,15 @@ void * RmcRcsDataThreadController::shareMemoryThread(void *arg) {
         sShareMemory->setState(RCS_RIL_SHARE_DATA_STATUS_RECV_NONE);
 
         sShareMemory->unlock("ril-md thread");
-
     }
     RFX_LOG_E(RFX_LOG_TAG, "[Share Mem Thd] end of readerLooper, should not happen");
 
     return 0;
 }
 
-//write data to client UA
-int RmcRcsDataThreadController::sendDataToUA(Channel_Data_t *data, int uaType) {
-    Ril_Channel_Obj_t *obj = 0;
+// write data to client UA
+int RmcRcsDataThreadController::sendDataToUA(Channel_Data_t* data, int uaType) {
+    Ril_Channel_Obj_t* obj = 0;
     int ret = 0;
     int id = 0;
 
@@ -612,14 +605,14 @@ int RmcRcsDataThreadController::sendDataToUA(Channel_Data_t *data, int uaType) {
     }
 
     do {
-        ret = fsend(id, (char *)data, UA_CHANNEL_HEADER_LEN);
+        ret = fsend(id, (char*)data, UA_CHANNEL_HEADER_LEN);
         if (ret != UA_CHANNEL_HEADER_LEN) {
             ret = -1;
             break;
         }
 
         if (data->len && data->data) {
-            ret = fsend(id, (char *)data->data, data->len);
+            ret = fsend(id, (char*)data->data, data->len);
             if (ret != data->len) {
                 ret = -1;
                 break;
@@ -636,7 +629,7 @@ int RmcRcsDataThreadController::sendDataToUA(Channel_Data_t *data, int uaType) {
     return ret;
 }
 
-int RmcRcsDataThreadController::fsend(int fd, char *data, int len) {
+int RmcRcsDataThreadController::fsend(int fd, char* data, int len) {
     int size = 0, ret = 0;
     int write_size = 0;
     int local_errno;
@@ -656,19 +649,20 @@ int RmcRcsDataThreadController::fsend(int fd, char *data, int len) {
         } else {
             if (errno == EINTR) {
                 continue;
-            }
-            else if (errno == EPIPE) {
+            } else if (errno == EPIPE) {
                 ;
             }
-            RFX_LOG_E(RFX_LOG_TAG, "Can't write the data to channel, error = (%d), fd = (%d)", local_errno, fd);
+            RFX_LOG_E(RFX_LOG_TAG, "Can't write the data to channel, error = (%d), fd = (%d)",
+                      local_errno, fd);
             break;
         }
     }
     return size;
 }
 
-void RmcRcsDataThreadController::sendMsgToShareMemory(char* outBuffer, int length, const char* user) {
-    sp<RmcRcsSharedMemory> Mem  = getSharedMem();
+void RmcRcsDataThreadController::sendMsgToShareMemory(char* outBuffer, int length,
+                                                      const char* user) {
+    sp<RmcRcsSharedMemory> Mem = getSharedMem();
 
     while (1) {
         if (!Mem->checkState(RCS_RIL_SHARE_DATA_STATUS_RECV_NONE)) {
@@ -689,12 +683,11 @@ void RmcRcsDataThreadController::sendMsgToShareMemory(char* outBuffer, int lengt
     Mem->signal(user);
 
     Mem->unlock(user);
-
 }
 
 bool RmcRcsDataThreadController::isLogEnable() {
     char enableLog[100] = {0};
 
     rfx_property_get("persist.vendor.rilrcs.log_enable", enableLog, "0");
-    return (atoi(enableLog) == 1)? true: false;
+    return (atoi(enableLog) == 1) ? true : false;
 }

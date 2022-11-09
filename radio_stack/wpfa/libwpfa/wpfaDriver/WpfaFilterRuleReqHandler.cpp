@@ -20,18 +20,16 @@
 
 using ::android::Mutex;
 
-WpfaFilterRuleReqHandler *WpfaFilterRuleReqHandler::s_self = NULL;
+WpfaFilterRuleReqHandler* WpfaFilterRuleReqHandler::s_self = NULL;
 
 static sem_t sWaitLooperSem;
 static bool sNeedWaitLooper = true;
 static Mutex sWaitLooperMutex;
 
-
 /*****************************************************************************
  * Class RuleReqMsgHandler
  *****************************************************************************/
-void WpfaFilterRuleReqHandler::RuleReqMsgHandler::handleMessage(
-        const Message& message) {
+void WpfaFilterRuleReqHandler::RuleReqMsgHandler::handleMessage(const Message& message) {
     WPFA_UNUSED(message);
     sender->processMessage(msg);
 }
@@ -63,20 +61,21 @@ bool WpfaFilterRuleReqHandler::threadLoop() {
         mtkLogD(WPFA_D_LOG_TAG, "threadLoop, result = %d, err=%d", result, err);
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    WPFA_D_ASSERT(0); // Can't go here
+    WPFA_D_ASSERT(0);  // Can't go here
     return true;
 }
 
 void WpfaFilterRuleReqHandler::enqueueFilterRuleReqMessage(const sp<WpfaDriverMessage>& message) {
-    //if (!RfxRilUtils::isInLogReductionList(message->getId())) {
-        mtkLogD(WPFA_D_LOG_TAG, "enqueueFilterRuleReqMessage: %s", message->toString().string());
+    // if (!RfxRilUtils::isInLogReductionList(message->getId())) {
+    mtkLogD(WPFA_D_LOG_TAG, "enqueueFilterRuleReqMessage: %s", message->toString().string());
     //}
     WpfaFilterRuleReqHandler* sender = s_self;
     sp<MessageHandler> handler = new RuleReqMsgHandler(sender, message);
     s_self->mLooper->sendMessage(handler, s_self->mDummyMsg);
 }
 
-void WpfaFilterRuleReqHandler::enqueueFilterRuleReqMessageFront(const sp<WpfaDriverMessage>& message) {
+void WpfaFilterRuleReqHandler::enqueueFilterRuleReqMessageFront(
+        const sp<WpfaDriverMessage>& message) {
     mtkLogD(WPFA_D_LOG_TAG, "enqueueFilterRuleReqMessageFront: %s", message->toString().string());
     WpfaFilterRuleReqHandler* sender = s_self;
     sp<MessageHandler> handler = new RuleReqMsgHandler(sender, message);
@@ -107,19 +106,19 @@ void WpfaFilterRuleReqHandler::processMessage(const sp<WpfaDriverMessage>& msg) 
     if (eventId > 0 && eventId < EVENT_M2A_MAX) {
         if (checkDriverState() == 0) {
             retValue = mWpfaDriver->notifyCallback(eventId, msg->getData()->getData());
-            mtkLogD(WPFA_D_LOG_TAG, "notifyCallback() msgId=%d eventId=%d ret=%d",
-                        msgId, eventId, retValue);
+            mtkLogD(WPFA_D_LOG_TAG, "notifyCallback() msgId=%d eventId=%d ret=%d", msgId, eventId,
+                    retValue);
 
             if (msgId == MSG_M2A_REG_DL_FILTER) {
-                wifiproxy_m2a_reg_dl_filter_t *pReqFilter =
-                        (wifiproxy_m2a_reg_dl_filter_t *)msg->getData()->getData();
+                wifiproxy_m2a_reg_dl_filter_t* pReqFilter =
+                        (wifiproxy_m2a_reg_dl_filter_t*)msg->getData()->getData();
                 sendRegAcceptResponse(msg->getTid(), pReqFilter->fid, retValue);
             } else if (msgId == MSG_M2A_DEREG_DL_FILTER) {
-                wifiproxy_m2a_dereg_dl_filter_t *pDeregFilter =
-                        (wifiproxy_m2a_dereg_dl_filter_t *)msg->getData()->getData();
+                wifiproxy_m2a_dereg_dl_filter_t* pDeregFilter =
+                        (wifiproxy_m2a_dereg_dl_filter_t*)msg->getData()->getData();
                 sendDeregAcceptResponse(msg->getTid(), pDeregFilter->fid, retValue);
             } else {
-                //no need to handle "MSG_M2A_WPFA_VERSION"
+                // no need to handle "MSG_M2A_WPFA_VERSION"
             }
         }
     } else {
@@ -128,41 +127,37 @@ void WpfaFilterRuleReqHandler::processMessage(const sp<WpfaDriverMessage>& msg) 
 }
 
 int WpfaFilterRuleReqHandler::sendRegAcceptResponse(uint16_t tId, uint32_t fId, int32_t errCause) {
-    mtkLogD(WPFA_D_LOG_TAG, "sendRegAcceptResponse() tid=%d fId=%d errCause=%d", tId, fId, errCause);
+    mtkLogD(WPFA_D_LOG_TAG, "sendRegAcceptResponse() tid=%d fId=%d errCause=%d", tId, fId,
+            errCause);
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
-        wifiproxy_a2m_reg_reply_t *pAcceptData = (wifiproxy_a2m_reg_reply_t *)calloc(1,
-                sizeof(wifiproxy_a2m_reg_reply_t));
+        wifiproxy_a2m_reg_reply_t* pAcceptData =
+                (wifiproxy_a2m_reg_reply_t*)calloc(1, sizeof(wifiproxy_a2m_reg_reply_t));
         pAcceptData->fid = fId;
         pAcceptData->error_cause = errCause;
 
         sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-                MSG_A2M_REG_REPLY,
-                tId,
-                CCCI_IP_TABLE_MSG,
-                0,
-                WpfaDriverAcceptData(pAcceptData, 1));
+                MSG_A2M_REG_REPLY, tId, CCCI_IP_TABLE_MSG, 0, WpfaDriverAcceptData(pAcceptData, 1));
         retValue = mDriverAdapter->sendMsgToControlMsgDispatcher(msg);
         free(pAcceptData);
     }
     return retValue;
 }
 
-int WpfaFilterRuleReqHandler::sendDeregAcceptResponse(uint16_t tId, uint32_t fId, int32_t errCause){
-    mtkLogD(WPFA_D_LOG_TAG, "sendDeregAcceptResponse() tid=%d fId=%d errCause=%d", tId, fId, errCause);
+int WpfaFilterRuleReqHandler::sendDeregAcceptResponse(uint16_t tId, uint32_t fId,
+                                                      int32_t errCause) {
+    mtkLogD(WPFA_D_LOG_TAG, "sendDeregAcceptResponse() tid=%d fId=%d errCause=%d", tId, fId,
+            errCause);
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
-        wifiproxy_a2m_dereg_reply_t *pDeregAcceptData = (wifiproxy_a2m_dereg_reply_t *)calloc(1,
-                sizeof(wifiproxy_a2m_dereg_reply_t));
+        wifiproxy_a2m_dereg_reply_t* pDeregAcceptData =
+                (wifiproxy_a2m_dereg_reply_t*)calloc(1, sizeof(wifiproxy_a2m_dereg_reply_t));
         pDeregAcceptData->fid = fId;
         pDeregAcceptData->error_cause = errCause;
 
-        sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-                MSG_A2M_DEREG_REPLY,
-                tId,
-                CCCI_IP_TABLE_MSG,
-                0,
-                WpfaDriverAcceptData(pDeregAcceptData, 1));
+        sp<WpfaDriverMessage> msg =
+                WpfaDriverMessage::obtainMessage(MSG_A2M_DEREG_REPLY, tId, CCCI_IP_TABLE_MSG, 0,
+                                                 WpfaDriverAcceptData(pDeregAcceptData, 1));
         retValue = mDriverAdapter->sendMsgToControlMsgDispatcher(msg);
         free(pDeregAcceptData);
     }

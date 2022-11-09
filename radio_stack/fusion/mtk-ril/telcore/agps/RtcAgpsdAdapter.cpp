@@ -19,7 +19,7 @@ int AgpsLooperCallback::handleEvent(int fd, int events, void* data) {
     const int size = 2048;
     RFX_ASSERT(events == Looper::EVENT_INPUT);
     RFX_UNUSED(data);
-    RtcAgpsdAdapter *adapter = m_adapter.promote().get();
+    RtcAgpsdAdapter* adapter = m_adapter.promote().get();
     if (adapter != NULL) {
         char buf[size];
         int len = adapter->safeRead(fd, buf, size);
@@ -34,47 +34,38 @@ int AgpsLooperCallback::handleEvent(int fd, int events, void* data) {
     return 1;
 }
 
-
 /*****************************************************************************
  * Class RtcAgpsdAdapter
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcAgpsdAdapter", RtcAgpsdAdapter, RfxObject);
-RtcAgpsdAdapter::RtcAgpsdAdapter() :
-    m_inFd(-1),
-    m_looperCallback(NULL) {
+RtcAgpsdAdapter::RtcAgpsdAdapter() : m_inFd(-1), m_looperCallback(NULL) {
     RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]Constructor 0x%zu", (size_t)this);
 }
-
 
 RtcAgpsdAdapter::~RtcAgpsdAdapter() {
     RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]Destructor 0x%zu", (size_t)this);
 }
-
 
 void RtcAgpsdAdapter::putByte(char* buff, int* offset, const char input) {
     *((char*)&buff[*offset]) = input;
     *offset += 1;
 }
 
-
 void RtcAgpsdAdapter::putInt16(char* buff, int* offset, const int16_t input) {
     putByte(buff, offset, input & 0xff);
     putByte(buff, offset, (input >> 8) & 0xff);
 }
-
 
 void RtcAgpsdAdapter::putInt32(char* buff, int* offset, const int32_t input) {
     putInt16(buff, offset, input & 0xffff);
     putInt16(buff, offset, (input >> 16) & 0xffff);
 }
 
-
 char RtcAgpsdAdapter::getByte(char* buff, int* offset) {
     char ret = buff[*offset];
     *offset += 1;
     return ret;
 }
-
 
 int16_t RtcAgpsdAdapter::getInt16(char* buff, int* offset) {
     int16_t ret = 0;
@@ -83,7 +74,6 @@ int16_t RtcAgpsdAdapter::getInt16(char* buff, int* offset) {
     return ret;
 }
 
-
 int32_t RtcAgpsdAdapter::getInt32(char* buff, int* offset) {
     int32_t ret = 0;
     ret |= getInt16(buff, offset) & 0xffff;
@@ -91,16 +81,11 @@ int32_t RtcAgpsdAdapter::getInt32(char* buff, int* offset) {
     return ret;
 }
 
-
-int RtcAgpsdAdapter::createSocket(
-        const char *name,
-        int type,
-        struct sockaddr_un *addr,
-        socklen_t *len) {
+int RtcAgpsdAdapter::createSocket(const char* name, int type, struct sockaddr_un* addr,
+                                  socklen_t* len) {
     int s = socket(AF_UNIX, type, 0);
     if (s < 0) {
-        RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]createSocket Error[%s]",
-            strerror(errno));
+        RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]createSocket Error[%s]", strerror(errno));
         return -1;
     }
     int err = makeAddress(name, addr, len);
@@ -111,16 +96,11 @@ int RtcAgpsdAdapter::createSocket(
     return s;
 }
 
-
-int RtcAgpsdAdapter::makeAddress(
-        const char *name,
-        struct sockaddr_un *addr,
-        socklen_t *len) {
+int RtcAgpsdAdapter::makeAddress(const char* name, struct sockaddr_un* addr, socklen_t* len) {
     size_t namelen;
     memset(addr, 0, sizeof(struct sockaddr_un));
     namelen = strlen(name);
-    if (namelen + 1 > sizeof(addr->sun_path))
-    {
+    if (namelen + 1 > sizeof(addr->sun_path)) {
         RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]makeAddress Error");
         return -1;
     }
@@ -131,11 +111,10 @@ int RtcAgpsdAdapter::makeAddress(
     return 0;
 }
 
-
 int RtcAgpsdAdapter::createOutSocket() {
     struct sockaddr_un addr;
     socklen_t len;
-    const char *name;
+    const char* name;
     if (RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK) {
         name = c_strOutSocketTest;
     } else {
@@ -145,20 +124,18 @@ int RtcAgpsdAdapter::createOutSocket() {
     if (s < 0) {
         return -1;
     }
-    if(connect(s, (struct sockaddr *) &addr, len) < 0) {
-        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createOutSocket Connect Error[%s]",
-            strerror(errno));
+    if (connect(s, (struct sockaddr*)&addr, len) < 0) {
+        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createOutSocket Connect Error[%s]", strerror(errno));
         close(s);
         return -1;
     }
     return s;
 }
 
-
 int RtcAgpsdAdapter::createInSocket() {
     struct sockaddr_un addr;
     socklen_t len;
-    const char *name;
+    const char* name;
     if (RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK) {
         name = c_strInSocketTest;
     } else {
@@ -171,34 +148,31 @@ int RtcAgpsdAdapter::createInSocket() {
     int n = 1;
     int ret = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &n, sizeof(n));
     if (ret < 0) {
-        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createInSocket setOpt Error[%s]",
-            strerror(errno));
+        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createInSocket setOpt Error[%s]", strerror(errno));
         close(s);
         return -1;
     }
-    if (bind(s, (struct sockaddr *) &addr, len) < 0) {
-        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createInSocket Bind Error[%s][%s]",
-            strerror(errno), name);
+    if (bind(s, (struct sockaddr*)&addr, len) < 0) {
+        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]createInSocket Bind Error[%s][%s]", strerror(errno),
+                  name);
         close(s);
         return -1;
     }
     return s;
 }
 
-
 int RtcAgpsdAdapter::safeWrite(int fd, void* buf, int len) {
     int n, retry = 10;
 
-    if(fd < 0 || buf == NULL || len < 0) {
-        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]safeWrite fd=%d buf=%p len=%d\n",
-            fd, buf, len);
+    if (fd < 0 || buf == NULL || len < 0) {
+        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]safeWrite fd=%d buf=%p len=%d\n", fd, buf, len);
         return -1;
     }
 
-    while((n = write(fd, buf, len)) != len) {
-        if(errno == EINTR) continue;
-        if(errno == EAGAIN) {
-            if(retry-- > 0) {
+    while ((n = write(fd, buf, len)) != len) {
+        if (errno == EINTR) continue;
+        if (errno == EAGAIN) {
+            if (retry-- > 0) {
                 usleep(100 * 1000);
                 continue;
             }
@@ -212,24 +186,22 @@ exit:
     return -1;
 }
 
-
 int RtcAgpsdAdapter::safeRead(int fd, void* buf, int len) {
     int n, retry = 10;
 
-    if(fd < 0 || buf == NULL || len < 0) {
-        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]safeRead fd=%d buf=%p len=%d\n",
-            fd, buf, len);
+    if (fd < 0 || buf == NULL || len < 0) {
+        RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]safeRead fd=%d buf=%p len=%d\n", fd, buf, len);
         return -1;
     }
 
-    if(len == 0) {
+    if (len == 0) {
         return 0;
     }
 
-    while((n = read(fd, buf, len)) < 0) {
-        if(errno == EINTR) continue;
-        if(errno == EAGAIN) {
-            if(retry-- > 0) {
+    while ((n = read(fd, buf, len)) < 0) {
+        if (errno == EINTR) continue;
+        if (errno == EAGAIN) {
+            if (retry-- > 0) {
                 usleep(100 * 1000);
                 continue;
             }
@@ -240,13 +212,12 @@ int RtcAgpsdAdapter::safeRead(int fd, void* buf, int len) {
     return n;
 
 exit:
-    if(errno != EAGAIN) {
+    if (errno != EAGAIN) {
         RFX_LOG_E(AGPS_TAG, "[RtcAgpsdAdapter]safeRead reason=[%s] fd=%d len=%d buf=%p\n",
-            strerror(errno), fd, len, buf);
+                  strerror(errno), fd, len, buf);
     }
     return -1;
 }
-
 
 int RtcAgpsdAdapter::checkCanWrite(int sock_fd) {
     int status = 0;
@@ -264,8 +235,7 @@ int RtcAgpsdAdapter::checkCanWrite(int sock_fd) {
     return 0;
 }
 
-
-int RtcAgpsdAdapter::sendToAgpsd(sp<RtcAgpsMessage> &message) {
+int RtcAgpsdAdapter::sendToAgpsd(sp<RtcAgpsMessage>& message) {
     int fd = createOutSocket();
     RFX_LOG_D(AGPS_TAG, "[RtcAgpsdAdapter]sendToAgpsd %d", message->getId());
     if (fd < 0) {
@@ -281,9 +251,8 @@ int RtcAgpsdAdapter::sendToAgpsd(sp<RtcAgpsMessage> &message) {
         case EVENT_AGPS_MOBILE_DATA_STATUS:
         case EVENT_AGPS_SET_APN:
         case EVENT_AGPS_DESTROY_APN:
-        case EVENT_MTK_RILP_INIT:
-        {
-            Parcel *p = message->getParcel();
+        case EVENT_MTK_RILP_INIT: {
+            Parcel* p = message->getParcel();
             p->setDataPosition(0);
             putInt32(buf, &offset, p->readInt32());
             if (checkCanWrite(fd) < 0) {
@@ -294,26 +263,20 @@ int RtcAgpsdAdapter::sendToAgpsd(sp<RtcAgpsMessage> &message) {
         }
 
         default:
-            RFX_LOG_D(AGPS_TAG, "[RtcAgpsdAdapter]sendToAgpsd Error event %d",
-                message->getId());
+            RFX_LOG_D(AGPS_TAG, "[RtcAgpsdAdapter]sendToAgpsd Error event %d", message->getId());
             break;
     }
     close(fd);
     return 0;
 }
 
-
-void RtcAgpsdAdapter::processOutputMessage(sp<RtcAgpsMessage> & message) {
-    sendToAgpsd(message);
-}
-
+void RtcAgpsdAdapter::processOutputMessage(sp<RtcAgpsMessage>& message) { sendToAgpsd(message); }
 
 void RtcAgpsdAdapter::onInit() {
     RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]onInit");
     m_inFd = createInSocket();
     m_looperCallback = new AgpsLooperCallback(this);
 }
-
 
 void RtcAgpsdAdapter::onDeinit() {
     RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]onDeinit");
@@ -325,35 +288,29 @@ void RtcAgpsdAdapter::onDeinit() {
     }
 }
 
-
 void RtcAgpsdAdapter::registerFd(sp<Looper> looper) {
     RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]registerFd");
-    looper->addFd(m_inFd,
-        Looper::POLL_CALLBACK, Looper::EVENT_INPUT, m_looperCallback, NULL);
+    looper->addFd(m_inFd, Looper::POLL_CALLBACK, Looper::EVENT_INPUT, m_looperCallback, NULL);
 }
 
-
-void RtcAgpsdAdapter::processInput(void *buf, int len) {
+void RtcAgpsdAdapter::processInput(void* buf, int len) {
     int offset = 0;
-    int32_t msg = getInt32((char *)buf, &offset);
+    int32_t msg = getInt32((char*)buf, &offset);
     switch (msg) {
-        case EVENT_UPDATE_STATE_TO_AGPSD:
-        {
+        case EVENT_UPDATE_STATE_TO_AGPSD: {
             sp<RtcAgpsMessage> msg =
-                RtcAgpsMessage::obtainMessage(EVENT_UPDATE_STATE_TO_AGPSD, NULL);
+                    RtcAgpsMessage::obtainMessage(EVENT_UPDATE_STATE_TO_AGPSD, NULL);
             sp<RtcAgpsMainThreadHandler> handler = new RtcAgpsMainThreadHandler(msg);
             handler->sendMessage(RfxMainThread::getLooper());
             break;
         }
 
-        case EVENT_SET_APN_RESULT:
-        {
-            int32_t result = getInt32((char *)buf, &offset);
+        case EVENT_SET_APN_RESULT: {
+            int32_t result = getInt32((char*)buf, &offset);
             RFX_LOG_V(AGPS_TAG, "[RtcAgpsdAdapter]EVENT_SET_APN_RESULT %d", result);
-            Parcel *p = new Parcel();
+            Parcel* p = new Parcel();
             p->writeInt32(result);
-            sp<RtcAgpsMessage> msg =
-                RtcAgpsMessage::obtainMessage(EVENT_SET_APN_RESULT, p);
+            sp<RtcAgpsMessage> msg = RtcAgpsMessage::obtainMessage(EVENT_SET_APN_RESULT, p);
             sp<RtcAgpsMainThreadHandler> handler = new RtcAgpsMainThreadHandler(msg);
             handler->sendMessage(RfxMainThread::getLooper());
             break;

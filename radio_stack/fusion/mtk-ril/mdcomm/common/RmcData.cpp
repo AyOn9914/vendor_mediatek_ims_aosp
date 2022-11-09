@@ -22,9 +22,9 @@
 /*****************************************************************************
  * Class RmcMultiAtReq
  *****************************************************************************/
-RmcAtSendInfo* RmcMultiAtReq::getNextAt(RmcAtRspInfo *cur, RfxBaseHandler *h) {
-    RfxAtLine *intermediate = cur->getResponse()->getIntermediates();
-    RfxAtLine *finalResponse = cur->getResponse()->getFinalResponse();
+RmcAtSendInfo* RmcMultiAtReq::getNextAt(RmcAtRspInfo* cur, RfxBaseHandler* h) {
+    RfxAtLine* intermediate = cur->getResponse()->getIntermediates();
+    RfxAtLine* finalResponse = cur->getResponse()->getFinalResponse();
     int err;
     bool stop = false;
     if (cur->getResponse()->isATCmdRspErr()) {
@@ -57,39 +57,26 @@ RmcAtSendInfo* RmcMultiAtReq::getNextAt(RmcAtRspInfo *cur, RfxBaseHandler *h) {
 /*****************************************************************************
  * Class RmcSingleAtReq
  *****************************************************************************/
-RmcAtSendInfo* RmcSingleAtReq::onGetFirstAtInfo(RfxBaseHandler *h) {
-    return onGetAtInfo(h);
-}
+RmcAtSendInfo* RmcSingleAtReq::onGetFirstAtInfo(RfxBaseHandler* h) { return onGetAtInfo(h); }
 
-RmcAtSendInfo* RmcSingleAtReq::onGetNextAtInfo(const String8 & curCmd, RfxBaseHandler *h) {
+RmcAtSendInfo* RmcSingleAtReq::onGetNextAtInfo(const String8& curCmd, RfxBaseHandler* h) {
     RFX_UNUSED(curCmd);
     RFX_UNUSED(h);
     return NULL;
 };
 
-void RmcSingleAtReq::onHandleFinalResponse(
-    const String8 &cmd,
-    RfxAtLine *line,
-    RfxBaseHandler *h
-) {
+void RmcSingleAtReq::onHandleFinalResponse(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h) {
     RFX_UNUSED(cmd);
     onHandleFinalResponse(line, h);
 }
 
-void RmcSingleAtReq::onHandleFinalResponseForError(
-    const String8 &cmd,
-    RfxAtLine *line,
-    RfxBaseHandler *h
-) {
+void RmcSingleAtReq::onHandleFinalResponseForError(const String8& cmd, RfxAtLine* line,
+                                                   RfxBaseHandler* h) {
     RFX_UNUSED(cmd);
     onHandleFinalResponseForError(line, h);
 }
 
-bool RmcSingleAtReq::onHandleIntermediates(
-    const String8 &cmd,
-    RfxAtLine *line,
-    RfxBaseHandler *h
-) {
+bool RmcSingleAtReq::onHandleIntermediates(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h) {
     RFX_UNUSED(cmd);
     return onHandleIntermediates(line, h);
 }
@@ -97,9 +84,9 @@ bool RmcSingleAtReq::onHandleIntermediates(
 /*****************************************************************************
  * Class RmcBaseRspData
  *****************************************************************************/
-sp<RfxMclMessage> RmcBaseRspData::toMessage(const sp<RfxMclMessage> &msg) {
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), getError(),
-        getData(), msg);
+sp<RfxMclMessage> RmcBaseRspData::toMessage(const sp<RfxMclMessage>& msg) {
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), getError(), getData(), msg);
     return response;
 }
 
@@ -107,21 +94,19 @@ sp<RfxMclMessage> RmcBaseRspData::toMessage(const sp<RfxMclMessage> &msg) {
  * Class RmcVoidRsp
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcVoidRsp);
-RmcVoidRsp::RmcVoidRsp(void *data, int length) : RmcBaseRspData(data, length),
-        m_error(RIL_E_SUCCESS) {
+RmcVoidRsp::RmcVoidRsp(void* data, int length)
+    : RmcBaseRspData(data, length), m_error(RIL_E_SUCCESS) {
     m_data = NULL;
     m_length = 0;
 }
 
-RmcVoidRsp::~RmcVoidRsp() {
-}
+RmcVoidRsp::~RmcVoidRsp() {}
 
 /*****************************************************************************
  * Class RmcBaseUrspData
  *****************************************************************************/
 sp<RfxMclMessage> RmcBaseUrspData::toMessage() {
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(getUrcId(), getSlotId(),
-        getData());
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(getUrcId(), getSlotId(), getData());
     return urc;
 }
 
@@ -130,25 +115,23 @@ sp<RfxMclMessage> RmcBaseUrspData::toMessage() {
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcVoidUrsp);
 
-RmcVoidUrsp::RmcVoidUrsp(void *data, int length) : RmcBaseUrspData(data, length),
-        m_urc(0), m_slotId(-1){
+RmcVoidUrsp::RmcVoidUrsp(void* data, int length)
+    : RmcBaseUrspData(data, length), m_urc(0), m_slotId(-1) {
     m_data = NULL;
     m_length = 0;
 }
 
-RmcVoidUrsp::~RmcVoidUrsp() {
-}
+RmcVoidUrsp::~RmcVoidUrsp() {}
 
 /*****************************************************************************
  * Class RmcStringUrsp
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcStringUrsp);
 
-RmcStringUrsp::RmcStringUrsp(void *data, int length) : RmcVoidUrsp(data, length) {
-    m_string.setTo((const char *)data, length);
-    m_data = (void *)m_string.string();
+RmcStringUrsp::RmcStringUrsp(void* data, int length) : RmcVoidUrsp(data, length) {
+    m_string.setTo((const char*)data, length);
+    m_data = (void*)m_string.string();
     m_length = length;
 }
 
-RmcStringUrsp::~RmcStringUrsp() {
-}
+RmcStringUrsp::~RmcStringUrsp() {}

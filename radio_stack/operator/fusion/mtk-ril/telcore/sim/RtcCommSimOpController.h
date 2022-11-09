@@ -31,17 +31,17 @@ class RtcCommSimOpController : public RtcCommSimController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcCommSimOpController);
 
-public:
+  public:
     RtcCommSimOpController();
     virtual ~RtcCommSimOpController();
 
-protected:
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& response);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 };
 
 #endif /* __RTC_COMM_SIM_OP_CONTROLLER_H__ */

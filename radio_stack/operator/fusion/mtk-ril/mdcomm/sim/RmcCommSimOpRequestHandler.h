@@ -30,13 +30,11 @@
 #include "RmcCommSimDefs.h"
 #include "RmcSimBaseHandler.h"
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #ifdef __cplusplus
 }
 #endif
-
 
 /*****************************************************************************
  * Class RpSimController
@@ -45,7 +43,7 @@ extern "C"
 class RmcCommSimOpRequestHandler : public RmcCommSimRequestHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCommSimOpRequestHandler);
 
-public:
+  public:
     RmcCommSimOpRequestHandler(int slot_id, int channel_id);
     virtual ~RmcCommSimOpRequestHandler();
 
@@ -54,10 +52,9 @@ public:
     // Process Request here
     virtual void handleRequest(const sp<RfxMclMessage>& msg);
     // Return the list which you want to reqister
-    virtual const int* queryTable(int channel_id, int *record_num);
+    virtual const int* queryTable(int channel_id, int* record_num);
 
-private:
-
+  private:
     // Request handler
     void handleAttGetSharedKey(const sp<RfxMclMessage>& msg);
     void handleAttUpdateSimLockSettings(const sp<RfxMclMessage>& msg);

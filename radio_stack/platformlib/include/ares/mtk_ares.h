@@ -21,30 +21,31 @@
 extern "C" {
 #endif
 
-struct records_naptr{
-  unsigned int order;
-  unsigned int pref;
-  char * flags;
-  char * service;
-  char * regexp;
-  char * fqdn;
-  struct records_naptr * next;
+struct records_naptr {
+    unsigned int order;
+    unsigned int pref;
+    char* flags;
+    char* service;
+    char* regexp;
+    char* fqdn;
+    struct records_naptr* next;
 };
 
-struct query_type{
-  int ai_family;
-  int ai_protocol;
-  int ai_socktype;
-  int ai_port;
-  int ai_type;
+struct query_type {
+    int ai_family;
+    int ai_protocol;
+    int ai_socktype;
+    int ai_port;
+    int ai_type;
 };
 
-extern int aes_getrecords(const char * hostname, const char *service,
-            const struct query_type * hints,struct records_naptr **result);
-extern int aes_getrecords_free(struct records_naptr *head);
+extern int aes_getrecords(const char* hostname, const char* service, const struct query_type* hints,
+                          struct records_naptr** result);
+extern int aes_getrecords_free(struct records_naptr* head);
 
-int mtk_aes_getrecords(const char * hostname, const char *service, const struct query_type * hints,struct records_naptr **result);
-int mtk_aes_getrecords_free(struct records_naptr *head);
+int mtk_aes_getrecords(const char* hostname, const char* service, const struct query_type* hints,
+                       struct records_naptr** result);
+int mtk_aes_getrecords_free(struct records_naptr* head);
 
 #ifdef __cplusplus
 }

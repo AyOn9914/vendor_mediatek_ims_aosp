@@ -25,7 +25,7 @@
 #include "RfxRilUtils.h"
 #include "RfxSuppServNotificationData.h"
 
-static const char * GsmCbsDcsStringp[MAX_DCS_SUPPORT] = {"GSM7","8BIT","UCS2"};
+static const char* GsmCbsDcsStringp[MAX_DCS_SUPPORT] = {"GSM7", "8BIT", "UCS2"};
 static bytes_t hexString2Byte(const char* hexString);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_ON_USSD);
@@ -37,36 +37,25 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_ON_VOLTE_SUBSCRIPTION);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_URC_CRING_NOTIFY);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_URC_ECPI133_NOTIFY);
 
-RmcSuppServUrcEntryHandler::RmcSuppServUrcEntryHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-    const char* urc[] = {
-        "+CUSD",
-        "+ECFU",
-        "+ECMCCSS",
-        "+EIUSD",
-        "+EIMSXUI",
-        "+EXCAPRCN"
-    };
+RmcSuppServUrcEntryHandler::RmcSuppServUrcEntryHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const char* urc[] = {"+CUSD", "+ECFU", "+ECMCCSS", "+EIUSD", "+EIMSXUI", "+EXCAPRCN"};
 
-    static const int event[] = {
-        RFX_MSG_EVENT_URC_CRING_NOTIFY,
-        RFX_MSG_EVENT_URC_ECPI133_NOTIFY
-    };
+    static const int event[] = {RFX_MSG_EVENT_URC_CRING_NOTIFY, RFX_MSG_EVENT_URC_ECPI133_NOTIFY};
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
-    registerToHandleEvent(event, sizeof(event)/sizeof(int));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
+    registerToHandleEvent(event, sizeof(event) / sizeof(int));
 
     memset(&tmpSvcNotify, 0, sizeof(RIL_SuppSvcNotification));
 }
 
 RFX_IMPLEMENT_HANDLER_CLASS(RmcSuppServUrcEntryHandler, RIL_CMD_PROXY_URC);
 
-RmcSuppServUrcEntryHandler::~RmcSuppServUrcEntryHandler() {
-}
+RmcSuppServUrcEntryHandler::~RmcSuppServUrcEntryHandler() {}
 
 void RmcSuppServUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
-    int ussdfeatureVersion = getFeatureVersion((char *) FEATURE_MD_USSD_DOMAIN_SELECTION, 0);
+    char* urc = msg->getRawUrc()->getLine();
+    int ussdfeatureVersion = getFeatureVersion((char*)FEATURE_MD_USSD_DOMAIN_SELECTION, 0);
 
     if (strstr(urc, "+EIMSXUI") != NULL || strstr(urc, "+ECMCCSS") != NULL) {
         // EIMSXUI URC contains sensitive information
@@ -79,7 +68,7 @@ void RmcSuppServUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
         logD(TAG, "[onHandleUrc]%s", urc);
     }
 
-    if(strstr(urc, "+CUSD") != NULL) {
+    if (strstr(urc, "+CUSD") != NULL) {
         if (ussdfeatureVersion == 1) {
             handleOnFusionUssd(msg);
         } else {
@@ -96,14 +85,14 @@ void RmcSuppServUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
         }
     } else if (strstr(urc, "+EIMSXUI") != NULL) {
         handleOnXui(msg);
-    } else if(strstr(urc, "+EXCAPRCN") != NULL) {
+    } else if (strstr(urc, "+EXCAPRCN") != NULL) {
         handleXcapResponseCodeNotify(msg);
     }
 }
 
 void RmcSuppServUrcEntryHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_EVENT_URC_CRING_NOTIFY:
             handleCRINGReveiced();
             break;
@@ -122,15 +111,15 @@ void RmcSuppServUrcEntryHandler::handleOnFusionUssd(const sp<RfxMclMessage>& msg
     logD(TAG, "handleOnFusionUssd: %s", encryptMsg);
     free(encryptMsg);
 
-    char *p_data[3];
-    char *finalData[2];
+    char* p_data[3];
+    char* finalData[2];
     RfxAtLine* line = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
     int err = 0;
     int length = 0;
     bytes_t ussdString = NULL;
 
     // Initialize finalData
-    for(int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         finalData[i] = NULL;
     }
 
@@ -174,7 +163,7 @@ void RmcSuppServUrcEntryHandler::handleOnFusionUssd(const sp<RfxMclMessage>& msg
     // <str>
     if (line->atTokHasmore()) {
         p_data[1] = line->atTokNextstr(&err);
-        if (err< 0) {
+        if (err < 0) {
             logE(TAG, "No <str> information");
             goto error;
         }
@@ -204,8 +193,8 @@ void RmcSuppServUrcEntryHandler::handleOnFusionUssd(const sp<RfxMclMessage>& msg
         finalData[0] = p_data[0];
         finalData[1] = NULL;
 
-        sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2),
-                RIL_CMD_PROXY_6, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2), RIL_CMD_PROXY_6,
+                  m_slot_id);
     } else if (length == 2) {
         /**
          * No <dcs> information, so it's USSI URC (from IMS) which is encoded by HEX.
@@ -213,10 +202,10 @@ void RmcSuppServUrcEntryHandler::handleOnFusionUssd(const sp<RfxMclMessage>& msg
          */
         ussdString = hexString2Byte(p_data[1]);
         finalData[0] = p_data[0];
-        finalData[1] = (char*) ussdString;
+        finalData[1] = (char*)ussdString;
 
-        sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2),
-                RIL_CMD_PROXY_6, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2), RIL_CMD_PROXY_6,
+                  m_slot_id);
     } else if (length == 3) {
         /**
          * There is <dcs> information, so it's USSD URC (from CS).
@@ -249,20 +238,20 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
     const char* dcs;
     int iDCS;
     int length = 0;
-    char *dcsString = NULL;
+    char* dcsString = NULL;
     char* newMode = NULL;
 
     // Coverity for declaim in the begining.
-    int      numStrings;
-    bytes_t  utf8String = NULL;
-    bytes_t  hexData = NULL;
-    int      len = 0, maxLen = 0, i = 0;
-    size_t   responselen = 0;
-    char**   p_cur = NULL;
-    char*    finalData[2];
+    int numStrings;
+    bytes_t utf8String = NULL;
+    bytes_t hexData = NULL;
+    int len = 0, maxLen = 0, i = 0;
+    size_t responselen = 0;
+    char** p_cur = NULL;
+    char* finalData[2];
 
     /* Initialize finalData */
-    for(int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         finalData[i] = NULL;
     }
 
@@ -272,12 +261,11 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
      */
     /*
      * <m>:
-     * 0   no further user action required (network initiated USSD Notify, or no further information needed after mobile initiated operation)
-     * 1   further user action required (network initiated USSD Request, or further information needed after mobile initiated operation)
-     * 2   USSD terminated by network
-     * 3   other local client has responded
-     * 4   operation not supported
-     * 5   network time out
+     * 0   no further user action required (network initiated USSD Notify, or no further information
+     * needed after mobile initiated operation) 1   further user action required (network initiated
+     * USSD Request, or further information needed after mobile initiated operation) 2   USSD
+     * terminated by network 3   other local client has responded 4   operation not supported 5
+     * network time out
      */
 
     line->atTokStart(&err);
@@ -298,14 +286,14 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
     if (line->atTokHasmore()) {
         /* Get <str> */
         p_str = line->atTokNextstr(&err);
-        if (err< 0) {
+        if (err < 0) {
             goto error;
         }
 
         length++;
 
         /* Get <dcs> */
-        iDCS = line-> atTokNextint(&err);
+        iDCS = line->atTokNextint(&err);
         if (err < 0) {
             logE(TAG, "No <dcs> information");
             goto error;
@@ -323,15 +311,15 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
          */
         GsmCbsDcsE dcsType = checkCbsDcs(iDCS);
         if (iDCS == 0x11) {
-           logD(TAG, "Ignore the first two bytes for DCS_UCS2");
-           p_str+=4;
+            logD(TAG, "Ignore the first two bytes for DCS_UCS2");
+            p_str += 4;
         }
 
         p_data[1] = p_str;
         logD(TAG, "onUssd: p_data[1] (p_str) = %s", p_data[1]);
         // Default new SS service class feature is supported.
-        if (dcsType == DCS_8BIT) {     // GsmCbsDcsE: DCS_8BIT = 1
-            p_data[2] = (char *) GsmCbsDcsStringp[dcsType];
+        if (dcsType == DCS_8BIT) {  // GsmCbsDcsE: DCS_8BIT = 1
+            p_data[2] = (char*)GsmCbsDcsStringp[dcsType];
             logD(TAG, "onUssd: p_data[2] (dcsString) = %s", p_data[2]);
         } else {
             /* DCS is set as "UCS2" by AT+CSCS in ril_callbacks.c */
@@ -342,27 +330,27 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
     }
 
     // Decode response data by using ril_gsm_util.
-    responselen = length * sizeof(char *);
-    p_cur = (char **) p_data;
+    responselen = length * sizeof(char*);
+    p_cur = (char**)p_data;
     // Only need m and str, dcs is only for str reference and no need to pass it.
 
-    numStrings = responselen / sizeof(char *);
+    numStrings = responselen / sizeof(char*);
 
     if (numStrings > 1) {
-        hexData = (bytes_t) calloc(strlen(p_cur[1]), sizeof(char));
-        if(hexData == NULL) {
+        hexData = (bytes_t)calloc(strlen(p_cur[1]), sizeof(char));
+        if (hexData == NULL) {
             logE(TAG, "onUssd:hexData malloc fail");
             goto error;
         }
 
-        len = gsm_hex_to_bytes((cbytes_t) p_cur[1], strlen(p_cur[1]), hexData);
+        len = gsm_hex_to_bytes((cbytes_t)p_cur[1], strlen(p_cur[1]), hexData);
         logD(TAG, "onUsdd add value to hexData = %s", hexData);
         logD(TAG, "onUsdd len = %d", len);
 
         dcs = p_cur[2];
         logD(TAG, "onUsdd dcs = p_cur[2] = %s", dcs);
 
-        maxLen = (!strcmp(dcs,"UCS2")) ? len / 2 : len;
+        maxLen = (!strcmp(dcs, "UCS2")) ? len / 2 : len;
         if ((maxLen < 0) || (maxLen > MAX_RIL_USSD_STRING_LENGTH)) {
             free(hexData);
             hexData = NULL;
@@ -381,7 +369,7 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
     finalData[0] = p_cur[0];
     logD(TAG, "onUssd, each string of finalData[0]= %s", finalData[0]);
     if (numStrings == 3) {
-        utf8String = (bytes_t) calloc(2*len+1, sizeof(char));
+        utf8String = (bytes_t)calloc(2 * len + 1, sizeof(char));
         if (utf8String == NULL) {
             free(hexData);   // Coverity
             hexData = NULL;  // Coverity
@@ -392,22 +380,22 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
         /* The USS strings need to be transform to utf8 */
         if (!strcmp(dcs, "GSM7")) {
             logD(TAG, "Ussd GSM7");
-            utf8_from_unpackedgsm7((cbytes_t) hexData, 0, len, utf8String);
+            utf8_from_unpackedgsm7((cbytes_t)hexData, 0, len, utf8String);
             logD(TAG, "onUssd for loop, utf8String= %s", utf8String);
         } else if (!strcmp(dcs, "UCS2")) {
             logD(TAG, "Ussd UCS2");
 
             // Some character can't display when receive the ussd notification
             zero4_to_space(hexData, len);
-            ucs2_to_utf8((cbytes_t) hexData, len/2, utf8String);
-        }  else {
+            ucs2_to_utf8((cbytes_t)hexData, len / 2, utf8String);
+        } else {
             logD(TAG, "Ussd not GSM7 or UCS2");
-            utf8_from_gsm8((cbytes_t) hexData, len, utf8String);
+            utf8_from_gsm8((cbytes_t)hexData, len, utf8String);
         }
-        finalData[1] = (char *) utf8String;
+        finalData[1] = (char*)utf8String;
         // Network might response empty str
         logD(TAG, "onUssd, each string of finalData[1]= %s",
-                RfxRilUtils::isUserLoad() == 1 ? "****" : finalData[1]);
+             RfxRilUtils::isUserLoad() == 1 ? "****" : finalData[1]);
     }
 
     /* Change to comply with AOSP */
@@ -417,8 +405,8 @@ void RmcSuppServUrcEntryHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
         logD(TAG, "onUssd: finalData[0] new value = %s", finalData[0]);
     }
 
-    sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2),
-            RIL_CMD_PROXY_6, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSD, RfxStringsData(finalData, 2), RIL_CMD_PROXY_6,
+              m_slot_id);
 
     logD(TAG, "Send RIL_UNSOL_ON_USSD");
 
@@ -448,19 +436,19 @@ void RmcSuppServUrcEntryHandler::handleOnCfuNotify(const sp<RfxMclMessage>& msg)
     }
 
     /* Get Status */
-    response[0] = line-> atTokNextint(&err);
+    response[0] = line->atTokNextint(&err);
     if (err < 0) {
         goto error;
     }
 
     /* Get Line info */
-    response[1] = line-> atTokNextint(&err);
+    response[1] = line->atTokNextint(&err);
     if (err < 0) {
         goto error;
     }
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CALL_FORWARDING,
-            m_slot_id, RfxIntsData(response, 2));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CALL_FORWARDING, m_slot_id,
+                                   RfxIntsData(response, 2));
     responseToTelCore(urc);
     logD(TAG, "Send RIL_UNSOL_CALL_FORWARDING");
 
@@ -475,45 +463,45 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
     RIL_SuppSvcNotification svcNotify;
     RfxAtLine* line = msg->getRawUrc();
     int err;
-    char *s = line->getLine();
+    char* s = line->getLine();
     int callId, service;
-    char *rawString;
-    char *tmpString = NULL;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    char* rawString;
+    char* tmpString = NULL;
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
     memset(&svcNotify, 0, sizeof(RIL_SuppSvcNotification));
-    svcNotify.notificationType = 0;  /* MO: 0, MT: 1 */
+    svcNotify.notificationType = 0; /* MO: 0, MT: 1 */
     svcNotify.code = CODE_IMS_MO_UNCONDITIONAL_CF_ACTIVE;
 
     /*
-    * +ECMCCSS=<call_id><service><raw_string>
-    * call_id: The id(index) of current call which the URC is related to.
-    * service: URC type -> 13  - Call Forwarding
-    *                      256 - Outgoing call barring
-    *                      259 - Call Waiting
-    */
+     * +ECMCCSS=<call_id><service><raw_string>
+     * call_id: The id(index) of current call which the URC is related to.
+     * service: URC type -> 13  - Call Forwarding
+     *                      256 - Outgoing call barring
+     *                      259 - Call Waiting
+     */
 
     /* +ECMCCSS */
     line->atTokStart(&err);
     if (err < 0) {
         logE(TAG, "Parse +ECMCCSS fail(start token): %s\n",
-                (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
+             (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
         return;
     }
 
     /* call_id */
-    callId = line-> atTokNextint(&err);
+    callId = line->atTokNextint(&err);
     if (err < 0) {
         logE(TAG, "Parse +ECMCCSS fail(call_id): %s\n",
-                (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
+             (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
         return;
     }
 
     /* service */
-    service = line-> atTokNextint(&err);
+    service = line->atTokNextint(&err);
     if (err < 0) {
         logE(TAG, "Parse +ECMCCSS fail(service): %s\n",
-                (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
+             (RfxRilUtils::isUserLoad() == 1) ? "****" : s);
         return;
     }
 
@@ -523,9 +511,9 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
         LOGE("Parse +ECMCCSS fail(Raw string): %s\n", s);
         return;
     }*/
-    char *tmpRawString = encryptString(rawString);
-    logD(TAG, "[onLteSuppSvcNotification] call_id = %d, service = %d, Raw string = %s\n",
-            callId, service, tmpRawString);
+    char* tmpRawString = encryptString(rawString);
+    logD(TAG, "[onLteSuppSvcNotification] call_id = %d, service = %d, Raw string = %s\n", callId,
+         service, tmpRawString);
 
     if (tmpRawString != NULL) {
         free(tmpRawString);
@@ -534,11 +522,11 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
     svcNotify.index = callId;
 
     switch (service) {
-        case 13:        /* Call Forwarding */
+        case 13: /* Call Forwarding */
             /* Refer to CODE_1_CALL_FORWARDED in SuppServiceNotification.java */
             svcNotify.code = CODE_IMS_MO_CALL_FORWARDED;
             /* Retrieve forwarded-to number or SIP URI */
-            tmpString = (char*) calloc(1, 256 * sizeof(char));
+            tmpString = (char*)calloc(1, 256 * sizeof(char));
             if (tmpString == NULL) {
                 logE(TAG, "onLteSuppSvcNotification: tmpString malloc fail");
                 return;
@@ -547,17 +535,17 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
             svcNotify.number = tmpString;
             break;
 
-        case 256:       /* Outgoing call barring */
+        case 256: /* Outgoing call barring */
             /* Reuse <code1> in +CSSI URC */
             svcNotify.code = CODE_IMS_MO_OUTGOING_CALLS_BARRED;
             break;
 
-        case 259:       /* Call waiting */
+        case 259: /* Call waiting */
             /* Reuse <code1> in +CSSI URC */
             svcNotify.code = CODE_IMS_MO_CALL_IS_WAITING;
             break;
 
-        case 257:   /* Call Forwarded*/
+        case 257: /* Call Forwarded*/
             if (SSConfig::notShowForwardedToast(currentMccmnc.string())) {
                 return;
             }
@@ -568,10 +556,11 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
     }
 
     /* Add this check for sensitive log */
-    char *tmpNumber = encryptString(svcNotify.number);
-    logD(TAG, "[onLteSuppSvcNotification] svcNotify.notificationType = %d,\
+    char* tmpNumber = encryptString(svcNotify.number);
+    logD(TAG,
+         "[onLteSuppSvcNotification] svcNotify.notificationType = %d,\
             svcNotify.code = %d, svcNotify.number = %s",
-            svcNotify.notificationType, svcNotify.code, tmpNumber);
+         svcNotify.notificationType, svcNotify.code, tmpNumber);
 
     if (tmpNumber != NULL) {
         free(tmpNumber);
@@ -595,13 +584,14 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
         return;
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION,
-            m_slot_id, RfxSuppServNotificationData(&svcNotify, sizeof(RIL_SuppSvcNotification)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION, m_slot_id,
+            RfxSuppServNotificationData(&svcNotify, sizeof(RIL_SuppSvcNotification)));
     responseToTelCore(urc);
     logD(TAG, "Send RIL_UNSOL_SUPP_SVC_NOTIFICATION");
 
     if (tmpString != NULL) {
-       free(tmpString);
+        free(tmpString);
     }
 }
 
@@ -612,67 +602,68 @@ void RmcSuppServUrcEntryHandler::handleOnLteSuppSvcNotification(const sp<RfxMclM
  * @param number    To store the last forwarded-to number or sip uri
  *
  */
-void RmcSuppServUrcEntryHandler::retrieveCallForwardedToNumber(char *rawString, char *number) {
-   char *begin = strchr(rawString, ':');
-   char *end, *end1;
-   char *tmpNumber = NULL;
-   char tmpStr[256];
-   int len;
+void RmcSuppServUrcEntryHandler::retrieveCallForwardedToNumber(char* rawString, char* number) {
+    char* begin = strchr(rawString, ':');
+    char *end, *end1;
+    char* tmpNumber = NULL;
+    char tmpStr[256];
+    int len;
 
-   /* For example:
-      History-Info: <sip:UserB@ims.example.com>;index=1,<sip:UserC@ims.example.com?Reason=SIP;cause=302;text="CDIV">;index=1.1,
-      <sip:UserD@ims.example.com?Reason=SIP;cause=302;text="CDIV">;index=1.2
-   */
+    /* For example:
+       History-Info:
+       <sip:UserB@ims.example.com>;index=1,<sip:UserC@ims.example.com?Reason=SIP;cause=302;text="CDIV">;index=1.1,
+       <sip:UserD@ims.example.com?Reason=SIP;cause=302;text="CDIV">;index=1.2
+    */
 
-   /* Find ':' of History-Info */
-   if (begin == NULL) {
-      return;
-   }
+    /* Find ':' of History-Info */
+    if (begin == NULL) {
+        return;
+    }
 
-   /* Find each number or sip uri */
-   end = begin;
-   while ((begin != NULL) && (end != NULL)) {
-      end = strchr(begin, '>');
-      begin = strchr(begin, '<');
-      if ((begin != NULL) && (end != NULL)) {
-         len = end - begin - 1;
-         if ((len > 0) && (len < 256)) {
-            strncpy(tmpStr, begin+1, len);
-            tmpStr[len] = '\0';
-            strncpy(number, tmpStr, strlen(tmpStr));
-            /* Extract number of SIP uri only */
-            if (strStartsWith(tmpStr, "sip:") || strStartsWith(tmpStr, "tel:")) {
-               strncpy(number, tmpStr+4, strlen(tmpStr+4));
-               end1 = strchr(number, '?');
-               if (end1 == NULL) {
-                   end1 = strchr(number, ';');
-               }
-               if (end1 != NULL) {
-                  number[end1 - number] = '\0';
-               }
+    /* Find each number or sip uri */
+    end = begin;
+    while ((begin != NULL) && (end != NULL)) {
+        end = strchr(begin, '>');
+        begin = strchr(begin, '<');
+        if ((begin != NULL) && (end != NULL)) {
+            len = end - begin - 1;
+            if ((len > 0) && (len < 256)) {
+                strncpy(tmpStr, begin + 1, len);
+                tmpStr[len] = '\0';
+                strncpy(number, tmpStr, strlen(tmpStr));
+                /* Extract number of SIP uri only */
+                if (strStartsWith(tmpStr, "sip:") || strStartsWith(tmpStr, "tel:")) {
+                    strncpy(number, tmpStr + 4, strlen(tmpStr + 4));
+                    end1 = strchr(number, '?');
+                    if (end1 == NULL) {
+                        end1 = strchr(number, ';');
+                    }
+                    if (end1 != NULL) {
+                        number[end1 - number] = '\0';
+                    }
+                }
+
+                tmpNumber = encryptString(number);
+                logD(TAG, "[retrieveCallForwardedToNumber] number = %s", tmpNumber);
+                if (tmpNumber != NULL) {
+                    free(tmpNumber);
+                }
             }
-
-            tmpNumber = encryptString(number);
-            logD(TAG, "[retrieveCallForwardedToNumber] number = %s", tmpNumber);
-            if (tmpNumber != NULL) {
-                free(tmpNumber);
-            }
-         }
-         begin = end + 1;
-      }
-   }
+            begin = end + 1;
+        }
+    }
 }
 
 static bytes_t hexString2Byte(const char* hexString) {
     size_t count = 0;
     char* pos = (char*)hexString;
-    size_t byteLength = strlen(hexString)/2;
-    bytes_t byteArray = (bytes_t) calloc(byteLength + 1, sizeof(byte_t));
+    size_t byteLength = strlen(hexString) / 2;
+    bytes_t byteArray = (bytes_t)calloc(byteLength + 1, sizeof(byte_t));
 
     if (byteArray == NULL) {
         RFX_LOG_E(TAG, "hexString2Byte, byteArray malloc failed!");
     } else {
-        for(count = 0; count < byteLength; count++) {
+        for (count = 0; count < byteLength; count++) {
             sscanf(pos, "%2hhx", &byteArray[count]);
             pos += 2;
         }
@@ -728,7 +719,7 @@ void RmcSuppServUrcEntryHandler::handleOnUssi(const sp<RfxMclMessage>& msg) {
         goto error;
     }
 
-    for (i = 0 ; i < length_of_urc_from_md ; i++) {
+    for (i = 0; i < length_of_urc_from_md; i++) {
         p_data[i] = line->atTokNextstr(&err);
         if (err < 0) {
             if (RfxRilUtils::isUserLoad() != 1) {
@@ -750,7 +741,7 @@ void RmcSuppServUrcEntryHandler::handleOnUssi(const sp<RfxMclMessage>& msg) {
     p_data[2] = (char*)ussdString;
 
     sendEvent(RFX_MSG_EVENT_UNSOL_ON_USSI, RfxStringsData(p_data, length_of_urc_to_ap),
-            RIL_CMD_PROXY_6, m_slot_id);
+              RIL_CMD_PROXY_6, m_slot_id);
 
     free(p_data[7]);
 
@@ -767,14 +758,13 @@ error:
 }
 
 void RmcSuppServUrcEntryHandler::handleOnXui(const sp<RfxMclMessage>& msg) {
-
     char* encryptMsg = encryptString(msg->getRawUrc()->getLine());
     logD(TAG, "OnXui: %s", encryptMsg);
     free(encryptMsg);
 
     char* p_data[4];
     RfxAtLine* line = msg->getRawUrc();
-    sp<RfxMclMessage> urc;   // Declare here ?_?
+    sp<RfxMclMessage> urc;  // Declare here ?_?
     int length_of_urc_from_md = 3;
     int length_of_urc_to_ap = 4;  // add urc + socket information to AP
     int err;
@@ -796,14 +786,14 @@ void RmcSuppServUrcEntryHandler::handleOnXui(const sp<RfxMclMessage>& msg) {
         goto error;
     }
 
-    for (i = 0 ; i < length_of_urc_from_md ; i++) {
+    for (i = 0; i < length_of_urc_from_md; i++) {
         p_data[i] = line->atTokNextstr(&err);
         if (err < 0) {
             goto error;
         }
     }
 
-    xui = (char *) alloca(urcLen);
+    xui = (char*)alloca(urcLen);
     memset(xui, 0, urcLen);
     strncpy(xui, p_data[2], strlen(p_data[2]) + 1);
     while (line->atTokHasmore()) {
@@ -815,8 +805,8 @@ void RmcSuppServUrcEntryHandler::handleOnXui(const sp<RfxMclMessage>& msg) {
 
     asprintf(&p_data[3], "%d", m_slot_id);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_XUI,
-            m_slot_id, RfxStringsData(p_data, length_of_urc_to_ap));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_XUI, m_slot_id,
+                                   RfxStringsData(p_data, length_of_urc_to_ap));
     responseToTelCore(urc);
 
     free(p_data[3]);
@@ -858,15 +848,15 @@ void RmcSuppServUrcEntryHandler::handleXcapResponseCodeNotify(const sp<RfxMclMes
 
     switch (code) {
         // Is VoLTE card, return 1
-        case 200:   // OK
-        case 404:   // Not Found
-        case 409:   // Conflict
-        case 412:   // Precondition Failed
-        case 844:   // SS Unprovisioned
+        case 200:  // OK
+        case 404:  // Not Found
+        case 409:  // Conflict
+        case 412:  // Precondition Failed
+        case 844:  // SS Unprovisioned
             response = 1;
             break;
         // Non VoLTE card, return 2
-        case 403:   // Forbidden
+        case 403:  // Forbidden
             response = 2;
             break;
         // Unknown
@@ -880,7 +870,7 @@ void RmcSuppServUrcEntryHandler::handleXcapResponseCodeNotify(const sp<RfxMclMes
     }
 
     urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_VOLTE_SUBSCRIPTION, m_slot_id,
-            RfxIntsData(&response, 1));
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
     return;
 
@@ -895,9 +885,9 @@ void RmcSuppServUrcEntryHandler::handleCRINGReveiced() {
     /* ECMCCSS has arrived already */
     if (isECMCCSS257Received) {
         logD(TAG, "Both ECMCCSS 257 & CRING are received, return tmpSvcNotify");
-        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION,
-            m_slot_id,
-            RfxSuppServNotificationData(&tmpSvcNotify, sizeof(RIL_SuppSvcNotification)));
+        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+                RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION, m_slot_id,
+                RfxSuppServNotificationData(&tmpSvcNotify, sizeof(RIL_SuppSvcNotification)));
         responseToTelCore(urc);
         resetFlagAndSvcNotify();
     }
@@ -905,8 +895,8 @@ void RmcSuppServUrcEntryHandler::handleCRINGReveiced() {
 
 void RmcSuppServUrcEntryHandler::handleECPI133Received(const sp<RfxMclMessage>& msg) {
     int* callId = (int*)(msg->getData()->getData());
-    logD(TAG, "handleECPI133Received, tmpSvcNotify.index = %d, callId = %d",
-            tmpSvcNotify.index, (*callId));
+    logD(TAG, "handleECPI133Received, tmpSvcNotify.index = %d, callId = %d", tmpSvcNotify.index,
+         (*callId));
     /* Only when the call id equals to ECMCCSS's, we reset the flag and SvcNotify.
      * If there is no ECMCCSS, the default index in tmpSvcNotify is zero */
     if (tmpSvcNotify.index == (*callId)) {

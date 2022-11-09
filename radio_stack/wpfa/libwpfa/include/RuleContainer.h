@@ -10,9 +10,8 @@ using namespace std;
 
 #define RC_LOG_TAG "WpfaRuleContainer"
 
-
 class RuleContainer {
-public:
+  public:
     RuleContainer();
     virtual ~RuleContainer();
 
@@ -23,12 +22,11 @@ public:
     void dumpAllFilterId();
     int findFilterById(int fid);
 
-
-protected:
+  protected:
     void copyFilter(int fid, WPFA_filter_reg_t filter);
 
-private:
-    //declaration container and iterator
+  private:
+    // declaration container and iterator
     map<int, WPFA_filter_reg_t> filterMap;
     map<int, WPFA_filter_reg_t>::iterator iter;
     map<int, WPFA_filter_reg_t>::reverse_iterator iter_r;

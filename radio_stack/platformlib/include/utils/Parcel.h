@@ -57,33 +57,33 @@ class TextOutput;
 
 class Parcel {
     friend class IPCThreadState;
-public:
+
+  public:
     class ReadableBlob;
     class WritableBlob;
 
-                        Parcel();
-                        ~Parcel();
+    Parcel();
+    ~Parcel();
 
-    const uint8_t*      data() const;
-    size_t              dataSize() const;
-    size_t              dataAvail() const;
-    size_t              dataPosition() const;
-    size_t              dataCapacity() const;
+    const uint8_t* data() const;
+    size_t dataSize() const;
+    size_t dataAvail() const;
+    size_t dataPosition() const;
+    size_t dataCapacity() const;
 
-    status_t            setDataSize(size_t size);
-    void                setDataPosition(size_t pos) const;
-    status_t            setDataCapacity(size_t size);
+    status_t setDataSize(size_t size);
+    void setDataPosition(size_t pos) const;
+    status_t setDataCapacity(size_t size);
 
-    status_t            setData(const uint8_t* buffer, size_t len);
+    status_t setData(const uint8_t* buffer, size_t len);
 
-    status_t            appendFrom(const Parcel *parcel,
-                                   size_t start, size_t len);
+    status_t appendFrom(const Parcel* parcel, size_t start, size_t len);
 
-    bool                allowFds() const;
-    bool                pushAllowFds(bool allowFds);
-    void                restoreAllowFds(bool lastValue);
+    bool allowFds() const;
+    bool pushAllowFds(bool allowFds);
+    void restoreAllowFds(bool lastValue);
 
-    bool                hasFileDescriptors() const;
+    bool hasFileDescriptors() const;
 
 #if 0
     // Writes the RPC header.
@@ -101,73 +101,73 @@ public:
     bool                checkInterface(IBinder*) const;
 #endif
 
-    void                freeData();
+    void freeData();
 
-private:
+  private:
     const binder_size_t* objects() const;
 
-public:
-    size_t              objectsCount() const;
+  public:
+    size_t objectsCount() const;
 
-    status_t            errorCheck() const;
-    void                setError(status_t err);
+    status_t errorCheck() const;
+    void setError(status_t err);
 
-    status_t            write(const void* data, size_t len);
-    void*               writeInplace(size_t len);
-    status_t            writeUnpadded(const void* data, size_t len);
-    status_t            writeInt32(int32_t val);
-    status_t            writeUint32(uint32_t val);
-    status_t            writeInt64(int64_t val);
-    status_t            writeUint64(uint64_t val);
-    status_t            writeFloat(float val);
-    status_t            writeDouble(double val);
-    status_t            writeCString(const char* str);
+    status_t write(const void* data, size_t len);
+    void* writeInplace(size_t len);
+    status_t writeUnpadded(const void* data, size_t len);
+    status_t writeInt32(int32_t val);
+    status_t writeUint32(uint32_t val);
+    status_t writeInt64(int64_t val);
+    status_t writeUint64(uint64_t val);
+    status_t writeFloat(float val);
+    status_t writeDouble(double val);
+    status_t writeCString(const char* str);
 #if 0
     status_t            writeString8(const String8& str);
 #endif
-    status_t            writeString16(const String16& str);
+    status_t writeString16(const String16& str);
 #if 0
     status_t            writeString16(const std::unique_ptr<String16>& str);
 #endif
-    status_t            writeString16(const char16_t* str, size_t len);
+    status_t writeString16(const char16_t* str, size_t len);
 #if 0
     status_t            writeStrongBinder(const sp<IBinder>& val);
     status_t            writeWeakBinder(const wp<IBinder>& val);
 #endif
-    status_t            writeInt32Array(size_t len, const int32_t *val);
-    status_t            writeByteArray(size_t len, const uint8_t *val);
-    status_t            writeBool(bool val);
-    status_t            writeChar(char16_t val);
-    status_t            writeByte(int8_t val);
+    status_t writeInt32Array(size_t len, const int32_t* val);
+    status_t writeByteArray(size_t len, const uint8_t* val);
+    status_t writeBool(bool val);
+    status_t writeChar(char16_t val);
+    status_t writeByte(int8_t val);
 
     // Take a UTF8 encoded string, convert to UTF16, write it to the parcel.
-    status_t            writeUtf8AsUtf16(const std::string& str);
-    status_t            writeUtf8AsUtf16(const std::unique_ptr<std::string>& str);
+    status_t writeUtf8AsUtf16(const std::string& str);
+    status_t writeUtf8AsUtf16(const std::unique_ptr<std::string>& str);
 
-    status_t            writeByteVector(const std::unique_ptr<std::vector<int8_t>>& val);
-    status_t            writeByteVector(const std::vector<int8_t>& val);
-    status_t            writeByteVector(const std::unique_ptr<std::vector<uint8_t>>& val);
-    status_t            writeByteVector(const std::vector<uint8_t>& val);
-    status_t            writeInt32Vector(const std::unique_ptr<std::vector<int32_t>>& val);
-    status_t            writeInt32Vector(const std::vector<int32_t>& val);
-    status_t            writeInt64Vector(const std::unique_ptr<std::vector<int64_t>>& val);
-    status_t            writeInt64Vector(const std::vector<int64_t>& val);
-    status_t            writeFloatVector(const std::unique_ptr<std::vector<float>>& val);
-    status_t            writeFloatVector(const std::vector<float>& val);
-    status_t            writeDoubleVector(const std::unique_ptr<std::vector<double>>& val);
-    status_t            writeDoubleVector(const std::vector<double>& val);
-    status_t            writeBoolVector(const std::unique_ptr<std::vector<bool>>& val);
-    status_t            writeBoolVector(const std::vector<bool>& val);
-    status_t            writeCharVector(const std::unique_ptr<std::vector<char16_t>>& val);
-    status_t            writeCharVector(const std::vector<char16_t>& val);
+    status_t writeByteVector(const std::unique_ptr<std::vector<int8_t>>& val);
+    status_t writeByteVector(const std::vector<int8_t>& val);
+    status_t writeByteVector(const std::unique_ptr<std::vector<uint8_t>>& val);
+    status_t writeByteVector(const std::vector<uint8_t>& val);
+    status_t writeInt32Vector(const std::unique_ptr<std::vector<int32_t>>& val);
+    status_t writeInt32Vector(const std::vector<int32_t>& val);
+    status_t writeInt64Vector(const std::unique_ptr<std::vector<int64_t>>& val);
+    status_t writeInt64Vector(const std::vector<int64_t>& val);
+    status_t writeFloatVector(const std::unique_ptr<std::vector<float>>& val);
+    status_t writeFloatVector(const std::vector<float>& val);
+    status_t writeDoubleVector(const std::unique_ptr<std::vector<double>>& val);
+    status_t writeDoubleVector(const std::vector<double>& val);
+    status_t writeBoolVector(const std::unique_ptr<std::vector<bool>>& val);
+    status_t writeBoolVector(const std::vector<bool>& val);
+    status_t writeCharVector(const std::unique_ptr<std::vector<char16_t>>& val);
+    status_t writeCharVector(const std::vector<char16_t>& val);
 #if 0
     status_t            writeString16Vector(
                             const std::unique_ptr<std::vector<std::unique_ptr<String16>>>& val);
     status_t            writeString16Vector(const std::vector<String16>& val);
 #endif
-    status_t            writeUtf8VectorAsUtf16Vector(
-                            const std::unique_ptr<std::vector<std::unique_ptr<std::string>>>& val);
-    status_t            writeUtf8VectorAsUtf16Vector(const std::vector<std::string>& val);
+    status_t writeUtf8VectorAsUtf16Vector(
+            const std::unique_ptr<std::vector<std::unique_ptr<std::string>>>& val);
+    status_t writeUtf8VectorAsUtf16Vector(const std::vector<std::string>& val);
 
 #if 0
     status_t            writeStrongBinderVector(const std::unique_ptr<std::vector<sp<IBinder>>>& val);
@@ -239,45 +239,45 @@ public:
     status_t            writeNoException();
 #endif
 
-    void                remove(size_t start, size_t amt);
+    void remove(size_t start, size_t amt);
 
-    status_t            read(void* outData, size_t len) const;
-    const void*         readInplace(size_t len) const;
-    int32_t             readInt32() const;
-    status_t            readInt32(int32_t *pArg) const;
-    uint32_t            readUint32() const;
-    status_t            readUint32(uint32_t *pArg) const;
-    int64_t             readInt64() const;
-    status_t            readInt64(int64_t *pArg) const;
-    uint64_t            readUint64() const;
-    status_t            readUint64(uint64_t *pArg) const;
-    float               readFloat() const;
-    status_t            readFloat(float *pArg) const;
-    double              readDouble() const;
-    status_t            readDouble(double *pArg) const;
-    intptr_t            readIntPtr() const;
-    status_t            readIntPtr(intptr_t *pArg) const;
-    bool                readBool() const;
-    status_t            readBool(bool *pArg) const;
-    char16_t            readChar() const;
-    status_t            readChar(char16_t *pArg) const;
-    int8_t              readByte() const;
-    status_t            readByte(int8_t *pArg) const;
+    status_t read(void* outData, size_t len) const;
+    const void* readInplace(size_t len) const;
+    int32_t readInt32() const;
+    status_t readInt32(int32_t* pArg) const;
+    uint32_t readUint32() const;
+    status_t readUint32(uint32_t* pArg) const;
+    int64_t readInt64() const;
+    status_t readInt64(int64_t* pArg) const;
+    uint64_t readUint64() const;
+    status_t readUint64(uint64_t* pArg) const;
+    float readFloat() const;
+    status_t readFloat(float* pArg) const;
+    double readDouble() const;
+    status_t readDouble(double* pArg) const;
+    intptr_t readIntPtr() const;
+    status_t readIntPtr(intptr_t* pArg) const;
+    bool readBool() const;
+    status_t readBool(bool* pArg) const;
+    char16_t readChar() const;
+    status_t readChar(char16_t* pArg) const;
+    int8_t readByte() const;
+    status_t readByte(int8_t* pArg) const;
 
     // Read a UTF16 encoded string, convert to UTF8
-    status_t            readUtf8FromUtf16(std::string* str) const;
-    status_t            readUtf8FromUtf16(std::unique_ptr<std::string>* str) const;
+    status_t readUtf8FromUtf16(std::string* str) const;
+    status_t readUtf8FromUtf16(std::unique_ptr<std::string>* str) const;
 
-    const char*         readCString() const;
+    const char* readCString() const;
 #if 0
     String8             readString8() const;
 #endif
-    String16            readString16() const;
+    String16 readString16() const;
 #if 0
     status_t            readString16(String16* pArg) const;
     status_t            readString16(std::unique_ptr<String16>* pArg) const;
 #endif
-    const char16_t*     readString16Inplace(size_t* outLen) const;
+    const char16_t* readString16Inplace(size_t* outLen) const;
 #if 0
     sp<IBinder>         readStrongBinder() const;
     status_t            readStrongBinder(sp<IBinder>* val) const;
@@ -305,30 +305,30 @@ public:
     status_t            readStrongBinderVector(std::vector<sp<IBinder>>* val) const;
 #endif
 
-    status_t            readByteVector(std::unique_ptr<std::vector<int8_t>>* val) const;
-    status_t            readByteVector(std::vector<int8_t>* val) const;
-    status_t            readByteVector(std::unique_ptr<std::vector<uint8_t>>* val) const;
-    status_t            readByteVector(std::vector<uint8_t>* val) const;
-    status_t            readInt32Vector(std::unique_ptr<std::vector<int32_t>>* val) const;
-    status_t            readInt32Vector(std::vector<int32_t>* val) const;
-    status_t            readInt64Vector(std::unique_ptr<std::vector<int64_t>>* val) const;
-    status_t            readInt64Vector(std::vector<int64_t>* val) const;
-    status_t            readFloatVector(std::unique_ptr<std::vector<float>>* val) const;
-    status_t            readFloatVector(std::vector<float>* val) const;
-    status_t            readDoubleVector(std::unique_ptr<std::vector<double>>* val) const;
-    status_t            readDoubleVector(std::vector<double>* val) const;
-    status_t            readBoolVector(std::unique_ptr<std::vector<bool>>* val) const;
-    status_t            readBoolVector(std::vector<bool>* val) const;
-    status_t            readCharVector(std::unique_ptr<std::vector<char16_t>>* val) const;
-    status_t            readCharVector(std::vector<char16_t>* val) const;
+    status_t readByteVector(std::unique_ptr<std::vector<int8_t>>* val) const;
+    status_t readByteVector(std::vector<int8_t>* val) const;
+    status_t readByteVector(std::unique_ptr<std::vector<uint8_t>>* val) const;
+    status_t readByteVector(std::vector<uint8_t>* val) const;
+    status_t readInt32Vector(std::unique_ptr<std::vector<int32_t>>* val) const;
+    status_t readInt32Vector(std::vector<int32_t>* val) const;
+    status_t readInt64Vector(std::unique_ptr<std::vector<int64_t>>* val) const;
+    status_t readInt64Vector(std::vector<int64_t>* val) const;
+    status_t readFloatVector(std::unique_ptr<std::vector<float>>* val) const;
+    status_t readFloatVector(std::vector<float>* val) const;
+    status_t readDoubleVector(std::unique_ptr<std::vector<double>>* val) const;
+    status_t readDoubleVector(std::vector<double>* val) const;
+    status_t readBoolVector(std::unique_ptr<std::vector<bool>>* val) const;
+    status_t readBoolVector(std::vector<bool>* val) const;
+    status_t readCharVector(std::unique_ptr<std::vector<char16_t>>* val) const;
+    status_t readCharVector(std::vector<char16_t>* val) const;
 #if 0
     status_t            readString16Vector(
                             std::unique_ptr<std::vector<std::unique_ptr<String16>>>* val) const;
     status_t            readString16Vector(std::vector<String16>* val) const;
 #endif
-    status_t            readUtf8VectorFromUtf16Vector(
-                            std::unique_ptr<std::vector<std::unique_ptr<std::string>>>* val) const;
-    status_t            readUtf8VectorFromUtf16Vector(std::vector<std::string>* val) const;
+    status_t readUtf8VectorFromUtf16Vector(
+            std::unique_ptr<std::vector<std::unique_ptr<std::string>>>* val) const;
+    status_t readUtf8VectorFromUtf16Vector(std::vector<std::string>* val) const;
 
 #if 0
     template<typename T>
@@ -377,14 +377,12 @@ public:
 #endif
 
     // Debugging: get metrics on current allocations.
-    static size_t       getGlobalAllocSize();
-    static size_t       getGlobalAllocCount();
+    static size_t getGlobalAllocSize();
+    static size_t getGlobalAllocCount();
 
-private:
-    typedef void        (*release_func)(Parcel* parcel,
-                                        const uint8_t* data, size_t dataSize,
-                                        const binder_size_t* objects, size_t objectsSize,
-                                        void* cookie);
+  private:
+    typedef void (*release_func)(Parcel* parcel, const uint8_t* data, size_t dataSize,
+                                 const binder_size_t* objects, size_t objectsSize, void* cookie);
 
 #if 0
     uintptr_t           ipcData() const;
@@ -399,82 +397,79 @@ public:
     void                print(TextOutput& to, uint32_t flags = 0) const;
 #endif
 
-private:
-                        Parcel(const Parcel& o);
-    Parcel&             operator=(const Parcel& o);
+  private:
+    Parcel(const Parcel& o);
+    Parcel& operator=(const Parcel& o);
 
-    status_t            finishWrite(size_t len);
-    void                releaseObjects();
-    void                acquireObjects();
-    status_t            growData(size_t len);
-    status_t            restartWrite(size_t desired);
-    status_t            continueWrite(size_t desired);
-    status_t            writePointer(uintptr_t val);
-    status_t            readPointer(uintptr_t *pArg) const;
-    uintptr_t           readPointer() const;
-    void                freeDataNoInit();
-    void                initState();
+    status_t finishWrite(size_t len);
+    void releaseObjects();
+    void acquireObjects();
+    status_t growData(size_t len);
+    status_t restartWrite(size_t desired);
+    status_t continueWrite(size_t desired);
+    status_t writePointer(uintptr_t val);
+    status_t readPointer(uintptr_t* pArg) const;
+    uintptr_t readPointer() const;
+    void freeDataNoInit();
+    void initState();
 #if 0
     void                scanForFds() const;
 #endif
 
-    template<class T>
-    status_t            readAligned(T *pArg) const;
+    template <class T>
+    status_t readAligned(T* pArg) const;
 
-    template<class T>   T readAligned() const;
+    template <class T>
+    T readAligned() const;
 
-    template<class T>
-    status_t            writeAligned(T val);
+    template <class T>
+    status_t writeAligned(T val);
 
 #if 0
     status_t            writeRawNullableParcelable(const Parcelable*
                                                    parcelable);
 #endif
 
-    template<typename T, typename U>
-    status_t            unsafeReadTypedVector(std::vector<T>* val,
-                                              status_t(Parcel::*read_func)(U*) const) const;
-    template<typename T>
-    status_t            readNullableTypedVector(std::unique_ptr<std::vector<T>>* val,
-                                                status_t(Parcel::*read_func)(T*) const) const;
-    template<typename T>
-    status_t            readTypedVector(std::vector<T>* val,
-                                        status_t(Parcel::*read_func)(T*) const) const;
-    template<typename T, typename U>
-    status_t            unsafeWriteTypedVector(const std::vector<T>& val,
-                                               status_t(Parcel::*write_func)(U));
-    template<typename T>
-    status_t            writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
-                                                 status_t(Parcel::*write_func)(const T&));
-    template<typename T>
-    status_t            writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
-                                                 status_t(Parcel::*write_func)(T));
-    template<typename T>
-    status_t            writeTypedVector(const std::vector<T>& val,
-                                         status_t(Parcel::*write_func)(const T&));
-    template<typename T>
-    status_t            writeTypedVector(const std::vector<T>& val,
-                                         status_t(Parcel::*write_func)(T));
+    template <typename T, typename U>
+    status_t unsafeReadTypedVector(std::vector<T>* val,
+                                   status_t (Parcel::*read_func)(U*) const) const;
+    template <typename T>
+    status_t readNullableTypedVector(std::unique_ptr<std::vector<T>>* val,
+                                     status_t (Parcel::*read_func)(T*) const) const;
+    template <typename T>
+    status_t readTypedVector(std::vector<T>* val, status_t (Parcel::*read_func)(T*) const) const;
+    template <typename T, typename U>
+    status_t unsafeWriteTypedVector(const std::vector<T>& val, status_t (Parcel::*write_func)(U));
+    template <typename T>
+    status_t writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
+                                      status_t (Parcel::*write_func)(const T&));
+    template <typename T>
+    status_t writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
+                                      status_t (Parcel::*write_func)(T));
+    template <typename T>
+    status_t writeTypedVector(const std::vector<T>& val, status_t (Parcel::*write_func)(const T&));
+    template <typename T>
+    status_t writeTypedVector(const std::vector<T>& val, status_t (Parcel::*write_func)(T));
 
-    status_t            mError;
-    uint8_t*            mData;
-    size_t              mDataSize;
-    size_t              mDataCapacity;
-    mutable size_t      mDataPos;
-    binder_size_t*      mObjects;
-    size_t              mObjectsSize;
-    size_t              mObjectsCapacity;
-    mutable size_t      mNextObjectHint;
+    status_t mError;
+    uint8_t* mData;
+    size_t mDataSize;
+    size_t mDataCapacity;
+    mutable size_t mDataPos;
+    binder_size_t* mObjects;
+    size_t mObjectsSize;
+    size_t mObjectsCapacity;
+    mutable size_t mNextObjectHint;
 
-    mutable bool        mFdsKnown;
-    mutable bool        mHasFds;
-    bool                mAllowFds;
+    mutable bool mFdsKnown;
+    mutable bool mHasFds;
+    bool mAllowFds;
 
-    release_func        mOwner;
-    void*               mOwnerCookie;
+    release_func mOwner;
+    void* mOwnerCookie;
 
     class Blob {
-    public:
+      public:
         Blob();
         ~Blob();
 
@@ -484,10 +479,10 @@ private:
         inline int fd() const { return mFd; };
         inline bool isMutable() const { return mMutable; }
 
-    protected:
+      protected:
         void init(int fd, void* data, size_t size, bool isMutable);
 
-        int mFd; // owned by parcel so not closed when released
+        int mFd;  // owned by parcel so not closed when released
         void* mData;
         size_t mSize;
         bool mMutable;
@@ -528,24 +523,26 @@ private:
     status_t read(FlattenableHelperInterface& val) const;
 #endif
 
-public:
+  public:
     class ReadableBlob : public Blob {
         friend class Parcel;
-    public:
+
+      public:
         inline const void* data() const { return mData; }
         inline void* mutableData() { return isMutable() ? mData : NULL; }
     };
 
     class WritableBlob : public Blob {
         friend class Parcel;
-    public:
+
+      public:
         inline void* data() { return mData; }
     };
 
-private:
+  private:
     size_t mOpenAshmemSize;
 
-public:
+  public:
     // TODO: Remove once ABI can be changed.
     size_t getBlobAshmemSize() const;
     size_t getOpenAshmemSize() const;
@@ -636,10 +633,9 @@ status_t Parcel::readNullableStrongBinder(sp<T>* val) const {
 }
 #endif
 
-template<typename T, typename U>
-status_t Parcel::unsafeReadTypedVector(
-        std::vector<T>* val,
-        status_t(Parcel::*read_func)(U*) const) const {
+template <typename T, typename U>
+status_t Parcel::unsafeReadTypedVector(std::vector<T>* val,
+                                       status_t (Parcel::*read_func)(U*) const) const {
     int32_t size;
     status_t status = this->readInt32(&size);
 
@@ -653,7 +649,7 @@ status_t Parcel::unsafeReadTypedVector(
 
     val->resize(size);
 
-    for (auto& v: *val) {
+    for (auto& v : *val) {
         status = (this->*read_func)(&v);
 
         if (status != OK) {
@@ -664,15 +660,15 @@ status_t Parcel::unsafeReadTypedVector(
     return OK;
 }
 
-template<typename T>
+template <typename T>
 status_t Parcel::readTypedVector(std::vector<T>* val,
-                                 status_t(Parcel::*read_func)(T*) const) const {
+                                 status_t (Parcel::*read_func)(T*) const) const {
     return unsafeReadTypedVector(val, read_func);
 }
 
-template<typename T>
+template <typename T>
 status_t Parcel::readNullableTypedVector(std::unique_ptr<std::vector<T>>* val,
-                                         status_t(Parcel::*read_func)(T*) const) const {
+                                         status_t (Parcel::*read_func)(T*) const) const {
     const int32_t start = dataPosition();
     int32_t size;
     status_t status = readInt32(&size);
@@ -694,9 +690,9 @@ status_t Parcel::readNullableTypedVector(std::unique_ptr<std::vector<T>>* val,
     return status;
 }
 
-template<typename T, typename U>
+template <typename T, typename U>
 status_t Parcel::unsafeWriteTypedVector(const std::vector<T>& val,
-                                        status_t(Parcel::*write_func)(U)) {
+                                        status_t (Parcel::*write_func)(U)) {
     if (val.size() > std::numeric_limits<int32_t>::max()) {
         return BAD_VALUE;
     }
@@ -718,21 +714,20 @@ status_t Parcel::unsafeWriteTypedVector(const std::vector<T>& val,
     return OK;
 }
 
-template<typename T>
+template <typename T>
 status_t Parcel::writeTypedVector(const std::vector<T>& val,
-                                  status_t(Parcel::*write_func)(const T&)) {
+                                  status_t (Parcel::*write_func)(const T&)) {
     return unsafeWriteTypedVector(val, write_func);
 }
 
-template<typename T>
-status_t Parcel::writeTypedVector(const std::vector<T>& val,
-                                  status_t(Parcel::*write_func)(T)) {
+template <typename T>
+status_t Parcel::writeTypedVector(const std::vector<T>& val, status_t (Parcel::*write_func)(T)) {
     return unsafeWriteTypedVector(val, write_func);
 }
 
-template<typename T>
+template <typename T>
 status_t Parcel::writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
-                                          status_t(Parcel::*write_func)(const T&)) {
+                                          status_t (Parcel::*write_func)(const T&)) {
     if (val.get() == nullptr) {
         return this->writeInt32(-1);
     }
@@ -740,9 +735,9 @@ status_t Parcel::writeNullableTypedVector(const std::unique_ptr<std::vector<T>>&
     return unsafeWriteTypedVector(*val, write_func);
 }
 
-template<typename T>
+template <typename T>
 status_t Parcel::writeNullableTypedVector(const std::unique_ptr<std::vector<T>>& val,
-                                          status_t(Parcel::*write_func)(T)) {
+                                          status_t (Parcel::*write_func)(T)) {
     if (val.get() == nullptr) {
         return this->writeInt32(-1);
     }
@@ -847,8 +842,8 @@ status_t unflatten_binder(const sp<ProcessState>& proc,
                           const flat_binder_object& flat, wp<IBinder>* out);
 #endif
 
-}; // namespace android
+};  // namespace android
 
 // ---------------------------------------------------------------------------
 
-#endif // ANDROID_PARCEL_H
+#endif  // ANDROID_PARCEL_H

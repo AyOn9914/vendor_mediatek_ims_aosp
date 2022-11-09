@@ -22,8 +22,7 @@
 using std::string;
 
 class MtkPhoneNumberUtils {
-
-public:
+  public:
     virtual ~MtkPhoneNumberUtils();
 
     /**
@@ -57,11 +56,11 @@ public:
      *
      * @param number number to check
      */
-    static bool isSpecialEmergencyNumber(int slotId, const char *number);
+    static bool isSpecialEmergencyNumber(int slotId, const char* number);
 
-private:
+  private:
     static int indexOfLastNetworkChar(string a);
-    static int minPositive (int a, int b);
+    static int minPositive(int a, int b);
     static bool isDialable(char c);
     static bool matchIntlPrefix(string a, int len);
     static bool matchTrunkPrefix(string a, int len);
@@ -70,7 +69,7 @@ private:
     static bool isISODigit(char c);
     static bool isCTCardType(int slot_id);
 
-public:
+  public:
     /*
      * Special characters
      *

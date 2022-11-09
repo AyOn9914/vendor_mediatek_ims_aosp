@@ -19,51 +19,48 @@
 
 #include <Log.h>
 
-
 namespace android {
 
 // Interface for printing to an arbitrary data stream
 class Printer {
-public:
+  public:
     // Print a new line specified by 'string'. \n is appended automatically.
     // -- Assumes that the string has no new line in it.
     virtual void printLine(const char* string = "") = 0;
 
     // Print a new line specified by the format string. \n is appended automatically.
     // -- Assumes that the resulting string has no new line in it.
-    virtual void printFormatLine(const char* format, ...) __attribute__((format (printf, 2, 3)));
+    virtual void printFormatLine(const char* format, ...) __attribute__((format(printf, 2, 3)));
 
-protected:
+  protected:
     Printer();
     virtual ~Printer();
-}; // class Printer
+};  // class Printer
 
 // Print to logcat
 class LogPrinter : public Printer {
-public:
+  public:
     // Create a printer using the specified logcat and log priority
     // - Unless ignoreBlankLines is false, print blank lines to logcat
     // (Note that the default ALOG behavior is to ignore blank lines)
-    LogPrinter(const char* logtag,
-               android_LogPriority priority = ANDROID_LOG_DEBUG,
-               const char* prefix = 0,
-               bool ignoreBlankLines = false);
+    LogPrinter(const char* logtag, android_LogPriority priority = ANDROID_LOG_DEBUG,
+               const char* prefix = 0, bool ignoreBlankLines = false);
 
     // Print the specified line to logcat. No \n at the end is necessary.
     virtual void printLine(const char* string);
 
-private:
+  private:
     void printRaw(const char* string);
 
     const char* mLogTag;
     android_LogPriority mPriority;
     const char* mPrefix;
     bool mIgnoreBlankLines;
-}; // class LogPrinter
+};  // class LogPrinter
 
 // Print to a file descriptor
 class FdPrinter : public Printer {
-public:
+  public:
     // Create a printer using the specified file descriptor.
     // - Each line will be prefixed with 'indent' number of blank spaces.
     // - In addition, each line will be prefixed with the 'prefix' string.
@@ -72,7 +69,7 @@ public:
     // Print the specified line to the file descriptor. \n is appended automatically.
     virtual void printLine(const char* string);
 
-private:
+  private:
     enum {
         MAX_FORMAT_STRING = 20,
     };
@@ -81,13 +78,13 @@ private:
     unsigned int mIndent;
     const char* mPrefix;
     char mFormatString[MAX_FORMAT_STRING];
-}; // class FdPrinter
+};  // class FdPrinter
 
 class String8;
 
 // Print to a String8
 class String8Printer : public Printer {
-public:
+  public:
     // Create a printer using the specified String8 as the target.
     // - In addition, each line will be prefixed with the 'prefix' string.
     // - target's memory lifetime must be a superset of this String8Printer.
@@ -96,25 +93,25 @@ public:
     // Append the specified line to the String8. \n is appended automatically.
     virtual void printLine(const char* string);
 
-private:
+  private:
     String8* mTarget;
     const char* mPrefix;
-}; // class String8Printer
+};  // class String8Printer
 
 // Print to an existing Printer by adding a prefix to each line
 class PrefixPrinter : public Printer {
-public:
+  public:
     // Create a printer using the specified printer as the target.
     PrefixPrinter(Printer& printer, const char* prefix);
 
     // Print the line (prefixed with prefix) using the printer.
     virtual void printLine(const char* string);
 
-private:
+  private:
     Printer& mPrinter;
     const char* mPrefix;
 };
 
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_PRINTER_H
+#endif  // ANDROID_PRINTER_H

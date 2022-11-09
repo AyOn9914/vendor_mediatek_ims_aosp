@@ -23,18 +23,18 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsLocalSaiNotifyData);
 
 RfxEmbmsLocalSaiNotifyData::RfxEmbmsLocalSaiNotifyData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_LocalSaiNotify*)data, length);
 }
 
 RfxEmbmsLocalSaiNotifyData::RfxEmbmsLocalSaiNotifyData(RIL_EMBMS_LocalSaiNotify* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsLocalSaiNotifyData::copyData(RIL_EMBMS_LocalSaiNotify *data, int length) {
+void RfxEmbmsLocalSaiNotifyData::copyData(RIL_EMBMS_LocalSaiNotify* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_LocalSaiNotify *) calloc(1, sizeof(RIL_EMBMS_LocalSaiNotify));
+    m_data = (RIL_EMBMS_LocalSaiNotify*)calloc(1, sizeof(RIL_EMBMS_LocalSaiNotify));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

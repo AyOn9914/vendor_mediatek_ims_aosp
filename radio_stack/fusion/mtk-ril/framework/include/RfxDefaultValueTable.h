@@ -21,7 +21,7 @@
 
 typedef struct _StatusDefaultValueEntry {
     RfxStatusKeyEnum key;
-    const char *key_string;
+    const char* key_string;
     RfxVariant value;
 } StatusDefaultValueEntry;
 

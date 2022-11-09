@@ -33,7 +33,7 @@
 #include <cutils/android_get_control_env.h>
 
 #ifndef TEMP_FAILURE_RETRY
-#define TEMP_FAILURE_RETRY(exp) (exp) // KISS implementation
+#define TEMP_FAILURE_RETRY(exp) (exp)  // KISS implementation
 #endif
 
 #if defined(__ANDROID__)
@@ -64,9 +64,7 @@ bool socket_peer_is_trusted(int fd __android_unused) {
     return true;
 }
 
-int socket_close(int sock) {
-    return close(sock);
-}
+int socket_close(int sock) { return close(sock); }
 
 int socket_set_receive_timeout(cutils_socket_t sock, int timeout_ms) {
     timeval tv;
@@ -75,8 +73,7 @@ int socket_set_receive_timeout(cutils_socket_t sock, int timeout_ms) {
     return setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 }
 
-ssize_t socket_send_buffers(cutils_socket_t sock,
-                            const cutils_socket_buffer_t* buffers,
+ssize_t socket_send_buffers(cutils_socket_t sock, const cutils_socket_buffer_t* buffers,
                             size_t num_buffers) {
     if (num_buffers > SOCKET_SEND_BUFFERS_MAX_BUFFERS) {
         return -1;
@@ -102,9 +99,9 @@ int android_get_control_socket(const char* name) {
     // Compare to UNIX domain socket name, must match!
     struct sockaddr_un addr;
     socklen_t addrlen = sizeof(addr);
-    int ret = TEMP_FAILURE_RETRY(getsockname(fd, (struct sockaddr *)&addr, &addrlen));
+    int ret = TEMP_FAILURE_RETRY(getsockname(fd, (struct sockaddr*)&addr, &addrlen));
     if (ret < 0) return -1;
-    char *path = NULL;
+    char* path = NULL;
     if (asprintf(&path, ANDROID_SOCKET_DIR "/%s", name) < 0) return -1;
     if (!path) return -1;
     int cmp = strcmp(addr.sun_path, path);

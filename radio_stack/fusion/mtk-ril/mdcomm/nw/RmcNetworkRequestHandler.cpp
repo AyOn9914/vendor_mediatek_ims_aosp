@@ -20,88 +20,77 @@
 #include "RfxViaUtils.h"
 
 static const int request[] = {
-    RFX_MSG_REQUEST_SIGNAL_STRENGTH,
-    RFX_MSG_REQUEST_SIGNAL_STRENGTH_WITH_WCDMA_ECIO,
-    RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
-    RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL,
-    RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT,
-    RFX_MSG_REQUEST_SET_BAND_MODE,
-    RFX_MSG_REQUEST_QUERY_AVAILABLE_BAND_MODE,
-    RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS,
-    RFX_MSG_REQUEST_SET_LOCATION_UPDATES,
-    RFX_MSG_REQUEST_GET_CELL_INFO_LIST,
-    RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE,
-    RFX_MSG_REQUEST_GET_POL_CAPABILITY,
-    RFX_MSG_REQUEST_GET_POL_LIST,
-    RFX_MSG_REQUEST_SET_POL_ENTRY,
-    RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE,
-    RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE,
-    RFX_MSG_REQUEST_GET_FEMTOCELL_LIST,
-    RFX_MSG_REQUEST_ABORT_FEMTOCELL_LIST,
-    RFX_MSG_REQUEST_SELECT_FEMTOCELL,
-    RFX_MSG_REQUEST_SCREEN_STATE,
-    RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER,
-    RFX_MSG_REQUEST_QUERY_FEMTOCELL_SYSTEM_SELECTION_MODE,
-    RFX_MSG_REQUEST_SET_FEMTOCELL_SYSTEM_SELECTION_MODE,
-    // RFX_MSG_REQUEST_VSS_ANTENNA_CONF,
-    // RFX_MSG_REQUEST_VSS_ANTENNA_INFO,
-    RFX_MSG_REQUEST_SET_SERVICE_STATE,
-    RFX_MSG_REQUEST_SET_PSEUDO_CELL_MODE,
-    RFX_MSG_REQUEST_GET_PSEUDO_CELL_INFO,
-    RFX_MSG_REQUEST_SET_ROAMING_ENABLE,
-    RFX_MSG_REQUEST_GET_ROAMING_ENABLE,
-    RFX_MSG_REQUEST_SET_LTE_RELEASE_VERSION,
-    RFX_MSG_REQUEST_GET_LTE_RELEASE_VERSION,
-    RFX_MSG_REQUEST_SET_SIGNAL_STRENGTH_REPORTING_CRITERIA,
-    RFX_MSG_REQUEST_SET_SYSTEM_SELECTION_CHANNELS,
-    RFX_MSG_REQUEST_GET_TS25_NAME,
-    RFX_MSG_REQUEST_GET_EHRPD_INFO_FOR_IMS,
-    RFX_MSG_REQUEST_ENABLE_CA_PLUS_FILTER,
-    RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT,
-    RFX_MSG_REQUEST_GET_SUGGESTED_PLMN_LIST,
-    RFX_MSG_REQUEST_CONFIG_A2_OFFSET,
-    RFX_MSG_REQUEST_CONFIG_B1_OFFSET,
-    RFX_MSG_REQUEST_ENABLE_SCG_FAILURE,
-    RFX_MSG_REQUEST_DISABLE_NR,
-    RFX_MSG_REQUEST_SET_TX_POWER,
-    RFX_MSG_REQUEST_SEARCH_STORED_FREQUENCY_INFO,
-    RFX_MSG_REQUEST_SEARCH_RAT,
-    RFX_MSG_REQUEST_SET_BACKGROUND_SEARCH_TIMER
-};
+        RFX_MSG_REQUEST_SIGNAL_STRENGTH, RFX_MSG_REQUEST_SIGNAL_STRENGTH_WITH_WCDMA_ECIO,
+        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
+        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL,
+        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT, RFX_MSG_REQUEST_SET_BAND_MODE,
+        RFX_MSG_REQUEST_QUERY_AVAILABLE_BAND_MODE, RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS,
+        RFX_MSG_REQUEST_SET_LOCATION_UPDATES, RFX_MSG_REQUEST_GET_CELL_INFO_LIST,
+        RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE, RFX_MSG_REQUEST_GET_POL_CAPABILITY,
+        RFX_MSG_REQUEST_GET_POL_LIST, RFX_MSG_REQUEST_SET_POL_ENTRY,
+        RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE, RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE,
+        RFX_MSG_REQUEST_GET_FEMTOCELL_LIST, RFX_MSG_REQUEST_ABORT_FEMTOCELL_LIST,
+        RFX_MSG_REQUEST_SELECT_FEMTOCELL, RFX_MSG_REQUEST_SCREEN_STATE,
+        RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER,
+        RFX_MSG_REQUEST_QUERY_FEMTOCELL_SYSTEM_SELECTION_MODE,
+        RFX_MSG_REQUEST_SET_FEMTOCELL_SYSTEM_SELECTION_MODE,
+        // RFX_MSG_REQUEST_VSS_ANTENNA_CONF,
+        // RFX_MSG_REQUEST_VSS_ANTENNA_INFO,
+        RFX_MSG_REQUEST_SET_SERVICE_STATE, RFX_MSG_REQUEST_SET_PSEUDO_CELL_MODE,
+        RFX_MSG_REQUEST_GET_PSEUDO_CELL_INFO, RFX_MSG_REQUEST_SET_ROAMING_ENABLE,
+        RFX_MSG_REQUEST_GET_ROAMING_ENABLE, RFX_MSG_REQUEST_SET_LTE_RELEASE_VERSION,
+        RFX_MSG_REQUEST_GET_LTE_RELEASE_VERSION,
+        RFX_MSG_REQUEST_SET_SIGNAL_STRENGTH_REPORTING_CRITERIA,
+        RFX_MSG_REQUEST_SET_SYSTEM_SELECTION_CHANNELS, RFX_MSG_REQUEST_GET_TS25_NAME,
+        RFX_MSG_REQUEST_GET_EHRPD_INFO_FOR_IMS, RFX_MSG_REQUEST_ENABLE_CA_PLUS_FILTER,
+        RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT, RFX_MSG_REQUEST_GET_SUGGESTED_PLMN_LIST,
+        RFX_MSG_REQUEST_CONFIG_A2_OFFSET, RFX_MSG_REQUEST_CONFIG_B1_OFFSET,
+        RFX_MSG_REQUEST_ENABLE_SCG_FAILURE, RFX_MSG_REQUEST_DISABLE_NR,
+        RFX_MSG_REQUEST_SET_TX_POWER, RFX_MSG_REQUEST_SEARCH_STORED_FREQUENCY_INFO,
+        RFX_MSG_REQUEST_SEARCH_RAT, RFX_MSG_REQUEST_SET_BACKGROUND_SEARCH_TIMER};
 
-static const int events[] = {
-    RFX_MSG_EVENT_EXIT_EMERGENCY_CALLBACK_MODE,
-    RFX_MSG_EVENT_FEMTOCELL_UPDATE,
-    RFX_MSG_EVENT_CONFIRM_RAT_BEGIN,
-    RFX_MSG_EVENT_CS_NETWORK_STATE,
-    RFX_MSG_EVENT_PS_NETWORK_STATE,
-    RFX_MSG_EVENT_RERESH_PHYSICAL_CONFIG,
-    RFX_MSG_EVENT_RSP_DATA_CONTEXT_IDS
-};
+static const int events[] = {RFX_MSG_EVENT_EXIT_EMERGENCY_CALLBACK_MODE,
+                             RFX_MSG_EVENT_FEMTOCELL_UPDATE,
+                             RFX_MSG_EVENT_CONFIRM_RAT_BEGIN,
+                             RFX_MSG_EVENT_CS_NETWORK_STATE,
+                             RFX_MSG_EVENT_PS_NETWORK_STATE,
+                             RFX_MSG_EVENT_RERESH_PHYSICAL_CONFIG,
+                             RFX_MSG_EVENT_RSP_DATA_CONTEXT_IDS};
 
 // register data
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SIGNAL_STRENGTH);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_BAND_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_AVAILABLE_BAND_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxNeighboringCellData, RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_QUERY_AVAILABLE_BAND_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxNeighboringCellData,
+                                RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_LOCATION_UPDATES);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCellInfoData, RFX_MSG_REQUEST_GET_CELL_INFO_LIST);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_POL_CAPABILITY);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringsData, RFX_MSG_REQUEST_GET_POL_LIST);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_POL_ENTRY);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringsData, RFX_MSG_REQUEST_GET_FEMTOCELL_LIST);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_ABORT_FEMTOCELL_LIST);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SELECT_FEMTOCELL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SCREEN_STATE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_FEMTOCELL_SYSTEM_SELECTION_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_FEMTOCELL_SYSTEM_SELECTION_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_QUERY_FEMTOCELL_SYSTEM_SELECTION_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_FEMTOCELL_SYSTEM_SELECTION_MODE);
 // RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_VSS_ANTENNA_CONF);
 // RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_VSS_ANTENNA_INFO);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_SERVICE_STATE);
@@ -112,25 +101,29 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_GET_RO
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_LTE_RELEASE_VERSION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_LTE_RELEASE_VERSION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
-        RFX_MSG_REQUEST_SIGNAL_STRENGTH_WITH_WCDMA_ECIO);
+                                RFX_MSG_REQUEST_SIGNAL_STRENGTH_WITH_WCDMA_ECIO);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSsrcData, RfxVoidData,
-        RFX_MSG_REQUEST_SET_SIGNAL_STRENGTH_REPORTING_CRITERIA);
+                                RFX_MSG_REQUEST_SET_SIGNAL_STRENGTH_REPORTING_CRITERIA);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSscData, RfxVoidData,
-        RFX_MSG_REQUEST_SET_SYSTEM_SELECTION_CHANNELS);
+                                RFX_MSG_REQUEST_SET_SYSTEM_SELECTION_CHANNELS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxStringData, RFX_MSG_REQUEST_GET_TS25_NAME);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_ENABLE_CA_PLUS_FILTER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_GET_EHRPD_INFO_FOR_IMS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxStringsData, RFX_MSG_REQUEST_GET_SUGGESTED_PLMN_LIST);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxStringsData,
+                                RFX_MSG_REQUEST_GET_SUGGESTED_PLMN_LIST);
 // NR request
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_CONFIG_A2_OFFSET);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_CONFIG_B1_OFFSET);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_ENABLE_SCG_FAILURE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_DISABLE_NR);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SET_TX_POWER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SEARCH_STORED_FREQUENCY_INFO);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_SEARCH_STORED_FREQUENCY_INFO);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SEARCH_RAT);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SET_BACKGROUND_SEARCH_TIMER);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_SET_BACKGROUND_SEARCH_TIMER);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_URC_FEMTOCELL_INFO);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_RESPONSE_PS_NETWORK_STATE_CHANGED);
@@ -140,16 +133,15 @@ RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_RSP_DATA_CONTEXT_IDS);
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcNetworkRequestHandler, RIL_CMD_PROXY_3);
 
-RmcNetworkRequestHandler::RmcNetworkRequestHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id),
-        m_emergency_only(0){
+RmcNetworkRequestHandler::RmcNetworkRequestHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id), m_emergency_only(0) {
     int err;
     sp<RfxAtResponse> p_response;
     logV(LOG_TAG, "%s[%d] start", __FUNCTION__, slot_id);
     m_slot_id = slot_id;
     m_channel_id = channel_id;
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
-    registerToHandleEvent(events, sizeof(events)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
+    registerToHandleEvent(events, sizeof(events) / sizeof(int));
 
     pthread_mutex_lock(&s_signalStrengthMutex[m_slot_id]);
     resetSignalStrengthCache(signal_strength_cache[m_slot_id], CACHE_GROUP_ALL);
@@ -231,13 +223,12 @@ RmcNetworkRequestHandler::RmcNetworkRequestHandler(int slot_id, int channel_id) 
     // TODO: consider boot up screen off test scenario
 }
 
-RmcNetworkRequestHandler::~RmcNetworkRequestHandler() {
-}
+RmcNetworkRequestHandler::~RmcNetworkRequestHandler() {}
 
 void RmcNetworkRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     // logD(LOG_TAG, "[onHandleRequest] %s", RFX_ID_TO_STR(msg->getId()));
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SIGNAL_STRENGTH:
         case RFX_MSG_REQUEST_SIGNAL_STRENGTH_WITH_WCDMA_ECIO:
             requestSignalStrength(msg);
@@ -353,7 +344,7 @@ void RmcNetworkRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
         case RFX_MSG_REQUEST_GET_SUGGESTED_PLMN_LIST:
             requestGetSuggestedPlmnList(msg);
             break;
-// NR request
+            // NR request
         case RFX_MSG_REQUEST_CONFIG_A2_OFFSET:
             requestConfigA2Offset(msg);
             break;
@@ -384,18 +375,17 @@ void RmcNetworkRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcNetworkRequestHandler::requestSignalStrength(const sp<RfxMclMessage>& msg)
-{
+void RmcNetworkRequestHandler::requestSignalStrength(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     RfxAtLine* p_cur;
     int err;
     sp<RfxMclMessage> response;
-    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE)/sizeof(int);
-    int *resp = new int[len];
+    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE) / sizeof(int);
+    int* resp = new int[len];
     pthread_mutex_lock(&s_signalStrengthMutex[m_slot_id]);
 
     RIL_RadioState state =
-        (RIL_RadioState) getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
+            (RIL_RadioState)getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
     if (RADIO_STATE_OFF == state) {
         resetSignalStrengthCache(signal_strength_cache[m_slot_id], CACHE_GROUP_ALL);
     } else {
@@ -404,46 +394,40 @@ void RmcNetworkRequestHandler::requestSignalStrength(const sp<RfxMclMessage>& ms
 
         // check error
         err = p_response->getError();
-        if (err != 0 ||
-                p_response == NULL ||
-                p_response->getSuccess() == 0 ||
-                p_response->getIntermediates() == NULL) {
+        if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+            p_response->getIntermediates() == NULL) {
             goto error;
         }
 
-        for (p_cur = p_response->getIntermediates()
-             ; p_cur != NULL
-             ; p_cur = p_cur->getNext()
-             ) {
+        for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
             err = getSignalStrength(p_cur);
 
-            if (err != 0)
-                continue;
+            if (err != 0) continue;
         }
     }
 
-    printSignalStrengthCache((char*) __FUNCTION__);
+    printSignalStrengthCache((char*)__FUNCTION__);
 
     // copy signal strength cache to int array
-    memcpy(resp, signal_strength_cache[m_slot_id], len*sizeof(int));
+    memcpy(resp, signal_strength_cache[m_slot_id], len * sizeof(int));
     pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
     // returns the whole cache, including GSM, WCDMA, TD-SCDMA, CDMA, EVDO, LTE
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData((void*)resp, len*sizeof(int)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS, RfxIntsData((void*)resp, len * sizeof(int)), msg, false);
     // response to TeleCore
     responseToTelCore(response);
-    delete [] resp;
+    delete[] resp;
 
     return;
 
 error:
     pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
     logE(LOG_TAG, "requestSignalStrength must never return an error when radio is on");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxIntsData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
-    delete [] resp;
+    delete[] resp;
     return;
 }
 
@@ -468,15 +452,14 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionAutomatic(const sp<RfxM
         mdEops[m_slot_id]->mode = 0;
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestSetNetworkSelectionManual(const sp<RfxMclMessage>& msg) {
     int err = 0;
-    const char *numeric_code;
+    const char* numeric_code;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
@@ -498,9 +481,8 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionManual(const sp<RfxMclM
     }
     if (len == 5 || len == 6) {
         // check if the numeric code is valid digit or not
-        for(i = 0; i < len ; i++) {
-            if(numeric_code[i] < '0' || numeric_code[i] > '9')
-                break;
+        for (i = 0; i < len; i++) {
+            if (numeric_code[i] < '0' || numeric_code[i] > '9') break;
         }
         if (i == len) {
             if (err >= 0) {
@@ -521,21 +503,22 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionManual(const sp<RfxMclM
     }
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcNetworkRequestHandler::requestSetNetworkSelectionManualWithAct(const sp<RfxMclMessage>& msg) {
-    int err, len, i;;
+void RmcNetworkRequestHandler::requestSetNetworkSelectionManualWithAct(
+        const sp<RfxMclMessage>& msg) {
+    int err, len, i;
+    ;
     const char *numeric_code, *act, *mode;
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     bool isSemiAutoMode = false;
     bool noneBlockAutoMode = false;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
-    const char **pReqData = (const char **)msg->getData()->getData();
+    const char** pReqData = (const char**)msg->getData()->getData();
 
     numeric_code = pReqData[0];
     act = pReqData[1];
@@ -546,7 +529,7 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionManualWithAct(const sp<
         goto error;
     }
 
-    if (msg->getData()->getDataLength()/sizeof(char *) == 3) {
+    if (msg->getData()->getDataLength() / sizeof(char*) == 3) {
         mode = pReqData[2];
         if (mode != NULL) {
             if (strncmp(mode, "1", 1) == 0) {
@@ -575,25 +558,28 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionManualWithAct(const sp<
         }
     } else if (len == 5 || len == 6) {
         // check if the numeric code is valid digit or not
-        for(i = 0; i < len ; i++) {
-            if( numeric_code[i] < '0' || numeric_code[i] > '9')
-                break;
+        for (i = 0; i < len; i++) {
+            if (numeric_code[i] < '0' || numeric_code[i] > '9') break;
         }
 
         if (i == len) {
             if (strlen(act) == 1 && '0' <= act[0] && act[0] <= '9') {
-                if(isSemiAutoMode == true) {
-                    p_response = atSendCommand(String8::format("AT+EOPS=5, 2, \"%s\", %s", numeric_code, act));
+                if (isSemiAutoMode == true) {
+                    p_response = atSendCommand(
+                            String8::format("AT+EOPS=5, 2, \"%s\", %s", numeric_code, act));
                 } else {
                     mdEops[m_slot_id]->mode = 1;
-                    p_response = atSendCommand(String8::format("AT+COPS=1, 2, \"%s\", %s", numeric_code, act));
+                    p_response = atSendCommand(
+                            String8::format("AT+COPS=1, 2, \"%s\", %s", numeric_code, act));
                 }
             } else {
                 if (isSemiAutoMode == true) {
-                    p_response = atSendCommand(String8::format("AT+EOPS=5, 2, \"%s\"", numeric_code));
+                    p_response =
+                            atSendCommand(String8::format("AT+EOPS=5, 2, \"%s\"", numeric_code));
                 } else {
                     mdEops[m_slot_id]->mode = 1;
-                    p_response = atSendCommand(String8::format("AT+COPS=1, 2, \"%s\"", numeric_code));
+                    p_response =
+                            atSendCommand(String8::format("AT+COPS=1, 2, \"%s\"", numeric_code));
                 }
             }
             err = p_response->getError();
@@ -608,8 +594,7 @@ void RmcNetworkRequestHandler::requestSetNetworkSelectionManualWithAct(const sp<
     }
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
@@ -617,52 +602,52 @@ error:
 void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) {
     int req, err, gsm_band, umts_band;
     unsigned int lte_band_1_32, lte_band_33_64;
-    char *cmd;
+    char* cmd;
     RIL_Errno ril_errno = RIL_E_REQUEST_NOT_SUPPORTED;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     req = pInt[0];
     switch (req) {
-        case BM_AUTO_MODE: //"unspecified" (selected by baseband automatically)
+        case BM_AUTO_MODE:  //"unspecified" (selected by baseband automatically)
             gsm_band = 0xff;
             umts_band = 0xffff;
             break;
-        case BM_EURO_MODE: //"EURO band" (GSM-900 / DCS-1800 / WCDMA-IMT-2000)
+        case BM_EURO_MODE:  //"EURO band" (GSM-900 / DCS-1800 / WCDMA-IMT-2000)
             gsm_band = GSM_BAND_900 | GSM_BAND_1800;
             umts_band = UMTS_BAND_I;
             break;
-        case BM_US_MODE: //"US band" (GSM-850 / PCS-1900 / WCDMA-850 / WCDMA-PCS-1900)
+        case BM_US_MODE:  //"US band" (GSM-850 / PCS-1900 / WCDMA-850 / WCDMA-PCS-1900)
             gsm_band = GSM_BAND_850 | GSM_BAND_1900;
             umts_band = UMTS_BAND_II | UMTS_BAND_V;
             break;
-        case BM_JPN_MODE: //"JPN band" (WCDMA-800 / WCDMA-IMT-2000)
+        case BM_JPN_MODE:  //"JPN band" (WCDMA-800 / WCDMA-IMT-2000)
             gsm_band = 0;
             umts_band = UMTS_BAND_I | UMTS_BAND_VI;
             break;
-        case BM_AUS_MODE: //"AUS band" (GSM-900 / DCS-1800 / WCDMA-850 / WCDMA-IMT-2000)
+        case BM_AUS_MODE:  //"AUS band" (GSM-900 / DCS-1800 / WCDMA-850 / WCDMA-IMT-2000)
             gsm_band = GSM_BAND_900 | GSM_BAND_1800;
             umts_band = UMTS_BAND_I | UMTS_BAND_V;
             break;
-        case BM_AUS2_MODE: //"AUS band 2" (GSM-900 / DCS-1800 / WCDMA-850)
+        case BM_AUS2_MODE:  //"AUS band 2" (GSM-900 / DCS-1800 / WCDMA-850)
             gsm_band = GSM_BAND_900 | GSM_BAND_1800;
             umts_band = UMTS_BAND_V;
             break;
         case BM_40_BROKEN:
-        case BM_CELLULAR_MODE: //"Cellular (800-MHz Band)"
-        case BM_PCS_MODE: //"PCS (1900-MHz Band)"
-        case BM_CLASS_3: //"Band Class 3 (JTACS Band)"
-        case BM_CLASS_4: //"Band Class 4 (Korean PCS Band)"
-        case BM_CLASS_5: //"Band Class 5 (450-MHz Band)"
-        case BM_CLASS_6: // "Band Class 6 (2-GMHz IMT2000 Band)"
-        case BM_CLASS_7: //"Band Class 7 (Upper 700-MHz Band)"
-        case BM_CLASS_8: //"Band Class 8 (1800-MHz Band)"
-        case BM_CLASS_9: //"Band Class 9 (900-MHz Band)"
-        case BM_CLASS_10: //"Band Class 10 (Secondary 800-MHz Band)"
-        case BM_CLASS_11: //"Band Class 11 (400-MHz European PAMR Band)"
-        case BM_CLASS_15: //"Band Class 15 (AWS Band)"
-        case BM_CLASS_16: //"Band Class 16 (US 2.5-GHz Band)"
+        case BM_CELLULAR_MODE:  //"Cellular (800-MHz Band)"
+        case BM_PCS_MODE:       //"PCS (1900-MHz Band)"
+        case BM_CLASS_3:        //"Band Class 3 (JTACS Band)"
+        case BM_CLASS_4:        //"Band Class 4 (Korean PCS Band)"
+        case BM_CLASS_5:        //"Band Class 5 (450-MHz Band)"
+        case BM_CLASS_6:        // "Band Class 6 (2-GMHz IMT2000 Band)"
+        case BM_CLASS_7:        //"Band Class 7 (Upper 700-MHz Band)"
+        case BM_CLASS_8:        //"Band Class 8 (1800-MHz Band)"
+        case BM_CLASS_9:        //"Band Class 9 (900-MHz Band)"
+        case BM_CLASS_10:       //"Band Class 10 (Secondary 800-MHz Band)"
+        case BM_CLASS_11:       //"Band Class 11 (400-MHz European PAMR Band)"
+        case BM_CLASS_15:       //"Band Class 15 (AWS Band)"
+        case BM_CLASS_16:       //"Band Class 16 (US 2.5-GHz Band)"
         default:
             gsm_band = -1;
             umts_band = -1;
@@ -671,9 +656,9 @@ void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) 
 
     if (gsm_band != -1 && umts_band != -1) {
         /******************************************************
-        * If the modem doesn't support certain group of bands, ex. GSM or UMTS
-        * It might just ignore the parameter.
-        *******************************************************/
+         * If the modem doesn't support certain group of bands, ex. GSM or UMTS
+         * It might just ignore the parameter.
+         *******************************************************/
         p_response = atSendCommand(String8::format("AT+EPBSE=%d, %d", gsm_band, umts_band));
         if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
             ril_errno = RIL_E_SUCCESS;
@@ -681,12 +666,13 @@ void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) 
     } else if (req == BM_40_BROKEN) {
         lte_band_1_32 = pInt[1];
         lte_band_33_64 = pInt[2];
-        p_response = atSendCommand(String8::format("AT+EPBSE=,,%u,%u", lte_band_1_32, lte_band_33_64));
+        p_response =
+                atSendCommand(String8::format("AT+EPBSE=,,%u,%u", lte_band_1_32, lte_band_33_64));
         if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
             ril_errno = RIL_E_SUCCESS;
         }
-    } else if (req == BM_FOR_DESENSE_RADIO_ON || req == BM_FOR_DESENSE_RADIO_OFF
-            || req == BM_FOR_DESENSE_RADIO_ON_ROAMING || req == BM_FOR_DESENSE_B8_OPEN) {
+    } else if (req == BM_FOR_DESENSE_RADIO_ON || req == BM_FOR_DESENSE_RADIO_OFF ||
+               req == BM_FOR_DESENSE_RADIO_ON_ROAMING || req == BM_FOR_DESENSE_B8_OPEN) {
         requestQueryCurrentBandMode();
         int c2k_radio_on;
         int need_config_umts = 0;
@@ -695,8 +681,10 @@ void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) 
         umts_band = bands[1];
         lte_band_1_32 = bands[2];
         lte_band_33_64 = bands[3];
-        logE(LOG_TAG, "BM FOR DESENCE, gsm_band:%d, umts_band : %d, lte_band_1_32 : %d, lte_band_33_64: %d, req: %d ",
-                gsm_band, umts_band, lte_band_1_32, lte_band_33_64, req);
+        logE(LOG_TAG,
+             "BM FOR DESENCE, gsm_band:%d, umts_band : %d, lte_band_1_32 : %d, lte_band_33_64: %d, "
+             "req: %d ",
+             gsm_band, umts_band, lte_band_1_32, lte_band_33_64, req);
         if (req == BM_FOR_DESENSE_RADIO_ON) {
             if (umts_band & 0x00000080) {
                 need_config_umts = 1;
@@ -713,17 +701,20 @@ void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) 
         } else {
             c2k_radio_on = 1;
         }
-        logE(LOG_TAG, "BM FOR DESENCE, need_config_umts: %d, force_switch : %d", need_config_umts, force_switch);
+        logE(LOG_TAG, "BM FOR DESENCE, need_config_umts: %d, force_switch : %d", need_config_umts,
+             force_switch);
         if (need_config_umts == 1 || force_switch == 1) {
             int skipDetach = 0;
             int detachCount = 0;
             while (skipDetach == 0 && detachCount < 10) {
                 if (req == BM_FOR_DESENSE_B8_OPEN) {
-                    p_response = atSendCommand(String8::format("AT+EPBSE=%d,%d,%d,%d", gsm_band, umts_band,
-                        lte_band_1_32, lte_band_33_64));
+                    p_response = atSendCommand(String8::format("AT+EPBSE=%d,%d,%d,%d", gsm_band,
+                                                               umts_band, lte_band_1_32,
+                                                               lte_band_33_64));
                 } else {
-                    p_response = atSendCommand(String8::format("AT+EPBSE=%d,%d,%d,%d,%d", gsm_band, umts_band,
-                        lte_band_1_32, lte_band_33_64, c2k_radio_on));
+                    p_response = atSendCommand(String8::format("AT+EPBSE=%d,%d,%d,%d,%d", gsm_band,
+                                                               umts_band, lte_band_1_32,
+                                                               lte_band_33_64, c2k_radio_on));
                 }
                 if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
                     logE(LOG_TAG, "Set band mode: success");
@@ -737,8 +728,7 @@ void RmcNetworkRequestHandler::requestSetBandMode(const sp<RfxMclMessage>& msg) 
             }
         }
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -770,21 +760,22 @@ void RmcNetworkRequestHandler::requestQueryCurrentBandMode() {
     bands[1] = umts_band;
     bands[2] = line->atTokNextint(&err);
     bands[3] = line->atTokNextint(&err);
-    logE(LOG_TAG, "requestQueryCurrentBandMode, gsm_band:%d, umts_band : %d, lte_band_1_32 : %d, lte_band_33_64: %d",
-            bands[0], bands[1], bands[2], bands[3]);
+    logE(LOG_TAG,
+         "requestQueryCurrentBandMode, gsm_band:%d, umts_band : %d, lte_band_1_32 : %d, "
+         "lte_band_33_64: %d",
+         bands[0], bands[1], bands[2], bands[3]);
 }
 
 void RmcNetworkRequestHandler::requestQueryAvailableBandMode(const sp<RfxMclMessage>& msg) {
     int err, gsm_band, umts_band;
-    int band_mode[10], index=1;
+    int band_mode[10], index = 1;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
     RfxAtLine* line;
 
     p_response = atSendCommandSingleline("AT+EPBSE?", "+EPBSE:");
 
-    if (p_response->getError() < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (p_response->getError() < 0 || p_response->getSuccess() == 0) goto error;
 
     line = p_response->getIntermediates();
 
@@ -799,19 +790,19 @@ void RmcNetworkRequestHandler::requestQueryAvailableBandMode(const sp<RfxMclMess
     umts_band = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    //0 for "unspecified" (selected by baseband automatically)
+    // 0 for "unspecified" (selected by baseband automatically)
     band_mode[index++] = BM_AUTO_MODE;
 
-    if (gsm_band !=0 || umts_band != 0) {
+    if (gsm_band != 0 || umts_band != 0) {
         // 1 for "EURO band" (GSM-900 / DCS-1800 / WCDMA-IMT-2000)
         if ((gsm_band == 0 || (gsm_band | GSM_BAND_900 | GSM_BAND_1800) == gsm_band) &&
-                (umts_band == 0 || (umts_band | UMTS_BAND_I) == umts_band)) {
+            (umts_band == 0 || (umts_band | UMTS_BAND_I) == umts_band)) {
             band_mode[index++] = BM_EURO_MODE;
         }
 
         // 2 for "US band" (GSM-850 / PCS-1900 / WCDMA-850 / WCDMA-PCS-1900)
         if ((gsm_band == 0 || (gsm_band | GSM_BAND_850 | GSM_BAND_1900) == gsm_band) &&
-                (umts_band == 0 || (umts_band | UMTS_BAND_II | UMTS_BAND_V) == umts_band)) {
+            (umts_band == 0 || (umts_band | UMTS_BAND_II | UMTS_BAND_V) == umts_band)) {
             band_mode[index++] = BM_US_MODE;
         }
 
@@ -821,29 +812,28 @@ void RmcNetworkRequestHandler::requestQueryAvailableBandMode(const sp<RfxMclMess
         }
 
         // 4 for "AUS band" (GSM-900 / DCS-1800 / WCDMA-850 / WCDMA-IMT-2000)
-        if ((gsm_band == 0 || (gsm_band | GSM_BAND_900 | GSM_BAND_1800)==gsm_band) &&
-                (umts_band == 0 || (umts_band | UMTS_BAND_I | UMTS_BAND_V)==umts_band)) {
+        if ((gsm_band == 0 || (gsm_band | GSM_BAND_900 | GSM_BAND_1800) == gsm_band) &&
+            (umts_band == 0 || (umts_band | UMTS_BAND_I | UMTS_BAND_V) == umts_band)) {
             band_mode[index++] = BM_AUS_MODE;
         }
 
         // 5 for "AUS band 2" (GSM-900 / DCS-1800 / WCDMA-850)
-        if ((gsm_band == 0 || (gsm_band | GSM_BAND_900 | GSM_BAND_1800)==gsm_band) &&
-                (umts_band == 0 || (umts_band | UMTS_BAND_V)==umts_band)) {
+        if ((gsm_band == 0 || (gsm_band | GSM_BAND_900 | GSM_BAND_1800) == gsm_band) &&
+            (umts_band == 0 || (umts_band | UMTS_BAND_V) == umts_band)) {
             band_mode[index++] = BM_AUS2_MODE;
         }
     }
     band_mode[0] = index - 1;
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(band_mode, index), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(band_mode, index),
+                                         msg, false);
     responseToTelCore(resp);
     return;
 
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     responseToTelCore(resp);
 }
-
 
 void RmcNetworkRequestHandler::requestGetNeighboringCellIds(const sp<RfxMclMessage>& msg) {
     int err, skip, nt_type;
@@ -851,21 +841,20 @@ void RmcNetworkRequestHandler::requestGetNeighboringCellIds(const sp<RfxMclMessa
     sp<RfxMclMessage> resp;
     RfxAtLine* line;
 
-    int rat,rssi,ci,lac,psc;
+    int rat, rssi, ci, lac, psc;
     int i = 0;
     int j = 0;
     RIL_NeighboringCell nbr[6];
-    RIL_NeighboringCell *p_nbr[6];
+    RIL_NeighboringCell* p_nbr[6];
 
     // logD(LOG_TAG, "Enter requestGetNeighboringCellIds()");
     p_response = atSendCommandMultiline("AT+ENBR", "+ENBR:");
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (err < 0 || p_response->getSuccess() == 0) goto error;
 
     line = p_response->getIntermediates();
-    while(line != NULL) {
+    while (line != NULL) {
         line->atTokStart(&err);
         if (err < 0) goto error;
 
@@ -875,8 +864,8 @@ void RmcNetworkRequestHandler::requestGetNeighboringCellIds(const sp<RfxMclMessa
         rssi = line->atTokNextint(&err);
         if (err < 0) goto error;
 
-        if (((rat == 1) && (rssi < 0 || rssi > 31) && (rssi != 99))
-                || ((rat == 2) && (rssi < 0 || rssi > 91))) {
+        if (((rat == 1) && (rssi < 0 || rssi > 31) && (rssi != 99)) ||
+            ((rat == 2) && (rssi < 0 || rssi > 91))) {
             logE(LOG_TAG, "The rssi of the %d-th is invalid: %d", i, rssi);
             goto error;
         }
@@ -895,7 +884,8 @@ void RmcNetworkRequestHandler::requestGetNeighboringCellIds(const sp<RfxMclMessa
                 logE(LOG_TAG, "Using asprintf and getting ERROR");
                 goto error;
             }
-            logD(LOG_TAG, "CURRENT_ENBR_RAT 1 :: NC[%d], rssi:%d, cid:%s", i, nbr[i].rssi, nbr[i].cid);
+            logD(LOG_TAG, "CURRENT_ENBR_RAT 1 :: NC[%d], rssi:%d, cid:%s", i, nbr[i].rssi,
+                 nbr[i].cid);
         } else if (rat == 2) {
             psc = line->atTokNextint(&err);
             if (err < 0) goto error;
@@ -915,19 +905,17 @@ void RmcNetworkRequestHandler::requestGetNeighboringCellIds(const sp<RfxMclMessa
     }
 
     resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxNeighboringCellData(p_nbr, i), msg, false);
+                                         RfxNeighboringCellData(p_nbr, i), msg, false);
     responseToTelCore(resp);
-    for(j=0;j<i;j++)
-        free(nbr[j].cid);
+    for (j = 0; j < i; j++) free(nbr[j].cid);
     return;
 
 error:
     logE(LOG_TAG, "requestGetNeighboringCellIds has error occur!!");
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     responseToTelCore(resp);
-    for(j=0;j<i;j++)
-        free(nbr[j].cid);
+    for (j = 0; j < i; j++) free(nbr[j].cid);
 }
 
 void RmcNetworkRequestHandler::requestSetLocationUpdates(const sp<RfxMclMessage>& msg) {
@@ -935,7 +923,7 @@ void RmcNetworkRequestHandler::requestSetLocationUpdates(const sp<RfxMclMessage>
     RIL_Errno err_no = RIL_E_SUCCESS;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     enabled = pInt[0];
     if (enabled == 1 || enabled == 0) {
@@ -974,15 +962,14 @@ void RmcNetworkRequestHandler::requestSetLocationUpdates(const sp<RfxMclMessage>
         }
     }
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), err_no,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), err_no, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
 void RmcNetworkRequestHandler::requestGetCellInfoList(const sp<RfxMclMessage>& msg) {
     int err = 0;
     int num = 0;
-    RIL_CellInfo_v12 *response = NULL;
+    RIL_CellInfo_v12* response = NULL;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
     RfxAtLine* line;
@@ -990,8 +977,7 @@ void RmcNetworkRequestHandler::requestGetCellInfoList(const sp<RfxMclMessage>& m
     p_response = atSendCommandSingleline("AT+ECELL", "+ECELL:");
 
     // +ECELL: <num_of_cell>...
-    if (p_response->getError() < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (p_response->getError() < 0 || p_response->getSuccess() == 0) goto error;
 
     line = p_response->getIntermediates();
 
@@ -1006,14 +992,15 @@ void RmcNetworkRequestHandler::requestGetCellInfoList(const sp<RfxMclMessage>& m
     }
     // logD(LOG_TAG, "Cell info listed, number=%d",num);
 
-    response = (RIL_CellInfo_v12 *) alloca(num * sizeof(RIL_CellInfo_v12));
+    response = (RIL_CellInfo_v12*)alloca(num * sizeof(RIL_CellInfo_v12));
     memset(response, 0, num * sizeof(RIL_CellInfo_v12));
 
     err = getCellInfoListV12(line, num, response);
     if (err < 0) goto error;
 
     resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxCellInfoData(response, num * sizeof(RIL_CellInfo_v12)), msg, false);
+                                         RfxCellInfoData(response, num * sizeof(RIL_CellInfo_v12)),
+                                         msg, false);
     responseToTelCore(resp);
     freeOperatorNameOfCellInfo(num, response);
     return;
@@ -1028,10 +1015,10 @@ error:
         char mnc_str[4] = {0};
         char empty_string = '\0';
         strncpy(mcc_str, last_plmn, 3);
-        strncpy(mnc_str, last_plmn+3, (strlen(last_plmn)-3));
+        strncpy(mnc_str, last_plmn + 3, (strlen(last_plmn) - 3));
 
         num = 1;
-        response = (RIL_CellInfo_v12 *) alloca(num * sizeof(RIL_CellInfo_v12));
+        response = (RIL_CellInfo_v12*)alloca(num * sizeof(RIL_CellInfo_v12));
         memset(response, 0, num * sizeof(RIL_CellInfo_v12));
         response[0].cellInfoType = RIL_CELL_INFO_TYPE_GSM;
         response[0].registered = 0;
@@ -1043,13 +1030,14 @@ error:
         response[0].CellInfo.gsm.cellIdentityGsm.mnc = atoi(mnc_str);
         response[0].CellInfo.gsm.cellIdentityGsm.operName.long_name = &empty_string;
         response[0].CellInfo.gsm.cellIdentityGsm.operName.short_name = &empty_string;
-        resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+        resp = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
                 RfxCellInfoData(response, num * sizeof(RIL_CellInfo_v12)), msg, false);
         responseToTelCore(resp);
     } else {
         logE(LOG_TAG, "requestGetCellInfoList must never return error when radio is on");
-        resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_NO_NETWORK_FOUND,
-                RfxVoidData(), msg, false);
+        resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_NO_NETWORK_FOUND, RfxVoidData(),
+                                             msg, false);
         responseToTelCore(resp);
     }
 }
@@ -1059,7 +1047,7 @@ void RmcNetworkRequestHandler::requestSetCellInfoListRate(const sp<RfxMclMessage
     RIL_Errno err_no = RIL_E_GENERIC_FAILURE;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     time = pInt[0];
 
@@ -1072,14 +1060,12 @@ void RmcNetworkRequestHandler::requestSetCellInfoListRate(const sp<RfxMclMessage
         goto finish;
     }
 
-    if (p_response->getError() >= 0 &&
-            p_response->getSuccess() > 0) {
+    if (p_response->getError() >= 0 && p_response->getSuccess() > 0) {
         err_no = RIL_E_SUCCESS;
     }
 
 finish:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), err_no,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), err_no, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -1116,10 +1102,10 @@ void RmcNetworkRequestHandler::requestGetPOLCapability(const sp<RfxMclMessage>& 
     if (err < 0) goto error;
 
     mHyphen = strchr(mOpen, '-');
-    if (mHyphen != NULL && mOpen < mHyphen ) {
+    if (mHyphen != NULL && mOpen < mHyphen) {
         // AT< +CPOL: (0-39), (0-2)
         //             ^
-        result[0] = strtol((mOpen+1), NULL, 10);
+        result[0] = strtol((mOpen + 1), NULL, 10);
         logD(LOG_TAG, "requestGetPOLCapability result 0: %d", result[0]);
     } else {
         goto error;
@@ -1129,7 +1115,7 @@ void RmcNetworkRequestHandler::requestGetPOLCapability(const sp<RfxMclMessage>& 
     if (mClose != NULL && mHyphen < mClose) {
         // AT< +CPOL: (0-39), (0-2)
         //               ^^
-        result[1] = strtol((mHyphen+1), NULL, 10);
+        result[1] = strtol((mHyphen + 1), NULL, 10);
         logD(LOG_TAG, "requestGetPOLCapability result 1: %d", result[1]);
     } else {
         goto error;
@@ -1141,10 +1127,10 @@ void RmcNetworkRequestHandler::requestGetPOLCapability(const sp<RfxMclMessage>& 
     if (err < 0) goto error;
 
     mHyphen = strchr(mOpen, '-');
-    if (mHyphen != NULL && mOpen < mHyphen ) {
+    if (mHyphen != NULL && mOpen < mHyphen) {
         // AT< +CPOL: (0-39), (0-2)
         //                     ^
-        result[2] = strtol((mOpen+1), NULL, 10);
+        result[2] = strtol((mOpen + 1), NULL, 10);
         logD(LOG_TAG, "requestGetPOLCapability result 2: %d", result[2]);
     } else {
         goto error;
@@ -1154,33 +1140,33 @@ void RmcNetworkRequestHandler::requestGetPOLCapability(const sp<RfxMclMessage>& 
     if (mClose != NULL && mHyphen < mClose) {
         // AT< +CPOL: (0-39), (0-2)
         //                       ^
-        result[3] = strtol((mHyphen+1), NULL, 10);
+        result[3] = strtol((mHyphen + 1), NULL, 10);
         logD(LOG_TAG, "requestGetPOLCapability result 3: %d", result[3]);
     } else {
         goto error;
     }
 
-    logD(LOG_TAG, "requestGetPOLCapability: %d %d %d %d", result[0],
-            result[1], result[2], result[3]);
+    logD(LOG_TAG, "requestGetPOLCapability: %d %d %d %d", result[0], result[1], result[2],
+         result[3]);
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(result, 4), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(result, 4), msg,
+                                         false);
     responseToTelCore(resp);
     return;
 
 error:
     logD(LOG_TAG, "requestGetPOLCapability: goto error");
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     responseToTelCore(resp);
 }
 
 void RmcNetworkRequestHandler::requestGetPOLList(const sp<RfxMclMessage>& msg) {
     int err, i, j, count, len, nAct, tmpAct;
-    char **response = NULL;
+    char** response = NULL;
     char *tmp, *block_p = NULL;
     sp<RfxAtResponse> p_response;
-    RfxAtLine *p_cur;
+    RfxAtLine* p_cur;
     sp<RfxMclMessage> resp;
 
     p_response = atSendCommandMultiline("AT+CPOL?", "+CPOL:");
@@ -1190,26 +1176,24 @@ void RmcNetworkRequestHandler::requestGetPOLList(const sp<RfxMclMessage>& msg) {
     }
 
     /* count the entries */
-    for (count = 0, p_cur = p_response->getIntermediates()
-            ; p_cur != NULL
-            ; p_cur = p_cur->getNext()) {
+    for (count = 0, p_cur = p_response->getIntermediates(); p_cur != NULL;
+         p_cur = p_cur->getNext()) {
         count++;
     }
     logD(LOG_TAG, "requestGetPOLList!! count is %d", count);
 
-    response = (char **) calloc(1, sizeof(char*) * count *4); // for string, each one is 25 bytes
+    response = (char**)calloc(1, sizeof(char*) * count * 4);  // for string, each one is 25 bytes
     /* In order to support E-UTRAN, nAct will be 2 digital,
     changed from 60 to 62 for addition 1 digital and buffer.*/
-    block_p = (char *) calloc(1, count* sizeof(char)*62);
+    block_p = (char*)calloc(1, count * sizeof(char) * 62);
 
     if (response == NULL || block_p == NULL) {
         logE(LOG_TAG, "requestGetPOLList calloc fail");
         goto error;
     }
     //+CPOL: <index>, <format>, <oper>, <GSM_Act>, <GSM_Compact_Act>, <UTRAN_Act>, <E-UTRAN Act>
-    for (i = 0,j=0, p_cur = p_response->getIntermediates()
-            ; p_cur != NULL
-            ; p_cur = p_cur->getNext(), i++,j+=4) {
+    for (i = 0, j = 0, p_cur = p_response->getIntermediates(); p_cur != NULL;
+         p_cur = p_cur->getNext(), i++, j += 4) {
         logD(LOG_TAG, "requestGetPOLList!! line is %s", p_cur->getLine());
 
         p_cur->atTokStart(&err);
@@ -1219,29 +1203,29 @@ void RmcNetworkRequestHandler::requestGetPOLList(const sp<RfxMclMessage>& msg) {
         tmp = p_cur->atTokNextstr(&err);
         if (err < 0) goto error;
 
-        response[j+0] = &block_p[i*62];
-        response[j+1] = &block_p[i*62+8];
-        response[j+2] = &block_p[i*62+10];
-        response[j+3] = &block_p[i*62+58];
+        response[j + 0] = &block_p[i * 62];
+        response[j + 1] = &block_p[i * 62 + 8];
+        response[j + 2] = &block_p[i * 62 + 10];
+        response[j + 3] = &block_p[i * 62 + 58];
 
-        sprintf(response[j+0], "%s", tmp);
+        sprintf(response[j + 0], "%s", tmp);
 
-        logD(LOG_TAG, "requestGetPOLList!! index is %s",response[j+0]);
+        logD(LOG_TAG, "requestGetPOLList!! index is %s", response[j + 0]);
         /* get format*/
         tmp = p_cur->atTokNextstr(&err);
         if (err < 0) goto error;
 
-        sprintf(response[j+1], "%s", tmp);
-        logD(LOG_TAG, "requestGetPOLList!! format is %s",response[j+1]);
+        sprintf(response[j + 1], "%s", tmp);
+        logD(LOG_TAG, "requestGetPOLList!! format is %s", response[j + 1]);
         /* get oper*/
         tmp = p_cur->atTokNextstr(&err);
         if (err < 0) goto error;
 
-        sprintf(response[j+2], "%s", tmp);
-        logD(LOG_TAG, "requestGetPOLList!! oper is %s",response[j+2]);
+        sprintf(response[j + 2], "%s", tmp);
+        logD(LOG_TAG, "requestGetPOLList!! oper is %s", response[j + 2]);
         nAct = 0;
 
-        if(p_cur->atTokHasmore()) {
+        if (p_cur->atTokHasmore()) {
             /* get <GSM AcT> */
             tmpAct = p_cur->atTokNextint(&err);
             if (err < 0) goto error;
@@ -1254,7 +1238,7 @@ void RmcNetworkRequestHandler::requestGetPOLList(const sp<RfxMclMessage>& msg) {
             tmpAct = p_cur->atTokNextint(&err);
             if (err < 0) goto error;
 
-            if(tmpAct == 1) {
+            if (tmpAct == 1) {
                 nAct |= 0x02;
             }
 
@@ -1272,19 +1256,19 @@ void RmcNetworkRequestHandler::requestGetPOLList(const sp<RfxMclMessage>& msg) {
                 tmpAct = p_cur->atTokNextint(&err);
                 if (err < 0) goto error;
 
-                if(tmpAct == 1) {
+                if (tmpAct == 1) {
                     nAct |= 0x08;
                 }
             }
         }
         /* ALPS00368351 To distinguish SIM file without <AcT> support, we set AcT to zero */
         // if(nAct == 0) { nAct = 1;} // No act value for SIM. set to GSM
-        logD(LOG_TAG, "Act = %d",nAct);
-        sprintf(response[j+3], "%d", nAct);
-        logD(LOG_TAG, "requestGetPOLList!! act is %s",response[j+3]);
+        logD(LOG_TAG, "Act = %d", nAct);
+        sprintf(response[j + 3], "%d", nAct);
+        logD(LOG_TAG, "requestGetPOLList!! act is %s", response[j + 3]);
     }
     resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringsData(response, count*4), msg, false);
+                                         RfxStringsData(response, count * 4), msg, false);
     responseToTelCore(resp);
     free(response);
     free(block_p);
@@ -1298,8 +1282,8 @@ error:
     if (block_p) {
         free(block_p);
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     responseToTelCore(resp);
 }
 
@@ -1307,18 +1291,20 @@ void RmcNetworkRequestHandler::requestSetPOLEntry(const sp<RfxMclMessage>& msg) 
     int i;
     int nAct[4] = {0};
     int nActTmp = 0;
-    const char **strings = (const char **)msg->getData()->getData();
+    const char** strings = (const char**)msg->getData()->getData();
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
 
     sp<RfxAtResponse> p_response;
-    RfxAtLine *p_cur;
+    RfxAtLine* p_cur;
     sp<RfxMclMessage> resp;
 
     if (msg->getData()->getDataLength() < (int)(3 * sizeof(char*))) {
-        logE(LOG_TAG, "requestSetPOLEntry no enough input params. datalen is %d, size of char* is %zu",
-                msg->getData()->getDataLength(), sizeof(char*));
+        logE(LOG_TAG,
+             "requestSetPOLEntry no enough input params. datalen is %d, size of char* is %zu",
+             msg->getData()->getDataLength(), sizeof(char*));
         p_response = atSendCommand(String8::format("AT+CPOL=%s", strings[0]));
-    } else if (strings[1] == NULL || strcmp("", strings[1]) == 0) { // no PLMN, then clean the entry
+    } else if (strings[1] == NULL ||
+               strcmp("", strings[1]) == 0) {  // no PLMN, then clean the entry
         p_response = atSendCommand(String8::format("AT+CPOL=%s", strings[0]));
     } else {
         nActTmp = atoi(strings[2]);
@@ -1326,18 +1312,22 @@ void RmcNetworkRequestHandler::requestSetPOLEntry(const sp<RfxMclMessage>& msg) 
 
         for (i = 0; i < 4; i++) {
             if (((nActTmp >> i) & 1) == 1) {
-                logD(LOG_TAG, "i = %d",i);
+                logD(LOG_TAG, "i = %d", i);
                 nAct[i] = 1;
             }
         }
 
-        /* ALPS00368351: To update file without <AcT> support, modem suggest not to set any nAcT parameter */
+        /* ALPS00368351: To update file without <AcT> support, modem suggest not to set any nAcT
+         * parameter */
         if (nActTmp == 0) {
-            logD(LOG_TAG, "requestSetPOLEntry no Act assigned,strings[2]=%s",strings[2]);
-            p_response = atSendCommand(String8::format("AT+CPOL=%s,2,\"%s\"", strings[0], strings[1]));
+            logD(LOG_TAG, "requestSetPOLEntry no Act assigned,strings[2]=%s", strings[2]);
+            p_response =
+                    atSendCommand(String8::format("AT+CPOL=%s,2,\"%s\"", strings[0], strings[1]));
         } else {
             logD(LOG_TAG, "R8, MOLY and LR9 can supoort 7 arguments");
-            p_response = atSendCommand(String8::format("AT+CPOL=%s,2,\"%s\",%d,%d,%d,%d", strings[0], strings[1], nAct[0], nAct[1], nAct[2], nAct[3]));
+            p_response =
+                    atSendCommand(String8::format("AT+CPOL=%s,2,\"%s\",%d,%d,%d,%d", strings[0],
+                                                  strings[1], nAct[0], nAct[1], nAct[2], nAct[3]));
         }
     }
     if (p_response->getError() < 0) {
@@ -1350,20 +1340,19 @@ void RmcNetworkRequestHandler::requestSetPOLEntry(const sp<RfxMclMessage>& msg) 
             logD(LOG_TAG, "p_response = %d/n", p_response->atGetCmeError());
             case CME_SUCCESS:
                 ret = RIL_E_GENERIC_FAILURE;
-            break;
+                break;
             case CME_UNKNOWN:
                 logD(LOG_TAG, "p_response: CME_UNKNOWN");
-            break;
+                break;
             default:
-            break;
+                break;
         }
     } else {
         ret = RIL_E_SUCCESS;
     }
 
 finish:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -1375,7 +1364,7 @@ void RmcNetworkRequestHandler::requestSetCdmaRoamingPreference(const sp<RfxMclMe
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
 
-    int *pInt = (int *) msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     reqRoamingType = pInt[0];
 
     // AT$ROAM=<type>
@@ -1389,14 +1378,16 @@ void RmcNetworkRequestHandler::requestSetCdmaRoamingPreference(const sp<RfxMclMe
         // for Roaming on Any Network
         roamingType = 1;
     } else {
-        logE(LOG_TAG, "requestSetCdmaRoamingPreference, Not support reqRoamingType=%d", reqRoamingType);
+        logE(LOG_TAG, "requestSetCdmaRoamingPreference, Not support reqRoamingType=%d",
+             reqRoamingType);
     }
 
     if (roamingType >= 0) {
         p_response = atSendCommand(String8::format("AT$ROAM=%d", roamingType));
         err = p_response->getError();
         if (err != 0 || p_response == NULL || p_response->getSuccess() == 0) {
-            logE(LOG_TAG, "requestSetCdmaRoamingPreference error, reqRoamingType=%d", reqRoamingType);
+            logE(LOG_TAG, "requestSetCdmaRoamingPreference error, reqRoamingType=%d",
+                 reqRoamingType);
         } else {
             ril_errno = RIL_E_SUCCESS;
         }
@@ -1419,10 +1410,9 @@ void RmcNetworkRequestHandler::requestQueryCdmaRoamingPreference(const sp<RfxMcl
 
     p_response = atSendCommandSingleline("AT$ROAM?", "$ROAM:");
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto error;
 
     line = p_response->getIntermediates();
 
@@ -1445,29 +1435,28 @@ void RmcNetworkRequestHandler::requestQueryCdmaRoamingPreference(const sp<RfxMcl
     }
 
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&roamingType, 1), msg, false);
+                                             RfxIntsData(&roamingType, 1), msg, false);
     responseToTelCore(response);
     return;
 error:
     logE(LOG_TAG, "requestQueryCdmaRoamingPreference error");
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxIntsData(&roamingType, 1), msg, false);
+                                             RfxIntsData(&roamingType, 1), msg, false);
     responseToTelCore(response);
 }
 
-void RmcNetworkRequestHandler::updateSignalStrength()
-{
+void RmcNetworkRequestHandler::updateSignalStrength() {
     sp<RfxAtResponse> p_response;
     RfxAtLine* p_cur;
     int err_cnt = 0;
     int err;
     sp<RfxMclMessage> urc;
-    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE)/sizeof(int);
-    int *resp = new int[len];
+    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE) / sizeof(int);
+    int* resp = new int[len];
     pthread_mutex_lock(&s_signalStrengthMutex[m_slot_id]);
 
     RIL_RadioState state =
-        (RIL_RadioState) getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
+            (RIL_RadioState)getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
     if (RADIO_STATE_OFF == state) {
         resetSignalStrengthCache(signal_strength_cache[m_slot_id], CACHE_GROUP_ALL);
     } else {
@@ -1476,51 +1465,44 @@ void RmcNetworkRequestHandler::updateSignalStrength()
 
         // check error
         err = p_response->getError();
-        if (err != 0 ||
-                p_response == NULL ||
-                p_response->getSuccess() == 0 ||
-                p_response->getIntermediates() == NULL) {
+        if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+            p_response->getIntermediates() == NULL) {
             goto error;
         }
 
-        for (p_cur = p_response->getIntermediates()
-             ; p_cur != NULL
-             ; p_cur = p_cur->getNext()
-             ) {
+        for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
             err = getSignalStrength(p_cur);
 
-            if (err != 0)
-                continue;
+            if (err != 0) continue;
         }
     }
     // copy signal strength cache to int array
-    memcpy(resp, signal_strength_cache[m_slot_id], len*sizeof(int));
+    memcpy(resp, signal_strength_cache[m_slot_id], len * sizeof(int));
     pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
 
-    printSignalStrengthCache((char*) __FUNCTION__);
+    printSignalStrengthCache((char*)__FUNCTION__);
 
     // returns the whole cache, including GSM, WCDMA, TD-SCDMA, CDMA, EVDO, LTE
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH,
-            m_slot_id, RfxIntsData((void*)resp, len*sizeof(int)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH, m_slot_id,
+                                   RfxIntsData((void*)resp, len * sizeof(int)));
     responseToTelCore(urc);
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH_WITH_WCDMA_ECIO,
-            m_slot_id, RfxIntsData((void*)resp, len*sizeof(int)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH_WITH_WCDMA_ECIO, m_slot_id,
+                                   RfxIntsData((void*)resp, len * sizeof(int)));
 
     // response to TeleCore
     responseToTelCore(urc);
-    delete [] resp;
+    delete[] resp;
 
     return;
 
 error:
     pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
     logE(LOG_TAG, "updateSignalStrength ERROR: %d", err);
-    delete [] resp;
+    delete[] resp;
     return;
 }
 
-void RmcNetworkRequestHandler::setUnsolResponseFilterSignalStrength(bool enable)
-{
+void RmcNetworkRequestHandler::setUnsolResponseFilterSignalStrength(bool enable) {
     sp<RfxAtResponse> p_response;
 
     // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the threshold.
@@ -1533,8 +1515,9 @@ void RmcNetworkRequestHandler::setUnsolResponseFilterSignalStrength(bool enable)
         if (p_response->getError() != 0 || p_response->getSuccess() == 0)
             logW(LOG_TAG, "There is something wrong with the exectution of AT+ECSQ=1");
 
-        // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the threshold.
-        // So we send command to adjust signaling threshold to MD1 whenever screen on/off.
+        // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the
+        // threshold. So we send command to adjust signaling threshold to MD1 whenever screen
+        // on/off.
         rfx_property_get("vendor.net.handover.thlte", threshold, "");
         /*
         if (strlen(threshold) == 0) {
@@ -1548,8 +1531,9 @@ void RmcNetworkRequestHandler::setUnsolResponseFilterSignalStrength(bool enable)
         if (p_response->getError() != 0 || p_response->getSuccess() == 0)
             logW(LOG_TAG, "There is something wrong with the exectution of AT+ECSQ=0");
 
-        // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the threshold.
-        // So we send command to adjust signaling threshold to MD1 whenever screen on/off.
+        // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the
+        // threshold. So we send command to adjust signaling threshold to MD1 whenever screen
+        // on/off.
         rfx_property_get("vendor.net.handover.thlte", threshold, "");
         if (strlen(threshold) != 0) {
             p_response = atSendCommand(String8::format("AT+ECSQ=3,3,%s", threshold));
@@ -1562,8 +1546,7 @@ void RmcNetworkRequestHandler::setUnsolResponseFilterSignalStrength(bool enable)
     }
 }
 
-void RmcNetworkRequestHandler::setUnsolResponseFilterNetworkState(bool enable)
-{
+void RmcNetworkRequestHandler::setUnsolResponseFilterNetworkState(bool enable) {
     sp<RfxAtResponse> p_response;
 
     if (enable) {
@@ -1636,17 +1619,17 @@ void RmcNetworkRequestHandler::setUnsolResponseFilterNetworkState(bool enable)
         if (p_response->getError() != 0 || p_response->getSuccess() == 0)
             // logW(LOG_TAG, "There is something wrong with the exectution of AT+EIPRL?");
 
-        /* Enable EFCELL URC */
-        if (isFemtocellSupport()) {
-            p_response = atSendCommand("AT+EFCELL=1");
-            if (p_response->getError() != 0 || p_response->getSuccess() == 0) {
-                logW(LOG_TAG, "There is something wrong with the exectution of AT+EFCELL=1");
-            } else {
-                p_response = atSendCommand("AT+EFCELL?");
-                if (p_response->getError() != 0 || p_response->getSuccess() == 0)
-                    logW(LOG_TAG, "There is something wrong with the exectution of AT+EFCELL?");
+            /* Enable EFCELL URC */
+            if (isFemtocellSupport()) {
+                p_response = atSendCommand("AT+EFCELL=1");
+                if (p_response->getError() != 0 || p_response->getSuccess() == 0) {
+                    logW(LOG_TAG, "There is something wrong with the exectution of AT+EFCELL=1");
+                } else {
+                    p_response = atSendCommand("AT+EFCELL?");
+                    if (p_response->getError() != 0 || p_response->getSuccess() == 0)
+                        logW(LOG_TAG, "There is something wrong with the exectution of AT+EFCELL?");
+                }
             }
-        }
 
         /* Enable EDEFROAM URC */
         p_response = atSendCommand("AT+EDEFROAM=1");
@@ -1761,40 +1744,39 @@ void RmcNetworkRequestHandler::setUnsolResponseFilterLinkCapacityEstimate(bool e
     sp<RfxAtResponse> pAtResponse = atSendCommand(String8::format("AT+EXLCE=%d", enable));
 
     if (pAtResponse == NULL) {
-        logE(LOG_TAG, "setUnsolResponseFilterLinkCapacityEstimate: Fail to set AT+EXLCE=%d", enable);
+        logE(LOG_TAG, "setUnsolResponseFilterLinkCapacityEstimate: Fail to set AT+EXLCE=%d",
+             enable);
     } else if (pAtResponse->isAtResponseFail()) {
-        logE(LOG_TAG, "setUnsolResponseFilterLinkCapacityEstimate: Fail to set AT+EXLCE=%d, ERROR:%d",
-                enable, pAtResponse->atGetCmeError());
+        logE(LOG_TAG,
+             "setUnsolResponseFilterLinkCapacityEstimate: Fail to set AT+EXLCE=%d, ERROR:%d",
+             enable, pAtResponse->atGetCmeError());
     }
 }
 
 void RmcNetworkRequestHandler::requestScreenState(const sp<RfxMclMessage>& msg) {
     /************************************
-    * Control the URC: ECSQ,CREG,CGREG,CEREG
-    * CIREG,PSBEARER,ECSG,EMODCFG,EREGINFO
-    *************************************/
+     * Control the URC: ECSQ,CREG,CGREG,CEREG
+     * CIREG,PSBEARER,ECSG,EMODCFG,EREGINFO
+     *************************************/
 
     int on_off, err;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     on_off = pInt[0];
 
     // The ePDG/RNS framework need to monitoring the LTE RSRP signal strength across the threshold.
     char threshold[RFX_PROPERTY_VALUE_MAX] = {0};
 
-    if (on_off)
-    {
+    if (on_off) {
         // screen is on
 
         setUnsolResponseFilterNetworkState(true);
 
         setUnsolResponseFilterSignalStrength(true);
         updateSignalStrength();
-    }
-    else
-    {
+    } else {
         // screen is off
 
         setUnsolResponseFilterNetworkState(false);
@@ -1802,26 +1784,25 @@ void RmcNetworkRequestHandler::requestScreenState(const sp<RfxMclMessage>& msg) 
         setUnsolResponseFilterSignalStrength(false);
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
-
 }
 
 void RmcNetworkRequestHandler::requestSetUnsolicitedResponseFilter(const sp<RfxMclMessage>& msg) {
     /************************************
-    * Control the URC: ECSQ,CREG,CGREG,CEREG,
-    * CIREG,PSBEARER,ECSG,EMODCFG,EREGINFO,
-    * EXLCE.
-    *************************************/
+     * Control the URC: ECSQ,CREG,CGREG,CEREG,
+     * CIREG,PSBEARER,ECSG,EMODCFG,EREGINFO,
+     * EXLCE.
+     *************************************/
 
     RIL_UnsolicitedResponseFilter filter;
     int err;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
-    RIL_UnsolicitedResponseFilter *pUnsolicitedResponseFilter
-            = (RIL_UnsolicitedResponseFilter *)msg->getData()->getData();
+    RIL_UnsolicitedResponseFilter* pUnsolicitedResponseFilter =
+            (RIL_UnsolicitedResponseFilter*)msg->getData()->getData();
 
     filter = pUnsolicitedResponseFilter[0];
 
@@ -1855,15 +1836,13 @@ void RmcNetworkRequestHandler::requestSetUnsolicitedResponseFilter(const sp<RfxM
         physicalConfigSwitch[m_slot_id] = false;
     }
 
-
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
-int RmcNetworkRequestHandler::isEnableModulationReport()
-{
+int RmcNetworkRequestHandler::isEnableModulationReport() {
     char optr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get("persist.vendor.operator.optr", optr, "");
@@ -1874,12 +1853,14 @@ int RmcNetworkRequestHandler::isEnableModulationReport()
 void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& msg) {
     /* +ECSG: <num_plmn>,<plmn_id>,<act>,<num_csg>,<csg_id>,<csg_icon_type>,<hnb_name>,<sig>[,...]
        AT Response Example
-       +ECSG: 3,"46000",2,1,<csg_id_A>,<csg_type_A>,<hnb_name_A>,<sig>,"46002",7,1,<csg_id_B>,<csg_type_B>,<hnb_name_B>,<sig>,"46002",7,1,<csg_id_C>,<csg_type_C>,<hnb_name_C>,<sig> */
-    int err, len, i, j, num, act, csgId ,csgIconType,numCsg, sig;
+       +ECSG:
+       3,"46000",2,1,<csg_id_A>,<csg_type_A>,<hnb_name_A>,<sig>,"46002",7,1,<csg_id_B>,<csg_type_B>,<hnb_name_B>,<sig>,"46002",7,1,<csg_id_C>,<csg_type_C>,<hnb_name_C>,<sig>
+     */
+    int err, len, i, j, num, act, csgId, csgIconType, numCsg, sig;
     sp<RfxMclMessage> response;
     RfxAtLine* line;
     sp<RfxAtResponse> p_response;
-    char **femtocellList = NULL;
+    char** femtocellList = NULL;
     char *femtocell = NULL, *plmn_id = NULL, *hnb_name = NULL;
     char shortname[MAX_OPER_NAME_LENGTH];
     int size_femto = 7;
@@ -1889,10 +1870,8 @@ void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& 
 
     // check <sig> available
     p_response = atSendCommandSingleline("AT+ECSG=6", "+ECSG");
-    if (p_response == NULL ||
-            p_response->getError() != 0 ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         logE(LOG_TAG, "modem does not support AT+ECELL=6.");
         support_sig = 0;
 
@@ -1900,10 +1879,8 @@ void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& 
         p_response = atSendCommandSingleline("AT+ECSG=0", "+ECSG");
 
         // check error
-        if (p_response == NULL ||
-                p_response->getError() != 0 ||
-                p_response->getSuccess() == 0 ||
-                p_response->getIntermediates() == NULL) {
+        if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0 ||
+            p_response->getIntermediates() == NULL) {
             goto error;
         }
     }
@@ -1920,33 +1897,33 @@ void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& 
     if (err < 0) goto error;
 
     // allocate memory
-    femtocellList = (char **) calloc(1, sizeof(char*) * num * size_femto);
-    femtocell = (char *) calloc(1, num* sizeof(char) * size_femto * MAX_OPER_NAME_LENGTH);
+    femtocellList = (char**)calloc(1, sizeof(char*) * num * size_femto);
+    femtocell = (char*)calloc(1, num * sizeof(char) * size_femto * MAX_OPER_NAME_LENGTH);
 
     if (femtocellList == NULL || femtocell == NULL) {
         logE(LOG_TAG, "requestGetFemtocellList calloc fail");
         goto error;
     }
 
-    for (i = 0, j = 0; i < num; i++, j+=size_femto) {
+    for (i = 0, j = 0; i < num; i++, j += size_femto) {
         /* <plmn_id>,<act>,<num_csg>,<csg_id>,<csg_icon_type>,<hnb_name> */
-        femtocellList[j+0] = &femtocell[(j+0)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+1] = &femtocell[(j+1)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+2] = &femtocell[(j+2)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+3] = &femtocell[(j+3)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+4] = &femtocell[(j+4)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+5] = &femtocell[(j+5)*MAX_OPER_NAME_LENGTH];
-        femtocellList[j+6] = &femtocell[(j+6)*MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 0] = &femtocell[(j + 0) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 1] = &femtocell[(j + 1) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 2] = &femtocell[(j + 2) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 3] = &femtocell[(j + 3) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 4] = &femtocell[(j + 4) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 5] = &femtocell[(j + 5) * MAX_OPER_NAME_LENGTH];
+        femtocellList[j + 6] = &femtocell[(j + 6) * MAX_OPER_NAME_LENGTH];
 
         /* get <plmn_id> numeric code*/
         plmn_id = line->atTokNextstr(&err);
         if (err < 0) goto error;
-        sprintf(femtocellList[j+0], "%s", plmn_id);
+        sprintf(femtocellList[j + 0], "%s", plmn_id);
 
-        int len = strlen(femtocellList[j+0]);
+        int len = strlen(femtocellList[j + 0]);
         if (len == 5 || len == 6) {
-            err = getOperatorNamesFromNumericCode(
-                      femtocellList[j+0], femtocellList[j+1],shortname, MAX_OPER_NAME_LENGTH);
+            err = getOperatorNamesFromNumericCode(femtocellList[j + 0], femtocellList[j + 1],
+                                                  shortname, MAX_OPER_NAME_LENGTH);
             if (err < 0) goto error;
         } else {
             goto error;
@@ -1955,7 +1932,7 @@ void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& 
         /* get <AcT> 0 is "2G", 2 is "3G", 7 is "4G"*/
         act = line->atTokNextint(&err);
         if (err < 0) goto error;
-        sprintf(femtocellList[j+2], "%d", act);
+        sprintf(femtocellList[j + 2], "%d", act);
 
         /* get <num_csg> fwk no need*/
         numCsg = line->atTokNextint(&err);
@@ -1964,63 +1941,59 @@ void RmcNetworkRequestHandler::requestGetFemtocellList(const sp<RfxMclMessage>& 
         /* get <csgId> */
         csgId = line->atTokNextint(&err);
         if (err < 0) goto error;
-        sprintf(femtocellList[j+3], "%d", csgId);
+        sprintf(femtocellList[j + 3], "%d", csgId);
 
         /* get <csgIconType> */
         csgIconType = line->atTokNextint(&err);
         if (err < 0) goto error;
-        sprintf(femtocellList[j+4], "%d", csgIconType);
+        sprintf(femtocellList[j + 4], "%d", csgIconType);
 
         /* get <hnbName> */
         hnb_name = line->atTokNextstr(&err);
         if (err < 0) goto error;
-        sprintf(femtocellList[j+5], "%s", hnb_name);
+        sprintf(femtocellList[j + 5], "%s", hnb_name);
 
         if (support_sig == 1) {
             /* get <sig> */
             sig = line->atTokNextint(&err);
             if (err < 0) goto error;
-            sprintf(femtocellList[j+6], "%d", sig);
+            sprintf(femtocellList[j + 6], "%d", sig);
         } else {
-            sprintf(femtocellList[j+6], "-200"); // fake low sig
+            sprintf(femtocellList[j + 6], "-200");  // fake low sig
         }
 
-        logD(LOG_TAG, "requestGetFemtocellList (%s, %s, %s, %s, %s, %s, %s)",
-                femtocellList[j+0],
-                femtocellList[j+1],
-                femtocellList[j+2],
-                femtocellList[j+3],
-                femtocellList[j+4],
-                femtocellList[j+5],
-                femtocellList[j+6]);
+        logD(LOG_TAG, "requestGetFemtocellList (%s, %s, %s, %s, %s, %s, %s)", femtocellList[j + 0],
+             femtocellList[j + 1], femtocellList[j + 2], femtocellList[j + 3], femtocellList[j + 4],
+             femtocellList[j + 5], femtocellList[j + 6]);
     }
 
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringsData(femtocellList, num*size_femto), msg, false);
+                                             RfxStringsData(femtocellList, num * size_femto), msg,
+                                             false);
     responseToTelCore(response);
     free(femtocellList);
     free(femtocell);
 
     m_csgListOngoing = 0;
-    m_csgListAbort =0; /* always clear here to prevent race condition scenario */
+    m_csgListAbort = 0; /* always clear here to prevent race condition scenario */
     return;
 
 error:
     logE(LOG_TAG, "requestGetFemtocellList must never return error when radio is on");
     if (m_csgListAbort == 1) {
         // requestGetFemtocellList is canceled
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_CANCELLED,
-            RfxStringsData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_CANCELLED, RfxStringsData(),
+                                                 msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringsData(), msg, false);
+                                                 RfxStringsData(), msg, false);
     }
     // response to TeleCore
     responseToTelCore(response);
     if (femtocellList != NULL) free(femtocellList);
     if (femtocell) free(femtocell);
     m_csgListOngoing = 0;
-    m_csgListAbort =0; /* always clear here to prevent race condition scenario */
+    m_csgListAbort = 0; /* always clear here to prevent race condition scenario */
 }
 
 void RmcNetworkRequestHandler::requestAbortFemtocellList(const sp<RfxMclMessage>& msg) {
@@ -2031,25 +2004,23 @@ void RmcNetworkRequestHandler::requestAbortFemtocellList(const sp<RfxMclMessage>
         m_csgListAbort = 1;
         p_response = atSendCommandSingleline("AT+ECSG=2", "+ECSG:");
         // check error
-        if (p_response == NULL ||
-                p_response->getError() != 0 ||
-                p_response->getSuccess() == 0) {
+        if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0) {
             m_csgListAbort = 0;
             logE(LOG_TAG, "requestAbortFemtocellList fail.");
             goto error;
         }
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
 
 error:
     logE(LOG_TAG, "requestAbortFemtocellList must never return error when radio is on");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
@@ -2057,16 +2028,14 @@ error:
 void RmcNetworkRequestHandler::requestSelectFemtocell(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     sp<RfxAtResponse> p_response;
-    const char **strings = (const char **)msg->getData()->getData();
-    //parameters:  <plmn> , <act> , <csg id>
+    const char** strings = (const char**)msg->getData()->getData();
+    // parameters:  <plmn> , <act> , <csg id>
 
     // check parameters
-    if ((msg->getData()->getDataLength() < (int)(3 * sizeof(char*)))
-            || (strings[0] == NULL)
-            || (strings[1] == NULL)
-            || (strings[2] == NULL)) {
+    if ((msg->getData()->getDataLength() < (int)(3 * sizeof(char*))) || (strings[0] == NULL) ||
+        (strings[1] == NULL) || (strings[2] == NULL)) {
         logE(LOG_TAG, "requestSelectFemtocell parameters wrong datalen = %d",
-                msg->getData()->getDataLength());
+             msg->getData()->getDataLength());
         goto error;
     }
 
@@ -2086,30 +2055,30 @@ void RmcNetworkRequestHandler::requestSelectFemtocell(const sp<RfxMclMessage>& m
         }
     }
 
-    p_response = atSendCommand(String8::format("AT+ECSG=1,\"%s\",%s,%s", strings[0],strings[2],strings[1]));
+    p_response = atSendCommand(
+            String8::format("AT+ECSG=1,\"%s\",%s,%s", strings[0], strings[2], strings[1]));
     // check error
-    if (p_response == NULL ||
-            p_response->getError() != 0 ||
-            p_response->getSuccess() == 0) {
+    if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0) {
         goto error;
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
 
 error:
     logE(LOG_TAG, "requestSelectFemtocell must never return error when radio is on");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
-void RmcNetworkRequestHandler::requestQueryFemtoCellSystemSelectionMode(const sp<RfxMclMessage>& msg) {
+void RmcNetworkRequestHandler::requestQueryFemtoCellSystemSelectionMode(
+        const sp<RfxMclMessage>& msg) {
     int mode, err;
-    int response[2] = { 0 };
+    int response[2] = {0};
     RIL_Errno ril_errno = RIL_E_MODE_NOT_SUPPORTED;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
@@ -2119,10 +2088,9 @@ void RmcNetworkRequestHandler::requestQueryFemtoCellSystemSelectionMode(const sp
     p_response = atSendCommandSingleline("AT+EFSS?", "+EFSS:");
 
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto error;
 
     // handle intermediate
     line = p_response->getIntermediates();
@@ -2139,23 +2107,24 @@ void RmcNetworkRequestHandler::requestQueryFemtoCellSystemSelectionMode(const sp
     if (err < 0) goto error;
 
     logD(LOG_TAG, "requestQueryFemtoCellSystemSelectionMode sucess, free memory");
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&mode, 1), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(&mode, 1), msg,
+                                         false);
     responseToTelCore(resp);
     return;
 error:
     logD(LOG_TAG,
-        "requestQueryFemtoCellSystemSelectionMode must never return error when radio is on");
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(&mode, 1), msg, false);
+         "requestQueryFemtoCellSystemSelectionMode must never return error when radio is on");
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxIntsData(&mode, 1),
+                                         msg, false);
     responseToTelCore(resp);
 }
 
-void RmcNetworkRequestHandler::requestSetFemtoCellSystemSelectionMode(const sp<RfxMclMessage>& msg) {
+void RmcNetworkRequestHandler::requestSetFemtoCellSystemSelectionMode(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int mode = pInt[0];
 
     logD(LOG_TAG, "requestSetFemtoCellSystemSelectionMode: mode=%d", mode);
@@ -2168,8 +2137,7 @@ void RmcNetworkRequestHandler::requestSetFemtoCellSystemSelectionMode(const sp<R
     } else {
         logE(LOG_TAG, "mode is invalid");
     }
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
@@ -2177,34 +2145,35 @@ void RmcNetworkRequestHandler::requestSetFemtoCellSystemSelectionMode(const sp<R
 
 void RmcNetworkRequestHandler::requestAntennaConf(const sp<RfxMclMessage>& msg) {
     int antennaType, err;
-    int response[2] = { 0 };
+    int response[2] = {0};
     RIL_Errno ril_errno = RIL_E_MODE_NOT_SUPPORTED;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     antennaType = pInt[0];
     response[0] = antennaType;
-    response[1] = 0; // failed
+    response[1] = 0;  // failed
 
     logD(LOG_TAG, "Enter requestAntennaConf(), antennaType = %d ", antennaType);
     // AT command format as below : (for VZ_REQ_LTEB13NAC_6290)
     // AT+ERFTX=8, <type>[,<param1>,<param2>]
     // <param1> is decoded as below:
     //    1 - Normal dual receiver operation(default UE behaviour)
-    //    2 - Single receiver operation 'enable primary receiver only'(disable secondary/MIMO receiver)
-    //    3 - Single receiver operation 'enable secondary/MIMO receiver only (disable primary receiver)
-    switch(antennaType){
-        case 0:    // 0: signal information is not available on all Rx chains
+    //    2 - Single receiver operation 'enable primary receiver only'(disable secondary/MIMO
+    //    receiver) 3 - Single receiver operation 'enable secondary/MIMO receiver only (disable
+    //    primary receiver)
+    switch (antennaType) {
+        case 0:  // 0: signal information is not available on all Rx chains
             antennaType = 0;
             break;
-        case 1:    // 1: Rx diversity bitmask for chain 0
+        case 1:  // 1: Rx diversity bitmask for chain 0
             antennaType = 2;
             break;
-        case 2:    // 2: Rx diversity bitmask for chain 1 is available
+        case 2:  // 2: Rx diversity bitmask for chain 1 is available
             antennaType = 3;
             break;
-        case 3:    // 3: Signal information on both Rx chains is available.
+        case 3:  // 3: Signal information on both Rx chains is available.
             antennaType = 1;
             break;
         default:
@@ -2222,12 +2191,12 @@ void RmcNetworkRequestHandler::requestAntennaConf(const sp<RfxMclMessage>& msg) 
         }
     } else {
         ril_errno = RIL_E_SUCCESS;
-        response[1] = 1; // success
+        response[1] = 1;  // success
         // Keep this settings for query antenna info.
         antennaTestingType = antennaType;
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxIntsData(response, 2), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 2), msg,
+                                         false);
     responseToTelCore(resp);
 }
 void RmcNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) {
@@ -2237,53 +2206,55 @@ void RmcNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) 
     RfxAtLine* line;
 
     int param1, param2, err, skip;
-    int response[6] = { 0 };
+    int response[6] = {0};
     memset(response, 0, sizeof(response));
-    int *primary_antenna_rssi   = &response[0];
-    int *relative_phase         = &response[1];
-    int *secondary_antenna_rssi = &response[2];
-    int *phase1                 = &response[3];
-    int *rxState_0              = &response[4];
-    int *rxState_1              = &response[5];
-    *primary_antenna_rssi   = 0;  // <primary_antenna_RSSI>
-    *relative_phase         = 0;  // <relative_phase>
+    int* primary_antenna_rssi = &response[0];
+    int* relative_phase = &response[1];
+    int* secondary_antenna_rssi = &response[2];
+    int* phase1 = &response[3];
+    int* rxState_0 = &response[4];
+    int* rxState_1 = &response[5];
+    *primary_antenna_rssi = 0;    // <primary_antenna_RSSI>
+    *relative_phase = 0;          // <relative_phase>
     *secondary_antenna_rssi = 0;  // <secondary_antenna_RSSI>
-    *phase1                 = 0;  // N/A
-    *rxState_0              = 0;  // rx0 status(0: not vaild; 1:valid)
-    *rxState_1              = 0;  // rx1 status(0: not vaild; 1:valid)
+    *phase1 = 0;                  // N/A
+    *rxState_0 = 0;               // rx0 status(0: not vaild; 1:valid)
+    *rxState_1 = 0;               // rx1 status(0: not vaild; 1:valid)
     // AT+ERFTX=8, <type> [,<param1>,<param2>]
     // <type>=0 is used for VZ_REQ_LTEB13NAC_6290
     // <param1> represents the A0 bit in ANTENNA INFORMATION REQUEST message
     // <param2> represents the A1 bit in ANTENNA INFORMATION REQUEST message
-    switch(antennaTestingType) {
-        case 0:    // signal information is not available on all Rx chains
+    switch (antennaTestingType) {
+        case 0:  // signal information is not available on all Rx chains
             param1 = 0;
             param2 = 0;
             break;
-        case 1:    // Normal dual receiver operation (default UE behaviour)
+        case 1:  // Normal dual receiver operation (default UE behaviour)
             param1 = 1;
             param2 = 1;
             break;
-        case 2:    // enable primary receiver only
+        case 2:  // enable primary receiver only
             param1 = 1;
             param2 = 0;
             break;
-        case 3:    // enable secondary/MIMO receiver only
+        case 3:  // enable secondary/MIMO receiver only
             param1 = 0;
             param2 = 1;
             break;
         default:
-            logE(LOG_TAG, "requestAntennaInfo: configuration is an invalid, antennaTestingType: %d", antennaTestingType);
+            logE(LOG_TAG, "requestAntennaInfo: configuration is an invalid, antennaTestingType: %d",
+                 antennaTestingType);
             goto error;
     }
-    logD(LOG_TAG, "requestAntennaInfo: antennaType=%d, param1=%d, param2=%d", antennaTestingType, param1, param2);
+    logD(LOG_TAG, "requestAntennaInfo: antennaType=%d, param1=%d, param2=%d", antennaTestingType,
+         param1, param2);
     if (antennaTestingType == 0) {
         p_response = atSendCommand(String8::format("AT+ERFTX=8,0,%d,%d", param1, param2));
         if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
             ril_errno = RIL_E_SUCCESS;
         }
-        resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-                RfxIntsData(response, 6), msg, false);
+        resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 6), msg,
+                                             false);
         responseToTelCore(resp);
         return;
     }
@@ -2291,7 +2262,7 @@ void RmcNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) 
     p_response = atSendCommand(String8::format("AT+ERFTX=8,1,%d", antennaTestingType));
     if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
         p_response = atSendCommandSingleline(String8::format("AT+ERFTX=8,0,%d,%d", param1, param2),
-                "+ERFTX:");
+                                             "+ERFTX:");
         if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
             // handle intermediate
             line = p_response->getIntermediates();
@@ -2316,7 +2287,8 @@ void RmcNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) 
             if (line->atTokHasmore()) {
                 (*secondary_antenna_rssi) = line->atTokNextint(&err);
                 if (err < 0) {
-                    logE(LOG_TAG, "ERROR occurs <secondary_antenna_rssi> form antenna info request");
+                    logE(LOG_TAG,
+                         "ERROR occurs <secondary_antenna_rssi> form antenna info request");
                     goto error;
                 } else {
                     // response for AT+ERFTX=8,0,1,0
@@ -2340,8 +2312,8 @@ void RmcNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) 
         goto error;
     }
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxIntsData(response, 6), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 6), msg,
+                                         false);
     responseToTelCore(resp);
 }
 
@@ -2352,7 +2324,7 @@ void RmcNetworkRequestHandler::requestSetServiceState(const sp<RfxMclMessage>& m
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     voice_reg_state = pInt[0];
     data_reg_state = pInt[1];
@@ -2362,22 +2334,18 @@ void RmcNetworkRequestHandler::requestSetServiceState(const sp<RfxMclMessage>& m
     ril_rata_reg_state = pInt[5];
 
     if ((voice_reg_state >= 0 && voice_reg_state <= 3) &&
-            (data_reg_state >= 0 && data_reg_state <= 3) &&
-            (voice_roaming_type >= 0 && voice_roaming_type <= 3) &&
-            (data_roaming_type >= 0 && data_roaming_type <= 3) &&
-            (ril_voice_reg_state >= 0 && ril_voice_reg_state <= 14) &&
-            (ril_rata_reg_state >= 0 && ril_rata_reg_state <= 14)) {
+        (data_reg_state >= 0 && data_reg_state <= 3) &&
+        (voice_roaming_type >= 0 && voice_roaming_type <= 3) &&
+        (data_roaming_type >= 0 && data_roaming_type <= 3) &&
+        (ril_voice_reg_state >= 0 && ril_voice_reg_state <= 14) &&
+        (ril_rata_reg_state >= 0 && ril_rata_reg_state <= 14)) {
         /*****************************
-        * If all parameters are valid,
-        * set to MD
-        ******************************/
-        p_response = atSendCommand(String8::format("AT+ESRVSTATE=%d,%d,%d,%d,%d,%d",
-                voice_reg_state,
-                data_reg_state,
-                voice_roaming_type,
-                data_roaming_type,
-                ril_voice_reg_state,
-                ril_rata_reg_state));
+         * If all parameters are valid,
+         * set to MD
+         ******************************/
+        p_response = atSendCommand(String8::format(
+                "AT+ESRVSTATE=%d,%d,%d,%d,%d,%d", voice_reg_state, data_reg_state,
+                voice_roaming_type, data_roaming_type, ril_voice_reg_state, ril_rata_reg_state));
         if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
             ril_errno = RIL_E_SUCCESS;
         }
@@ -2385,8 +2353,7 @@ void RmcNetworkRequestHandler::requestSetServiceState(const sp<RfxMclMessage>& m
 
     updateCellularPsState();
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -2401,9 +2368,9 @@ void RmcNetworkRequestHandler::handleConfirmRatBegin(const sp<RfxMclMessage>& ms
         p_response = atSendCommand("AT+ERPRAT");
         err = p_response->getError();
 
-        ret = (err < 0 || 0 == p_response->getSuccess()) ? true:false;
-        logV(LOG_TAG, "confirmRatBegin, send command AT+ERPRAT, err = %d, ret=%d, count=%d",
-            err, ret, count);
+        ret = (err < 0 || 0 == p_response->getSuccess()) ? true : false;
+        logV(LOG_TAG, "confirmRatBegin, send command AT+ERPRAT, err = %d, ret=%d, count=%d", err,
+             ret, count);
         count++;
         // If get wrong result, we need to check whether go on or not.
         if (ret) {
@@ -2412,7 +2379,8 @@ void RmcNetworkRequestHandler::handleConfirmRatBegin(const sp<RfxMclMessage>& ms
                 break;
             }
 
-            RIL_RadioState state = (RIL_RadioState) getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
+            RIL_RadioState state =
+                    (RIL_RadioState)getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
             if (RADIO_STATE_UNAVAILABLE == state || RADIO_STATE_OFF == state) {
                 logD(LOG_TAG, "confirmRatBegin, radio unavliable/off, return directly.");
                 break;
@@ -2424,17 +2392,18 @@ void RmcNetworkRequestHandler::handleConfirmRatBegin(const sp<RfxMclMessage>& ms
 }
 
 void RmcNetworkRequestHandler::handleCsNetworkStateEvent(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int *) msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int prevRegState = pInt[0];
     int prevRat = pInt[1];
     int newRegState = pInt[2];
     int newRat = pInt[3];
-    if ((prevRegState != newRegState
-            || RfxNwServiceState::isCdmaGroup(prevRat) != RfxNwServiceState::isCdmaGroup(newRat))
-            && RfxNwServiceState::isInService(newRegState)) {
-        logV(LOG_TAG, "handleCsNetworkStateEvent, need updateSignalStrength, "
-                "prevRegState=%d, prevRat=%d, newRegState=%d, newRat=%d",
-                prevRegState, prevRat, newRegState, newRat);
+    if ((prevRegState != newRegState ||
+         RfxNwServiceState::isCdmaGroup(prevRat) != RfxNwServiceState::isCdmaGroup(newRat)) &&
+        RfxNwServiceState::isInService(newRegState)) {
+        logV(LOG_TAG,
+             "handleCsNetworkStateEvent, need updateSignalStrength, "
+             "prevRegState=%d, prevRat=%d, newRegState=%d, newRat=%d",
+             prevRegState, prevRat, newRegState, newRat);
         updateSignalStrength();
     }
 }
@@ -2442,7 +2411,7 @@ void RmcNetworkRequestHandler::handleCsNetworkStateEvent(const sp<RfxMclMessage>
 void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>& msg) {
     // response[0] = state, response[1] = mccmnc, response[2] = rat.
     int response[3];
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     // state (consider iwlan)
     response[0] = pInt[2];
     // rat (consider iwlan)
@@ -2451,7 +2420,7 @@ void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>
 
     int err;
     int skip;
-    char *eops_response = NULL;
+    char* eops_response = NULL;
     sp<RfxMclMessage> urc;
     RfxAtLine* line;
     sp<RfxAtResponse> p_response;
@@ -2461,12 +2430,13 @@ void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>
     int prevRat = pInt[1];
     int newRegState = pInt[2];
     int newRat = pInt[3];
-    if ((prevRegState != newRegState
-            || RfxNwServiceState::isCdmaGroup(prevRat) != RfxNwServiceState::isCdmaGroup(newRat))
-            && RfxNwServiceState::isInService(newRegState)) {
-        logV(LOG_TAG, "handlePsNetworkStateEvent, need updateSignalStrength, "
-                "prevRegState=%d, prevRat=%d, newRegState=%d, newRat=%d",
-                prevRegState, prevRat, newRegState, newRat);
+    if ((prevRegState != newRegState ||
+         RfxNwServiceState::isCdmaGroup(prevRat) != RfxNwServiceState::isCdmaGroup(newRat)) &&
+        RfxNwServiceState::isInService(newRegState)) {
+        logV(LOG_TAG,
+             "handlePsNetworkStateEvent, need updateSignalStrength, "
+             "prevRegState=%d, prevRat=%d, newRegState=%d, newRat=%d",
+             prevRegState, prevRat, newRegState, newRat);
         updateSignalStrength();
     }
 
@@ -2475,10 +2445,8 @@ void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>
 
     // check error
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         logE(LOG_TAG, "EOPS got error response");
     } else {
         // handle intermediate
@@ -2494,11 +2462,11 @@ void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>
                 if (line->atTokHasmore()) {
                     /* <format> */
                     skip = line->atTokNextint(&err);
-                    if (err >= 0 && skip == 2)
-                    {
+                    if (err >= 0 && skip == 2) {
                         /* <oper> */
                         eops_response = line->atTokNextstr(&err);
-                        /* Modem might response invalid PLMN ex: "", "000000" , "??????", all convert to "000000" */
+                        /* Modem might response invalid PLMN ex: "", "000000" , "??????", all
+                         * convert to "000000" */
                         if (!((eops_response[0] >= '0') && (eops_response[0] <= '9'))) {
                             // logE(LOG_TAG, "EOPS got invalid plmn response");
                             memset(eops_response, 0, operNumericLength);
@@ -2510,23 +2478,23 @@ void RmcNetworkRequestHandler::handlePsNetworkStateEvent(const sp<RfxMclMessage>
     }
     if (eops_response != NULL) {
         getMclStatusManager()->setString8Value(RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED,
-                String8::format("%s", eops_response));
+                                               String8::format("%s", eops_response));
         response[1] = atoi(eops_response);
     } else {
-        getMclStatusManager()->setString8Value(RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED, String8(""));
+        getMclStatusManager()->setString8Value(RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED,
+                                               String8(""));
         response[1] = 0;
     }
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_PS_NETWORK_STATE_CHANGED,
-            m_slot_id, RfxIntsData(response, 3));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_PS_NETWORK_STATE_CHANGED, m_slot_id,
+                                   RfxIntsData(response, 3));
     // response to TeleCore
     responseToTelCore(urc);
 
     return;
 }
 
-void RmcNetworkRequestHandler::updateCellularPsState() {
-}
+void RmcNetworkRequestHandler::updateCellularPsState() {}
 
 void RmcNetworkRequestHandler::triggerPollNetworkState() {
     logD(LOG_TAG, "triggerPollNetworkState");
@@ -2535,8 +2503,8 @@ void RmcNetworkRequestHandler::triggerPollNetworkState() {
     atSendCommand("AT+ECSQ");
 
     // update voice/data/Operator
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED,
-            m_slot_id, RfxVoidData());
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED, m_slot_id, RfxVoidData());
     responseToTelCore(urc);
 }
 
@@ -2556,7 +2524,7 @@ void RmcNetworkRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
         case RFX_MSG_EVENT_CONFIRM_RAT_BEGIN:
             handleConfirmRatBegin(msg);
             break;
-    case RFX_MSG_EVENT_CS_NETWORK_STATE:
+        case RFX_MSG_EVENT_CS_NETWORK_STATE:
             handleCsNetworkStateEvent(msg);
             break;
         case RFX_MSG_EVENT_PS_NETWORK_STATE:
@@ -2576,7 +2544,7 @@ void RmcNetworkRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
 
 void RmcNetworkRequestHandler::updatePseudoCellMode() {
     sp<RfxAtResponse> p_response;
-    char *property = NULL;
+    char* property = NULL;
     char prop[RFX_PROPERTY_VALUE_MAX] = {0};
 
     p_response = atSendCommandSingleline("AT+EAPC?", "+EAPC:");
@@ -2599,17 +2567,17 @@ void RmcNetworkRequestHandler::requestSetPseudoCellMode(const sp<RfxMclMessage>&
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    char *property = NULL;
-    char *cmd = NULL;
-    int *pInt = (int *)msg->getData()->getData();
+    char* property = NULL;
+    char* cmd = NULL;
+    int* pInt = (int*)msg->getData()->getData();
     int apc_mode = pInt[0];
     int urc_enable = pInt[1];
     int timer = pInt[2];
     /*
-    *  apc_mode = 0: disable APC feature
-    *  apc_mode = 1: set APC mode I, if detect a pseudo cell, not attach it
-    *  apc_mode = 2: set APC mode II, if detect a pseudo cell, also attach it
-    */
+     *  apc_mode = 0: disable APC feature
+     *  apc_mode = 1: set APC mode I, if detect a pseudo cell, not attach it
+     *  apc_mode = 2: set APC mode II, if detect a pseudo cell, also attach it
+     */
     asprintf(&cmd, "AT+EAPC=%d,%d,%d", apc_mode, urc_enable, timer);
     p_response = atSendCommand(cmd);
     if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
@@ -2623,18 +2591,16 @@ void RmcNetworkRequestHandler::requestSetPseudoCellMode(const sp<RfxMclMessage>&
         logE(LOG_TAG, "requestSetPseudoCellMode failed");
     }
     free(cmd);
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
-
 
 void RmcNetworkRequestHandler::setRoamingEnable(const sp<RfxMclMessage>& msg) {
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    char *cmd = NULL;
-    int *pInt = (int*)msg->getData()->getData();
+    char* cmd = NULL;
+    int* pInt = (int*)msg->getData()->getData();
     /*
         data[0] : phone id (0,1,2,3,...)
         data[1] : international_voice_text_roaming (0,1)
@@ -2652,26 +2618,28 @@ void RmcNetworkRequestHandler::setRoamingEnable(const sp<RfxMclMessage>& msg) {
         NOTE: The order is different.
     */
     int err = 0;
-    int (*p)[6] = (int(*)[6])pInt;
+    int(*p)[6] = (int(*)[6])pInt;
     // rever the setting from enable(fwk) to bar(md)
     for (int i = 1; i < 6; i++) {
-        (*p)[i] = (*p)[i] == 0 ? 1: 0;
+        (*p)[i] = (*p)[i] == 0 ? 1 : 0;
     }
 
-    asprintf(&cmd, "AT+EROAMBAR=%d,%d,%d,%d,%d"
-        , (*p)[3]  // BAR_Dom_Voice_Roaming_Enabled
-        , (*p)[4]  // BAR_Dom_Data_Roaming_Enabled
-        , (*p)[1]  // Bar_Int_Voice_Roaming_Enabled
-        , (*p)[2]  // Bar_Int_Data_Roaming_Enabled
-        , (*p)[5]);  // Bar_LTE_Data_Roaming_Enabled
+    asprintf(&cmd, "AT+EROAMBAR=%d,%d,%d,%d,%d", (*p)[3]  // BAR_Dom_Voice_Roaming_Enabled
+             ,
+             (*p)[4]  // BAR_Dom_Data_Roaming_Enabled
+             ,
+             (*p)[1]  // Bar_Int_Voice_Roaming_Enabled
+             ,
+             (*p)[2]  // Bar_Int_Data_Roaming_Enabled
+             ,
+             (*p)[5]);  // Bar_LTE_Data_Roaming_Enabled
     logD(LOG_TAG, "setRoamingEnable %s", cmd);
     p_response = atSendCommand(cmd);
     if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
         ril_errno = RIL_E_SUCCESS;
     }
     free(cmd);
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -2689,7 +2657,7 @@ void RmcNetworkRequestHandler::getRoamingEnable(const sp<RfxMclMessage>& msg) {
      response[3] : domestic_voice_text_roaming (0,1)
      response[4] : domestic_data_roaming (0,1)
      response[5] : domestic_LTE_data_roaming (1) */
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
     int roaming[6] = {1, 0, 1, 1, 1, 1};  // default value
@@ -2699,10 +2667,8 @@ void RmcNetworkRequestHandler::getRoamingEnable(const sp<RfxMclMessage>& msg) {
 
     // check error
     err = p_response->getError();
-    if (err != 0 ||
-          p_response == NULL ||
-          p_response->getSuccess() == 0 ||
-          p_response->getIntermediates() == NULL)
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
         goto error;
 
     // handle intermediate
@@ -2726,36 +2692,32 @@ void RmcNetworkRequestHandler::getRoamingEnable(const sp<RfxMclMessage>& msg) {
     roaming[4] = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-
     // <Bar_Int_Voice_Roaming_Enabled>
     roaming[1] = line->atTokNextint(&err);
     if (err < 0) goto error;
-
 
     // <Bar_Int_Data_Roaming_Enabled>
     roaming[2] = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-
     // <Bar_LTE_Data_Roaming_Enabled>
     roaming[5] = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-
     // rever the setting from enable(fwk) to bar(md)
     for (int i = 1; i < 6; i++) {
-        roaming[i] = roaming[i] == 0 ? 1:0;
+        roaming[i] = roaming[i] == 0 ? 1 : 0;
     }
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxIntsData(roaming, 6), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(roaming, 6), msg,
+                                         false);
     // response to TeleCore
     responseToTelCore(resp);
     return;
-    error:
+error:
     logE(LOG_TAG, "getRoamingEnable must never return error when radio is on");
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     // response to TeleCore
     responseToTelCore(resp);
 }
@@ -2807,42 +2769,41 @@ void RmcNetworkRequestHandler::requestGetPseudoCellInfo(const sp<RfxMclMessage>&
         response[3] = num;
 
         for (int i = 0; i < num; i++) {
-            response[i*6 + 4] = line->atTokNextint(&err);
+            response[i * 6 + 4] = line->atTokNextint(&err);
             if (err < 0) goto error;
 
             if (line->atTokHasmore()) {
-                response[i*6 + 5] = line->atTokNextint(&err);
+                response[i * 6 + 5] = line->atTokNextint(&err);
                 if (err < 0) goto error;
 
-                response[i*6 + 6] = line->atTokNextint(&err);
+                response[i * 6 + 6] = line->atTokNextint(&err);
                 if (err < 0) goto error;
 
-                response[i*6 + 7] = line->atTokNextint(&err);
+                response[i * 6 + 7] = line->atTokNextint(&err);
                 if (err < 0) goto error;
 
-                response[i*6 + 8] = line->atTokNextint(&err);
+                response[i * 6 + 8] = line->atTokNextint(&err);
                 if (err < 0) goto error;
 
-                response[i*6 + 9] = line->atTokNextint(&err);
+                response[i * 6 + 9] = line->atTokNextint(&err);
                 if (err < 0) goto error;
             }
         }
     }
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(response, 16), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(response, 16),
+                                         msg, false);
     responseToTelCore(resp);
     return;
 
 error:
     logE(LOG_TAG, "requestGetPseudoCellInfo failed err=%d", p_response->getError());
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                         false);
     responseToTelCore(resp);
 }
 
-int RmcNetworkRequestHandler::isDisable2G()
-{
+int RmcNetworkRequestHandler::isDisable2G() {
     int ret = 0;
     char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     char optr[RFX_PROPERTY_VALUE_MAX] = {0};
@@ -2871,7 +2832,7 @@ void RmcNetworkRequestHandler::requestSetLteReleaseVersion(const sp<RfxMclMessag
     // <mode>=1 turn on LTE Carrier Aggregation
 
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
-    int *pInt = (int *) msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int mode = pInt[0];
 
     if (mode < 0) {
@@ -2884,8 +2845,8 @@ void RmcNetworkRequestHandler::requestSetLteReleaseVersion(const sp<RfxMclMessag
         }
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
@@ -2911,14 +2872,14 @@ void RmcNetworkRequestHandler::requestGetLteReleaseVersion(const sp<RfxMclMessag
     mode = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&mode, 1), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(&mode, 1),
+                                             msg, false);
     responseToTelCore(response);
     return;
 
 error:
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(&mode, 1), msg, false);
+                                             RfxIntsData(&mode, 1), msg, false);
     responseToTelCore(response);
 }
 
@@ -2946,7 +2907,7 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
     if (!physicalConfigSwitch[m_slot_id]) return;  // It's off.
 
     RIL_DATA_REG_STATE_CACHE* temp_data_reg_state =
-            (RIL_DATA_REG_STATE_CACHE*) calloc(1, sizeof(RIL_DATA_REG_STATE_CACHE));
+            (RIL_DATA_REG_STATE_CACHE*)calloc(1, sizeof(RIL_DATA_REG_STATE_CACHE));
     if (temp_data_reg_state == NULL) {
         logE(LOG_TAG, "currentPhysicalChannelConfigs: alloc temp_data_reg_state fail");
         return;
@@ -2973,12 +2934,12 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
             }
             pthread_mutex_unlock(&s_caMutex[m_slot_id]);
         } else if (temp_data_reg_state->radio_technology == 1 ||
-            temp_data_reg_state->radio_technology == 2) {
+                   temp_data_reg_state->radio_technology == 2) {
             // GPRS or EDGE
             num = 1;
         } else if (temp_data_reg_state->radio_technology == 6 ||
-            temp_data_reg_state->radio_technology == 8 ||
-            temp_data_reg_state->radio_technology == 13) {
+                   temp_data_reg_state->radio_technology == 8 ||
+                   temp_data_reg_state->radio_technology == 13) {
             // C2K
             num = 0;
         } else {
@@ -2992,8 +2953,7 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
 
     RIL_PhysicalChannelConfig rilPhysicalconfig[num];
 
-    if (num > 0 &&
-        isInService(temp_data_reg_state->registration_state)) {
+    if (num > 0 && isInService(temp_data_reg_state->registration_state)) {
         memset(rilPhysicalconfig, 0, num * sizeof(RIL_PhysicalChannelConfig));
         if (temp_data_reg_state->radio_technology == 14 ||
             temp_data_reg_state->radio_technology == 19) {
@@ -3030,18 +2990,18 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
                 if (data_reg_state_cache[m_slot_id]->endc_available == 1 &&
                     data_reg_state_cache[m_slot_id]->endc_sib == 1 &&
                     data_reg_state_cache[m_slot_id]->dcnr_restricted == 0) {
-                    rilPhysicalconfig[num-1].rat = RADIO_TECH_NR;
-                    rilPhysicalconfig[num-1].status = SECONDARY_SERVING;
-                    rilPhysicalconfig[num-1].cellBandwidthDownlink = physicalConfig[3];
-                    rilPhysicalconfig[num-1].fr = LOW;
-                    rilPhysicalconfig[num-1].channelNumber = 0x7FFFFFFF;
-                    rilPhysicalconfig[num-1].physicalCellId = 0x7FFFFFFF;
-                    fillCidToPhysicalChannelConfig(&rilPhysicalconfig[num-1]);
+                    rilPhysicalconfig[num - 1].rat = RADIO_TECH_NR;
+                    rilPhysicalconfig[num - 1].status = SECONDARY_SERVING;
+                    rilPhysicalconfig[num - 1].cellBandwidthDownlink = physicalConfig[3];
+                    rilPhysicalconfig[num - 1].fr = LOW;
+                    rilPhysicalconfig[num - 1].channelNumber = 0x7FFFFFFF;
+                    rilPhysicalconfig[num - 1].physicalCellId = 0x7FFFFFFF;
+                    fillCidToPhysicalChannelConfig(&rilPhysicalconfig[num - 1]);
                 }
             }
             pthread_mutex_unlock(&s_caMutex[m_slot_id]);
         } else if (temp_data_reg_state->radio_technology == 1 ||
-            temp_data_reg_state->radio_technology == 2) {
+                   temp_data_reg_state->radio_technology == 2) {
             // GPRS or EDGE
             physicalConfig[0] = 1;
             physicalConfig[1] = 200;
@@ -3053,8 +3013,8 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
             rilPhysicalconfig[0].channelNumber = 0x7FFFFFFF;
             rilPhysicalconfig[0].physicalCellId = 0x7FFFFFFF;
         } else if (temp_data_reg_state->radio_technology == 6 ||
-            temp_data_reg_state->radio_technology == 8 ||
-            temp_data_reg_state->radio_technology == 13) {
+                   temp_data_reg_state->radio_technology == 8 ||
+                   temp_data_reg_state->radio_technology == 13) {
             // C2K
         } else {
             // else 3G cases
@@ -3090,26 +3050,22 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
     }
     if (forceUpdate) hasChanged = true;
     logD(LOG_TAG, "physicalConfig = [%d, %d, %d, %d], hasChanged=%d, forceUpdate=%d",
-        physicalConfig[0],
-        physicalConfig[1],
-        physicalConfig[2],
-        physicalConfig[3],
-        (hasChanged? 1: 0),
-        (forceUpdate? 1: 0));
+         physicalConfig[0], physicalConfig[1], physicalConfig[2], physicalConfig[3],
+         (hasChanged ? 1 : 0), (forceUpdate ? 1 : 0));
     // only send URC when it's changed.
     if (hasChanged) {
         if (num != 0) {
-            urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PHYSICAL_CHANNEL_CONFIGS_MTK,
-                    m_slot_id,
-                    RfxIntsData((void*)rilPhysicalconfig, num*sizeof(RIL_PhysicalChannelConfig)));
+            urc = RfxMclMessage::obtainUrc(
+                    RFX_MSG_URC_PHYSICAL_CHANNEL_CONFIGS_MTK, m_slot_id,
+                    RfxIntsData((void*)rilPhysicalconfig, num * sizeof(RIL_PhysicalChannelConfig)));
             responseToTelCore(urc);
         } else {
             // send an empty one to clear
             RIL_PhysicalChannelConfig pcc = {};
             memset(&pcc, 0, sizeof(RIL_PhysicalChannelConfig));
 
-            urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PHYSICAL_CHANNEL_CONFIGS_MTK,
-                    m_slot_id,
+            urc = RfxMclMessage::obtainUrc(
+                    RFX_MSG_URC_PHYSICAL_CHANNEL_CONFIGS_MTK, m_slot_id,
                     RfxIntsData((void*)&pcc, sizeof(RIL_PhysicalChannelConfig)));
             responseToTelCore(urc);
         }
@@ -3121,27 +3077,22 @@ void RmcNetworkRequestHandler::currentPhysicalChannelConfigs(bool forceUpdate) {
     if (temp_data_reg_state != NULL) free(temp_data_reg_state);
 }
 
-void RmcNetworkRequestHandler::requestSetSignalStrengthReportingCriteria
-        (const sp<RfxMclMessage>& msg) {
+void RmcNetworkRequestHandler::requestSetSignalStrengthReportingCriteria(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> resp;
     RIL_Errno ril_err = RIL_E_INVALID_ARGUMENTS;
     RIL_SignalStrength_Reporting_Criteria* ssrc =
-            (RIL_SignalStrength_Reporting_Criteria*) msg->getData()->getData();
-    logD(LOG_TAG, "requestSetSignalStrengthReportingCriteria %d, %d, %d"
-            "thresholdsDbm[0] = %d"
-            "thresholdsDbm[1] = %d"
-            "thresholdsDbm[2] = %d"
-            "thresholdsDbm[3] = %d",
-            ssrc->hysteresisMs,
-            ssrc->hysteresisDb,
-            (int) ssrc->accessNetwork,
-            ssrc->thresholdsDbm[0],
-            ssrc->thresholdsDbm[1],
-            ssrc->thresholdsDbm[2],
-            ssrc->thresholdsDbm[3]);
+            (RIL_SignalStrength_Reporting_Criteria*)msg->getData()->getData();
+    logD(LOG_TAG,
+         "requestSetSignalStrengthReportingCriteria %d, %d, %d"
+         "thresholdsDbm[0] = %d"
+         "thresholdsDbm[1] = %d"
+         "thresholdsDbm[2] = %d"
+         "thresholdsDbm[3] = %d",
+         ssrc->hysteresisMs, ssrc->hysteresisDb, (int)ssrc->accessNetwork, ssrc->thresholdsDbm[0],
+         ssrc->thresholdsDbm[1], ssrc->thresholdsDbm[2], ssrc->thresholdsDbm[3]);
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(resp);
     return;
 }
@@ -3166,18 +3117,17 @@ int getLteBandHex(int band_number) {
     // band 33 = 1
     // band 34 = 2
     // band 35 = 4
-    while(band_number > 32) band_number = band_number - 32;
+    while (band_number > 32) band_number = band_number - 32;
     band_hex = 1 << (band_number - 1);
     return band_hex;
 }
 
-void RmcNetworkRequestHandler::requestSetSystemSelectionChannels
-        (const sp<RfxMclMessage>& msg) {
-    // +EMMCHLCK=<mode>,[<act>,<band indicator>,[<number of channel>,]<arfcn>,[<arfcn>,<arfcn>,...,<arfcn>],<cell id>]
+void RmcNetworkRequestHandler::requestSetSystemSelectionChannels(const sp<RfxMclMessage>& msg) {
+    // +EMMCHLCK=<mode>,[<act>,<band indicator>,[<number of
+    // channel>,]<arfcn>,[<arfcn>,<arfcn>,...,<arfcn>],<cell id>]
     sp<RfxMclMessage> resp;
     RIL_Errno ril_err = RIL_E_RADIO_NOT_AVAILABLE;
-    RIL_SystemSelectionChannels* ssc =
-            (RIL_SystemSelectionChannels*) msg->getData()->getData();
+    RIL_SystemSelectionChannels* ssc = (RIL_SystemSelectionChannels*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     int err;
     // disable
@@ -3196,7 +3146,8 @@ void RmcNetworkRequestHandler::requestSetSystemSelectionChannels
         log.append(String8::format(",specifiers_length=%d", ssc->specifiers_length));
         for (int i = 0; i < ssc->specifiers_length; i++) {
             String8 cmd("AT+EMMCHLCK=3");
-            log.append(String8::format(",specifiers[%d].radio_access_network=%d", i, ssc->specifiers[i].radio_access_network));
+            log.append(String8::format(",specifiers[%d].radio_access_network=%d", i,
+                                       ssc->specifiers[i].radio_access_network));
             // <act>
             switch (ssc->specifiers[i].radio_access_network) {
                 case GERAN:
@@ -3211,7 +3162,8 @@ void RmcNetworkRequestHandler::requestSetSystemSelectionChannels
                 default:
                     goto error;
             }
-            log.append(String8::format(",specifiers[%d].bands_length=%d", i, ssc->specifiers[i].bands_length));
+            log.append(String8::format(",specifiers[%d].bands_length=%d", i,
+                                       ssc->specifiers[i].bands_length));
             // <band indicator>
             int band_indicator = 0;
             for (int j = 0; j < ssc->specifiers[i].bands_length; j++) {
@@ -3226,27 +3178,34 @@ void RmcNetworkRequestHandler::requestSetSystemSelectionChannels
                                 band_indicator = 0;
                             }
                         }
-                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j, ssc->specifiers[i].bands.geran_bands[j]));
+                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j,
+                                                   ssc->specifiers[i].bands.geran_bands[j]));
                         break;
                     case UTRAN:
-                        band_indicator = band_indicator | getUmtsBandHex(ssc->specifiers[i].bands.utran_bands[j]);
-                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j, ssc->specifiers[i].bands.utran_bands[j]));
+                        band_indicator = band_indicator |
+                                         getUmtsBandHex(ssc->specifiers[i].bands.utran_bands[j]);
+                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j,
+                                                   ssc->specifiers[i].bands.utran_bands[j]));
                         break;
                     case EUTRAN:
-                        band_indicator = band_indicator | getLteBandHex(ssc->specifiers[i].bands.eutran_bands[j]);
-                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j, ssc->specifiers[i].bands.eutran_bands[j]));
+                        band_indicator = band_indicator |
+                                         getLteBandHex(ssc->specifiers[i].bands.eutran_bands[j]);
+                        log.append(String8::format(",specifiers[%d].bands[%d]=%d", i, j,
+                                                   ssc->specifiers[i].bands.eutran_bands[j]));
                         break;
                     default:
                         goto error;
                 }
             }
             cmd.append(String8::format(",%x", band_indicator));
-            log.append(String8::format(",specifiers[%d].channels_length=%d", i, ssc->specifiers[i].channels_length));
+            log.append(String8::format(",specifiers[%d].channels_length=%d", i,
+                                       ssc->specifiers[i].channels_length));
             // <number of channel>
             cmd.append(String8::format(",%d", ssc->specifiers[i].channels_length));
             // <arfcn>
             for (int j = 0; j < ssc->specifiers[i].channels_length; j++) {
-                log.append(String8::format(",specifiers[%d].channels[%d]=%d", i, j, ssc->specifiers[i].channels[j]));
+                log.append(String8::format(",specifiers[%d].channels[%d]=%d", i, j,
+                                           ssc->specifiers[i].channels[j]));
                 cmd.append(String8::format(",%d", ssc->specifiers[i].channels[j]));
             }
             p_response = atSendCommand(cmd.string());
@@ -3266,47 +3225,47 @@ void RmcNetworkRequestHandler::requestSetSystemSelectionChannels
     }
     logD(LOG_TAG, "%s", log.string());
 
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(resp);
     return;
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_err,
-                RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_err, RfxVoidData(), msg, false);
     responseToTelCore(resp);
-
 }
 
 void RmcNetworkRequestHandler::requestGetTs25Name(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
-    int *pInt = (int *) msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int mcc = pInt[0];
     int mnc = pInt[1];
-    char *mccmnc = NULL;
+    char* mccmnc = NULL;
     char longname[MAX_OPER_NAME_LENGTH], shortname[MAX_OPER_NAME_LENGTH];
 
     logD(LOG_TAG, "requestGetTs25Name input %d %d", mcc, mnc);
-    if (mnc > 99) asprintf(&mccmnc, "%d%03d", mcc, mnc);
-    else asprintf(&mccmnc, "%d%02d", mcc, mnc);
+    if (mnc > 99)
+        asprintf(&mccmnc, "%d%03d", mcc, mnc);
+    else
+        asprintf(&mccmnc, "%d%02d", mcc, mnc);
     getPLMNNameFromNumeric(mccmnc, longname, shortname, MAX_OPER_NAME_LENGTH);
     free(mccmnc);
     logD(LOG_TAG, "requestGetTs25Name result %s %s", longname, shortname);
     // response long name only.
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData(longname, (strlen(longname)+1)), msg, false);
+                                             RfxStringData(longname, (strlen(longname) + 1)), msg,
+                                             false);
     responseToTelCore(response);
     return;
 }
 
 void RmcNetworkRequestHandler::requestEnableCaPlusFilter(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
-    int *pInt = (int *) msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     bool enabled = pInt[0] == 0 ? false : true;
 
     ca_filter_switch[m_slot_id] = enabled;
     logD(LOG_TAG, "requestEnableCaPlusFilter enabled %d", pInt[0]);
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(response);
     return;
 }
@@ -3314,10 +3273,10 @@ void RmcNetworkRequestHandler::requestEnableCaPlusFilter(const sp<RfxMclMessage>
 bool RmcNetworkRequestHandler::handleGetDataContextIds(const sp<RfxMclMessage>& msg) {
     bool changed = false;
     int m_data_context_ids[16] = {};
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int size = msg->getData()->getDataLength() / sizeof(int);
 
-    memcpy((void*) m_data_context_ids, (void*) data_context_ids[m_slot_id], 16 * sizeof(int));
+    memcpy((void*)m_data_context_ids, (void*)data_context_ids[m_slot_id], 16 * sizeof(int));
     for (int i = 0; i < 16; i++) {
         if (i < size) {
             data_context_ids[m_slot_id][i] = pInt[i];
@@ -3325,13 +3284,12 @@ bool RmcNetworkRequestHandler::handleGetDataContextIds(const sp<RfxMclMessage>& 
             data_context_ids[m_slot_id][i] = -1;
         }
     }
-    if (memcmp((void*) m_data_context_ids, (void*) data_context_ids[m_slot_id], 16 * sizeof(int)) != 0)
+    if (memcmp((void*)m_data_context_ids, (void*)data_context_ids[m_slot_id], 16 * sizeof(int)) !=
+        0)
         changed = true;
-    logD(LOG_TAG, "handleGetDataContextIds [%d, %d, %d, %d, ...]",
-            data_context_ids[m_slot_id][0],
-            data_context_ids[m_slot_id][1],
-            data_context_ids[m_slot_id][2],
-            data_context_ids[m_slot_id][3]);
+    logD(LOG_TAG, "handleGetDataContextIds [%d, %d, %d, %d, ...]", data_context_ids[m_slot_id][0],
+         data_context_ids[m_slot_id][1], data_context_ids[m_slot_id][2],
+         data_context_ids[m_slot_id][3]);
     return changed;
 }
 
@@ -3342,14 +3300,16 @@ bool RmcNetworkRequestHandler::handleGetDataContextIds(const sp<RfxMclMessage>& 
  * <threshold_array>: threshold value array
  */
 void RmcNetworkRequestHandler::registerCellularQualityReport(const sp<RfxMclMessage>& msg) {
-    char** params = (char**) msg->getData()->getData();
+    char** params = (char**)msg->getData()->getData();
     char* atCmd = (char*)"AT+EHOMEAS";
     sp<RfxAtResponse> p_response;
     int err = 0;
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     sp<RfxMclMessage> response;
-    char theshold1[6];memset(theshold1, 0, sizeof(theshold1));
-    char theshold2[6];memset(theshold2, 0, sizeof(theshold2));
+    char theshold1[6];
+    memset(theshold1, 0, sizeof(theshold1));
+    char theshold2[6];
+    memset(theshold2, 0, sizeof(theshold2));
     int thresholdCount = 1;
     char* pExtended_thresholds = NULL;
     char* pStart = params[2];
@@ -3358,8 +3318,8 @@ void RmcNetworkRequestHandler::registerCellularQualityReport(const sp<RfxMclMess
     pComma = strchr(pStart, ',');
     if (pComma == NULL) {
         // only one threshold
-        strncpy(theshold1, pStart, sizeof(theshold1)-1);
-        strncpy(theshold2, pStart, sizeof(theshold2)-1);
+        strncpy(theshold1, pStart, sizeof(theshold1) - 1);
+        strncpy(theshold2, pStart, sizeof(theshold2) - 1);
     } else {
         memcpy(theshold1, pStart, pComma - pStart);
         theshold1[(pComma - pStart)] = 0;
@@ -3369,7 +3329,7 @@ void RmcNetworkRequestHandler::registerCellularQualityReport(const sp<RfxMclMess
         pComma = strchr(pStart, ',');
         if (pComma == NULL) {
             // only two thresholds
-            strncpy(theshold2, pStart, sizeof(theshold2)-1);
+            strncpy(theshold2, pStart, sizeof(theshold2) - 1);
         } else {
             memcpy(theshold2, pStart, pComma - pStart);
             theshold2[(pComma - pStart)] = 0;
@@ -3389,11 +3349,11 @@ void RmcNetworkRequestHandler::registerCellularQualityReport(const sp<RfxMclMess
     String8 cmd;
     if (thresholdCount <= 2) {
         cmd = String8::format("%s=%s,%s,%s,%s,%s", atCmd, params[0], params[1], theshold1,
-                theshold2, params[3]);
+                              theshold2, params[3]);
     } else {
-        logD(LOG_TAG, "registerCellularQualityReport %d, %s",thresholdCount, pExtended_thresholds);
+        logD(LOG_TAG, "registerCellularQualityReport %d, %s", thresholdCount, pExtended_thresholds);
         cmd = String8::format("%s=%s,%s,%s,%s,%s,%d,%s", atCmd, params[0], params[1], theshold1,
-                theshold2, params[3], thresholdCount-2, pExtended_thresholds);
+                              theshold2, params[3], thresholdCount - 2, pExtended_thresholds);
     }
 
     p_response = atSendCommand(cmd);
@@ -3405,8 +3365,7 @@ void RmcNetworkRequestHandler::registerCellularQualityReport(const sp<RfxMclMess
     }
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
@@ -3415,16 +3374,16 @@ void RmcNetworkRequestHandler::requestGetEhrpdInfo(const sp<RfxMclMessage>& msg)
     int err = 0;
     char* responseStr = NULL;
     sp<RfxMclMessage> response;
-    CDMA_CELL_LOCATION_INFO cdma_cell_location = { 0, 0, 0, 0, 0, 0, 0, NULL, NULL };
+    CDMA_CELL_LOCATION_INFO cdma_cell_location = {0, 0, 0, 0, 0, 0, 0, NULL, NULL};
 
-    ViaBaseHandler *mViaHandler = RfxViaUtils::getViaHandler();
+    ViaBaseHandler* mViaHandler = RfxViaUtils::getViaHandler();
     if (mViaHandler != NULL) {
         err = mViaHandler->getCdmaLocationInfo(this, &cdma_cell_location);
         if (err < 0) goto error;
         if (cdma_cell_location.sector_id != NULL && cdma_cell_location.subnet_mask != NULL) {
             // Skip the first two characters, eg: 0x00a8c0 -> 00a8c0.
             err = asprintf(&responseStr, "%s:%s", cdma_cell_location.sector_id + 2,
-                    cdma_cell_location.subnet_mask + 2);
+                           cdma_cell_location.subnet_mask + 2);
             if (err < 0) goto error;
         } else {
             goto error;
@@ -3435,7 +3394,8 @@ void RmcNetworkRequestHandler::requestGetEhrpdInfo(const sp<RfxMclMessage>& msg)
 
     if (responseStr != NULL) {
         response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxStringData(responseStr, strlen(responseStr)), msg, false);
+                                                 RfxStringData(responseStr, strlen(responseStr)),
+                                                 msg, false);
         responseToTelCore(response);
         free(responseStr);
         responseStr = NULL;
@@ -3444,8 +3404,8 @@ void RmcNetworkRequestHandler::requestGetEhrpdInfo(const sp<RfxMclMessage>& msg)
         logE(LOG_TAG, "%s, return because responseStr is NULL.", __FUNCTION__);
     }
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxStringData(),
+                                             msg, false);
     responseToTelCore(response);
     if (responseStr != NULL) {
         free(responseStr);
@@ -3456,7 +3416,7 @@ error:
 
 void RmcNetworkRequestHandler::requestGetSuggestedPlmnList(const sp<RfxMclMessage>& msg) {
     int err, len, list_size, num_filter, i, j;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int rat = pInt[0];
     int num = pInt[1];
     int timer = pInt[2];
@@ -3464,12 +3424,12 @@ void RmcNetworkRequestHandler::requestGetSuggestedPlmnList(const sp<RfxMclMessag
     sp<RfxMclMessage> resp;
     sp<RfxAtResponse> p_response;
     RfxAtLine* line;
-    char *tmp;
+    char* tmp;
 
     logE(LOG_TAG, "requestGetSuggestedPlmnList rat=%d, num=%d, timer=%d", rat, num, timer);
 
-    p_response = atSendCommandSingleline(
-        String8::format("AT+EPLWSS=%d,%d,%d", rat, num, timer), "+EPLWSS:");
+    p_response = atSendCommandSingleline(String8::format("AT+EPLWSS=%d,%d,%d", rat, num, timer),
+                                         "+EPLWSS:");
     err = p_response->getError();
     if (err < 0 || p_response->getSuccess() == 0) {
         goto error;
@@ -3480,17 +3440,17 @@ void RmcNetworkRequestHandler::requestGetSuggestedPlmnList(const sp<RfxMclMessag
     // count the number of operator
     tmp = line->getLine();
     len = strlen(tmp);
-    for(i = 0, list_size = 0, num_filter = 0; i < len ; i++ ) {
+    for (i = 0, list_size = 0, num_filter = 0; i < len; i++) {
         // here we assume that there is no nested ()
         if (tmp[i] == '(') {
             list_size++;
             num_filter++;
-        } else if (tmp[i] == ',' && tmp[i+1] == ',') {
+        } else if (tmp[i] == ',' && tmp[i + 1] == ',') {
             break;
         }
     }
 
-    response = (char**) calloc(1, sizeof(char*) * list_size);
+    response = (char**)calloc(1, sizeof(char*) * list_size);
     if (response == NULL) goto error;
     memset(response, 0, sizeof(char*) * list_size);
     // +EPLWSS: (2,"Far EasTone","FET","46601",0),(...),...,,(0, 1, 3),(0-2)
@@ -3498,7 +3458,7 @@ void RmcNetworkRequestHandler::requestGetSuggestedPlmnList(const sp<RfxMclMessag
     line->atTokStart(&err);
     if (err < 0) goto error;
 
-    for (i = 0; i < list_size ; i++) {
+    for (i = 0; i < list_size; i++) {
         // <state>
         tmp = line->atTokNextstr(&err);
         if (err < 0) goto error;
@@ -3526,22 +3486,21 @@ void RmcNetworkRequestHandler::requestGetSuggestedPlmnList(const sp<RfxMclMessag
     }
 
     resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringsData(response, list_size), msg, false);
+                                         RfxStringsData(response, list_size), msg, false);
     responseToTelCore(resp);
 
     if (response != NULL) {
-        for (i = 0; i < list_size ; i++) {
+        for (i = 0; i < list_size; i++) {
             if (response[i] != NULL) free(response[i]);
         }
         free(response);
     }
     return;
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_MODEM_ERR,
-                RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_MODEM_ERR, RfxVoidData(), msg, false);
     responseToTelCore(resp);
     if (response != NULL) {
-        for (i = 0; i < list_size ; i++) {
+        for (i = 0; i < list_size; i++) {
             if (response[i] != NULL) free(response[i]);
         }
         free(response);
@@ -3552,55 +3511,55 @@ error:
 void RmcNetworkRequestHandler::requestConfigA2Offset(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestConfigB1Offset(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestEnableSCGFailure(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestDisableNr(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestSetTxPower(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestSearchStoreFrenquencyInfo(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestSearchRat(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcNetworkRequestHandler::requestSetBackgroundSearchTimer(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> response;
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
-            RfxVoidData(), msg, false);
+                                             RfxVoidData(), msg, false);
     responseToTelCore(response);
 }

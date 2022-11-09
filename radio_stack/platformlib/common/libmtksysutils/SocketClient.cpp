@@ -32,9 +32,7 @@
 #define SLOGW(...) (mtkLogW(LOG_TAG, __VA_ARGS__))
 #define SLOGE(...) (mtkLogE(LOG_TAG, __VA_ARGS__))
 
-SocketClient::SocketClient(int socket, bool owned) {
-    init(socket, owned, false);
-}
+SocketClient::SocketClient(int socket, bool owned) { init(socket, owned, false); }
 
 SocketClient::SocketClient(int socket, bool owned, bool useCmdNum) {
     init(socket, owned, useCmdNum);
@@ -70,12 +68,12 @@ SocketClient::~SocketClient() {
     }
 }
 
-int SocketClient::sendMsg(int code, const char *msg, bool addErrno) {
+int SocketClient::sendMsg(int code, const char* msg, bool addErrno) {
     return sendMsg(code, msg, addErrno, mUseCmdNum);
 }
 
-int SocketClient::sendMsg(int code, const char *msg, bool addErrno, bool useCmdNum) {
-    char *buf;
+int SocketClient::sendMsg(int code, const char* msg, bool addErrno, bool useCmdNum) {
+    char* buf;
     int ret = 0;
 
     if (addErrno) {
@@ -100,8 +98,7 @@ int SocketClient::sendMsg(int code, const char *msg, bool addErrno, bool useCmdN
 }
 
 // send 3-digit code, null, binary-length, binary data
-int SocketClient::sendBinaryMsg(int code, const void *data, int len) {
-
+int SocketClient::sendBinaryMsg(int code, const void* data, int len) {
     // 4 bytes for the code & null + 4 bytes for the len
     char buf[8];
     // Write the code
@@ -111,9 +108,9 @@ int SocketClient::sendBinaryMsg(int code, const void *data, int len) {
     memcpy(buf + 4, &tmp, sizeof(uint32_t));
 
     struct iovec vec[2];
-    vec[0].iov_base = (void *) buf;
+    vec[0].iov_base = (void*)buf;
     vec[0].iov_len = sizeof(buf);
-    vec[1].iov_base = (void *) data;
+    vec[1].iov_base = (void*)data;
     vec[1].iov_len = len;
 
     pthread_mutex_lock(&mWriteMutex);
@@ -130,14 +127,14 @@ int SocketClient::sendCode(int code) {
     return sendData(buf, sizeof(buf));
 }
 
-char *SocketClient::quoteArg(const char *arg) {
+char* SocketClient::quoteArg(const char* arg) {
     int len = strlen(arg);
-    char *result = (char *)malloc(len * 2 + 3);
-    char *current = result;
-    const char *end = arg + len;
-    char *oldresult;
+    char* result = (char*)malloc(len * 2 + 3);
+    char* current = result;
+    const char* end = arg + len;
+    char* oldresult;
 
-    if(result == NULL) {
+    if (result == NULL) {
         SLOGW("malloc error (%s)", strerror(errno));
         return NULL;
     }
@@ -145,22 +142,21 @@ char *SocketClient::quoteArg(const char *arg) {
     *(current++) = '"';
     while (arg < end) {
         switch (*arg) {
-        case '\\':
-        case '"':
-            *(current++) = '\\'; // fallthrough
-        default:
-            *(current++) = *(arg++);
+            case '\\':
+            case '"':
+                *(current++) = '\\';  // fallthrough
+            default:
+                *(current++) = *(arg++);
         }
     }
     *(current++) = '"';
     *(current++) = '\0';
-    oldresult = result; // save pointer in case realloc fails
-    result = (char *)realloc(result, current-result);
+    oldresult = result;  // save pointer in case realloc fails
+    result = (char*)realloc(result, current - result);
     return result ? result : oldresult;
 }
 
-
-int SocketClient::sendMsg(const char *msg) {
+int SocketClient::sendMsg(const char* msg) {
     // Send the message including null character
     if (sendData(msg, strlen(msg) + 1) != 0) {
         SLOGW("Unable to send msg '%s'", msg);
@@ -169,9 +165,9 @@ int SocketClient::sendMsg(const char *msg) {
     return 0;
 }
 
-int SocketClient::sendData(const void *data, int len) {
+int SocketClient::sendData(const void* data, int len) {
     struct iovec vec[1];
-    vec[0].iov_base = (void *) data;
+    vec[0].iov_base = (void*)data;
     vec[0].iov_len = len;
 
     pthread_mutex_lock(&mWriteMutex);
@@ -181,7 +177,7 @@ int SocketClient::sendData(const void *data, int len) {
     return rc;
 }
 
-int SocketClient::sendDatav(struct iovec *iov, int iovcnt) {
+int SocketClient::sendDatav(struct iovec* iov, int iovcnt) {
     pthread_mutex_lock(&mWriteMutex);
     int rc = sendDataLockedv(iov, iovcnt);
     pthread_mutex_unlock(&mWriteMutex);
@@ -189,8 +185,7 @@ int SocketClient::sendDatav(struct iovec *iov, int iovcnt) {
     return rc;
 }
 
-int SocketClient::sendDataLockedv(struct iovec *iov, int iovcnt) {
-
+int SocketClient::sendDataLockedv(struct iovec* iov, int iovcnt) {
     if (mSocket < 0) {
         errno = EHOSTUNREACH;
         return -1;
@@ -201,7 +196,7 @@ int SocketClient::sendDataLockedv(struct iovec *iov, int iovcnt) {
     }
 
     int ret = 0;
-    int e = 0; // SLOGW and sigaction are not inert regarding errno
+    int e = 0;  // SLOGW and sigaction are not inert regarding errno
     int current = 0;
 
     struct sigaction new_action, old_action;
@@ -210,8 +205,7 @@ int SocketClient::sendDataLockedv(struct iovec *iov, int iovcnt) {
     sigaction(SIGPIPE, &new_action, &old_action);
 
     for (;;) {
-        ssize_t rc = TEMP_FAILURE_RETRY(
-            writev(mSocket, iov + current, iovcnt - current));
+        ssize_t rc = TEMP_FAILURE_RETRY(writev(mSocket, iov + current, iovcnt - current));
 
         if (rc > 0) {
             size_t written = rc;
@@ -222,7 +216,7 @@ int SocketClient::sendDataLockedv(struct iovec *iov, int iovcnt) {
             if (current == iovcnt) {
                 break;
             }
-            iov[current].iov_base = (char *)iov[current].iov_base + written;
+            iov[current].iov_base = (char*)iov[current].iov_base + written;
             iov[current].iov_len -= written;
             continue;
         }

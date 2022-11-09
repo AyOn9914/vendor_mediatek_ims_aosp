@@ -34,34 +34,34 @@ typedef enum {
 class RmcWpRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcWpRequestHandler);
 
-    public:
-        RmcWpRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcWpRequestHandler();
+  public:
+    RmcWpRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcWpRequestHandler();
 
-    public:
-        static int isWorldModeSwitching();
-        void setActiveModemType();
-        int getActiveModemType();
-        int queryActiveMode();
+  public:
+    static int isWorldModeSwitching();
+    void setActiveModemType();
+    int getActiveModemType();
+    int queryActiveMode();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestResumingWorldMode(const sp<RfxMclMessage>& msg);
-        void onWorldModeStateChanged(int state);
-        void handleWorldModeChanged(const sp<RfxMclMessage>& msg);
-        WorldPhonePolicyType getWorldPhonePolicy();
-        void setWorldPhonePolicy();
-        int isWorldPhoneSupport();
-        SVLTE_PROJ_TYPE getSvlteProjectType();
-        int isSvlteLcgSupport();
-        void worldPhoneInitialize(int slot_id);
+  private:
+    void requestResumingWorldMode(const sp<RfxMclMessage>& msg);
+    void onWorldModeStateChanged(int state);
+    void handleWorldModeChanged(const sp<RfxMclMessage>& msg);
+    WorldPhonePolicyType getWorldPhonePolicy();
+    void setWorldPhonePolicy();
+    int isWorldPhoneSupport();
+    SVLTE_PROJ_TYPE getSvlteProjectType();
+    int isSvlteLcgSupport();
+    void worldPhoneInitialize(int slot_id);
 
-    private:
-        static int bWorldModeSwitching;
-        static int ecsraUrcParams[5];
-        static RIL_RadioState radioStateBackup[MAX_SIM_COUNT];
+  private:
+    static int bWorldModeSwitching;
+    static int ecsraUrcParams[5];
+    static RIL_RadioState radioStateBackup[MAX_SIM_COUNT];
 };
 
 #endif /*__RMC_WP_REQUEST_HANDLER_H__*/

@@ -28,8 +28,7 @@
 static const int kMaxNativeFds = 1024;
 static const int kMaxNativeInts = 1024;
 
-native_handle_t* native_handle_create(int numFds, int numInts)
-{
+native_handle_t* native_handle_create(int numFds, int numInts) {
     if (numFds < 0 || numInts < 0 || numFds > kMaxNativeFds || numInts > kMaxNativeInts) {
         return NULL;
     }
@@ -44,24 +43,20 @@ native_handle_t* native_handle_create(int numFds, int numInts)
     return h;
 }
 
-int native_handle_delete(native_handle_t* h)
-{
+int native_handle_delete(native_handle_t* h) {
     if (h) {
-        if (h->version != sizeof(native_handle_t))
-            return -EINVAL;
+        if (h->version != sizeof(native_handle_t)) return -EINVAL;
         free(h);
     }
     return 0;
 }
 
-int native_handle_close(const native_handle_t* h)
-{
-    if (h->version != sizeof(native_handle_t))
-        return -EINVAL;
+int native_handle_close(const native_handle_t* h) {
+    if (h->version != sizeof(native_handle_t)) return -EINVAL;
 
     const int numFds = h->numFds;
     int i;
-    for (i=0 ; i<numFds ; i++) {
+    for (i = 0; i < numFds; i++) {
         close(h->data[i]);
     }
     return 0;

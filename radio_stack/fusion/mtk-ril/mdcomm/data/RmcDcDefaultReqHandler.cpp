@@ -28,12 +28,11 @@
 /*****************************************************************************
  * Class RmcDcDefaultReqHandler
  *****************************************************************************/
-RmcDcDefaultReqHandler::RmcDcDefaultReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager)
-: RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {
-}
+RmcDcDefaultReqHandler::RmcDcDefaultReqHandler(int slot_id, int channel_id,
+                                               RmcDcPdnManager* pdnManager)
+    : RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {}
 
-RmcDcDefaultReqHandler::~RmcDcDefaultReqHandler() {
-}
+RmcDcDefaultReqHandler::~RmcDcDefaultReqHandler() {}
 
 void RmcDcDefaultReqHandler::requestSetupDataCall(const sp<RfxMclMessage>& msg) {
     RmcDcCommonReqHandler::requestSetupDataCall(msg);
@@ -89,8 +88,8 @@ void RmcDcDefaultReqHandler::requestResetMdDataRetryCount(const sp<RfxMclMessage
 
 void RmcDcDefaultReqHandler::requestLastFailCause(const sp<RfxMclMessage>& msg) {
     int cause = getLastFailCause();
-    sp<RfxMclMessage> responseMsg = RfxMclMessage::obtainResponse(RIL_E_SUCCESS,
-            RfxIntsData(&cause, 1), msg);
+    sp<RfxMclMessage> responseMsg =
+            RfxMclMessage::obtainResponse(RIL_E_SUCCESS, RfxIntsData(&cause, 1), msg);
     responseToTelCore(responseMsg);
 }
 
@@ -98,7 +97,8 @@ void RmcDcDefaultReqHandler::requestOrSendDataCallList(const sp<RfxMclMessage>& 
     RmcDcCommonReqHandler::requestOrSendDataCallList(msg);
 }
 
-void RmcDcDefaultReqHandler::requestOrSendDataCallList(const sp<RfxMclMessage>& msg, Vector<int> *vAidList) {
+void RmcDcDefaultReqHandler::requestOrSendDataCallList(const sp<RfxMclMessage>& msg,
+                                                       Vector<int>* vAidList) {
     RmcDcCommonReqHandler::requestOrSendDataCallList(msg, vAidList);
 }
 
@@ -117,7 +117,7 @@ void RmcDcDefaultReqHandler::requestSetLteAccessStratumReport(const sp<RfxMclMes
     //     1   Turn on URC +EDRBSTATE
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
-    int *pReqData = (int *)msg->getData()->getData();
+    int* pReqData = (int*)msg->getData()->getData();
     int enabled = pReqData[0];
 
     RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] enabled: %d", m_slot_id, __FUNCTION__, enabled);
@@ -126,11 +126,11 @@ void RmcDcDefaultReqHandler::requestSetLteAccessStratumReport(const sp<RfxMclMes
 
     if (p_response->isAtResponseFail()) {
         RFX_LOG_E(RFX_LOG_TAG, "[%d][%s]AT+EDRB command returns ERROR", m_slot_id, __FUNCTION__);
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                RfxVoidData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                                 msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg,
+                                                 false);
     }
     responseToTelCore(response);
 }
@@ -143,45 +143,45 @@ void RmcDcDefaultReqHandler::onLteAccessStratumStateChange(const sp<RfxMclMessag
     // <AcT> only reported when drb_state = 0, report the current PS access technology
     int err = 0;
     int response[DRB_NUM] = {0};
-    char *urc = (char*)msg->getData()->getData();
-    RfxAtLine *pLine = new RfxAtLine(urc, NULL);
+    char* urc = (char*)msg->getData()->getData();
+    RfxAtLine* pLine = new RfxAtLine(urc, NULL);
     sp<RfxMclMessage> urcMsg;
 
     RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] urc=%s", m_slot_id, __FUNCTION__, urc);
 
     pLine->atTokStart(&err);
     if (err < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start",
-                m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start", m_slot_id, __FUNCTION__);
         goto error;
     }
 
     response[DRB_STATE] = pLine->atTokNextint(&err);
     if (err < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing <drb_state>",
-                m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing <drb_state>", m_slot_id,
+                  __FUNCTION__);
         goto error;
     }
 
-    if (DRB_NOT_EXISTED == response[DRB_STATE]) {  // 2G/3G/4G connected but no DRB exists/4G AS idle
+    if (DRB_NOT_EXISTED ==
+        response[DRB_STATE]) {  // 2G/3G/4G connected but no DRB exists/4G AS idle
         response[DRB_ACT] = pLine->atTokNextint(&err);
         if (err < 0) {
-            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing <AcT>",
-                    m_slot_id, __FUNCTION__);
+            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing <AcT>", m_slot_id,
+                      __FUNCTION__);
             goto error;
         }
         response[DRB_ACT] = convertNetworkType(response[DRB_ACT]);
     }
-    RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] <drb_state>: %d, <AcT>: %d",
-            m_slot_id, __FUNCTION__, response[DRB_STATE], response[DRB_ACT]);
+    RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] <drb_state>: %d, <AcT>: %d", m_slot_id, __FUNCTION__,
+              response[DRB_STATE], response[DRB_ACT]);
 
     if (DRB_NOT_EXISTED == response[DRB_STATE]) {
-        urcMsg = RfxMclMessage::obtainUrc(RFX_MSG_URC_LTE_ACCESS_STRATUM_STATE_CHANGE,
-                m_slot_id, RfxIntsData(response, DRB_NUM));
+        urcMsg = RfxMclMessage::obtainUrc(RFX_MSG_URC_LTE_ACCESS_STRATUM_STATE_CHANGE, m_slot_id,
+                                          RfxIntsData(response, DRB_NUM));
         responseToTelCore(urcMsg);
     } else {
-        urcMsg = RfxMclMessage::obtainUrc(RFX_MSG_URC_LTE_ACCESS_STRATUM_STATE_CHANGE,
-                m_slot_id, RfxIntsData(&response[DRB_STATE], DRB_NUM - 1));
+        urcMsg = RfxMclMessage::obtainUrc(RFX_MSG_URC_LTE_ACCESS_STRATUM_STATE_CHANGE, m_slot_id,
+                                          RfxIntsData(&response[DRB_STATE], DRB_NUM - 1));
         responseToTelCore(urcMsg);
     }
 
@@ -192,35 +192,35 @@ error:
 void RmcDcDefaultReqHandler::requestSetLteUplinkDataTransfer(const sp<RfxMclMessage>& msg) {
     // Tclose timer(sec.) << 16 | 0 : stop uplink data transfer with Tclose timer
     // 1 : start uplink data transfer
-    int *pReqData = (int *)msg->getData()->getData();
+    int* pReqData = (int*)msg->getData()->getData();
     int state = pReqData[0];
     int transIntfId = pReqData[1];
-    NetAgentService *pNetAgentService = NetAgentService::getInstance();
+    NetAgentService* pNetAgentService = NetAgentService::getInstance();
     sp<NetActionBase> action;
 
-    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] state: %d, transIntfId: %d",
-            m_slot_id, __FUNCTION__, state, transIntfId);
+    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] state: %d, transIntfId: %d", m_slot_id, __FUNCTION__, state,
+              transIntfId);
 
     if (NULL == pNetAgentService) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error",
-                m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error", m_slot_id,
+                  __FUNCTION__);
         requestSetLteUplinkDataTransferCompleted(false, msg);
     } else {
-        action = new NetAction<const sp<RfxMclMessage>>(this,
-                &RmcDcDefaultReqHandler::requestSetLteUplinkDataTransferCompleted, msg);
+        action = new NetAction<const sp<RfxMclMessage>>(
+                this, &RmcDcDefaultReqHandler::requestSetLteUplinkDataTransferCompleted, msg);
         pNetAgentService->setNetworkTransmitState(state, transIntfId, action);
     }
 }
 
-void RmcDcDefaultReqHandler::requestSetLteUplinkDataTransferCompleted(
-        bool bSuccess, const sp<RfxMclMessage> msg) {
+void RmcDcDefaultReqHandler::requestSetLteUplinkDataTransferCompleted(bool bSuccess,
+                                                                      const sp<RfxMclMessage> msg) {
     sp<RfxMclMessage> response;
     if (bSuccess) {
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg,
+                                                 false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                RfxVoidData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                                 msg, false);
     }
     responseToTelCore(response);
 }

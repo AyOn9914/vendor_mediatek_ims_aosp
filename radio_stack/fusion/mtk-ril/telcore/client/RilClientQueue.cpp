@@ -25,7 +25,7 @@
  *****************************************************************************/
 
 #define RFX_LOG_TAG "RilClientQueue"
-#define ARRAY_LENGTH(array) (sizeof(array)/sizeof(array[0]))
+#define ARRAY_LENGTH(array) (sizeof(array) / sizeof(array[0]))
 
 RilClientQueue::RilClientQueue() {
     RFX_LOG_D(RFX_LOG_TAG, "construct head message");
@@ -35,14 +35,14 @@ RilClientQueue::RilClientQueue() {
 }
 
 RilClientQueue::RilClientQueue(RilClient* client) {
-    RFX_LOG_D(RFX_LOG_TAG, "construct client with client id %d", client -> identity);
+    RFX_LOG_D(RFX_LOG_TAG, "construct client with client id %d", client->identity);
     this->client = client;
     this->nextClient = NULL;
     this->prevClient = NULL;
 }
 
 RilClientQueue::~RilClientQueue() {
-    RFX_LOG_D(RFX_LOG_TAG, "destructor run with client id %d", client -> identity);
+    RFX_LOG_D(RFX_LOG_TAG, "destructor run with client id %d", client->identity);
     this->client = NULL;
     this->nextClient = NULL;
     this->prevClient = NULL;

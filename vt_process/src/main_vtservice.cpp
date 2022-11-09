@@ -34,7 +34,6 @@
 using namespace android;
 
 int main(void) {
-
     sp<ProcessState> proc(ProcessState::self());
     sp<IServiceManager> sm = defaultServiceManager();
 

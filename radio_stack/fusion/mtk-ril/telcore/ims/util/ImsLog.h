@@ -22,13 +22,12 @@
 //#define IMS__DEBUG
 
 #ifdef IMS__DEBUG
-    #define IMS_DEBUG(...)  RFX_LOG_D(__VA_ARGS__)
+#define IMS_DEBUG(...) RFX_LOG_D(__VA_ARGS__)
 #else
-    #define IMS_DEBUG(...)
+#define IMS_DEBUG(...)
 #endif
 
-#define IMS_LOG_D(...)  RFX_LOG_D(__VA_ARGS__)
-#define IMS_LOG_E(...)  RFX_LOG_E(__VA_ARGS__)
+#define IMS_LOG_D(...) RFX_LOG_D(__VA_ARGS__)
+#define IMS_LOG_E(...) RFX_LOG_E(__VA_ARGS__)
 
-
-#endif // IMS_LOG_H
+#endif  // IMS_LOG_H

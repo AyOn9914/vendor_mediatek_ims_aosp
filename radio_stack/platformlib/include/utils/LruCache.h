@@ -27,16 +27,16 @@ namespace android {
 /**
  * GenerationCache callback used when an item is removed
  */
-template<typename EntryKey, typename EntryValue>
+template <typename EntryKey, typename EntryValue>
 class OnEntryRemoved {
-public:
-    virtual ~OnEntryRemoved() { };
+  public:
+    virtual ~OnEntryRemoved(){};
     virtual void operator()(EntryKey& key, EntryValue& value) = 0;
-}; // class OnEntryRemoved
+};  // class OnEntryRemoved
 
 template <typename TKey, typename TValue>
 class LruCache {
-public:
+  public:
     explicit LruCache(uint32_t maxCapacity);
     virtual ~LruCache();
 
@@ -53,7 +53,7 @@ public:
     void clear();
     const TValue& peekOldestValue();
 
-private:
+  private:
     LruCache(const LruCache& that);  // disallow copy constructor
 
     struct Entry {
@@ -62,21 +62,16 @@ private:
         Entry* parent;
         Entry* child;
 
-        Entry(TKey key_, TValue value_) : key(key_), value(value_), parent(NULL), child(NULL) {
-        }
+        Entry(TKey key_, TValue value_) : key(key_), value(value_), parent(NULL), child(NULL) {}
         const TKey& getKey() const { return key; }
     };
 
     struct HashForEntry : public std::unary_function<Entry*, hash_t> {
-        size_t operator() (const Entry* entry) const {
-            return hash_type(entry->key);
-        };
+        size_t operator()(const Entry* entry) const { return hash_type(entry->key); };
     };
 
     struct EqualityForHashedEntries : public std::unary_function<Entry*, hash_t> {
-        bool operator() (const Entry* lhs, const Entry* rhs) const {
-            return lhs->key == rhs->key;
-        };
+        bool operator()(const Entry* lhs, const Entry* rhs) const { return lhs->key == rhs->key; };
     };
 
     typedef std::unordered_set<Entry*, HashForEntry, EqualityForHashedEntries> LruCacheSet;
@@ -97,16 +92,15 @@ private:
     uint32_t mMaxCapacity;
     TValue mNullValue;
 
-public:
+  public:
     // To be used like:
     // while (it.next()) {
     //   it.value(); it.key();
     // }
     class Iterator {
-    public:
-        Iterator(const LruCache<TKey, TValue>& cache):
-                mCache(cache), mIterator(mCache.mSet->begin()), mBeginReturned(false) {
-        }
+      public:
+        Iterator(const LruCache<TKey, TValue>& cache)
+            : mCache(cache), mIterator(mCache.mSet->begin()), mBeginReturned(false) {}
 
         bool next() {
             if (mIterator == mCache.mSet->end()) {
@@ -123,14 +117,11 @@ public:
             return ret;
         }
 
-        const TValue& value() const {
-            return (*mIterator)->value;
-        }
+        const TValue& value() const { return (*mIterator)->value; }
 
-        const TKey& key() const {
-            return (*mIterator)->key;
-        }
-    private:
+        const TKey& key() const { return (*mIterator)->key; }
+
+      private:
         const LruCache<TKey, TValue>& mCache;
         typename LruCacheSet::iterator mIterator;
         bool mBeginReturned;
@@ -140,12 +131,12 @@ public:
 // Implementation is here, because it's fully templated
 template <typename TKey, typename TValue>
 LruCache<TKey, TValue>::LruCache(uint32_t maxCapacity)
-    : mSet(new LruCacheSet())
-    , mListener(NULL)
-    , mOldest(NULL)
-    , mYoungest(NULL)
-    , mMaxCapacity(maxCapacity)
-    , mNullValue(NULL) {
+    : mSet(new LruCacheSet()),
+      mListener(NULL),
+      mOldest(NULL),
+      mYoungest(NULL),
+      mMaxCapacity(maxCapacity),
+      mNullValue(NULL) {
     mSet->max_load_factor(1.0);
 };
 
@@ -155,7 +146,7 @@ LruCache<TKey, TValue>::~LruCache() {
     clear();
 };
 
-template<typename K, typename V>
+template <typename K, typename V>
 void LruCache<K, V>::setOnEntryRemovedListener(OnEntryRemoved<K, V>* listener) {
     mListener = listener;
 }
@@ -171,7 +162,7 @@ const TValue& LruCache<TKey, TValue>::get(const TKey& key) {
     if (find_result == mSet->end()) {
         return mNullValue;
     }
-    Entry *entry = *find_result;
+    Entry* entry = *find_result;
     detachFromCache(*entry);
     attachToCache(*entry);
     return entry->value;
@@ -269,5 +260,5 @@ void LruCache<TKey, TValue>::detachFromCache(Entry& entry) {
     entry.child = NULL;
 }
 
-}
-#endif // ANDROID_UTILS_LRU_CACHE_H
+}  // namespace android
+#endif  // ANDROID_UTILS_LRU_CACHE_H

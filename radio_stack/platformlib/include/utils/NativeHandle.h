@@ -24,19 +24,17 @@ typedef struct native_handle native_handle_t;
 
 namespace android {
 
-class NativeHandle: public LightRefBase<NativeHandle> {
-public:
+class NativeHandle : public LightRefBase<NativeHandle> {
+  public:
     // Create a refcounted wrapper around a native_handle_t, and declare
     // whether the wrapper owns the handle (so that it should clean up the
     // handle upon destruction) or not.
     // If handle is NULL, no NativeHandle will be created.
     static sp<NativeHandle> create(native_handle_t* handle, bool ownsHandle);
 
-    const native_handle_t* handle() const {
-        return mHandle;
-    }
+    const native_handle_t* handle() const { return mHandle; }
 
-private:
+  private:
     // for access to the destructor
     friend class LightRefBase<NativeHandle>;
 
@@ -51,6 +49,6 @@ private:
     NativeHandle& operator=(const NativeHandle&);
 };
 
-} // namespace android
+}  // namespace android
 
-#endif // ANDROID_NATIVE_HANDLE_H
+#endif  // ANDROID_NATIVE_HANDLE_H

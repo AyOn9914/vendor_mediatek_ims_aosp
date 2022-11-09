@@ -29,8 +29,8 @@
 #define RTC_DAC_LOG_TAG "RTC_DAC"
 
 /// OEM temp data switch @{
-#define TEMP_DATA_SWITCH_OFF       (0)
-#define TEMP_DATA_SWITCH_ON        (1)
+#define TEMP_DATA_SWITCH_OFF (0)
+#define TEMP_DATA_SWITCH_ON (1)
 /// @}
 
 static const int RETRY_TIME_MS = 100;
@@ -45,17 +45,15 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_DATA_C
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_DATA_CONNECTION_DETACH);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA);
 
-RtcDataAllowController::RtcDataAllowController() :
-    mDoingDataAllow(false),
-    mReqDataAllow(false),
-    mDisallowingPeer(0),
-    mLastAllowTrueRequest(NULL),
-    mIsPreferredDataMode(-1),
-    isMdSelfEdallow(-1) {
-}
+RtcDataAllowController::RtcDataAllowController()
+    : mDoingDataAllow(false),
+      mReqDataAllow(false),
+      mDisallowingPeer(0),
+      mLastAllowTrueRequest(NULL),
+      mIsPreferredDataMode(-1),
+      isMdSelfEdallow(-1) {}
 
-RtcDataAllowController::~RtcDataAllowController() {
-}
+RtcDataAllowController::~RtcDataAllowController() {}
 
 void RtcDataAllowController::onInit() {
     RfxController::onInit();  // Required: invoke super class implementation
@@ -71,22 +69,24 @@ void RtcDataAllowController::onInit() {
     isMdSelfEdallow = getFeatureVersion(MdEdallowTriggered, 0);
     logD(RTC_DAC_LOG_TAG, "isMdSelfEdallow = %d", isMdSelfEdallow);
     if (!isMdSelfEdallow) {
-        getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_PREFERRED_DATA_SIM,
+        getNonSlotScopeStatusManager()->registerStatusChanged(
+                RFX_STATUS_KEY_PREFERRED_DATA_SIM,
                 RfxStatusChangeCallback(this, &RtcDataAllowController::onPreferredChanged));
         for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-            getStatusManager(i)->registerStatusChanged(RFX_STATUS_CONNECTION_STATE,
-                RfxStatusChangeCallback(this, &RtcDataAllowController::onHidlStateChanged));
-            getStatusManager(i)->
-                registerStatusChangedEx(RFX_STATUS_KEY_SML_SLOT_LOCK_POLICY_SERVICE_CAPABILITY,
-                RfxStatusChangeCallbackEx(this, &RtcDataAllowController::onSimMeLockChanged));
+            getStatusManager(i)->registerStatusChanged(
+                    RFX_STATUS_CONNECTION_STATE,
+                    RfxStatusChangeCallback(this, &RtcDataAllowController::onHidlStateChanged));
+            getStatusManager(i)->registerStatusChangedEx(
+                    RFX_STATUS_KEY_SML_SLOT_LOCK_POLICY_SERVICE_CAPABILITY,
+                    RfxStatusChangeCallbackEx(this, &RtcDataAllowController::onSimMeLockChanged));
         }
     }
 
     const int requestIdList[] = {
-        RFX_MSG_REQUEST_ALLOW_DATA,  // 123
-        RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH,
-        RFX_MSG_REQUEST_DATA_CONNECTION_DETACH,
-        RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA,
+            RFX_MSG_REQUEST_ALLOW_DATA,  // 123
+            RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH,
+            RFX_MSG_REQUEST_DATA_CONNECTION_DETACH,
+            RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA,
     };
 
     // register request
@@ -103,8 +103,7 @@ void RtcDataAllowController::onInit() {
      */
     char imsSubmarinefeature[] = "IMS SUBMARINE";
     int imsSubmarinesupport = getFeatureVersion(imsSubmarinefeature);
-    logD(RTC_DAC_LOG_TAG,
-            "MD Feature: imsSubmarinesupport=%d", imsSubmarinesupport);
+    logD(RTC_DAC_LOG_TAG, "MD Feature: imsSubmarinesupport=%d", imsSubmarinesupport);
 
     if (imsSubmarinesupport == 1) {
         logD(RTC_DAC_LOG_TAG, "Creating WPFA");
@@ -128,9 +127,8 @@ void RtcDataAllowController::onDeinit() {
 }
 
 int RtcDataAllowController::checkRequestExistInQueue(int type, int slotId) {
-    for(int i = 0 ; i < (int)mOnDemandQueue.size() ; i++){
-        if(mOnDemandQueue[i].type == type &&
-                mOnDemandQueue[i].slotId == slotId) {
+    for (int i = 0; i < (int)mOnDemandQueue.size(); i++) {
+        if (mOnDemandQueue[i].type == type && mOnDemandQueue[i].slotId == slotId) {
             return i;
         }
     }
@@ -138,8 +136,8 @@ int RtcDataAllowController::checkRequestExistInQueue(int type, int slotId) {
 }
 
 int RtcDataAllowController::checkTypeExistInQueue(int type) {
-    for(int i = 0 ; i < (int)mOnDemandQueue.size() ; i++){
-        if(mOnDemandQueue[i].type == type) {
+    for (int i = 0; i < (int)mOnDemandQueue.size(); i++) {
+        if (mOnDemandQueue[i].type == type) {
             return i;
         }
     }
@@ -150,14 +148,12 @@ void RtcDataAllowController::enqueueNetworkRequest(int r_id, int slotId) {
     if (isMdSelfEdallow != 0) {
         return;
     }
-    int defaultSim = getNonSlotScopeStatusManager()->getIntValue(
-            RFX_STATUS_KEY_DEFAULT_DATA_SIM);
-    int preferSim = getNonSlotScopeStatusManager()->getIntValue(
-            RFX_STATUS_KEY_PREFERRED_DATA_SIM);
+    int defaultSim = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_DEFAULT_DATA_SIM);
+    int preferSim = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_PREFERRED_DATA_SIM);
     /*RIL_DATA_PROFILE_VENDOR_MMS = 1001*/
     if (r_id != RIL_DATA_PROFILE_DEFAULT && r_id != RIL_DATA_PROFILE_IMS) {
         logD(RTC_DAC_LOG_TAG, "enqueueNetworkRequest: r_id=%d,slotId=%d,defaultS=%d,preferS=%d",
-             r_id , slotId, defaultSim, preferSim);
+             r_id, slotId, defaultSim, preferSim);
         if (mOnDemandQueue.size() == 0) {
             logD(RTC_DAC_LOG_TAG, "enqueueNetworkRequest: set data allow to %d", slotId);
 
@@ -167,16 +163,15 @@ void RtcDataAllowController::enqueueNetworkRequest(int r_id, int slotId) {
             mOnDemandQueue.push_back(demandRequest);
 
             logD(RTC_DAC_LOG_TAG, "enqueueNetworkRequest: curr queue: %d",
-                    (int)mOnDemandQueue.size());
+                 (int)mOnDemandQueue.size());
             onSetDataAllow(slotId);
             return;
-        }
-        else {
+        } else {
             int ret = checkRequestExistInQueue(r_id, slotId);
             if (ret >= 0) {
                 logD(RTC_DAC_LOG_TAG,
                      "enqueueNetworkRequest: type = %d , slotId = %d, already enqueue, return",
-                     r_id , slotId);
+                     r_id, slotId);
                 return;
             }
 
@@ -186,7 +181,7 @@ void RtcDataAllowController::enqueueNetworkRequest(int r_id, int slotId) {
             mOnDemandQueue.push_back(demandRequest);
 
             logD(RTC_DAC_LOG_TAG, "enqueueNetworkRequest: curr queue: %d",
-                    (int)mOnDemandQueue.size());
+                 (int)mOnDemandQueue.size());
             return;
         }
     }
@@ -198,21 +193,19 @@ bool RtcDataAllowController::dequeueNetworkRequest(int r_id, int slotId) {
         // Do not trigger reseet retry timmer in this case.
         return false;
     }
-    logD(RTC_DAC_LOG_TAG, "dequeueNetworkRequest: r_id = %d , slotId = %d,", r_id , slotId);
-    int preferSim = getNonSlotScopeStatusManager()->getIntValue(
-            RFX_STATUS_KEY_PREFERRED_DATA_SIM);
+    logD(RTC_DAC_LOG_TAG, "dequeueNetworkRequest: r_id = %d , slotId = %d,", r_id, slotId);
+    int preferSim = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_PREFERRED_DATA_SIM);
     if (r_id != RIL_DATA_PROFILE_DEFAULT && r_id != RIL_DATA_PROFILE_IMS) {
         int ret = checkRequestExistInQueue(r_id, slotId);
         if (ret >= 0) {
-
-            mOnDemandQueue.erase(mOnDemandQueue.begin()+ret);
+            mOnDemandQueue.erase(mOnDemandQueue.begin() + ret);
             logD(RTC_DAC_LOG_TAG, "dequeueNetworkRequest: curr queue: %d",
-                    (int)mOnDemandQueue.size());
+                 (int)mOnDemandQueue.size());
         }
         if (mOnDemandQueue.size() == 0) {
             onSetDataAllow(preferSim);
             return FINISH_ALL_REQUEST;
-        } else if (mOnDemandQueue.size() > 0){
+        } else if (mOnDemandQueue.size() > 0) {
             onSetDataAllow(mOnDemandQueue[0].slotId);
         }
     }
@@ -222,78 +215,79 @@ bool RtcDataAllowController::dequeueNetworkRequest(int r_id, int slotId) {
 void RtcDataAllowController::onSetDataAllow(int slotId) {
     int allowMessage = DISALLOW_DATA;
     int i;
-    if(slotId < 0 || slotId >= RfxRilUtils::rfxGetSimCount()){
+    if (slotId < 0 || slotId >= RfxRilUtils::rfxGetSimCount()) {
         logD(RTC_DAC_LOG_TAG, "onSetDataAllow: inValid slotId", slotId);
         return;
     }
-    if(getAllowDataSlot() == slotId) {
+    if (getAllowDataSlot() == slotId) {
         logD(RTC_DAC_LOG_TAG, "onSetDataAllow: slotId[%d] = true", slotId);
         return;
     }
     for (i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-        if(i != slotId){
-            sp<RfxMessage> msgDisallow = RfxMessage::obtainRequest(
-                i, RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+        if (i != slotId) {
+            sp<RfxMessage> msgDisallow = RfxMessage::obtainRequest(i, RFX_MSG_REQUEST_ALLOW_DATA,
+                                                                   RfxIntsData(&allowMessage, 1));
             msgDisallow->setSlotId(i);
             RfxMainThread::enqueueMessage(msgDisallow);
         }
     }
     allowMessage = ALLOW_DATA;
-    sp<RfxMessage> msgAllow = RfxMessage::obtainRequest(
-            slotId, RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+    sp<RfxMessage> msgAllow = RfxMessage::obtainRequest(slotId, RFX_MSG_REQUEST_ALLOW_DATA,
+                                                        RfxIntsData(&allowMessage, 1));
     msgAllow->setSlotId(slotId);
     RfxMainThread::enqueueMessage(msgAllow);
     setAllowDataSlot(true, slotId);
 }
 
 bool RtcDataAllowController::onHandleRequest(const sp<RfxMessage>& message) {
-    logV(RTC_DAC_LOG_TAG, "[%d]Handle request %s",
-            message->getPToken(), RFX_ID_TO_STR(message->getId()));
+    logV(RTC_DAC_LOG_TAG, "[%d]Handle request %s", message->getPToken(),
+         RFX_ID_TO_STR(message->getId()));
 
     switch (message->getId()) {
-    case RFX_MSG_REQUEST_ALLOW_DATA:
-        // From Gen97, md has the ability to set EDALLOW=1/0 itself.
-        // Do nothing and return success to framework for VTS:setdataallowed testcase.
-        if (isMdSelfEdallow == 0) {
-            preprocessRequest(message);
-        } else {
-            sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(message->getSlotId(),
-            RFX_MSG_REQUEST_ALLOW_DATA, RIL_E_SUCCESS, RfxVoidData(), message);
-            responseToRilj(responseMsg);
-            mDoingDataAllow = false;
-        }
-        break;
-    case RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH:
-        handleDataConnectionAttachRequest(message);
-        break;
-    case RFX_MSG_REQUEST_DATA_CONNECTION_DETACH:
-        handleDataConnectionDetachRequest(message);
-        break;
-    default:
-        logD(RTC_DAC_LOG_TAG, "unknown request, ignore!");
-        break;
+        case RFX_MSG_REQUEST_ALLOW_DATA:
+            // From Gen97, md has the ability to set EDALLOW=1/0 itself.
+            // Do nothing and return success to framework for VTS:setdataallowed testcase.
+            if (isMdSelfEdallow == 0) {
+                preprocessRequest(message);
+            } else {
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(message->getSlotId(), RFX_MSG_REQUEST_ALLOW_DATA,
+                                                   RIL_E_SUCCESS, RfxVoidData(), message);
+                responseToRilj(responseMsg);
+                mDoingDataAllow = false;
+            }
+            break;
+        case RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH:
+            handleDataConnectionAttachRequest(message);
+            break;
+        case RFX_MSG_REQUEST_DATA_CONNECTION_DETACH:
+            handleDataConnectionDetachRequest(message);
+            break;
+        default:
+            logD(RTC_DAC_LOG_TAG, "unknown request, ignore!");
+            break;
     }
     return true;
 }
 
 bool RtcDataAllowController::onHandleResponse(const sp<RfxMessage>& message) {
-    logV(RTC_DAC_LOG_TAG, "[%d]Handle response %s.",
-            message->getPToken(), RFX_ID_TO_STR(message->getId()));
+    logV(RTC_DAC_LOG_TAG, "[%d]Handle response %s.", message->getPToken(),
+         RFX_ID_TO_STR(message->getId()));
 
     switch (message->getId()) {
-    case RFX_MSG_REQUEST_ALLOW_DATA:
-        handleSetDataAllowResponse(message);
-        break;
-    case RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH:
-    case RFX_MSG_REQUEST_DATA_CONNECTION_DETACH:
-        responseToRilj(message);
-        break;
-    case RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA:
-        logD(RTC_DAC_LOG_TAG, "Not handle recovery allow data response");
-        break;
-    default:
-        logD(RTC_DAC_LOG_TAG, "unknown response, ignore!");
-        break;
+        case RFX_MSG_REQUEST_ALLOW_DATA:
+            handleSetDataAllowResponse(message);
+            break;
+        case RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH:
+        case RFX_MSG_REQUEST_DATA_CONNECTION_DETACH:
+            responseToRilj(message);
+            break;
+        case RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA:
+            logD(RTC_DAC_LOG_TAG, "Not handle recovery allow data response");
+            break;
+        default:
+            logD(RTC_DAC_LOG_TAG, "unknown response, ignore!");
+            break;
     }
     return true;
 }
@@ -307,14 +301,12 @@ bool RtcDataAllowController::onPreviewMessage(const sp<RfxMessage>& message) {
     int requestId = message->getId();
 
     // Only log REQUEST type.
-    if (message->getType() == REQUEST
-            && isNeedSuspendRequest(message)) {
+    if (message->getType() == REQUEST && isNeedSuspendRequest(message)) {
         return false;
     } else {
         if (message->getType() == REQUEST && requestId == RFX_MSG_REQUEST_ALLOW_DATA) {
-            logD(RTC_DAC_LOG_TAG, "[%d]onPreviewMessage: execute %s, type = [%d]",
-                    requestToken,
-                    RFX_ID_TO_STR(message->getId()),message->getType());
+            logD(RTC_DAC_LOG_TAG, "[%d]onPreviewMessage: execute %s, type = [%d]", requestToken,
+                 RFX_ID_TO_STR(message->getId()), message->getType());
         }
         return true;
     }
@@ -328,8 +320,10 @@ bool RtcDataAllowController::isNeedSuspendRequest(const sp<RfxMessage>& message)
     int requestId = message->getId();
     if (requestId == RFX_MSG_REQUEST_ALLOW_DATA) {
         if (!mDoingDataAllow) {
-            logD(RTC_DAC_LOG_TAG, "[%d]isNeedSuspendRequest: First RFX_MSG_REQUEST_ALLOW_DATA"
-                    ", set flag on", requestToken);
+            logD(RTC_DAC_LOG_TAG,
+                 "[%d]isNeedSuspendRequest: First RFX_MSG_REQUEST_ALLOW_DATA"
+                 ", set flag on",
+                 requestToken);
             mDoingDataAllow = true;
             return false;
         } else {
@@ -350,12 +344,12 @@ bool RtcDataAllowController::onCheckIfResumeMessage(const sp<RfxMessage>& messag
 }
 
 void RtcDataAllowController::handleSetDataAllowRequest(const sp<RfxMessage>& request) {
-    const int *pRspData = (const int *)request->getData()->getData();
+    const int* pRspData = (const int*)request->getData()->getData();
     bool allowData = pRspData[0];
     mReqDataAllow = allowData;
 
     logD(RTC_DAC_LOG_TAG, "[%d]handleSetDataAllowRequest: requestId:%d, phone:%d, allow:%d",
-            request->getPToken(), request->getId(), request->getSlotId(), allowData);
+         request->getPToken(), request->getId(), request->getSlotId(), allowData);
 
     // For Telephonyware, if other non-android platform use set-data-allow mode,
     // here should records which sim is allowed. Otherwise, in set-preferred-data mode, should
@@ -365,45 +359,45 @@ void RtcDataAllowController::handleSetDataAllowRequest(const sp<RfxMessage>& req
         setAllowDataSlot(allowData, request->getSlotId());
     }
 
-    sp<RfxMessage> message = RfxMessage::obtainRequest(request->getSlotId(),
-            request->getId(), request, true);
+    sp<RfxMessage> message =
+            RfxMessage::obtainRequest(request->getSlotId(), request->getId(), request, true);
     requestToMcl(message);
 }
 
 void RtcDataAllowController::handleSetDataAllowResponse(const sp<RfxMessage>& response) {
     logD(RTC_DAC_LOG_TAG,
-            "[%d]handleSetDataAllowResponse: allowData = %d, response->getError()=%d, getSlot()=%d",
-            response->getPToken(), mReqDataAllow, response->getError(), response->getSlotId());
+         "[%d]handleSetDataAllowResponse: allowData = %d, response->getError()=%d, getSlot()=%d",
+         response->getPToken(), mReqDataAllow, response->getError(), response->getSlotId());
     if (RIL_E_REQUEST_NOT_SUPPORTED == response->getError()) {
         int allowMessage = INVAILD_ID;
-        allowMessage = (mReqDataAllow == true)? ALLOW_DATA : DISALLOW_DATA;
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(response->getSlotId(),
-                RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+        allowMessage = (mReqDataAllow == true) ? ALLOW_DATA : DISALLOW_DATA;
+        sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                response->getSlotId(), RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
         msg->setSlotId(response->getSlotId());
         logD(RTC_DAC_LOG_TAG,
-                "[%d]RIL_E_REQUEST_NOT_SUPPORTED, resend: allowMessage = %d, getSlot()=%d",
-                response->getPToken(), allowMessage, response->getSlotId());
+             "[%d]RIL_E_REQUEST_NOT_SUPPORTED, resend: allowMessage = %d, getSlot()=%d",
+             response->getPToken(), allowMessage, response->getSlotId());
         requestToMcl(msg, false, ms2ns(RETRY_TIME_MS));
         return;
     }
 
     /// RILD temp data solution. Only for OEM customization, unused in internal solution. @{
     // Need to restore allow data and data connection when temp data switch end.
-    if (RtcDataUtils::isSupportTempDataSwitchFromOem()
-            && getStatusManager(response->getSlotId())->getIntValue(
-                    RFX_STATUS_KEY_TEMP_DATA_SWTICH, 0) == TEMP_DATA_SWITCH_ON
-            && !mReqDataAllow) {
+    if (RtcDataUtils::isSupportTempDataSwitchFromOem() &&
+        getStatusManager(response->getSlotId())->getIntValue(RFX_STATUS_KEY_TEMP_DATA_SWTICH, 0) ==
+                TEMP_DATA_SWITCH_ON &&
+        !mReqDataAllow) {
         logD(RTC_DAC_LOG_TAG, "[%s] restore temp data for slot [%d]", __FUNCTION__,
-                (1 - response->getSlotId()));
+             (1 - response->getSlotId()));
 
-        getStatusManager(response->getSlotId())->setIntValue(
-                RFX_STATUS_KEY_TEMP_DATA_SWTICH, TEMP_DATA_SWITCH_OFF);
+        getStatusManager(response->getSlotId())
+                ->setIntValue(RFX_STATUS_KEY_TEMP_DATA_SWTICH, TEMP_DATA_SWITCH_OFF);
         setAllowDataSlot(true, (1 - response->getSlotId()));
 
         int allowMessage = ALLOW_DATA;
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                1 - response->getSlotId(),
-                RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+        sp<RfxMessage> msg = RfxMessage::obtainRequest(1 - response->getSlotId(),
+                                                       RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA,
+                                                       RfxIntsData(&allowMessage, 1));
         msg->setSlotId(1 - response->getSlotId());
         requestToMcl(msg);
     }
@@ -421,12 +415,11 @@ void RtcDataAllowController::handleSetDataAllowResponse(const sp<RfxMessage>& re
         // Set temp data switch state for the slot which has calls and allow data (1)
         if (RtcDataUtils::isSupportTempDataSwitchFromOem()) {
             int slotId = response->getSlotId();
-            bool isInCall = getStatusManager(slotId)->getBoolValue(
-                    RFX_STATUS_KEY_IN_CALL, false);
+            bool isInCall = getStatusManager(slotId)->getBoolValue(RFX_STATUS_KEY_IN_CALL, false);
             logD(RTC_DAC_LOG_TAG, "[%d][%s] isInCall = %d", slotId, __FUNCTION__, isInCall);
             if (isInCall) {
                 getStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_TEMP_DATA_SWTICH,
-                        TEMP_DATA_SWITCH_ON);
+                                                      TEMP_DATA_SWITCH_ON);
             }
         }
         /// @}
@@ -445,15 +438,15 @@ void RtcDataAllowController::handleSetDataAllowResponse(const sp<RfxMessage>& re
 }
 
 bool RtcDataAllowController::preprocessRequest(const sp<RfxMessage>& request) {
-    const int *pRspData = (const int *)request->getData()->getData();
+    const int* pRspData = (const int*)request->getData()->getData();
     bool allowData = pRspData[0];
     mReqDataAllow = allowData;
 
     if (allowData) {
         // Copy the request
         // 1. if allow true,  apply for retry.
-        mLastAllowTrueRequest = RfxMessage::obtainRequest(request->getSlotId(),
-                request->getId(), request, true);
+        mLastAllowTrueRequest =
+                RfxMessage::obtainRequest(request->getSlotId(), request->getId(), request, true);
     }
     handleSetDataAllowRequest(request);
 
@@ -479,8 +472,8 @@ void RtcDataAllowController::handleMultiAllowError(int activePhoneId) {
         if (i != activePhoneId) {
             // Create disallow request for common
             allowMessage = DISALLOW_DATA;
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                    i, RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(i, RFX_MSG_REQUEST_ALLOW_DATA,
+                                                           RfxIntsData(&allowMessage, 1));
             msg->setSlotId(i);
 
             logD(RTC_DAC_LOG_TAG, "disallowPeerPhone: precheck PhoneId = %d", i);
@@ -492,14 +485,16 @@ void RtcDataAllowController::handleMultiAllowError(int activePhoneId) {
 }
 
 /*
-  * Check if the process is detaching peer.
-  * Return true for ignoring response to RILJ because the requests are created by RILProxy.
-*/
+ * Check if the process is detaching peer.
+ * Return true for ignoring response to RILJ because the requests are created by RILProxy.
+ */
 bool RtcDataAllowController::checkDisallowingPeer() {
     if (mDisallowingPeer > 0) {
         mDisallowingPeer--;
-        logD(RTC_DAC_LOG_TAG, "handleSetDataAllowResponse consume disallow peer,"
-                " mDisallowingPeer %d", mDisallowingPeer);
+        logD(RTC_DAC_LOG_TAG,
+             "handleSetDataAllowResponse consume disallow peer,"
+             " mDisallowingPeer %d",
+             mDisallowingPeer);
         if (mDisallowingPeer == 0) {
             // resume the attach request
             handleSetDataAllowRequest(mLastAllowTrueRequest);
@@ -511,13 +506,13 @@ bool RtcDataAllowController::checkDisallowingPeer() {
 }
 
 bool RtcDataAllowController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState) {
+                                                    bool isModemPowerOff, int radioState) {
     // always execute request
-    if((radioState == (int)RADIO_STATE_OFF || radioState == (int)RADIO_STATE_UNAVAILABLE) &&
-            (message->getId() == RFX_MSG_REQUEST_ALLOW_DATA ||
-            // OEM customization, allow attach request because Java Fw will send detach
-            // request first and radio state maybe in radio_off state.
-            message->getId() == RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH)) {
+    if ((radioState == (int)RADIO_STATE_OFF || radioState == (int)RADIO_STATE_UNAVAILABLE) &&
+        (message->getId() == RFX_MSG_REQUEST_ALLOW_DATA ||
+         // OEM customization, allow attach request because Java Fw will send detach
+         // request first and radio state maybe in radio_off state.
+         message->getId() == RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH)) {
         return false;
     }
     return RfxController::onCheckIfRejectMessage(message, isModemPowerOff, radioState);
@@ -528,14 +523,14 @@ void RtcDataAllowController::onAttachOrDetachDone(const sp<RfxMessage> message) 
 
     // Lock radio lock for data use only to avoid other module do radio on/off
     if (message->getId() == RFX_MSG_REQUEST_DATA_CONNECTION_DETACH) {
-        getStatusManager(message->getSlotId())->setIntValue(RFX_STATUS_KEY_RADIO_LOCK,
-                RADIO_LOCK_BY_DATA);
+        getStatusManager(message->getSlotId())
+                ->setIntValue(RFX_STATUS_KEY_RADIO_LOCK, RADIO_LOCK_BY_DATA);
     }
     responseToRilj(RfxMessage::obtainResponse(RIL_E_SUCCESS, message, false));
 }
 
 void RtcDataAllowController::handleDataConnectionAttachRequest(const sp<RfxMessage>& message) {
-    const int *pReqData = (const int *)message->getData()->getData();
+    const int* pReqData = (const int*)message->getData()->getData();
     logD(RTC_DAC_LOG_TAG, "handleDataConnectionAttachRequest: type=%d", pReqData[0]);
 
     // 0, ps attach, 1, ps&cs attach.
@@ -547,11 +542,10 @@ void RtcDataAllowController::handleDataConnectionAttachRequest(const sp<RfxMessa
             getStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_RADIO_LOCK, RADIO_LOCK_IDLE);
         }
 
-        sp<RfxAction> action = new RfxAction1<const sp<RfxMessage>>(this,
-                &RtcDataAllowController::onAttachOrDetachDone, message);
-        RtcRadioController* radioController =
-            (RtcRadioController *)findController(message->getSlotId(),
-                    RFX_OBJ_CLASS_INFO(RtcRadioController));
+        sp<RfxAction> action = new RfxAction1<const sp<RfxMessage>>(
+                this, &RtcDataAllowController::onAttachOrDetachDone, message);
+        RtcRadioController* radioController = (RtcRadioController*)findController(
+                message->getSlotId(), RFX_OBJ_CLASS_INFO(RtcRadioController));
         radioController->moduleRequestRadioPower(true, action, RFOFF_CAUSE_UNSPECIFIED);
     } else {
         requestToMcl(message);
@@ -559,7 +553,7 @@ void RtcDataAllowController::handleDataConnectionAttachRequest(const sp<RfxMessa
 }
 
 void RtcDataAllowController::handleDataConnectionDetachRequest(const sp<RfxMessage>& message) {
-    const int *pReqData = (const int *)message->getData()->getData();
+    const int* pReqData = (const int*)message->getData()->getData();
     logD(RTC_DAC_LOG_TAG, "handleDataConnectionDetachRequest: type=%d", pReqData[0]);
 
     // 0, ps detach, 1, ps&cs detach.
@@ -571,11 +565,10 @@ void RtcDataAllowController::handleDataConnectionDetachRequest(const sp<RfxMessa
             getStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_RADIO_LOCK, RADIO_LOCK_IDLE);
         }
 
-        sp<RfxAction> action = new RfxAction1<const sp<RfxMessage>>(this,
-                &RtcDataAllowController::onAttachOrDetachDone, message);
-        RtcRadioController* radioController =
-            (RtcRadioController *)findController(message->getSlotId(),
-                    RFX_OBJ_CLASS_INFO(RtcRadioController));
+        sp<RfxAction> action = new RfxAction1<const sp<RfxMessage>>(
+                this, &RtcDataAllowController::onAttachOrDetachDone, message);
+        RtcRadioController* radioController = (RtcRadioController*)findController(
+                message->getSlotId(), RFX_OBJ_CLASS_INFO(RtcRadioController));
         radioController->moduleRequestRadioPower(false, action, RFOFF_CAUSE_UNSPECIFIED);
     } else {
         requestToMcl(message);
@@ -588,7 +581,7 @@ void RtcDataAllowController::handleDataConnectionDetachRequest(const sp<RfxMessa
  */
 void RtcDataAllowController::setAllowDataSlot(bool allow, int slot) {
     if (allow) {
-        logI(RTC_DAC_LOG_TAG, "setAllowDataSlot allow= %d slot= %d", allow ,slot);
+        logI(RTC_DAC_LOG_TAG, "setAllowDataSlot allow= %d slot= %d", allow, slot);
         rfx_property_set("vendor.ril.data.allow_data_slot", String8::format("%d", slot).string());
     }
 }
@@ -598,7 +591,7 @@ void RtcDataAllowController::setAllowDataSlot(bool allow, int slot) {
  */
 int RtcDataAllowController::getAllowDataSlot() {
     int allowMessage = INVAILD_ID;
-    char allowDataSlot[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char allowDataSlot[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.data.allow_data_slot", allowDataSlot, "-1");
     int allowSlot = atoi(allowDataSlot);
     logI(RTC_DAC_LOG_TAG, "getAllowDataSlot slot prop = %d", allowSlot);
@@ -625,19 +618,19 @@ void RtcDataAllowController::resendAllowData() {
     int i = 0;
     int allowMessage = INVAILD_ID;
 
-    char allowDataSlot[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char allowDataSlot[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.data.allow_data_slot", allowDataSlot, "-1");
     int allowSlot = atoi(allowDataSlot);
     logI(RTC_DAC_LOG_TAG, "resendAllowData slot prop = %d", allowSlot);
 
     // Process the request again
     for (i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-    // Always resend the slot of EDALLOW=1
-    //TODO: check if we need to re-send EDALLOW=0
+        // Always resend the slot of EDALLOW=1
+        // TODO: check if we need to re-send EDALLOW=0
         if (i == allowSlot) {
             allowMessage = ALLOW_DATA;
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                    i, RFX_MSG_REQUEST_ALLOW_DATA, RfxIntsData(&allowMessage, 1));
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(i, RFX_MSG_REQUEST_ALLOW_DATA,
+                                                           RfxIntsData(&allowMessage, 1));
             msg->setSlotId(i);
             logD(RTC_DAC_LOG_TAG, "resendAllowData: PhoneId = %d, allow =%d", i, allowMessage);
             // Resend allow request to common RIL queue to avoid request mismatch
@@ -649,7 +642,7 @@ void RtcDataAllowController::resendAllowData() {
 
 bool RtcDataAllowController::isPreferredDataMode() {
     if (mIsPreferredDataMode != -1) {
-        //logD(RTC_DAC_LOG_TAG, "isPreferredDataMode:  %d", mIsPreferredDataMode);
+        // logD(RTC_DAC_LOG_TAG, "isPreferredDataMode:  %d", mIsPreferredDataMode);
         return (mIsPreferredDataMode == 1) ? true : false;
     }
     char preferredDataMode[MTK_PROPERTY_VALUE_MAX] = {0};
@@ -663,13 +656,13 @@ bool RtcDataAllowController::isPreferredDataMode() {
     return true;
 }
 
-void RtcDataAllowController::onPreferredChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcDataAllowController::onPreferredChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                RfxVariant value) {
     RFX_UNUSED(key);
     RFX_UNUSED(old_value);
     int dataSim = value.asInt();
 
-    char legacyMode[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char legacyMode[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.data.legacy_allow_mode", legacyMode, "-1");
     int isLegacyMode = atoi(legacyMode);
     if (isLegacyMode == 1) {
@@ -679,17 +672,17 @@ void RtcDataAllowController::onPreferredChanged(RfxStatusKeyEnum key,
         setAllowDataSlot(true, -1);
     }
 
-    if(mOnDemandQueue.size() == 0 && dataSim >= 0){
-            logD(RTC_DAC_LOG_TAG, "onPreferredChanged, try to set allow to %d", dataSim);
-            onSetDataAllow(dataSim);
-    } else if(mOnDemandQueue.size() > 0) {
+    if (mOnDemandQueue.size() == 0 && dataSim >= 0) {
+        logD(RTC_DAC_LOG_TAG, "onPreferredChanged, try to set allow to %d", dataSim);
+        onSetDataAllow(dataSim);
+    } else if (mOnDemandQueue.size() > 0) {
         logD(RTC_DAC_LOG_TAG, "onPreferredChanged, not acting, due to type=%d, slot=%d",
-                mOnDemandQueue[0].type, mOnDemandQueue[0].slotId);
+             mOnDemandQueue[0].type, mOnDemandQueue[0].slotId);
     }
 }
 
-void RtcDataAllowController::onHidlStateChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcDataAllowController::onHidlStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                RfxVariant value) {
     bool oldState = false, newState = false;
 
     RFX_UNUSED(key);
@@ -697,12 +690,12 @@ void RtcDataAllowController::onHidlStateChanged(RfxStatusKeyEnum key,
     newState = value.asBool();
 
     logD(RTC_DAC_LOG_TAG, "onHidlStateChanged: old state:%d, newstate:%d, clear queue", oldState,
-            newState);
+         newState);
     mOnDemandQueue.clear();
 }
 
 void RtcDataAllowController::onSimMeLockChanged(int slotId, RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+                                                RfxVariant old_value, RfxVariant value) {
     int policy = 0;
     int shouldService = 0;
 
@@ -710,28 +703,28 @@ void RtcDataAllowController::onSimMeLockChanged(int slotId, RfxStatusKeyEnum key
     RFX_UNUSED(old_value);
     shouldService = value.asInt();
     policy = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_SML_SLOT_LOCK_POLICY, 0);
-    logD(RTC_DAC_LOG_TAG, "SimMeLockChanged[%d]: policy = %d, shouldService = %d",
-            slotId, policy, shouldService);
-    if (policy == SML_SLOT_LOCK_POLICY_UNKNOWN ||
-            policy == SML_SLOT_LOCK_POLICY_NONE ||
-            policy == SML_SLOT_LOCK_POLICY_LEGACY) {
+    logD(RTC_DAC_LOG_TAG, "SimMeLockChanged[%d]: policy = %d, shouldService = %d", slotId, policy,
+         shouldService);
+    if (policy == SML_SLOT_LOCK_POLICY_UNKNOWN || policy == SML_SLOT_LOCK_POLICY_NONE ||
+        policy == SML_SLOT_LOCK_POLICY_LEGACY) {
         return;
     }
     if (shouldService != SML_SLOT_LOCK_POLICY_SERVICE_CAPABILITY_FULL &&
         shouldService != SML_SLOT_LOCK_POLICY_SERVICE_CAPABILITY_PS_ONLY) {
-        mOnDemandQueue.erase(
-                std::remove_if(mOnDemandQueue.begin(), mOnDemandQueue.end(),
-                [slotId](const onDemandRequest & request) { return request.slotId == slotId; }),
-                mOnDemandQueue.end());
+        mOnDemandQueue.erase(std::remove_if(mOnDemandQueue.begin(), mOnDemandQueue.end(),
+                                            [slotId](const onDemandRequest& request) {
+                                                return request.slotId == slotId;
+                                            }),
+                             mOnDemandQueue.end());
         if (mOnDemandQueue.size() == 0) {
-            int preferSim = getNonSlotScopeStatusManager()->getIntValue(
-                    RFX_STATUS_KEY_PREFERRED_DATA_SIM);
-            logD(RTC_DAC_LOG_TAG, "SimMeLockChanged[%d]: set back to prefer sim: %d",
-                    slotId, preferSim);
+            int preferSim =
+                    getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_PREFERRED_DATA_SIM);
+            logD(RTC_DAC_LOG_TAG, "SimMeLockChanged[%d]: set back to prefer sim: %d", slotId,
+                 preferSim);
             onSetDataAllow(preferSim);
         } else if (mOnDemandQueue.size() > 0) {
             logD(RTC_DAC_LOG_TAG, "SimMeLockChanged[%d]: set to on-demand: type: %d, sim: %d",
-                    slotId, mOnDemandQueue[0].type, mOnDemandQueue[0].slotId);
+                 slotId, mOnDemandQueue[0].type, mOnDemandQueue[0].slotId);
             onSetDataAllow(mOnDemandQueue[0].slotId);
         }
     }

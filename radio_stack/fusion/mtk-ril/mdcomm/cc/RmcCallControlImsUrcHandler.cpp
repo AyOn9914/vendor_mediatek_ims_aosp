@@ -36,34 +36,32 @@
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCallControlImsUrcHandler, RIL_CMD_PROXY_URC);
 
 static const char* urc[] = {
-    URC_CONF_SRVCC,
-    URC_CONF_MODIFIED_RESULT,
-    URC_VDM_SELECT_RESULT,
-    URC_IMS_CALL_MODE,
-    URC_IMS_VIDEO_CAP,
-    URC_ECPLICIT_CALL_TRANSFER,
-    URC_IMS_CALL_CONTROL_RESULT,
-    URC_IMS_EVENT_PACKAGE,
-    URC_SRVCC,
-    URC_ECC_BEARER,
-    URC_REDIAL_ECC_INDICATION,
-    URC_IMS_HEADER,
-    URC_CALL_ADDITIONAL_INFO,
+        URC_CONF_SRVCC,
+        URC_CONF_MODIFIED_RESULT,
+        URC_VDM_SELECT_RESULT,
+        URC_IMS_CALL_MODE,
+        URC_IMS_VIDEO_CAP,
+        URC_ECPLICIT_CALL_TRANSFER,
+        URC_IMS_CALL_CONTROL_RESULT,
+        URC_IMS_EVENT_PACKAGE,
+        URC_SRVCC,
+        URC_ECC_BEARER,
+        URC_REDIAL_ECC_INDICATION,
+        URC_IMS_HEADER,
+        URC_CALL_ADDITIONAL_INFO,
 };
 
-RmcCallControlImsUrcHandler::RmcCallControlImsUrcHandler(
-    int slot_id, int channel_id) : RmcCallControlBaseHandler(slot_id, channel_id) {
-
-    registerToHandleURC(urc, sizeof(urc) / sizeof(char *));
+RmcCallControlImsUrcHandler::RmcCallControlImsUrcHandler(int slot_id, int channel_id)
+    : RmcCallControlBaseHandler(slot_id, channel_id) {
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcCallControlImsUrcHandler::~RmcCallControlImsUrcHandler() {
-}
+RmcCallControlImsUrcHandler::~RmcCallControlImsUrcHandler() {}
 
 void RmcCallControlImsUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
+    char* urc = msg->getRawUrc()->getLine();
     // logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
-    if(strStartsWith(urc, URC_CONF_SRVCC)) {
+    if (strStartsWith(urc, URC_CONF_SRVCC)) {
         handleConfSrvcc(msg);
     } else if (strStartsWith(urc, URC_CONF_MODIFIED_RESULT)) {
         handleConfModifiedResult(msg);
@@ -98,20 +96,20 @@ void RmcCallControlImsUrcHandler::onHandleTimer() {
 
 void RmcCallControlImsUrcHandler::handleConfSrvcc(const sp<RfxMclMessage>& msg) {
     /*
-    * +ECONFSRVCC: <number_of_calls>, <call_id>, ...
-    * <number_of_calls>: number of calls, the limitation is 5 (not include the host)
-    * <call_id>...: 0 = incoming call; 1~32 = call id
-    */
+     * +ECONFSRVCC: <number_of_calls>, <call_id>, ...
+     * <number_of_calls>: number of calls, the limitation is 5 (not include the host)
+     * <call_id>...: 0 = incoming call; 1~32 = call id
+     */
     const int maxDataLen = 6;
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
 
     int index = 0;
     int data[maxDataLen] = {0, 0, 0, 0, 0, 0};
-    while(line->atTokHasmore() && index < maxDataLen) {
+    while (line->atTokHasmore() && index < maxDataLen) {
         data[index] = line->atTokNextint(&err);
         if (err < 0) break;
         ++index;
@@ -122,8 +120,8 @@ void RmcCallControlImsUrcHandler::handleConfSrvcc(const sp<RfxMclMessage>& msg) 
         return;
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        RFX_MSG_UNSOL_ECONF_SRVCC_INDICATION, m_slot_id, RfxIntsData(data, maxDataLen));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ECONF_SRVCC_INDICATION,
+                                                     m_slot_id, RfxIntsData(data, maxDataLen));
     responseToTelCore(urc);
 }
 
@@ -154,20 +152,20 @@ void RmcCallControlImsUrcHandler::handleImsCallControlResult(const sp<RfxMclMess
 
 void RmcCallControlImsUrcHandler::handleVoiceDomainSelectResult(const sp<RfxMclMessage>& msg) {
     /*
-    * +EVADSREP: <domain>, [<call rat>]
-    * <domain>: 0 = CS; 1 = IMS
-    * <call rat>: The rat of IMS call
-    * 1: LTE
-    * 2: WiFi
-    * 3: NR
-    */
+     * +EVADSREP: <domain>, [<call rat>]
+     * <domain>: 0 = CS; 1 = IMS
+     * <call rat>: The rat of IMS call
+     * 1: LTE
+     * 2: WiFi
+     * 3: NR
+     */
     if (!hasImsCall(msg->getSlotId())) {
         logD(RFX_LOG_TAG, "No ImsCall, ignore +EVADSREP");
         return;
     }
 
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -175,20 +173,20 @@ void RmcCallControlImsUrcHandler::handleVoiceDomainSelectResult(const sp<RfxMclM
     int voiceDomain = line->atTokNextint(&err);
     if (err < 0) return;
 
-    logD(RFX_LOG_TAG, "EVADSREP: %s", (voiceDomain == 0)? (char*)"cs": (char*)"ims");
+    logD(RFX_LOG_TAG, "EVADSREP: %s", (voiceDomain == 0) ? (char*)"cs" : (char*)"ims");
 
     int callRat = -1;
     if (line->atTokHasmore()) {
         callRat = line->atTokNextint(&err);
-        if(err < 0) return;
+        if (err < 0) return;
 
         logD(RFX_LOG_TAG, "EVADSREP rat: %d", callRat);
     }
     int data[2];
     data[0] = voiceDomain;
     data[1] = callRat;
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CALL_RAT_INDICATION,
-            m_slot_id, RfxIntsData(data, 2));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CALL_RAT_INDICATION, m_slot_id,
+                                                     RfxIntsData(data, 2));
     responseToTelCore(urc);
 
     if (voiceDomain != 0) return;
@@ -199,19 +197,18 @@ void RmcCallControlImsUrcHandler::handleVoiceDomainSelectResult(const sp<RfxMclM
 
 void RmcCallControlImsUrcHandler::handleCallModeChanged(const sp<RfxMclMessage>& msg) {
     /*
-    * +EIMSCMODE: <call id>,<call_mode>,<camera_direction>,<audio_direction>,<PAU>,<audio_codec>
-    * <call_id>: 0-incoming call, 1~32-call id
-    * <call_mode>: call mode, should between 20 ~ 25
-    * <video_state>: video state (send / recv)
-    * <audio_direction>: audio state (send / recv)
-    * <PAU>: P-Asserted-Identity
-    * <audio_codec>: codec
-    */
+     * +EIMSCMODE: <call id>,<call_mode>,<camera_direction>,<audio_direction>,<PAU>,<audio_codec>
+     * <call_id>: 0-incoming call, 1~32-call id
+     * <call_mode>: call mode, should between 20 ~ 25
+     * <video_state>: video state (send / recv)
+     * <audio_direction>: audio state (send / recv)
+     * <PAU>: P-Asserted-Identity
+     * <audio_codec>: codec
+     */
     const int maxLen = 6;
     int rfxMsg = RFX_MSG_UNSOL_CALLMOD_CHANGE_INDICATOR;
     notifyStringsDataToTcl(msg, rfxMsg, maxLen);
 }
-
 
 void RmcCallControlImsUrcHandler::handleECT(const sp<RfxMclMessage>& msg) {
     /**
@@ -224,14 +221,13 @@ void RmcCallControlImsUrcHandler::handleECT(const sp<RfxMclMessage>& msg) {
     notifyIntsDataToTcl(msg, rfxMsg, maxLen, appendPhoneId);
 }
 
-
 void RmcCallControlImsUrcHandler::handleVideoCapabilityChanged(const sp<RfxMclMessage>& msg) {
     /*
-    * +EIMSVCAP: <call ID>, <local video capability>, <remote video capability>
-    * <call_id>: 0-incoming call, 1~32-call id
-    * <local video capability>: true = has video capability; false = no video capability
-    * <remote video capability>: true = has video capabilit; false = no video capability
-    */
+     * +EIMSVCAP: <call ID>, <local video capability>, <remote video capability>
+     * <call_id>: 0-incoming call, 1~32-call id
+     * <local video capability>: true = has video capability; false = no video capability
+     * <remote video capability>: true = has video capabilit; false = no video capability
+     */
     const int maxLen = 3;
     int rfxMsg = RFX_MSG_UNSOL_VIDEO_CAPABILITY_INDICATOR;
     notifyStringsDataToTcl(msg, rfxMsg, maxLen);
@@ -254,7 +250,7 @@ void RmcCallControlImsUrcHandler::handleEventPackage(const sp<RfxMclMessage>& ms
 
 void RmcCallControlImsUrcHandler::handleSrvccStateChange(const sp<RfxMclMessage>& msg) {
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -269,14 +265,14 @@ void RmcCallControlImsUrcHandler::notifySrvccState(int state) {
     logE(RFX_LOG_TAG, "Notify SRVCC state: %d", state);
     int data[1];
     data[0] = state;
-    sp<RfxMclMessage> urc =
-        RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SRVCC_STATE_NOTIFY, m_slot_id, RfxIntsData(data, 1));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SRVCC_STATE_NOTIFY, m_slot_id,
+                                                     RfxIntsData(data, 1));
     responseToTelCore(urc);
 
     // Trigger GsmFwk poll call after SRVCC
     if (state == SRVCC_COMPLETED) {
         sp<RfxMclMessage> callStateChangeUrc = RfxMclMessage::obtainUrc(
-            RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED, m_slot_id, RfxVoidData());
+                RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED, m_slot_id, RfxVoidData());
         responseToTelCore(callStateChangeUrc);
     }
 }
@@ -326,7 +322,7 @@ void RmcCallControlImsUrcHandler::handleCallAdditionalInfo(const sp<RfxMclMessag
     const int maxLen = 5;
     int rfxMsg = RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO;
 
-    RfxAtLine *urc = msg->getRawUrc();
+    RfxAtLine* urc = msg->getRawUrc();
     if (urc == NULL) return;
     // token init
     int ret;
@@ -368,7 +364,7 @@ void RmcCallControlImsUrcHandler::handleCallAdditionalInfo(const sp<RfxMclMessag
         logD(RFX_LOG_TAG, "Wrong URC format: params more than limit");
     }
 
-    sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(rfxMsg, m_slot_id,
-            RfxStringsData((char**)data.data(), (int)data.size()));
+    sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(
+            rfxMsg, m_slot_id, RfxStringsData((char**)data.data(), (int)data.size()));
     responseToTelCore(unsol);
 }

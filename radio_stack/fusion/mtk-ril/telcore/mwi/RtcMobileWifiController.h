@@ -33,22 +33,22 @@ class RtcMobileWifiController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcMobileWifiController);
 
-public:
+  public:
     RtcMobileWifiController();
     virtual ~RtcMobileWifiController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& response);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     void onWFCPDNStatusChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant new_value);
 
-private:
+  private:
 };
 
 #endif /* __RFX_MOBILE_WIFI_CONTROLLER_H__ */

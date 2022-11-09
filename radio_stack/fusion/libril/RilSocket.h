@@ -30,41 +30,37 @@
  * </ul>
  */
 class RilSocket {
-    protected:
+  protected:
+    /**
+     * Socket name.
+     */
+    const char* name;
 
-        /**
-         * Socket name.
-         */
-        const char* name;
+    /**
+     * Socket id.
+     */
+    RIL_SOCKET_ID id;
 
-        /**
-         * Socket id.
-         */
-        RIL_SOCKET_ID id;
+  public:
+    /**
+     * Constructor.
+     *
+     * @param Socket name.
+     * @param Socket id.
+     */
+    RilSocket(const char* socketName, RIL_SOCKET_ID socketId) {
+        name = socketName;
+        id = socketId;
+    }
 
-    public:
+    /**
+     * Get socket id.
+     *
+     * @return RIL_SOCKET_ID socket id.
+     */
+    RIL_SOCKET_ID getSocketId(void) { return id; }
 
-        /**
-         * Constructor.
-         *
-         * @param Socket name.
-         * @param Socket id.
-         */
-        RilSocket(const char* socketName, RIL_SOCKET_ID socketId) {
-            name = socketName;
-            id = socketId;
-        }
-
-        /**
-         * Get socket id.
-         *
-         * @return RIL_SOCKET_ID socket id.
-         */
-        RIL_SOCKET_ID getSocketId(void) {
-            return id;
-        }
-
-        virtual ~RilSocket(){}
+    virtual ~RilSocket() {}
 };
 
 #endif

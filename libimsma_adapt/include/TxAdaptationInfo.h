@@ -21,81 +21,57 @@
 #include <time.h>
 #include <list>
 
-typedef struct{
-    bool *needRecord;
-    bool *active;
+typedef struct {
+    bool* needRecord;
+    bool* active;
     bool canExpand;
     int32_t ratio;
     uint32_t maxBitrate;
-}signalInfo;
+} signalInfo;
 
 /**
-  *@ An object of this class facilitates TX Adaptation info calculate
-  *@ it contains informations related to RTCP or TMMBR
-  */
-class TxAdaptationInfo
-{
-
-public:
+ *@ An object of this class facilitates TX Adaptation info calculate
+ *@ it contains informations related to RTCP or TMMBR
+ */
+class TxAdaptationInfo {
+  public:
     TxAdaptationInfo();
 
-    void addSenderInfo(uint8_t *data);
+    void addSenderInfo(uint8_t* data);
 
-    int processReportBlock(uint8_t *data, int32_t contain_TMMBR, signalInfo sigInfo, uint32_t *target, bool *needForceI);
+    int processReportBlock(uint8_t* data, int32_t contain_TMMBR, signalInfo sigInfo,
+                           uint32_t* target, bool* needForceI);
 
-    //for FIR
+    // for FIR
     bool processFIR(uint8_t seqNum);
-    void setFreshTimeUs() {
-        mLastRefreshPointSentTimeUs = GetNowUs();
-    };
+    void setFreshTimeUs() { mLastRefreshPointSentTimeUs = GetNowUs(); };
     bool processGenericNACK(uint8_t* data_fci, uint32_t fci_num);
     void resetFirParam();
 
-    //for adaptation
-    bool processTMMBR(uint8_t* data, uint32_t *target, uint32_t durationUs, signalInfo sigInfo);
-    bool checkFallBack(uint32_t *target, uint32_t durationUs);
+    // for adaptation
+    bool processTMMBR(uint8_t* data, uint32_t* target, uint32_t durationUs, signalInfo sigInfo);
+    bool checkFallBack(uint32_t* target, uint32_t durationUs);
     void resetOnStop();
     void updateStatisticInfo(int64_t timeUs, size_t payload_size, size_t size);
     void updateEncBitRate(int64_t timeUs, uint32_t size);
 
-    //scattered info
-    void setLastTimeUs(int64_t param) {
-        mLastTimeUs = param;
-    };
-    void setLastRtpTime(uint32_t param) {
-        mLastRtpTime = param;
-    };
-    void setLastRTPSeqNum(uint32_t param) {
-        mLastRTPSeqNum = param;
-    };
-    void setMBRUL(uint32_t param) {
-        mMBRUL = param;
-    };
-    void setRtpBW(uint32_t param) {
-        mRtpPacketBandWidth = param;
-    };
-    void selfIncFrameCount(void) {
-        mRTPSentCount++;
-    };
-    void addPayloadSize(uint64_t param) {
-        mLastPayloadSize += param;
-    };
-    uint32_t getRTPSentCount(void) {
-        return mRTPSentCount;
-    };
-    uint32_t getLastRTPSeqNum(void) {
-        return mLastRTPSeqNum;
-    };
-    uint32_t getRTPQueueNumHighWater(void) {
-        return mRTPQueueNumHighWater;
-    };
+    // scattered info
+    void setLastTimeUs(int64_t param) { mLastTimeUs = param; };
+    void setLastRtpTime(uint32_t param) { mLastRtpTime = param; };
+    void setLastRTPSeqNum(uint32_t param) { mLastRTPSeqNum = param; };
+    void setMBRUL(uint32_t param) { mMBRUL = param; };
+    void setRtpBW(uint32_t param) { mRtpPacketBandWidth = param; };
+    void selfIncFrameCount(void) { mRTPSentCount++; };
+    void addPayloadSize(uint64_t param) { mLastPayloadSize += param; };
+    uint32_t getRTPSentCount(void) { return mRTPSentCount; };
+    uint32_t getLastRTPSeqNum(void) { return mLastRTPSeqNum; };
+    uint32_t getRTPQueueNumHighWater(void) { return mRTPQueueNumHighWater; };
 
     ~TxAdaptationInfo();
 
-private:
-
+  private:
     enum {
-        imsma_rtp_ReservedHeaderSize = 0,//16,
+        imsma_rtp_ReservedHeaderSize = 0,  // 16,
         imsma_rtp_MTU_size = 1200,
     };
 
@@ -103,18 +79,17 @@ private:
         struct timespec t;
         t.tv_sec = t.tv_nsec = 0;
         clock_gettime(CLOCK_MONOTONIC, &t);
-        return ((long long)(t.tv_sec)*1000000000LL + t.tv_nsec) / 1000ll;
+        return ((long long)(t.tv_sec) * 1000000000LL + t.tv_nsec) / 1000ll;
     }
 
     bool updateSendingRate();
     bool checkAllowIncrEncBR(uint32_t durationUs);
     uint32_t tuneNetBitRate(uint32_t uiNetBitRate);
-    void notifyAdjustEncBR(uint32_t uiNewBR,bool immediately = false);
+    void notifyAdjustEncBR(uint32_t uiNewBR, bool immediately = false);
     void initAdaptationParams();
 
-
-    //for FIR
-    //if hold on ->resume, need reset these elements
+    // for FIR
+    // if hold on ->resume, need reset these elements
     int64_t mLastRefreshPointSentTimeUs;
     int32_t mLastFIRSeqNum;
 
@@ -122,8 +97,8 @@ private:
     struct PacketEntry {
         int64_t timeUs;
         int64_t send_timeUs;
-        uint32_t iRtpSize;//bytes
-        uint32_t iNetSize;//bytes
+        uint32_t iRtpSize;  // bytes
+        uint32_t iNetSize;  // bytes
     };
     std::list<PacketEntry> mPacketList;
 
@@ -136,7 +111,6 @@ private:
     uint32_t mSendPacketRate;
     uint32_t mAvgPayloadSize;
 
-
     int64_t mLastTimeUs;
     uint32_t mLastRtpTime;
     uint32_t mRTPSentCount;
@@ -146,7 +120,7 @@ private:
     struct FrameEntry {
         int64_t recv_timeUs;
         int64_t frame_timeUs;
-        uint32_t iframeSize;//bytes
+        uint32_t iframeSize;  // bytes
     };
     std::list<FrameEntry> mFrameList;
     uint32_t mFramesTotalSize;
@@ -155,29 +129,28 @@ private:
     uint32_t mLastEstimateEncBR;
     uint32_t mLastEstimateFPS;
 
-
     double mDAvgRTPOH;
     uint32_t mUIAvgRTPOH;
 
-    uint32_t mLastTMMBRTotalBitRate;//bps
-    uint32_t mLastTMMBRNetBitRate; //bps
+    uint32_t mLastTMMBRTotalBitRate;  // bps
+    uint32_t mLastTMMBRNetBitRate;    // bps
     int64_t mLastTMMBRRecvTimeUs;
 
-    //how much bigger the bit rate in TMMBR
-    //than the current encoding bitrate, we should trigger increase bit rate
-    uint32_t mIncEncBRThreshold; //bps  defalut > 10000bps
+    // how much bigger the bit rate in TMMBR
+    // than the current encoding bitrate, we should trigger increase bit rate
+    uint32_t mIncEncBRThreshold;  // bps  defalut > 10000bps
 
-    //how much littler the bit rate in TMMBR
-    //than the current encoding bitrate, we should trigger reduce bit rate
-    uint32_t mReduceEncBRThreshold; //bps default > 5000bps
+    // how much littler the bit rate in TMMBR
+    // than the current encoding bitrate, we should trigger reduce bit rate
+    uint32_t mReduceEncBRThreshold;  // bps default > 5000bps
 
-    //monitor rtp packet queue
+    // monitor rtp packet queue
     uint32_t mRTPQueueNumHighWater;
     uint32_t mRTPQueueDurHighWaterUs;
     uint32_t mRTPQueueDurLowWaterUs;
 
-    //reception report info
-    //int64_t mLastRRTimeUs;
+    // reception report info
+    // int64_t mLastRRTimeUs;
 
     struct ReceptionReport {
         uint8_t fraction_lost;
@@ -197,13 +170,13 @@ private:
 
     uint32_t mLastExcess_bit;
 
-    //threshold for Reception report to adjust enc bit rate
+    // threshold for Reception report to adjust enc bit rate
     uint8_t m_flst_threshold;
     uint32_t m_diffJitterUs_Thrsd;
     int32_t m_diffBR_Thrsd;
     int32_t m_diffPR_Thrsd;
 
-    int32_t m_diffBR_LowWater;//low water for increase encodig bit rate
+    int32_t m_diffBR_LowWater;  // low water for increase encodig bit rate
     int32_t m_diffPR_LowWater;
 
     uint32_t mLastAdjustEncBitRate;
@@ -225,11 +198,10 @@ private:
 
     uint32_t mLast_RTT_ms;
 
-    void riseBitrate(uint32_t *bitRate, signalInfo sigInfo);
+    void riseBitrate(uint32_t* bitRate, signalInfo sigInfo);
     bool mBackUpIncrease;
     uint32_t mRRCount;
 
     /******for adaptation end**************/
-
 };
-#endif // _IMS_TXADA_H_
+#endif  // _IMS_TXADA_H_

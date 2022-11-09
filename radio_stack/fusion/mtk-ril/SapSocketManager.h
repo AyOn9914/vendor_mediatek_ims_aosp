@@ -26,22 +26,19 @@ static int socket_sap_gsm_fds[MAX_SIM_COUNT];
 static int socket_sap_c2k_fds[MAX_SIM_COUNT];
 static int socket_sap_bt_fds[MAX_SIM_COUNT];
 const char PROPERTY_RIL_FULL_UICC_TYPE[MAX_SIM_COUNT][35] = {
-    "vendor.gsm.ril.fulluicctype",
-    "vendor.gsm.ril.fulluicctype.2",
-    "vendor.gsm.ril.fulluicctype.3",
-    "vendor.gsm.ril.fulluicctype.4",
+        "vendor.gsm.ril.fulluicctype",
+        "vendor.gsm.ril.fulluicctype.2",
+        "vendor.gsm.ril.fulluicctype.3",
+        "vendor.gsm.ril.fulluicctype.4",
 };
 
 class SapSocketManager {
-
-public:
-
+  public:
     SapSocketManager();
     static bool setSapSocket(RIL_SOCKET_ID socketId, RILD_RadioTechnology_Group group, int fd);
-    static bool sendSapMessageToRild(void *data, int datalen, RIL_SOCKET_ID socketId);
+    static bool sendSapMessageToRild(void* data, int datalen, RIL_SOCKET_ID socketId);
 
-private:
-
+  private:
     static RILD_RadioTechnology_Group choiceDestViaCurrCardType(int slotId);
 };
 #endif

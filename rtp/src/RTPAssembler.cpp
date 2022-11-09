@@ -27,34 +27,27 @@
 
 #include <stdint.h>
 
-namespace imsma
-{
+namespace imsma {
 
-RTPAssembler::RTPAssembler()
-    : mFirstFailureTimeUs(-1)
-{
+RTPAssembler::RTPAssembler() : mFirstFailureTimeUs(-1) {}
 
-}
+// test
+// RTPAssembler::RTPAssembler(const RTPAssembler & src){
+//   mFirstFailureTimeUs = src.mFirstFailureTimeUs;
+// }
 
-//test
-//RTPAssembler::RTPAssembler(const RTPAssembler & src){
-//  mFirstFailureTimeUs = src.mFirstFailureTimeUs;
-//}
-
-void RTPAssembler::onPacketReceived(const sp<RTPSource> &source)
-{
-    //test:
-    //RTPAssembler dest(*this);
+void RTPAssembler::onPacketReceived(const sp<RTPSource>& source) {
+    // test:
+    // RTPAssembler dest(*this);
 
     AssemblyStatus status;
 
-    for(;;) {
+    for (;;) {
         status = assembleMore(source);
 
-        if(status == WRONG_SEQUENCE_NUMBER) {
-            if(mFirstFailureTimeUs >= 0) {
-                if(ALooper::GetNowUs() - mFirstFailureTimeUs > 5000ll) {
-
+        if (status == WRONG_SEQUENCE_NUMBER) {
+            if (mFirstFailureTimeUs >= 0) {
+                if (ALooper::GetNowUs() - mFirstFailureTimeUs > 5000ll) {
                     mFirstFailureTimeUs = -1;
 
                     // LOG(VERBOSE) << "waited too long for packet.";
@@ -66,7 +59,7 @@ void RTPAssembler::onPacketReceived(const sp<RTPSource> &source)
             }
 
             break;
-        } else if(status == LARGE_SEQUENCE_GAP) {
+        } else if (status == LARGE_SEQUENCE_GAP) {
             mFirstFailureTimeUs = -1;
             packetLostRegister();
             continue;
@@ -74,50 +67,49 @@ void RTPAssembler::onPacketReceived(const sp<RTPSource> &source)
         } else {
             mFirstFailureTimeUs = -1;
 
-            if(status == NOT_ENOUGH_DATA) {
+            if (status == NOT_ENOUGH_DATA) {
                 break;
             }
         }
     }
 
-    //maybe we have some packetlost updata
+    // maybe we have some packetlost updata
     packetLost();
 }
 
 // static
-void RTPAssembler::CopyMetas(const sp<ABuffer> &to, const sp<ABuffer> &from)
-{
+void RTPAssembler::CopyMetas(const sp<ABuffer>& to, const sp<ABuffer>& from) {
     sp<AMessage> to_meta = to->meta();
     sp<AMessage> from_meta = from->meta();
 
-    //copy rtp-time meta
+    // copy rtp-time meta
     uint32_t rtpTime;
-    CHECK(from_meta->findInt32("rtp-time", (int32_t *) &rtpTime));
+    CHECK(from_meta->findInt32("rtp-time", (int32_t*)&rtpTime));
     to_meta->setInt32("rtp-time", rtpTime);
 
     // Copy the seq number.
     to->setInt32Data(from->int32Data());
 
-    //copy the rotation,facing,flip info
+    // copy the rotation,facing,flip info
     int32_t ccw_rotation = 0;
     int32_t camera_facing = IMSMA_CAMERA_FACING_UNKNOW;
     int32_t flip = IMSMA_CAMERA_NO_FLIP;
 
-    from_meta->findInt32("ccw_rotation",&ccw_rotation);
-    from_meta->findInt32("camera_facing",&camera_facing);
-    from_meta->findInt32("flip",&flip);
+    from_meta->findInt32("ccw_rotation", &ccw_rotation);
+    from_meta->findInt32("camera_facing", &camera_facing);
+    from_meta->findInt32("flip", &flip);
 
-    to_meta->setInt32("ccw_rotation",ccw_rotation);
-    to_meta->setInt32("camera_facing",camera_facing);
-    to_meta->setInt32("flip",flip);
+    to_meta->setInt32("ccw_rotation", ccw_rotation);
+    to_meta->setInt32("camera_facing", camera_facing);
+    to_meta->setInt32("flip", flip);
 
-    //copy maker info
+    // copy maker info
     int32_t marker_bit = 0;
     from_meta->findInt32("M", &marker_bit);
 
-    if(marker_bit > 0) {
-        ALOGV("%s,last accu of frame",__FUNCTION__);
-        to_meta->setInt32("M",marker_bit);
+    if (marker_bit > 0) {
+        ALOGV("%s,last accu of frame", __FUNCTION__);
+        to_meta->setInt32("M", marker_bit);
     }
 }
 
@@ -212,7 +204,7 @@ void ARTPAssembler::updatePacketReceived(const sp<ARTPSource> &source,
 {
     evaluateDuration(source, buffer);
 }
-#endif // #ifdef MTK_AOSP_ENHANCEMENT
+#endif  // #ifdef MTK_AOSP_ENHANCEMENT
 #endif
 
 }  // namespace imsma

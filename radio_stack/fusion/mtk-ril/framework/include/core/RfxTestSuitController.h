@@ -23,7 +23,7 @@
 #include "RfxController.h"
 #include "RfxTestBasicController.h"
 
-typedef RfxObject* (*RfxCreateControllerFuncPtr)(RfxObject *parent);
+typedef RfxObject* (*RfxCreateControllerFuncPtr)(RfxObject* parent);
 
 #define RIL_REQUEST_LOCAL_TEST 9999
 
@@ -31,35 +31,33 @@ typedef RfxObject* (*RfxCreateControllerFuncPtr)(RfxObject *parent);
  * Class RfxTestSuitController
  *****************************************************************************/
 
-class RfxTestSuitController : public RfxController
-{
+class RfxTestSuitController : public RfxController {
     RFX_DECLARE_CLASS(RfxTestSuitController);
     RFX_OBJ_DECLARE_SINGLETON_CLASS(RfxTestSuitController);
 
-// Constructor / Destructor
-public:
-
-    RfxTestSuitController(): m_testObj(NULL) {}
+    // Constructor / Destructor
+  public:
+    RfxTestSuitController() : m_testObj(NULL) {}
 
     virtual ~RfxTestSuitController() {}
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
 
     virtual void onInit();
 
-public:
+  public:
     bool isEnableTest();
     void checkSuccessAndEnqueueNext();
 
-public:
+  public:
     static const RfxCreateControllerFuncPtr s_test_controllers[];
 
-private:
+  private:
     bool mTestSwitcher = false;
     uint32_t m_index = 0;
-    RfxTestBasicController * m_testObj;
+    RfxTestBasicController* m_testObj;
 };
 
 #endif /* __RFX_TEST_SUIT_CONTROLLER_H__ */

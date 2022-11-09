@@ -24,10 +24,10 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxPcoData);
 
-RfxPcoData::RfxPcoData(void *data, int length) : RfxBaseData(data, length) {
+RfxPcoData::RfxPcoData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_PCO_Data *pdata = (RIL_PCO_Data *) data;
-        RIL_PCO_Data *response = (RIL_PCO_Data*) calloc(1, sizeof(RIL_PCO_Data));
+        RIL_PCO_Data* pdata = (RIL_PCO_Data*)data;
+        RIL_PCO_Data* response = (RIL_PCO_Data*)calloc(1, sizeof(RIL_PCO_Data));
         RFX_ASSERT(response != NULL);
 
         response->cid = pdata->cid;
@@ -42,20 +42,20 @@ RfxPcoData::RfxPcoData(void *data, int length) : RfxBaseData(data, length) {
 }
 
 RfxPcoData::~RfxPcoData() {
-    RIL_PCO_Data *pdata = (RIL_PCO_Data *) m_data;
+    RIL_PCO_Data* pdata = (RIL_PCO_Data*)m_data;
     free(pdata->bearer_proto);
     free(pdata->contents);
     free(pdata);
 }
 
-void RfxPcoData::copyString(char **dst, char *src) {
+void RfxPcoData::copyString(char** dst, char* src) {
     RFX_ASSERT(dst != NULL);
     if (src != NULL) {
-        *dst = (char *) calloc(strlen(src) + 1, sizeof(char));
+        *dst = (char*)calloc(strlen(src) + 1, sizeof(char));
         RFX_ASSERT((*dst) != NULL);
         strncpy(*dst, src, strlen(src));
     } else {
-        *dst = (char *) calloc(1, sizeof(char));
+        *dst = (char*)calloc(1, sizeof(char));
         RFX_ASSERT((*dst) != NULL);
         (*dst)[0] = 0;
     }

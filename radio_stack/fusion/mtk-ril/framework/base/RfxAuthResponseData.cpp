@@ -21,10 +21,10 @@ RFX_IMPLEMENT_DATA_CLASS(RfxAuthResponseData);
 
 #define RFX_LOG_TAG "RfxAuthResponseData"
 
-RfxAuthResponseData::RfxAuthResponseData(void *data, int length) : RfxBaseData(data, length)  {
+RfxAuthResponseData::RfxAuthResponseData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_AuthResponse* pOriginal = (RIL_AuthResponse *) data;
-        RIL_AuthResponse* pData = (RIL_AuthResponse *) calloc(1, sizeof(RIL_AuthResponse));
+        RIL_AuthResponse* pOriginal = (RIL_AuthResponse*)data;
+        RIL_AuthResponse* pData = (RIL_AuthResponse*)calloc(1, sizeof(RIL_AuthResponse));
         if (pData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
@@ -34,7 +34,7 @@ RfxAuthResponseData::RfxAuthResponseData(void *data, int length) : RfxBaseData(d
         pData->capMask = pOriginal->capMask;
         pData->devIdLength = pOriginal->devIdLength;
         if (pOriginal->devId != NULL) {
-            pData->devId = (char *)calloc(1, pData->devIdLength+1);
+            pData->devId = (char*)calloc(1, pData->devIdLength + 1);
             if (pData->devId == NULL) {
                 mtkLogD(RFX_LOG_TAG, "OOM");
                 return;
@@ -51,7 +51,7 @@ RfxAuthResponseData::RfxAuthResponseData(void *data, int length) : RfxBaseData(d
 RfxAuthResponseData::~RfxAuthResponseData() {
     // free memory
     if (m_data != NULL) {
-        RIL_AuthResponse* pData = (RIL_AuthResponse *) m_data;
+        RIL_AuthResponse* pData = (RIL_AuthResponse*)m_data;
         if (pData->devId != NULL) {
             free(pData->devId);
         }

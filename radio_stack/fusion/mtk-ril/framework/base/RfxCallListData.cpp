@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCallListData);
 
-RfxCallListData::RfxCallListData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCallListData::RfxCallListData(void* data, int length) : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
@@ -26,28 +26,28 @@ RfxCallListData::RfxCallListData(void *data, int length) : RfxBaseData(data, len
 
     m_length = length;
     m_data = NULL;
-    int countOfCall = m_length / sizeof(RIL_Call *);
-    RIL_Call ** pp_calls = (RIL_Call **)calloc(countOfCall, sizeof(RIL_Call *));
+    int countOfCall = m_length / sizeof(RIL_Call*);
+    RIL_Call** pp_calls = (RIL_Call**)calloc(countOfCall, sizeof(RIL_Call*));
     RFX_ASSERT(pp_calls != NULL);
 
     if (countOfCall > 0) {
-        RIL_Call ** tmp = (RIL_Call **)data;
+        RIL_Call** tmp = (RIL_Call**)data;
         for (int i = 0; i < countOfCall; i++) {
-            pp_calls[i] = (RIL_Call *)calloc(1, sizeof(RIL_Call));
+            pp_calls[i] = (RIL_Call*)calloc(1, sizeof(RIL_Call));
             RFX_ASSERT(pp_calls[i] != NULL);
             memset(pp_calls[i], 0, sizeof(RIL_Call));
             memcpy(pp_calls[i], tmp[i], sizeof(RIL_Call));
             if (tmp[i]->number != NULL) {
                 int len = strlen(tmp[i]->number);
-                //Allocate and zero-initialize array
-                pp_calls[i]->number = (char *)calloc(len + 1, sizeof(char));
+                // Allocate and zero-initialize array
+                pp_calls[i]->number = (char*)calloc(len + 1, sizeof(char));
                 RFX_ASSERT(pp_calls[i]->number != NULL);
                 strncpy(pp_calls[i]->number, tmp[i]->number, len);
             }
             if (tmp[i]->name != NULL) {
                 int len = strlen(tmp[i]->name);
-                //Allocate and zero-initialize array
-                pp_calls[i]->name = (char *)calloc(len + 1, sizeof(char));
+                // Allocate and zero-initialize array
+                pp_calls[i]->name = (char*)calloc(len + 1, sizeof(char));
                 RFX_ASSERT(pp_calls[i]->name != NULL);
                 strncpy(pp_calls[i]->name, tmp[i]->name, len);
             }
@@ -59,8 +59,8 @@ RfxCallListData::RfxCallListData(void *data, int length) : RfxBaseData(data, len
 
 RfxCallListData::~RfxCallListData() {
     // free
-    int countOfCall = m_length / sizeof(RIL_Call *);
-    RIL_Call ** pp_calls = (RIL_Call **)m_data;
+    int countOfCall = m_length / sizeof(RIL_Call*);
+    RIL_Call** pp_calls = (RIL_Call**)m_data;
     if (pp_calls != NULL) {
         for (int i = 0; i < countOfCall; i++) {
             if (pp_calls[i] != NULL) {

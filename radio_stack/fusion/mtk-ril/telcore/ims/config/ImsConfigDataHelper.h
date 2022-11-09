@@ -24,12 +24,12 @@
 #include <string>
 
 class ImsConfigDataHelper {
-private:
+  private:
     ImsConfigDataHelper();
     virtual ~ImsConfigDataHelper();
-    static std::map<int,ConfigSettings> sConfigData;
+    static std::map<int, ConfigSettings> sConfigData;
 
-public:
+  public:
     static std::vector<std::shared_ptr<ConfigValue>> getConfigData(int operatorId);
     static int getConfigDataType(int configId);
     static bool isProvisionToModem(int configId);
@@ -37,4 +37,4 @@ public:
     static int getConfigId(std::string provisionStr);
 };
 
-#endif //RIL_IMSCONFIGDATA_H
+#endif  // RIL_IMSCONFIGDATA_H

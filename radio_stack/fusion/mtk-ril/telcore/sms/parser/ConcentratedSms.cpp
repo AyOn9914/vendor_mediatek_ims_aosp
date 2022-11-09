@@ -22,36 +22,32 @@
 #include "SmsMessage.h"
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "ConcentratedSms"
+#define RFX_LOG_TAG "ConcentratedSms"
 
 /*****************************************************************************
  * Class SmsHeader
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("ConcentratedSms", ConcentratedSms, RfxObject);
 
-ConcentratedSms::ConcentratedSms(SmsMessage *msg) :
-        mWapPushUserData(NULL),
-        mWappushMsg(NULL),
-        mTimeoutHandle(NULL) {
+ConcentratedSms::ConcentratedSms(SmsMessage* msg)
+    : mWapPushUserData(NULL), mWappushMsg(NULL), mTimeoutHandle(NULL) {
     mTotalSeg = msg->getTotalSegnumber();
     mRefNumber = msg->getRefNumber();
     mIsWapPush = msg->isWapush();
     mMsgList.push_back(msg);
 }
 
-ConcentratedSms::ConcentratedSms() :
-    mTotalSeg(0),
-    mRefNumber(-1),
-    mIsWapPush(false),
-    mWapPushUserData(NULL),
-    mWappushMsg(NULL),
-    mTimeoutHandle(NULL) {
-}
+ConcentratedSms::ConcentratedSms()
+    : mTotalSeg(0),
+      mRefNumber(-1),
+      mIsWapPush(false),
+      mWapPushUserData(NULL),
+      mWappushMsg(NULL),
+      mTimeoutHandle(NULL) {}
 
 void ConcentratedSms::onInit() {
     RFX_LOG_D(RFX_LOG_TAG, "ConcentratedSms init start timer!");
-    mTimeoutHandle = RfxTimer::start(RfxCallback0(this,
-            &ConcentratedSms::onTimeout), ms2ns(60000));
+    mTimeoutHandle = RfxTimer::start(RfxCallback0(this, &ConcentratedSms::onTimeout), ms2ns(60000));
 }
 
 void ConcentratedSms::onDeinit() {
@@ -63,25 +59,22 @@ void ConcentratedSms::onDeinit() {
         RfxTimer::stop(mTimeoutHandle);
         mTimeoutHandle = NULL;
     }
-    list<SmsMessage *>::iterator iter;
+    list<SmsMessage*>::iterator iter;
     for (iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
-        SmsMessage *temp = *iter;
+        SmsMessage* temp = *iter;
         if (temp != NULL) {
             delete temp;
         }
     }
     mMsgList.clear();
 }
-int ConcentratedSms::getRefNumber() {
-    return mRefNumber;
-}
+int ConcentratedSms::getRefNumber() { return mRefNumber; }
 
-void ConcentratedSms::addSegment(SmsMessage *msg) {
-    list<SmsMessage *>::iterator iter;
+void ConcentratedSms::addSegment(SmsMessage* msg) {
+    list<SmsMessage*>::iterator iter;
     for (iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
-        SmsMessage *sms = *iter;
-        if ((sms->getRefNumber() == mRefNumber) &&
-                (sms->getSeqNumber() == msg->getSeqNumber())) {
+        SmsMessage* sms = *iter;
+        if ((sms->getRefNumber() == mRefNumber) && (sms->getSeqNumber() == msg->getSeqNumber())) {
             // duplicated SMS, delete it.
             delete msg;
             return;
@@ -92,22 +85,20 @@ void ConcentratedSms::addSegment(SmsMessage *msg) {
     return;
 }
 
-bool ConcentratedSms::isAllSegmentsReceived() {
-    return (int)mMsgList.size() == mTotalSeg;
-}
+bool ConcentratedSms::isAllSegmentsReceived() { return (int)mMsgList.size() == mTotalSeg; }
 
 void ConcentratedSms::parseWappushPdu() {
     int pduLength = 0;
-    for (list<SmsMessage *>::iterator iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
-        SmsMessage *sms = *iter;
+    for (list<SmsMessage*>::iterator iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
+        SmsMessage* sms = *iter;
         pduLength += sms->getUserDataLength();
     }
-    BYTE *wapPdu = new BYTE[pduLength];
+    BYTE* wapPdu = new BYTE[pduLength];
     int offset = 0;
-    for (list<SmsMessage *>::iterator iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
-        SmsMessage *sms = *iter;
+    for (list<SmsMessage*>::iterator iter = mMsgList.begin(); iter != mMsgList.end(); iter++) {
+        SmsMessage* sms = *iter;
         memcpy(wapPdu + offset, sms->getUserData(), sms->getUserDataLength());
-        offset +=  sms->getUserDataLength();
+        offset += sms->getUserDataLength();
     }
     mWappushMsg = new WappushMessage(wapPdu, pduLength);
     mWappushMsg->parsePdu();
@@ -128,9 +119,7 @@ int ConcentratedSms::getWappushMsgUserDataLength() {
     return 0;
 }
 
-bool ConcentratedSms::isWappush() {
-    return mIsWapPush;
-}
+bool ConcentratedSms::isWappush() { return mIsWapPush; }
 
 bool ConcentratedSms::isWapushForSUPL() {
     if (mWappushMsg != NULL) {
@@ -139,7 +128,7 @@ bool ConcentratedSms::isWapushForSUPL() {
     return false;
 }
 
-bool ConcentratedSms::compareSms(SmsMessage *msg1, SmsMessage *msg2) {
+bool ConcentratedSms::compareSms(SmsMessage* msg1, SmsMessage* msg2) {
     if (msg1->getSeqNumber() < msg2->getSeqNumber()) {
         return true;
     }

@@ -25,19 +25,19 @@
 class RmcRcsReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcRcsReqHandler);
 
-    public:
-        RmcRcsReqHandler(int slot_id, int channel_id);
-        virtual ~RmcRcsReqHandler();
-        static bool isRcsUaSupport();
+  public:
+    RmcRcsReqHandler(int slot_id, int channel_id);
+    virtual ~RmcRcsReqHandler();
+    static bool isRcsUaSupport();
 
-    private:
-        void handleEventRcsSendMsg(const sp<RfxMclMessage>& msg);
-        void handleEventRcsReceiveMsg(const sp<RfxMclMessage>& msg);
-        bool isImsSubmarineSupport();
+  private:
+    void handleEventRcsSendMsg(const sp<RfxMclMessage>& msg);
+    void handleEventRcsReceiveMsg(const sp<RfxMclMessage>& msg);
+    bool isImsSubmarineSupport();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 };
 
 #endif /* __RMC_RCS_REQ_HANDLER_H__ */

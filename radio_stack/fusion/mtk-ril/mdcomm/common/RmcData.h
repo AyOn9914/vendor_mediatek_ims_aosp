@@ -27,14 +27,13 @@
 /*****************************************************************************
  * Class RmcBaseReqData
  *****************************************************************************/
-class RmcBaseReqData: public RfxBaseData {
-// External Method
-public:
+class RmcBaseReqData : public RfxBaseData {
+    // External Method
+  public:
     // Set the RIL error number
     //
     // RETURNS: void
-    void setError(
-        RIL_Errno err       // [IN] Set RIL error number
+    void setError(RIL_Errno err  // [IN] Set RIL error number
     ) {
         m_error = err;
     }
@@ -42,75 +41,64 @@ public:
     // Get the RIL error number
     //
     // RETURNS: the RIL error number
-    RIL_Errno getError() const {
-        return m_error;
-    }
+    RIL_Errno getError() const { return m_error; }
 
-// Constructor / Destructor
-public:
-    RmcBaseReqData(void *data, int length)
-            :RfxBaseData(data, length), m_error(RIL_E_SUCCESS) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcBaseReqData(void* data, int length) : RfxBaseData(data, length), m_error(RIL_E_SUCCESS) {}
 
-    virtual ~RmcBaseReqData() {
-    }
+    virtual ~RmcBaseReqData() {}
 
-// Overridable
-public:
+    // Overridable
+  public:
     // Get the first AT send Info
     //
     // RETURNS: the first AT send info
-    virtual RmcAtSendInfo* getFirstAt(
-        RfxBaseHandler *h           // [IN] The pointer of the RfxBaseHandler
-    ) = 0;
+    virtual RmcAtSendInfo* getFirstAt(RfxBaseHandler* h  // [IN] The pointer of the RfxBaseHandler
+                                      ) = 0;
 
     // Get the next AT send info
     //
     // RETURNS: the next AT send info
-    virtual RmcAtSendInfo* getNextAt(
-        RmcAtRspInfo *cur,         // [IN] the current AT response info
-        RfxBaseHandler *h          // [IN] the pointer of the RfxBaseHandler
-    ) = 0;
+    virtual RmcAtSendInfo* getNextAt(RmcAtRspInfo* cur,  // [IN] the current AT response info
+                                     RfxBaseHandler* h   // [IN] the pointer of the RfxBaseHandler
+                                     ) = 0;
 
-// Implementation
-private:
+    // Implementation
+  private:
     RIL_Errno m_error;
 };
 
 /*****************************************************************************
  * Class RmcMultiAtReq
  *****************************************************************************/
-class RmcMultiAtReq: public RmcBaseReqData {
-// Constructor / Destructor
-public:
-    RmcMultiAtReq(void *data, int length) : RmcBaseReqData(data, length) {
-    }
-    virtual ~RmcMultiAtReq() {
-    }
+class RmcMultiAtReq : public RmcBaseReqData {
+    // Constructor / Destructor
+  public:
+    RmcMultiAtReq(void* data, int length) : RmcBaseReqData(data, length) {}
+    virtual ~RmcMultiAtReq() {}
 
-// Override
-public:
-    virtual RmcAtSendInfo* getFirstAt(RfxBaseHandler *h) {
-         return onGetFirstAtInfo(h);
-    }
+    // Override
+  public:
+    virtual RmcAtSendInfo* getFirstAt(RfxBaseHandler* h) { return onGetFirstAtInfo(h); }
 
-    virtual RmcAtSendInfo* getNextAt(RmcAtRspInfo *cur, RfxBaseHandler *h);
+    virtual RmcAtSendInfo* getNextAt(RmcAtRspInfo* cur, RfxBaseHandler* h);
 
-// Overridable
-protected:
+    // Overridable
+  protected:
     // Callback when get the first AT send info
     //
     // RETURNS: the AT send info
     virtual RmcAtSendInfo* onGetFirstAtInfo(
-        RfxBaseHandler *h        // [IN] The pointer of the RfxBaseHandler
-    ) = 0;
+            RfxBaseHandler* h  // [IN] The pointer of the RfxBaseHandler
+            ) = 0;
 
     // Callback when get the next AT send info
     //
     // RETURNS: the next AT send info
     virtual RmcAtSendInfo* onGetNextAtInfo(
-        const String8 & curCmd,    // [IN] The current AT command
-        RfxBaseHandler *h          // [IN] The pointer of the RfxBaseHandler
+            const String8& curCmd,  // [IN] The current AT command
+            RfxBaseHandler* h       // [IN] The pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(curCmd);
         RFX_UNUSED(h);
@@ -121,9 +109,9 @@ protected:
     //
     // RETURNS: void
     virtual void onHandleFinalResponse(
-        const String8 &curCmd,  // [IN] the AT command
-        RfxAtLine *line,        // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h       // [IN] the pointer of the RfxBaseHandler
+            const String8& curCmd,  // [IN] the AT command
+            RfxAtLine* line,        // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h       // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(curCmd);
         RFX_UNUSED(line);
@@ -134,9 +122,9 @@ protected:
     //
     // RETURNS: void
     virtual void onHandleFinalResponseForError(
-        const String8 &curCmd,  // [IN] the AT command
-        RfxAtLine *line,        // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h       // [IN] the pointer of the RfxBaseHandler
+            const String8& curCmd,  // [IN] the AT command
+            RfxAtLine* line,        // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h       // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(curCmd);
         RFX_UNUSED(line);
@@ -147,9 +135,9 @@ protected:
     //
     // RETURNS: return true to handle the next intermediates if there is
     virtual bool onHandleIntermediates(
-        const String8 &curCmd,  // [IN] the AT command
-        RfxAtLine *line,        // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h       // [IN] the pointer of the RfxBaseHandler
+            const String8& curCmd,  // [IN] the AT command
+            RfxAtLine* line,        // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h       // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(curCmd);
         RFX_UNUSED(line);
@@ -158,48 +146,39 @@ protected:
     }
 };
 
-
 /*****************************************************************************
  * Class RmcSingleAtReq
  *****************************************************************************/
-class RmcSingleAtReq: public RmcMultiAtReq {
-// Constructor / Destructor
-public:
-    RmcSingleAtReq(void *data, int length)
-            : RmcMultiAtReq(data, length) {
-    }
+class RmcSingleAtReq : public RmcMultiAtReq {
+    // Constructor / Destructor
+  public:
+    RmcSingleAtReq(void* data, int length) : RmcMultiAtReq(data, length) {}
 
-    virtual ~RmcSingleAtReq() {
-    }
+    virtual ~RmcSingleAtReq() {}
 
-// Override
-protected:
-    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler *h);
-    virtual RmcAtSendInfo* onGetNextAtInfo(const String8 & cmd, RfxBaseHandler *h);
-    virtual void onHandleFinalResponse(const String8 &cmd, RfxAtLine *line, RfxBaseHandler *h);
-    virtual void onHandleFinalResponseForError(
-        const String8 &cmd,
-        RfxAtLine *line,
-        RfxBaseHandler *h
-    );
-    virtual bool onHandleIntermediates(const String8 &cmd, RfxAtLine *line, RfxBaseHandler *h);
+    // Override
+  protected:
+    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler* h);
+    virtual RmcAtSendInfo* onGetNextAtInfo(const String8& cmd, RfxBaseHandler* h);
+    virtual void onHandleFinalResponse(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h);
+    virtual void onHandleFinalResponseForError(const String8& cmd, RfxAtLine* line,
+                                               RfxBaseHandler* h);
+    virtual bool onHandleIntermediates(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h);
 
-// Overridable
-protected:
+    // Overridable
+  protected:
     // Get the AT send info
     //
     // RETURNS: the AT send info
-    virtual RmcAtSendInfo* onGetAtInfo(
-        RfxBaseHandler *h   // [IN] the pointer of the RfxBaseHandler
-    ) = 0;
-
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h  // [IN] the pointer of the RfxBaseHandler
+                                       ) = 0;
 
     // Callback when handle the final response
     //
     // RETURNS: void
     virtual void onHandleFinalResponse(
-        RfxAtLine *line,    // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h   // [IN] the pointer of the RfxBaseHandler
+            RfxAtLine* line,   // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h  // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(line);
         RFX_UNUSED(h);
@@ -209,8 +188,8 @@ protected:
     //
     // RETURNS: void
     virtual void onHandleFinalResponseForError(
-        RfxAtLine *line,    // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h   // [IN] the pointer of the RfxBaseHandler
+            RfxAtLine* line,   // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h  // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(line);
         RFX_UNUSED(h);
@@ -220,8 +199,8 @@ protected:
     //
     // RETURNS: return true to handle the next intermediates if there is
     virtual bool onHandleIntermediates(
-        RfxAtLine *line,    // [IN] the AT line after atToStart is invoked
-        RfxBaseHandler *h   // [IN] the pointer of the RfxBaseHandler
+            RfxAtLine* line,   // [IN] the AT line after atToStart is invoked
+            RfxBaseHandler* h  // [IN] the pointer of the RfxBaseHandler
     ) {
         RFX_UNUSED(line);
         RFX_UNUSED(h);
@@ -233,37 +212,32 @@ protected:
  * Class RmcBaseRspData
  *****************************************************************************/
 class RmcBaseRspData : public RfxBaseData {
-// External Method
-public:
+    // External Method
+  public:
     // Generate the response message to telcore
     //
     // RETURNS: the response message
     sp<RfxMclMessage> toMessage(
-        const sp<RfxMclMessage> &msg  // [IN] the request message from telcore
+            const sp<RfxMclMessage>& msg  // [IN] the request message from telcore
     );
 
-// Constructor / Destructor
-public:
-    RmcBaseRspData(void *data, int length)
-            : RfxBaseData(data, length) {
-    }
-    virtual ~RmcBaseRspData() {
-    }
+    // Constructor / Destructor
+  public:
+    RmcBaseRspData(void* data, int length) : RfxBaseData(data, length) {}
+    virtual ~RmcBaseRspData() {}
 
-// Overriable
-protected:
+    // Overriable
+  protected:
     // Get the RIL error number
     //
     // RETURNS: the RIL error number
-    virtual RIL_Errno getError() const= 0;
+    virtual RIL_Errno getError() const = 0;
 
-protected:
+  protected:
     // Get the reference of the data
     //
     // RETURNS: the reference of the data
-    const RfxBaseData & getData() const {
-        return *this;
-    }
+    const RfxBaseData& getData() const { return *this; }
 };
 
 /*****************************************************************************
@@ -272,20 +246,16 @@ protected:
 class RmcVoidRsp : public RmcBaseRspData {
     RFX_DECLARE_DATA_CLASS(RmcVoidRsp);
 
-// Constructor / Destructor
-public:
-    RmcVoidRsp(RIL_Errno e) :
-        RmcBaseRspData(NULL, 0), m_error(e) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcVoidRsp(RIL_Errno e) : RmcBaseRspData(NULL, 0), m_error(e) {}
 
-// Override
-protected:
-    virtual RIL_Errno getError() const {
-        return m_error;
-    }
+    // Override
+  protected:
+    virtual RIL_Errno getError() const { return m_error; }
 
-// Implementation
-private:
+    // Implementation
+  private:
     RIL_Errno m_error;
 };
 
@@ -293,23 +263,20 @@ private:
  * Class RmcBaseUrspData
  *****************************************************************************/
 class RmcBaseUrspData : public RfxBaseData {
-// External Method
-public:
+    // External Method
+  public:
     // Generate the URC message to telcore
     //
     // RETURNS: the URC message
     sp<RfxMclMessage> toMessage();
 
-// Constructor / Destructor
-public:
-    RmcBaseUrspData(void *data, int length)
-            :RfxBaseData(data, length) {
-    }
-    virtual ~RmcBaseUrspData() {
-    }
+    // Constructor / Destructor
+  public:
+    RmcBaseUrspData(void* data, int length) : RfxBaseData(data, length) {}
+    virtual ~RmcBaseUrspData() {}
 
-// Overridable
-protected:
+    // Overridable
+  protected:
     // Get the URC ID
     //
     // RETURNS: the URC ID
@@ -320,15 +287,12 @@ protected:
     // RETURNS The slot ID
     virtual int getSlotId() const = 0;
 
-protected:
+  protected:
     // Get the reference of the data
     //
     // The reference of the data
-    const RfxBaseData & getData() const {
-        return *this;
-    }
+    const RfxBaseData& getData() const { return *this; }
 };
-
 
 /*****************************************************************************
  * Class RmcVoidUrsp
@@ -336,24 +300,18 @@ protected:
 class RmcVoidUrsp : public RmcBaseUrspData {
     RFX_DECLARE_DATA_CLASS(RmcVoidUrsp);
 
-// Constructor / Destructor
-public:
-    RmcVoidUrsp(int urc, int slotId) :
-        RmcBaseUrspData(NULL, 0), m_urc(urc), m_slotId(slotId) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcVoidUrsp(int urc, int slotId) : RmcBaseUrspData(NULL, 0), m_urc(urc), m_slotId(slotId) {}
 
-// Override
-protected:
-    virtual int getUrcId() const {
-        return m_urc;
-    }
+    // Override
+  protected:
+    virtual int getUrcId() const { return m_urc; }
 
-    virtual int getSlotId() const {
-        return m_slotId;
-    }
+    virtual int getSlotId() const { return m_slotId; }
 
-// Implementation
-private:
+    // Implementation
+  private:
     int m_urc;
     int m_slotId;
 };
@@ -361,19 +319,18 @@ private:
 /*****************************************************************************
  * Class RmcStringUrsp
  *****************************************************************************/
-class RmcStringUrsp: public RmcVoidUrsp {
+class RmcStringUrsp : public RmcVoidUrsp {
     RFX_DECLARE_DATA_CLASS(RmcStringUrsp);
 
-// Constructor / Destructor
-public:
-    RmcStringUrsp(int urc, int slotId, String8 str) :
-            RmcVoidUrsp(urc, slotId), m_string(str) {
-        m_data = (void *)m_string.string();
+    // Constructor / Destructor
+  public:
+    RmcStringUrsp(int urc, int slotId, String8 str) : RmcVoidUrsp(urc, slotId), m_string(str) {
+        m_data = (void*)m_string.string();
         m_length = m_string.length();
     }
 
-// Implementation
-private:
+    // Implementation
+  private:
     String8 m_string;
 };
 

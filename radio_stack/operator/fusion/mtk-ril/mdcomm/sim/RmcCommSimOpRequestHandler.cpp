@@ -31,41 +31,32 @@ using ::android::String8;
 using namespace std;
 
 static const int ch1OpReqList[] = {
-    RFX_MSG_REQUEST_ATT_GET_SHARED_KEY,
-    RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS,
-    RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION,
-    RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS,
-    RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS,
-    RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG,
-    RFX_MSG_REQUEST_ATT_GET_API_VERSION,
-    RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS,
-    RFX_MSG_REQUEST_SEND_RSU_REQUEST,
+        RFX_MSG_REQUEST_ATT_GET_SHARED_KEY,       RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS,
+        RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION, RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS,
+        RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS,     RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG,
+        RFX_MSG_REQUEST_ATT_GET_API_VERSION,      RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS,
+        RFX_MSG_REQUEST_SEND_RSU_REQUEST,
 };
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_SHARED_KEY);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_ATT_GET_SHARED_KEY);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData,
-        RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS);
+                                RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION);
+                                RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
-        RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_API_VERSION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS);
+                                RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_ATT_GET_API_VERSION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxOpRsuRequestData, RfxOpRsuResponseData,
-        RFX_MSG_REQUEST_SEND_RSU_REQUEST);
+                                RFX_MSG_REQUEST_SEND_RSU_REQUEST);
 
 /*****************************************************************************
  * Class RmcCommSimOpRequestHandler
  *****************************************************************************/
-RmcCommSimOpRequestHandler::RmcCommSimOpRequestHandler(int slot_id, int channel_id) :
-        RmcCommSimRequestHandler(slot_id, channel_id) {
+RmcCommSimOpRequestHandler::RmcCommSimOpRequestHandler(int slot_id, int channel_id)
+    : RmcCommSimRequestHandler(slot_id, channel_id) {
     setTag(String8("RmcCommSimOpReq"));
 }
 
@@ -74,7 +65,7 @@ RmcCommSimOpRequestHandler::~RmcCommSimOpRequestHandler() {
     pthread_mutex_destroy(&simStatusMutex);
 }
 
-const int* RmcCommSimOpRequestHandler::queryTable(int channel_id, int *record_num) {
+const int* RmcCommSimOpRequestHandler::queryTable(int channel_id, int* record_num) {
     const int* superTable = RmcCommSimRequestHandler::queryTable(channel_id, record_num);
     int subRecordNumber = 0;
     int* bufTable = NULL;
@@ -82,8 +73,8 @@ const int* RmcCommSimOpRequestHandler::queryTable(int channel_id, int *record_nu
     int supRecordNumber = *record_num;
 
     if (channel_id == RIL_CMD_PROXY_1) {
-        subRecordNumber = sizeof(ch1OpReqList)/sizeof(int);
-        bufTable = (int*)calloc(1, sizeof(int)* (subRecordNumber + supRecordNumber));
+        subRecordNumber = sizeof(ch1OpReqList) / sizeof(int);
+        bufTable = (int*)calloc(1, sizeof(int) * (subRecordNumber + supRecordNumber));
         RFX_ASSERT(bufTable != NULL);
         if (NULL != superTable) {
             memcpy(bufTable, superTable, sizeof(int) * supRecordNumber);
@@ -94,7 +85,7 @@ const int* RmcCommSimOpRequestHandler::queryTable(int channel_id, int *record_nu
         memcpy(bufTable + index, ch1OpReqList, sizeof(int) * subRecordNumber);
         *record_num += subRecordNumber;
     } else {
-        bufTable = (int*)calloc(1, sizeof(int)* supRecordNumber);
+        bufTable = (int*)calloc(1, sizeof(int) * supRecordNumber);
         RFX_ASSERT(bufTable != NULL);
         if (NULL != superTable) {
             memcpy(bufTable, superTable, sizeof(int) * supRecordNumber);
@@ -110,7 +101,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCommSimOpRequestHandler::needHandle(
     int request = msg->getId();
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
 
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_ATT_GET_SHARED_KEY:
         case RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS:
         case RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION:
@@ -132,7 +123,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCommSimOpRequestHandler::needHandle(
 
 void RmcCommSimOpRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_ATT_GET_SHARED_KEY:
             handleAttGetSharedKey(msg);
             break;
@@ -168,13 +159,13 @@ void RmcCommSimOpRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcCommSimOpRequestHandler::handleAttGetSharedKey(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int key_len;
-    char *key = NULL;
+    char* key = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetSharedKey.\n");
 
@@ -207,8 +198,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (key != NULL) {
         logD(mTag, "[RSU-SIMLOCK] key %s.\n", key);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)key, strlen(key)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)key, strlen(key)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -218,7 +209,7 @@ done:
 void RmcCommSimOpRequestHandler::handleAttUpdateSimLockSettings(const sp<RfxMclMessage>& msg) {
     String8 pString((char*)(msg->getData()->getData()));
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
@@ -226,8 +217,8 @@ void RmcCommSimOpRequestHandler::handleAttUpdateSimLockSettings(const sp<RfxMclM
 
     logD(mTag, "[RSU-SIMLOCK] handleAttUpdateSimLockSettings strings %s\n", pString.string());
 
-    cmd.append(String8::format("AT+EATTSLB=1,%d,\"%s\"",
-            (unsigned int)((pString.size() + 1)/2), pString.string()));
+    cmd.append(String8::format("AT+EATTSLB=1,%d,\"%s\"", (unsigned int)((pString.size() + 1) / 2),
+                               pString.string()));
 
     p_response = atSendCommand(cmd.string());
     cmd.clear();
@@ -253,7 +244,7 @@ void RmcCommSimOpRequestHandler::handleAttUpdateSimLockSettings(const sp<RfxMclM
     } else {
         ret = RIL_E_SUCCESS;
         sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                m_slot_id, RfxVoidData());
+                                                           m_slot_id, RfxVoidData());
         responseToTelCore(unsol);
     }
 
@@ -264,13 +255,13 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttGetSimLockVersion(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int info_len;
-    char *info = NULL;
+    char* info = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetSimLockVersion\n");
 
@@ -304,8 +295,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (info != NULL) {
         logD(mTag, "[RSU-SIMLOCK] info %s.\n", info);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)info, strlen(info)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)info, strlen(info)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -314,7 +305,7 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttResetSimLockSettings(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
@@ -347,7 +338,7 @@ void RmcCommSimOpRequestHandler::handleAttResetSimLockSettings(const sp<RfxMclMe
         }
     } else {
         sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                m_slot_id, RfxVoidData());
+                                                           m_slot_id, RfxVoidData());
         responseToTelCore(unsol);
     }
     ret = RIL_E_SUCCESS;
@@ -358,13 +349,13 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttGetModemStatus(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int status_len;
-    char *status = NULL;
+    char* status = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetModemStatus\n");
 
@@ -398,8 +389,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (status != NULL) {
         logD(mTag, "[RSU-SIMLOCK] status %s.\n", status);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)status, strlen(status)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)status, strlen(status)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -408,13 +399,13 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttGetModemConfig(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int config_len;
-    char *config = NULL;
+    char* config = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetModemConfig\n");
 
@@ -448,8 +439,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (config != NULL) {
         logD(mTag, "[RSU-SIMLOCK] status %s.\n", config);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)config, strlen(config)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)config, strlen(config)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -458,13 +449,13 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttGetApiVersion(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int version_len;
-    char *version = NULL;
+    char* version = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetApiVersion\n");
 
@@ -498,8 +489,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (version != NULL) {
         logD(mTag, "[RSU-SIMLOCK] version %s.\n", version);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)version, strlen(version)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)version, strlen(version)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -508,13 +499,13 @@ done:
 
 void RmcCommSimOpRequestHandler::handleAttGetSimSlots(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int slots_len;
-    char *slots = NULL;
+    char* slots = NULL;
 
     logD(mTag, "[RSU-SIMLOCK] handleAttGetSimSlots\n");
 
@@ -548,8 +539,8 @@ done:
     logD(mTag, "[RSU-SIMLOCK] done.\n");
     if (slots != NULL) {
         logD(mTag, "[RSU-SIMLOCK] slots %s.\n", slots);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)slots, strlen(slots)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)slots, strlen(slots)), msg, false);
     } else {
         response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
@@ -558,10 +549,10 @@ done:
 
 void RmcCommSimOpRequestHandler::handleRsuRequest(const sp<RfxMclMessage>& msg) {
     RIL_RsuRequestInfo* request = (RIL_RsuRequestInfo*)(msg->getData()->getData());
-    logD(mTag, "[RSU-SIMLOCK] handleRsuRequest opId = %d, requestId = %d",
-            request->opId, request->requestId);
+    logD(mTag, "[RSU-SIMLOCK] handleRsuRequest opId = %d, requestId = %d", request->opId,
+         request->requestId);
 
-    switch(request->opId) {
+    switch (request->opId) {
         case RSU_OP_VZW:
             handleVzwRsuRequest(msg);
             return;
@@ -571,15 +562,15 @@ void RmcCommSimOpRequestHandler::handleRsuRequest(const sp<RfxMclMessage>& msg) 
             break;
     }
 
-    sp<RfxMclMessage> mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                    RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    sp<RfxMclMessage> mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
 void RmcCommSimOpRequestHandler::handleKDDIRsuRequest(const sp<RfxMclMessage>& msg) {
     RIL_RsuRequestInfo* request = (RIL_RsuRequestInfo*)(msg->getData()->getData());
 
-    switch(request->requestId) {
+    switch (request->requestId) {
         case RSU_REQUEST_SET_SIM_LOCK_DATA:
             handleKDDIRsuSetSimLockData(msg);
             return;
@@ -591,8 +582,8 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuRequest(const sp<RfxMclMessage>& m
             break;
     }
 
-    sp<RfxMclMessage> mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                    RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg);
+    sp<RfxMclMessage> mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -619,8 +610,9 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuSetSimLockData(const sp<RfxMclMess
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    logD(mTag, "[RSU-SIMLOCK] handleKDDIRsuSetSimLockData opId = %d, requestId = %d, data_size = %d",
-            request->opId, requestId, data_size);
+    logD(mTag,
+         "[RSU-SIMLOCK] handleKDDIRsuSetSimLockData opId = %d, requestId = %d, data_size = %d",
+         request->opId, requestId, data_size);
     cuttent_data = request->data;
     do {
         cuttent_data = cuttent_data + length;
@@ -630,14 +622,15 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuSetSimLockData(const sp<RfxMclMess
             requestId = RSU_MODEM_REQUEST_SET_LOCK_DATA_DONE;
             length = data_size;
         }
-        logD(mTag, "[RSU-SIMLOCK] requestId %d, length %d, offset %d", requestId, data_size, offset);
+        logD(mTag, "[RSU-SIMLOCK] requestId %d, length %d, offset %d", requestId, data_size,
+             offset);
         lock_data = (char*)calloc(1, length + 1);
         RFX_ASSERT(lock_data != NULL);
         strncpy(lock_data, cuttent_data, length);
 
         cmd.clear();
-        cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d,%d,\"%s\"",
-                request->opId, requestId, offset, length, lock_data));
+        cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d,%d,\"%s\"", request->opId, requestId,
+                                   offset, length, lock_data));
         atResponse = atSendCommand(cmd);
         free(lock_data);
         if (atResponse == NULL) {
@@ -666,33 +659,34 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuSetSimLockData(const sp<RfxMclMess
         logD(mTag, "[RSU-SIMLOCK] data_size %d, %d", data_size, offset);
     } while (data_size > 0);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
 void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage>& msg,
-        int requestId) {
+                                                          int requestId) {
     int err = 0;
     int errCode = 0;
 
     String8 cmd("");
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
-    RfxAtLine *p_cur = NULL;
+    RfxAtLine* p_cur = NULL;
 
     int category = 0, triplet_length = 0;
     RIL_RsuRequestInfo* request = (RIL_RsuRequestInfo*)(msg->getData()->getData());
     RIL_RsuResponseInfo* response = (RIL_RsuResponseInfo*)calloc(1, sizeof(RIL_RsuResponseInfo));
-    int sim_lock_group = 1; // 1: white list, 2: black list
+    int sim_lock_group = 1;  // 1: white list, 2: black list
     char* IMSI = NULL;
     char* GID1 = NULL;
     char* GID2 = NULL;
@@ -708,8 +702,8 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage
         sim_lock_group = 2;
     }
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d",
-            request->opId, RSU_MODEM_REQUEST_GET_LOCK_DATA, sim_lock_group));
+    cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d", request->opId,
+                               RSU_MODEM_REQUEST_GET_LOCK_DATA, sim_lock_group));
     atResponse = atSendCommandMultiline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleKDDIRsuGetLockData atResponse is null");
@@ -720,17 +714,15 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleKDDIRsuGetLockData errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
         return;
     }
 
-    for (p_cur = atResponse->getIntermediates()
-            ; p_cur != NULL
-            ; p_cur = p_cur->getNext()) {
+    for (p_cur = atResponse->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
         p_cur->atTokStart(&err);
         if (err < 0) {
             logE(mTag, "[RSU-SIMLOCK] handleKDDIRsuGetLockData atTokStart error");
@@ -766,15 +758,16 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage
                 logE(mTag, "[RSU-SIMLOCK] get GID2 error.");
                 goto error;
             }
-            //Construct IMSI:GID1:GID2,IMSI:GID1:GID2,...
-            asprintf(&temp_data,"%s:%s:%s:%s", category_str, IMSI, GID1, GID2);
+            // Construct IMSI:GID1:GID2,IMSI:GID1:GID2,...
+            asprintf(&temp_data, "%s:%s:%s:%s", category_str, IMSI, GID1, GID2);
             logD(mTag, "[RSU-SIMLOCK] temp_data %s", temp_data);
             if (tmp_buffer1 == NULL) {
                 tmp_buffer1 = (char*)calloc(1, (strlen(temp_data) * sizeof(char)) + 2);
                 RFX_ASSERT(tmp_buffer1 != NULL);
                 strncpy(tmp_buffer1, temp_data, strlen(temp_data));
             } else {
-                tmp_buffer2 = (char*)calloc(1, ((strlen(tmp_buffer1) + strlen(temp_data)) * sizeof(char)) + 2);
+                tmp_buffer2 = (char*)calloc(
+                        1, ((strlen(tmp_buffer1) + strlen(temp_data)) * sizeof(char)) + 2);
                 RFX_ASSERT(tmp_buffer2 != NULL);
                 strncpy(tmp_buffer2, tmp_buffer1, strlen(tmp_buffer1));
                 strncat(tmp_buffer2, ",", 1);
@@ -783,12 +776,13 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage
                 tmp_buffer1 = tmp_buffer2;
             }
             logD(mTag, "[RSU-SIMLOCK] handleKDDIRsuGetLockData tmp_buffer1 %s, tmp_buffer2 %s",
-                    tmp_buffer1, tmp_buffer2);
+                 tmp_buffer1, tmp_buffer2);
         }
     }
     response->data = tmp_buffer1;
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(tmp_buffer1);
     free(response);
@@ -796,15 +790,15 @@ void RmcCommSimOpRequestHandler::handleKDDIRsuGetLockData(const sp<RfxMclMessage
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
 void RmcCommSimOpRequestHandler::handleVzwRsuRequest(const sp<RfxMclMessage>& msg) {
     RIL_RsuRequestInfo* request = (RIL_RsuRequestInfo*)(msg->getData()->getData());
 
-    switch(request->requestId) {
+    switch (request->requestId) {
         case RSU_REQUEST_INIT_REQUEST:
             handleVzwRsuInitiate(msg);
             return;
@@ -827,8 +821,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuRequest(const sp<RfxMclMessage>& ms
             break;
     }
 
-    sp<RfxMclMessage> mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                    RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    sp<RfxMclMessage> mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -837,7 +831,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuInitiate(const sp<RfxMclMessage>& m
     int errCode = 0;
 
     String8 cmd("");
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -862,8 +856,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuInitiate(const sp<RfxMclMessage>& m
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuInitiate errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -883,14 +877,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuInitiate(const sp<RfxMclMessage>& m
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuInitiate err < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuInitiate err < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_INIT_REQUEST) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuInitiate err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuInitiate err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -902,16 +900,17 @@ void RmcCommSimOpRequestHandler::handleVzwRsuInitiate(const sp<RfxMclMessage>& m
     response->data = generateRequest;
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuInitiate generateRequest = %s", response->data);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -920,7 +919,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetSharedKey(const sp<RfxMclMessage
     int errCode = 0;
 
     String8 cmd("");
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -934,8 +933,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetSharedKey(const sp<RfxMclMessage
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d,\"%s\"",
-            request->opId, RSU_MODEM_REQUEST_GET_SHARED_KEY, request->data));
+    cmd.append(String8::format("AT+ESMLRSU=%d,%d,\"%s\"", request->opId,
+                               RSU_MODEM_REQUEST_GET_SHARED_KEY, request->data));
     atResponse = atSendCommandSingleline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetSharedKey atResponse is null");
@@ -946,8 +945,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetSharedKey(const sp<RfxMclMessage
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetSharedKey errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -967,14 +966,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetSharedKey(const sp<RfxMclMessage
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetSharedKey err < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetSharedKey err < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_GET_SHARED_KEY) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetSharedKey err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetSharedKey err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -986,16 +989,17 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetSharedKey(const sp<RfxMclMessage
     response->data = sharedKey;
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuGetSharedKey sharedKey = %s", response->data);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -1004,7 +1008,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUpdateLockData(const sp<RfxMclMessa
     int errCode = 0;
 
     String8 cmd("");
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -1018,8 +1022,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUpdateLockData(const sp<RfxMclMessa
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d,\"%s\"",
-            request->opId, RSU_MODEM_REQUEST_UPDATE_LOCK_DATA, request->data));
+    cmd.append(String8::format("AT+ESMLRSU=%d,%d,\"%s\"", request->opId,
+                               RSU_MODEM_REQUEST_UPDATE_LOCK_DATA, request->data));
     atResponse = atSendCommandSingleline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUpdateLockData atResponse is null");
@@ -1030,8 +1034,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUpdateLockData(const sp<RfxMclMessa
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUpdateLockData errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -1051,14 +1055,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUpdateLockData(const sp<RfxMclMessa
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUpdateLockData err < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuUpdateLockData err < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_UPDATE_LOCK_DATA) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUpdateLockData err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuUpdateLockData err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -1070,16 +1078,17 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUpdateLockData(const sp<RfxMclMessa
     response->data = lockData;
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuUpdateLockData lockData = %s", response->data);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -1088,7 +1097,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetVersion(const sp<RfxMclMessage>&
     int errCode = 0;
     String8 cmd("");
 
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -1103,8 +1112,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetVersion(const sp<RfxMclMessage>&
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d",
-            request->opId, RSU_MODEM_REQUEST_GET_LOCK_VERSION));
+    cmd.append(
+            String8::format("AT+ESMLRSU=%d,%d", request->opId, RSU_MODEM_REQUEST_GET_LOCK_VERSION));
     atResponse = atSendCommandSingleline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetVersion atResponse is null");
@@ -1115,8 +1124,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetVersion(const sp<RfxMclMessage>&
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetVersion errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -1136,14 +1145,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetVersion(const sp<RfxMclMessage>&
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetVersion err < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetVersion err < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_GET_LOCK_VERSION) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetVersion err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetVersion err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -1165,16 +1178,17 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetVersion(const sp<RfxMclMessage>&
     response->version = ((atoi(majorVersion) << 16) + atoi(minorVersion));
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuGetVersion version = %d", response->version);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -1183,7 +1197,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetStatus(const sp<RfxMclMessage>& 
     int errCode = 0;
     String8 cmd("");
 
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -1198,8 +1212,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetStatus(const sp<RfxMclMessage>& 
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d",
-            request->opId, RSU_MODEM_REQUEST_GET_LOCK_STATUS));
+    cmd.append(
+            String8::format("AT+ESMLRSU=%d,%d", request->opId, RSU_MODEM_REQUEST_GET_LOCK_STATUS));
     atResponse = atSendCommandSingleline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetStatus atResponse is null");
@@ -1210,8 +1224,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetStatus(const sp<RfxMclMessage>& 
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetStatus errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -1231,14 +1245,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetStatus(const sp<RfxMclMessage>& 
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetStatus err < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetStatus err < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_GET_LOCK_STATUS) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuGetStatus err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuGetStatus err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -1260,18 +1278,19 @@ void RmcCommSimOpRequestHandler::handleVzwRsuGetStatus(const sp<RfxMclMessage>& 
         goto error;
     }
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuGetStatus unlockStatus = %d unlockTime = %lld",
-            response->status, response->time);
+         response->status, response->time);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -1280,7 +1299,7 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUnlockTimer(const sp<RfxMclMessage>
     int errCode = 0;
 
     String8 cmd("");
-    RfxAtLine *pLine = NULL;
+    RfxAtLine* pLine = NULL;
     sp<RfxAtResponse> atResponse;
     sp<RfxMclMessage> mclResponse;
 
@@ -1295,8 +1314,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUnlockTimer(const sp<RfxMclMessage>
     response->opId = request->opId;
     response->requestId = request->requestId;
 
-    cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d",
-            request->opId, RSU_MODEM_REQUEST_UNLOCK_TIMER, (request->requestType == 2 ? 0 : 1)));
+    cmd.append(String8::format("AT+ESMLRSU=%d,%d,%d", request->opId, RSU_MODEM_REQUEST_UNLOCK_TIMER,
+                               (request->requestType == 2 ? 0 : 1)));
     atResponse = atSendCommandSingleline(cmd, "+ESMLRSU:");
     if (atResponse == NULL) {
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUnlockTimer atResponse is null");
@@ -1307,8 +1326,8 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUnlockTimer(const sp<RfxMclMessage>
         errCode = atResponse->atGetCmeError();
         logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUnlockTimer errCode = %d", errCode);
         response->errCode = errCode;
-        mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE,
+        mclResponse = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_GENERIC_FAILURE,
                 RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
         responseToTelCore(mclResponse);
         free(response);
@@ -1328,14 +1347,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUnlockTimer(const sp<RfxMclMessage>
 
     opId = pLine->atTokNextint(&err);
     if (err < 0 || opId != request->opId) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUnlockTimer er < 0 or opId = %d"
-                " not equal ot request opId = %d", opId, request->opId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuUnlockTimer er < 0 or opId = %d"
+             " not equal ot request opId = %d",
+             opId, request->opId);
         goto error;
     }
     requestId = pLine->atTokNextint(&err);
     if (err < 0 || requestId != RSU_MODEM_REQUEST_UNLOCK_TIMER) {
-        logE(mTag, "[RSU-SIMLOCK] handleVzwRsuUnlockTimer err < 0 or requestId = %d"
-                " not equal ot request requestId = %d", requestId, request->requestId);
+        logE(mTag,
+             "[RSU-SIMLOCK] handleVzwRsuUnlockTimer err < 0 or requestId = %d"
+             " not equal ot request requestId = %d",
+             requestId, request->requestId);
         goto error;
     }
 
@@ -1357,17 +1380,18 @@ void RmcCommSimOpRequestHandler::handleVzwRsuUnlockTimer(const sp<RfxMclMessage>
         goto error;
     }
     logD(mTag, "[RSU-SIMLOCK] handleVzwRsuUnlockTimer timerStatus = %d passedTime = %lld",
-            response->status, response->time);
+         response->status, response->time);
 
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_SUCCESS, RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
+    mclResponse = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxOpRsuResponseData(response, sizeof(RIL_RsuResponseInfo)), msg);
     responseToTelCore(mclResponse);
     free(response);
     return;
 
 error:
     free(response);
-    mclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-            RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
+    mclResponse =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }

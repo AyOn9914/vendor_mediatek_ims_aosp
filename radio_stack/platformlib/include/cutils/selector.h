@@ -48,7 +48,6 @@ typedef struct Selector Selector;
  */
 typedef struct SelectableFd SelectableFd;
 struct SelectableFd {
-
     /** The file descriptor itself. */
     int fd;
 

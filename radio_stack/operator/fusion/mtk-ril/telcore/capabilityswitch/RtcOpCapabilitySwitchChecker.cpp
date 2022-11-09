@@ -39,17 +39,16 @@
 /*****************************************************************************
  * Class RtcCapabilitySwitchChecker
  *****************************************************************************/
-RFX_IMPLEMENT_CLASS("RtcOpCapabilitySwitchChecker", RtcOpCapabilitySwitchChecker, RtcCapabilitySwitchChecker);
+RFX_IMPLEMENT_CLASS("RtcOpCapabilitySwitchChecker", RtcOpCapabilitySwitchChecker,
+                    RtcCapabilitySwitchChecker);
 
-RtcOpCapabilitySwitchChecker::RtcOpCapabilitySwitchChecker() {
-}
+RtcOpCapabilitySwitchChecker::RtcOpCapabilitySwitchChecker() {}
 
-RtcOpCapabilitySwitchChecker::~RtcOpCapabilitySwitchChecker() {
-}
+RtcOpCapabilitySwitchChecker::~RtcOpCapabilitySwitchChecker() {}
 
 int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
-    int current_major_slot = m_status_managers[MAX_RFX_SLOT_ID]->getIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+    int current_major_slot =
+            m_status_managers[MAX_RFX_SLOT_ID]->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
 
     if (RtcCapabilitySwitchUtil::isSimSwitchEnabled() == false) {
         RFX_LOG_D(RFX_LOG_TAG, "getHigherPrioritySlot, sim switch is disabled");
@@ -58,8 +57,8 @@ int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
 
     int sim_count = RfxRilUtils::rfxGetSimCount();
     int gemini_mode = getGeminiMode();
-    RFX_LOG_D(RFX_LOG_TAG, "getHigherPrioritySlot, sim_count=%d, mode=%d, cur=%d",
-              sim_count, gemini_mode, current_major_slot);
+    RFX_LOG_D(RFX_LOG_TAG, "getHigherPrioritySlot, sim_count=%d, mode=%d, cur=%d", sim_count,
+              gemini_mode, current_major_slot);
 
     if (sim_count > 3) {
         RFX_LOG_D(RFX_LOG_TAG, "4sim do switch");
@@ -115,14 +114,14 @@ int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
             if (RtcCapabilitySwitchUtil::isOp01Sim(getImsi(i))) {
                 op01_sim_count++;
                 op01_sim_slot_id = i;
-            } else if(isCdmaOnlySim(i) || isCdmaDualModeSim(i) ||
-                      RtcCapabilitySwitchUtil::isOp09Sim(getImsi(i))) {
+            } else if (isCdmaOnlySim(i) || isCdmaDualModeSim(i) ||
+                       RtcCapabilitySwitchUtil::isOp09Sim(getImsi(i))) {
                 c2k_sim_count++;
                 c2k_sim_slot_id = i;
-                c2k_volte_state = m_status_managers[i]->getIntValue(
-                        RFX_STATUS_KEY_VOLTE_STATE, -1);
-                if ((c2k_volte_state == 0) || (isLteNetworkType(m_status_managers[i]->getIntValue(
-                        RFX_STATUS_KEY_PREFERRED_NW_TYPE, -1)) == false)) {
+                c2k_volte_state = m_status_managers[i]->getIntValue(RFX_STATUS_KEY_VOLTE_STATE, -1);
+                if ((c2k_volte_state == 0) ||
+                    (isLteNetworkType(m_status_managers[i]->getIntValue(
+                             RFX_STATUS_KEY_PREFERRED_NW_TYPE, -1)) == false)) {
                     c2k_volte_off_sim_count++;
                     c2k_volte_off_slot_id = i;
                 } else {
@@ -137,7 +136,7 @@ int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
               op01_sim_count, c2k_sim_count, c2k_volte_on_sim_count, c2k_volte_off_sim_count,
               c2k_volte_off_slot_id, common_gsm_sim_count, m_waive_enhance_config);
     if (isSupportSimSwitchEnhancement(ENHANCEMENT_T_PLUS_W) && (inserted_sim_count == 2) &&
-               (common_gsm_sim_count == 1) && (op01_sim_count == 1)) {
+        (common_gsm_sim_count == 1) && (op01_sim_count == 1)) {
         if (RatConfig_isTdscdmaSupported()) {
             // t + w --> always on t card if support TD-SCDMA
             return op01_sim_slot_id;
@@ -145,20 +144,20 @@ int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
             // t + w --> don't need to capability switch if not support TD-SCDMA
             return CURRENT_SLOT;
         }
-    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_T_PLUS_C) &&
-               (inserted_sim_count == 2) && (op01_sim_count == 1) && (c2k_sim_count == 1)) {
+    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_T_PLUS_C) && (inserted_sim_count == 2) &&
+               (op01_sim_count == 1) && (c2k_sim_count == 1)) {
         // t + c --> always on c card
         return c2k_sim_slot_id;
-    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_C) &&
-               (inserted_sim_count == 2) && (common_gsm_sim_count == 1) && (c2k_sim_count == 1)) {
+    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_C) && (inserted_sim_count == 2) &&
+               (common_gsm_sim_count == 1) && (c2k_sim_count == 1)) {
         // w + c--> always on c card
         return c2k_sim_slot_id;
-    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_W) &&
-               (inserted_sim_count == 2) && (common_gsm_sim_count == 2)) {
+    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_W) && (inserted_sim_count == 2) &&
+               (common_gsm_sim_count == 2)) {
         // w + w --> don't need to capability switch
         return CURRENT_SLOT;
-    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_NA) &&
-               (inserted_sim_count == 1) && (common_gsm_sim_count == 1)) {
+    } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_W_PLUS_NA) && (inserted_sim_count == 1) &&
+               (common_gsm_sim_count == 1)) {
         // w + empty --> don't need to capability switch
         return CURRENT_SLOT;
     } else if (isSupportSimSwitchEnhancement(ENHANCEMENT_C_PLUS_C) && (inserted_sim_count == 2) &&
@@ -181,8 +180,8 @@ int RtcOpCapabilitySwitchChecker::getHigherPrioritySlot() {
 }
 
 bool RtcOpCapabilitySwitchChecker::isSkipCapabilitySwitch(int new_major_slot) {
-    int current_major_slot = m_status_managers[MAX_RFX_SLOT_ID]->getIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+    int current_major_slot =
+            m_status_managers[MAX_RFX_SLOT_ID]->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
     int sim_count = RfxRilUtils::rfxGetSimCount();
     bool ret = false;
     if (new_major_slot == current_major_slot) {
@@ -210,13 +209,14 @@ bool RtcOpCapabilitySwitchChecker::isSkipCapabilitySwitch(int new_major_slot) {
             RFX_LOG_D(RFX_LOG_TAG, "skip switch, high priority slot:%d", new_major_slot);
             ret = true;
         } else if (high_priority_slot == CURRENT_SLOT) {
-            if ((sim_count == 3) && ((new_major_slot == SLOT_2) || (current_major_slot == SLOT_2))) {
+            if ((sim_count == 3) &&
+                ((new_major_slot == SLOT_2) || (current_major_slot == SLOT_2))) {
                 RFX_LOG_D(RFX_LOG_TAG, "3sim do switch, new slot:%d", new_major_slot);
             } else {
                 RFX_LOG_D(RFX_LOG_TAG, "skip switch, keep on current slot:%d", new_major_slot);
                 ret = true;
             }
-        } else if (isSatisfyOperatorRules(new_major_slot) == false){
+        } else if (isSatisfyOperatorRules(new_major_slot) == false) {
             RFX_LOG_D(RFX_LOG_TAG, "skip switch, not satisfy op rules:%d", new_major_slot);
             ret = true;
         }
@@ -240,6 +240,4 @@ bool RtcOpCapabilitySwitchChecker::isSatisfyOperatorRules(int new_major_slot) {
     return ret;
 }
 
-bool RtcOpCapabilitySwitchChecker::isSatisfyOp01Rules(int new_major_slot) {
-    return true;
-}
+bool RtcOpCapabilitySwitchChecker::isSatisfyOp01Rules(int new_major_slot) { return true; }

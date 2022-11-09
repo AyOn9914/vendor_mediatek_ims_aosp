@@ -23,12 +23,13 @@ extern "C" {
 
 #define WPFA_D_LOG_TAG "WpfaDriverUtilis"
 
-WpfaDriverUtilis *WpfaDriverUtilis::sInstance = NULL;
+WpfaDriverUtilis* WpfaDriverUtilis::sInstance = NULL;
 Mutex WpfaDriverUtilis::sWpfaDriverUtilisInitMutex;
 
-char ulIpPkt1[] = "45000054bd19400040017ef9c0a82bdc090909090800e146000100010f728b5c0" \
-                  "0000000af150e0000000000101112131415161718191a1b1c1d1e1f2021222324" \
-                  "25262728292a2b2c2d2e2f3031323334353637";
+char ulIpPkt1[] =
+        "45000054bd19400040017ef9c0a82bdc090909090800e146000100010f728b5c0"
+        "0000000af150e0000000000101112131415161718191a1b1c1d1e1f2021222324"
+        "25262728292a2b2c2d2e2f3031323334353637";
 
 WpfaDriverUtilis::WpfaDriverUtilis() {
     mtkLogD(WPFA_D_LOG_TAG, "-new()");
@@ -39,24 +40,21 @@ void WpfaDriverUtilis::init() {
     mFakeMdTid = FAKE_MD_TID_START;
     mEventId = TEST_EVENT_NONE;
     mtkLogD(WPFA_D_LOG_TAG, "-init()");
-
 }
 
-WpfaDriverUtilis::~WpfaDriverUtilis() {
-    mtkLogD(WPFA_D_LOG_TAG, "-del()");
-}
+WpfaDriverUtilis::~WpfaDriverUtilis() { mtkLogD(WPFA_D_LOG_TAG, "-del()"); }
 
 WpfaDriverUtilis* WpfaDriverUtilis::getInstance() {
     if (sInstance != NULL) {
-       return sInstance;
+        return sInstance;
     } else {
-       sWpfaDriverUtilisInitMutex.lock();
-       sInstance = new WpfaDriverUtilis();
-       if (sInstance == NULL) {
-          mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriverUtilis fail");
-       }
-       sWpfaDriverUtilisInitMutex.unlock();
-       return sInstance;
+        sWpfaDriverUtilisInitMutex.lock();
+        sInstance = new WpfaDriverUtilis();
+        if (sInstance == NULL) {
+            mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriverUtilis fail");
+        }
+        sWpfaDriverUtilisInitMutex.unlock();
+        return sInstance;
     }
 }
 
@@ -84,16 +82,16 @@ void WpfaDriverUtilis::testStartNormal(const sp<WpfaDriverMessage>& msg) {
 
 void WpfaDriverUtilis::fake_M2A_WPFA_VERSION(const sp<WpfaDriverMessage>& msg) {
     WpfaCcciDataHeader ccciDataHeader;
-    ccci_msg_hdr_t *header = NULL;
-    ccci_msg_body_t *body = NULL;
+    ccci_msg_hdr_t* header = NULL;
+    ccci_msg_body_t* body = NULL;
 
-    header = (ccci_msg_hdr_t *) calloc(1, CCCI_HEADER_SIZE);
+    header = (ccci_msg_hdr_t*)calloc(1, CCCI_HEADER_SIZE);
     if (header == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *heard");
         return;
     }
 
-    body = (ccci_msg_body_t *) calloc(1, sizeof(ccci_msg_body_t));
+    body = (ccci_msg_body_t*)calloc(1, sizeof(ccci_msg_body_t));
     if (body == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *body");
         free(header);
@@ -105,15 +103,16 @@ void WpfaDriverUtilis::fake_M2A_WPFA_VERSION(const sp<WpfaDriverMessage>& msg) {
     header->msg_type = msg->getType();
     header->param_16bit = msg->getParams();
 
-    const wifiproxy_ap_md_filter_ver_t *verMsg =
-            (const wifiproxy_ap_md_filter_ver_t *)msg->getData()->getData();
+    const wifiproxy_ap_md_filter_ver_t* verMsg =
+            (const wifiproxy_ap_md_filter_ver_t*)msg->getData()->getData();
 
     body->u.version.ap_filter_ver = verMsg->ap_filter_ver;
     body->u.version.md_filter_ver = FILTER_VERSION_1_2;
     body->u.version.dl_buffer_size = verMsg->dl_buffer_size;
     body->u.version.ul_buffer_size = verMsg->ul_buffer_size;
 
-    mtkLogD(WPFA_D_LOG_TAG, "fake_M2A_WPFA_VERSION md_filter_ver=%d", body->u.version.md_filter_ver);
+    mtkLogD(WPFA_D_LOG_TAG, "fake_M2A_WPFA_VERSION md_filter_ver=%d",
+            body->u.version.md_filter_ver);
 
     ccciDataHeader = WpfaCcciDataHeaderEncoder::decodeHeader(header);
     mReader->handleFilterRuleCtrlEvent(ccciDataHeader, WpfaDriverVersionData(body, 1));
@@ -124,18 +123,18 @@ void WpfaDriverUtilis::fake_M2A_WPFA_VERSION(const sp<WpfaDriverMessage>& msg) {
 
 void WpfaDriverUtilis::fake_M2A_REG_DL_FILTER(int testingFilterStrId) {
     WpfaCcciDataHeader ccciDataHeader;
-    ccci_msg_hdr_t *header = NULL;
-    ccci_msg_body_t *body = NULL;
+    ccci_msg_hdr_t* header = NULL;
+    ccci_msg_body_t* body = NULL;
 
     wifiproxy_m2a_reg_dl_filter_t m2a_reg_dl_filter;
 
-    header = (ccci_msg_hdr_t *) calloc(1, CCCI_HEADER_SIZE);
+    header = (ccci_msg_hdr_t*)calloc(1, CCCI_HEADER_SIZE);
     if (header == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *heard");
         return;
     }
 
-    body = (ccci_msg_body_t *) calloc(1, sizeof(ccci_msg_body_t));
+    body = (ccci_msg_body_t*)calloc(1, sizeof(ccci_msg_body_t));
     if (body == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *body");
         free(header);
@@ -149,7 +148,8 @@ void WpfaDriverUtilis::fake_M2A_REG_DL_FILTER(int testingFilterStrId) {
     header->param_16bit = 0;
 
     // fake message body
-    wifiProxy_filter_reg_t *testingMdFilter = (wifiProxy_filter_reg_t *) malloc(sizeof(wifiProxy_filter_reg_t));
+    wifiProxy_filter_reg_t* testingMdFilter =
+            (wifiProxy_filter_reg_t*)malloc(sizeof(wifiProxy_filter_reg_t));
     if (testingMdFilter == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "testingMdFilter is NULL, return.");
         free(body);
@@ -239,18 +239,18 @@ void WpfaDriverUtilis::fake_M2A_REG_DL_FILTER(int testingFilterStrId) {
 
 void WpfaDriverUtilis::fake_M2A_DEREG_DL_FILTER(uint32_t filterId) {
     WpfaCcciDataHeader ccciDataHeader;
-    ccci_msg_hdr_t *header = NULL;
-    ccci_msg_body_t *body = NULL;
+    ccci_msg_hdr_t* header = NULL;
+    ccci_msg_body_t* body = NULL;
 
     wifiproxy_m2a_reg_dl_filter_t m2a_reg_dl_filter;
 
-    header = (ccci_msg_hdr_t *) calloc(1, CCCI_HEADER_SIZE);
+    header = (ccci_msg_hdr_t*)calloc(1, CCCI_HEADER_SIZE);
     if (header == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *heard");
         return;
     }
 
-    body = (ccci_msg_body_t *) calloc(1, sizeof(ccci_msg_body_t));
+    body = (ccci_msg_body_t*)calloc(1, sizeof(ccci_msg_body_t));
     if (body == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *body");
         free(header);
@@ -272,25 +272,24 @@ void WpfaDriverUtilis::fake_M2A_DEREG_DL_FILTER(uint32_t filterId) {
 
     free(body);
     free(header);
-
 }
 
 void WpfaDriverUtilis::fake_M2A_UL_IP_PKT(int IpPktId) {
-    int i= 0;
+    int i = 0;
     const uint8_t maxTryCnt = 10;
     uint8_t tryCnt = 0;
 
     WpfaCcciDataHeader ccciDataHeader;
-    ccci_msg_hdr_t *header = NULL;
-    ccci_msg_ul_ip_pkt_body_t *body = NULL;
+    ccci_msg_hdr_t* header = NULL;
+    ccci_msg_ul_ip_pkt_body_t* body = NULL;
 
-    header = (ccci_msg_hdr_t *) calloc(1, CCCI_HEADER_SIZE);
+    header = (ccci_msg_hdr_t*)calloc(1, CCCI_HEADER_SIZE);
     if (header == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *heard");
         return;
     }
 
-    body = (ccci_msg_ul_ip_pkt_body_t *) calloc(1, sizeof(ccci_msg_ul_ip_pkt_body_t));
+    body = (ccci_msg_ul_ip_pkt_body_t*)calloc(1, sizeof(ccci_msg_ul_ip_pkt_body_t));
     if (body == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM *body");
         free(header);
@@ -306,7 +305,7 @@ void WpfaDriverUtilis::fake_M2A_UL_IP_PKT(int IpPktId) {
         header->param_16bit = 84;
         for (i = 0; i < 84; i++) {
             body->u.ul_ip_pkt.pkt[i] = (uint8_t)ulIpPkt1[i];
-            //mtkLogD(WPFA_D_LOG_TAG, "u.ul_ip_pkt.pkt[%d]=%c",i, body->u.ul_ip_pkt.pkt[i]);
+            // mtkLogD(WPFA_D_LOG_TAG, "u.ul_ip_pkt.pkt[%d]=%c",i, body->u.ul_ip_pkt.pkt[i]);
         }
     } else {
         mtkLogE(WPFA_D_LOG_TAG, "unknown IpPktId=%d", IpPktId);
@@ -337,6 +336,6 @@ uint16_t WpfaDriverUtilis::fake_MD_Tid() {
         newTid = FAKE_MD_TID_START;
     }
     mFakeMdTid = newTid;
-    //mtkLogD(WPFA_D_LOG_TAG, "fake_MD_Tid() newTid=%d", mFakeMdTid);
+    // mtkLogD(WPFA_D_LOG_TAG, "fake_MD_Tid() newTid=%d", mFakeMdTid);
     return mFakeMdTid;
 }

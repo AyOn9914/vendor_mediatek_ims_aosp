@@ -45,17 +45,14 @@
  *****************************************************************************/
 typedef struct {
     int prefNwTypeFromRilj = -1;  // RILJ setting
-    int prefNwTypeDefault = -1;  // Default setting
-    int prefNwType = -1;  // MD setting
+    int prefNwTypeDefault = -1;   // Default setting
+    int prefNwType = -1;          // MD setting
     RatSwitchCaller ratSwitchCaller = RAT_SWITCH_UNKNOWN;
     sp<RfxAction> action;
     sp<RfxMessage> message;
 } RatSettings;
 
-typedef enum {
-    SWITCH_RAT,
-    GMSS_RAT
-} PHONE_CHANGE_SOURCE;
+typedef enum { SWITCH_RAT, GMSS_RAT } PHONE_CHANGE_SOURCE;
 
 typedef enum {
     PS_RAT_FAMILY_UNKNOWN = 0,
@@ -71,7 +68,7 @@ class RtcRatSwitchController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcRatSwitchController);
 
-public:
+  public:
     RtcRatSwitchController();
     virtual ~RtcRatSwitchController();
     void setPreferredNetworkType(RatSwitchInfo ratSwtichInfo);
@@ -80,19 +77,19 @@ public:
     void setLocalAbortAvailableNetwork(const sp<RfxAction>& action);
     bool isECBMRestrictedModeSupport();
 
-protected:
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
     virtual void onDeInit();
 
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-private:
+  private:
     int calculateDefaultNetworkType(RatSwitchInfo ratSwtichInfo);
     void setPreferredNetworkType(const sp<RfxMessage>& message);
     void getPreferredNetworkType(const sp<RfxMessage>& message);
@@ -104,21 +101,20 @@ private:
     void responseGetPreferredNetworkType(const sp<RfxMessage>& response);
     void responseGetVoiceRadioTech(const sp<RfxMessage>& response);
 
-    void switchNwRat(int prefNwType,  const RatSwitchCaller ratSwitchCaller,
-        const sp<RfxAction>& action, const sp<RfxMessage>& message);
+    void switchNwRat(int prefNwType, const RatSwitchCaller ratSwitchCaller,
+                     const sp<RfxAction>& action, const sp<RfxMessage>& message);
     void configRatMode();
     void queueRatSwitchRecord(int prefNwType, const RatSwitchCaller ratSwitchCaller,
-        const sp<RfxAction>& action, const sp<RfxMessage>& message);
+                              const sp<RfxAction>& action, const sp<RfxMessage>& message);
     void processPendingRatSwitchRecord();
     bool hasPendingRecord();
     void updateState(int prefNwType, RatSwitchResult switchResult);
     void updatePhoneMode(PHONE_CHANGE_SOURCE source);
-    void onApVoiceCallCountChanged(int slotId, RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value);
-    void onVolteStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value);
-    void onImsRegistrationStatusChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value);
+    void onApVoiceCallCountChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
+                                   RfxVariant value);
+    void onVolteStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onImsRegistrationStatusChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                        RfxVariant value);
 
     int isNetworkScanOngoing();
     bool isAPInCall();
@@ -139,13 +135,13 @@ private:
     int getDefaultNetWorkType(int slotId);
     void setPreferredNetWorkTypeToSysProp(int slotId, int val);
     int getPreferredNetWorkTypeFromSysProp(int slotId);
-    void setIntSysProp(char *propName, int val);
-    int getIntSysProp(char *propName, int defaultVal);
+    void setIntSysProp(char* propName, int val);
+    int getIntSysProp(char* propName, int defaultVal);
     int isNewSimCard(int slotId);
     int isRafContainsCdma(int raf);
     int isRafContainsGsm(int raf);
 
-    const char *switchCallerToString(int callerEnum);
+    const char* switchCallerToString(int callerEnum);
 
     int filterPrefNwTypeFromRilj(const int prefNwType);
 
@@ -159,13 +155,14 @@ private:
 
     void onUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     bool needDisableCdmaRat();
-    bool needDisableCdmaRatByMccMnc(const char *mccmnc);
+    bool needDisableCdmaRatByMccMnc(const char* mccmnc);
 
     void onRestrictedModeChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-public:
+  public:
     RfxSignal2<int, int> mRatSwitchSignal;
-private:
+
+  private:
     static bool sIsInSwitching;
     Vector<int> mTokensGetEgmssForHvolte;
     RatSettings mRatSettings;

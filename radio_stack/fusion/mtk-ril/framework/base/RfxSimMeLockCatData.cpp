@@ -19,11 +19,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimMeLockCatData);
 
-RfxSimMeLockCatData::RfxSimMeLockCatData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimMeLockCatData::RfxSimMeLockCatData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SimMeLockCatInfo *pSimMeLockInfo = (RIL_SimMeLockCatInfo*)_data;
-        RIL_SimMeLockCatInfo *pData = (RIL_SimMeLockCatInfo *)calloc(1,
-                sizeof(RIL_SimMeLockCatInfo));
+        RIL_SimMeLockCatInfo* pSimMeLockInfo = (RIL_SimMeLockCatInfo*)_data;
+        RIL_SimMeLockCatInfo* pData =
+                (RIL_SimMeLockCatInfo*)calloc(1, sizeof(RIL_SimMeLockCatInfo));
         RFX_ASSERT(pData != NULL);
 
         pData->catagory = pSimMeLockInfo->catagory;
@@ -41,7 +41,7 @@ RfxSimMeLockCatData::RfxSimMeLockCatData(void *_data, int _length) : RfxBaseData
 
 RfxSimMeLockCatData::~RfxSimMeLockCatData() {
     if (m_data != NULL) {
-        RIL_SimMeLockCatInfo *pData = (RIL_SimMeLockCatInfo*)m_data;
+        RIL_SimMeLockCatInfo* pData = (RIL_SimMeLockCatInfo*)m_data;
 
         // free memory
         free(m_data);

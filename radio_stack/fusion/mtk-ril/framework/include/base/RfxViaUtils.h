@@ -32,12 +32,12 @@
  *****************************************************************************/
 
 class RfxViaUtils {
-public:
+  public:
     static void initViaHandler();
     static ViaBaseHandler* getViaHandler();
     static void deInitViaHandler();
 
-private:
+  private:
     static ViaBaseHandler* m_viaHandler;
     static void* m_dlHandler;
 };

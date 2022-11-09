@@ -24,23 +24,23 @@
 
 WPFA_IMPLEMENT_DATA_CLASS(WpfaDriverULIpPkt);
 
-WpfaDriverULIpPkt::WpfaDriverULIpPkt(void *_data, int _length) :
-        WpfaDriverBaseData(_data, _length) {
-    int ret=0;
+WpfaDriverULIpPkt::WpfaDriverULIpPkt(void* _data, int _length)
+    : WpfaDriverBaseData(_data, _length) {
+    int ret = 0;
     if (_data != NULL) {
-        wifiproxy_m2a_ul_ip_pkt_t *pSendMsg = (wifiproxy_m2a_ul_ip_pkt_t*)_data;
-        wifiproxy_m2a_ul_ip_pkt_t *pData = (wifiproxy_m2a_ul_ip_pkt_t *)calloc(1,
-                    sizeof(wifiproxy_m2a_ul_ip_pkt_t));
+        wifiproxy_m2a_ul_ip_pkt_t* pSendMsg = (wifiproxy_m2a_ul_ip_pkt_t*)_data;
+        wifiproxy_m2a_ul_ip_pkt_t* pData =
+                (wifiproxy_m2a_ul_ip_pkt_t*)calloc(1, sizeof(wifiproxy_m2a_ul_ip_pkt_t));
         if (pData == NULL) {
-            mtkLogD(WPFA_D_LOG_TAG,"pData is null, return.");
+            mtkLogD(WPFA_D_LOG_TAG, "pData is null, return.");
             return;
         }
 
-        for(int i = 0; i < MAX_UL_IP_PKT_SIZE; i++){
+        for (int i = 0; i < MAX_UL_IP_PKT_SIZE; i++) {
             pData->pkt[i] = pSendMsg->pkt[i];
-            //mtkLogD("WpfaDriverULIpPkt", "pData->pkt[%d]=%c",i, pData->pkt[i]);
+            // mtkLogD("WpfaDriverULIpPkt", "pData->pkt[%d]=%c",i, pData->pkt[i]);
         }
-        mData = (void* )pData;
+        mData = (void*)pData;
         mLength = _length;
     }
 }

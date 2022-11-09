@@ -27,26 +27,23 @@
 #include "RfxMessage.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 /*****************************************************************************
  * Class RfxMainHandler
  *****************************************************************************/
 
 class RfxMainHandler : public MessageHandler {
-public:
-
+  public:
     virtual ~RfxMainHandler() {}
 
-public:
-
+  public:
     virtual void handleMessage(const Message& message);
 
-protected:
-
+  protected:
     // Sub-class should override onHandleMessage(), not handleMessage()
     virtual void onHandleMessage(const Message& message) = 0;
 };
@@ -56,18 +53,15 @@ protected:
  *****************************************************************************/
 
 class RfxMainThread : public Thread {
-
-private:
-
+  private:
     RfxMainThread();
 
     virtual ~RfxMainThread();
 
-public:
-
+  public:
     static void init();
 
-    static sp<Looper> waitLooper(); // Must invoke after calling rfx_init()
+    static sp<Looper> waitLooper();  // Must invoke after calling rfx_init()
 
     static void enqueueMessage(const sp<RfxMessage>& message);
 
@@ -77,18 +71,16 @@ public:
 
     static void clearMessages();
 
-private:
-
+  private:
     virtual bool threadLoop();
     void initControllers();
 
-private:
-
-    static RfxMainThread *s_self;
+  private:
+    static RfxMainThread* s_self;
 
     sp<Looper> m_looper;
 
     Message m_dummy_msg;
 };
 
-#endif // __RFX_MAIN_THREAD_H__
+#endif  // __RFX_MAIN_THREAD_H__

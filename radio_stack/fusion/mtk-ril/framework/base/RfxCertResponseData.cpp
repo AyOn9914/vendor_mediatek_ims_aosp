@@ -21,10 +21,10 @@ RFX_IMPLEMENT_DATA_CLASS(RfxCertResponseData);
 
 #define RFX_LOG_TAG "RfxCertResponseData"
 
-RfxCertResponseData::RfxCertResponseData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCertResponseData::RfxCertResponseData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_CertResponse* pOriginal = (RIL_CertResponse *) data;
-        RIL_CertResponse* pData = (RIL_CertResponse *) calloc(1, sizeof(RIL_CertResponse));
+        RIL_CertResponse* pOriginal = (RIL_CertResponse*)data;
+        RIL_CertResponse* pData = (RIL_CertResponse*)calloc(1, sizeof(RIL_CertResponse));
         if (pData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
@@ -34,7 +34,7 @@ RfxCertResponseData::RfxCertResponseData(void *data, int length) : RfxBaseData(d
         pData->custId = pOriginal->custId;
         pData->rndLength = pOriginal->rndLength;
         if (pOriginal->rnd != NULL) {
-            pData->rnd = (char *)calloc(1, pData->rndLength+1);
+            pData->rnd = (char*)calloc(1, pData->rndLength + 1);
             if (pData->rnd == NULL) {
                 mtkLogD(RFX_LOG_TAG, "OOM");
                 return;
@@ -51,7 +51,7 @@ RfxCertResponseData::RfxCertResponseData(void *data, int length) : RfxBaseData(d
 RfxCertResponseData::~RfxCertResponseData() {
     // free memory
     if (m_data != NULL) {
-        RIL_CertResponse* pData = (RIL_CertResponse *) m_data;
+        RIL_CertResponse* pData = (RIL_CertResponse*)m_data;
         if (pData->rnd != NULL) {
             free(pData->rnd);
         }

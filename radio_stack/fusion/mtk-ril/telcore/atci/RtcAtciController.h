@@ -33,19 +33,19 @@ using ::android::Mutex;
 class RtcAtciController : public RfxController {
     RFX_DECLARE_CLASS(RtcAtciController);
 
-public:
+  public:
     RtcAtciController() {}
     virtual ~RtcAtciController() {}
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual bool onHandleAtciRequest(const sp<RfxMessage>& message);
     virtual bool onHandleAtciResponse(const sp<RfxMessage>& message);
 
-private:
-    static const char *LOG_TAG_ATCI;
-    static const char *ENABLE_URC_PROP;
+  private:
+    static const char* LOG_TAG_ATCI;
+    static const char* ENABLE_URC_PROP;
 };
 
 #endif /* __RTC_ATCI_CONTROLLER_H__ */

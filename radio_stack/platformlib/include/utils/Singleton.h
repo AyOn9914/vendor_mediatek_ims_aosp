@@ -22,14 +22,12 @@
 #include <threads.h>
 #include <../cutils/compiler.h>
 
-
 namespace android {
 // ---------------------------------------------------------------------------
 
 template <typename TYPE>
-class ANDROID_API Singleton
-{
-public:
+class ANDROID_API Singleton {
+  public:
     static TYPE& getInstance() {
         Mutex::Autolock _l(sLock);
         TYPE* instance = sInstance;
@@ -45,13 +43,13 @@ public:
         return sInstance != 0;
     }
 
-protected:
-    ~Singleton() { };
-    Singleton() { };
+  protected:
+    ~Singleton(){};
+    Singleton(){};
 
-private:
+  private:
     Singleton(const Singleton&);
-    Singleton& operator = (const Singleton&);
+    Singleton& operator=(const Singleton&);
     static Mutex sLock;
     static TYPE* sInstance;
 };
@@ -65,14 +63,14 @@ private:
  * for some unknown reason using the default ctor doesn't emit the variable!
  */
 
-#define ANDROID_SINGLETON_STATIC_INSTANCE(TYPE)                 \
-    template<> ::android::Mutex  \
-        (::android::Singleton< TYPE >::sLock)(::android::Mutex::PRIVATE);  \
-    template<> TYPE* ::android::Singleton< TYPE >::sInstance(0);  \
-    template class ::android::Singleton< TYPE >;
-
+#define ANDROID_SINGLETON_STATIC_INSTANCE(TYPE)                                     \
+    template <>                                                                     \
+    ::android::Mutex(::android::Singleton<TYPE>::sLock)(::android::Mutex::PRIVATE); \
+    template <>                                                                     \
+    TYPE* ::android::Singleton<TYPE>::sInstance(0);                                 \
+    template class ::android::Singleton<TYPE>;
 
 // ---------------------------------------------------------------------------
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_UTILS_SINGLETON_H
+#endif  // ANDROID_UTILS_SINGLETON_H

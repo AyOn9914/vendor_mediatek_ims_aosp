@@ -22,35 +22,35 @@
 class RmcCallControlImsUrcHandler : public RmcCallControlBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCallControlImsUrcHandler);
 
-    public:
-        RmcCallControlImsUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcCallControlImsUrcHandler();
+  public:
+    RmcCallControlImsUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcCallControlImsUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-    private:
-        void handleConfSrvcc(const sp<RfxMclMessage>& msg);
-        void handleSipMsgIndication(const sp<RfxMclMessage>& msg);
-        void handleConfModifiedResult(const sp<RfxMclMessage>& msg);
-        //void handleCallStateControlResult(const sp<RfxMclMessage>& msg);
-        void handleVoiceDomainSelectResult(const sp<RfxMclMessage>& msg);
-        void handleCallModeChanged(const sp<RfxMclMessage>& msg);
-        void handleECT(const sp<RfxMclMessage>& msg);
-        void handleVideoCapabilityChanged(const sp<RfxMclMessage>& msg);
-        void handleEventPackage(const sp<RfxMclMessage>& msg);
-        void handleSrvccStateChange(const sp<RfxMclMessage>& msg);
-        void handleImsCallControlResult(const sp<RfxMclMessage>& msg);
-        void handleEmergencyBearerSupportInfo(const sp<RfxMclMessage>& msg);
-        void handleRedialEmergencyIndication(const sp<RfxMclMessage>& msg);
-        void handleImsHeaderInfo(const sp<RfxMclMessage>& msg);
-        void handleCallAdditionalInfo(const sp<RfxMclMessage>& msg);
+  private:
+    void handleConfSrvcc(const sp<RfxMclMessage>& msg);
+    void handleSipMsgIndication(const sp<RfxMclMessage>& msg);
+    void handleConfModifiedResult(const sp<RfxMclMessage>& msg);
+    // void handleCallStateControlResult(const sp<RfxMclMessage>& msg);
+    void handleVoiceDomainSelectResult(const sp<RfxMclMessage>& msg);
+    void handleCallModeChanged(const sp<RfxMclMessage>& msg);
+    void handleECT(const sp<RfxMclMessage>& msg);
+    void handleVideoCapabilityChanged(const sp<RfxMclMessage>& msg);
+    void handleEventPackage(const sp<RfxMclMessage>& msg);
+    void handleSrvccStateChange(const sp<RfxMclMessage>& msg);
+    void handleImsCallControlResult(const sp<RfxMclMessage>& msg);
+    void handleEmergencyBearerSupportInfo(const sp<RfxMclMessage>& msg);
+    void handleRedialEmergencyIndication(const sp<RfxMclMessage>& msg);
+    void handleImsHeaderInfo(const sp<RfxMclMessage>& msg);
+    void handleCallAdditionalInfo(const sp<RfxMclMessage>& msg);
 
-        void notifySrvccState(int state);
-        void notifyUnsolWithInt(int unsol, int data);
-        void notifyUnsolWithInts(int unsol, int dataLen, int data[]);
-        void notifyUnsolWithStrings(int unsol, char *str);
+    void notifySrvccState(int state);
+    void notifyUnsolWithInt(int unsol, int data);
+    void notifyUnsolWithInts(int unsol, int dataLen, int data[]);
+    void notifyUnsolWithStrings(int unsol, char* str);
 };
 #endif

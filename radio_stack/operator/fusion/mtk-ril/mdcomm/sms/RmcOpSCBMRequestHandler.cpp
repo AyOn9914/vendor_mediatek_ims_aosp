@@ -23,38 +23,31 @@
 #include "RfxStatusDefs.h"
 #include "RfxVoidData.h"
 
-
 using ::android::String8;
 
-static const int reqList[] = {
-    RFX_MSG_REQUEST_EXIT_SCBM
-};
-
+static const int reqList[] = {RFX_MSG_REQUEST_EXIT_SCBM};
 
 // Register handler
 RFX_IMPLEMENT_HANDLER_CLASS(RmcOpSCBMRequestHandler, RIL_CMD_PROXY_1);
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
-        RFX_MSG_REQUEST_EXIT_SCBM);
-
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_EXIT_SCBM);
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcOpSCBMRequestHandler::RmcOpSCBMRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcOpSCBMRequestHandler::RmcOpSCBMRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcOpSCBMRequest"));
-    registerToHandleRequest(reqList, sizeof(reqList)/sizeof(int));
+    registerToHandleRequest(reqList, sizeof(reqList) / sizeof(int));
     logD(mTag, "RmcOpSCBMRequestHandler: constructor");
 }
 
-RmcOpSCBMRequestHandler::~RmcOpSCBMRequestHandler() {
-}
+RmcOpSCBMRequestHandler::~RmcOpSCBMRequestHandler() {}
 
 void RmcOpSCBMRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
     logD(mTag, "onHandleRequest: %s(%d)", idToString(id), id);
-    switch(id) {
+    switch (id) {
         case RFX_MSG_REQUEST_EXIT_SCBM:
             requestExitSCBM(msg);
             break;
@@ -69,7 +62,7 @@ void RmcOpSCBMRequestHandler::requestExitSCBM(const sp<RfxMclMessage>& msg) {
     if (getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF, false)) {
         logE(mTag, "%s MD off, just return success!", __FUNCTION__);
         sp<RfxMclMessage> mclResponse =
-        RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
+                RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
         responseToTelCore(mclResponse);
         return;
     }

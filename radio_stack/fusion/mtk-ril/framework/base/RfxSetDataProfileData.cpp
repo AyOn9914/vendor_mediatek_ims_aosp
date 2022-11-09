@@ -22,101 +22,104 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSetDataProfileData);
 
-RfxSetDataProfileData::RfxSetDataProfileData(void *data, int length) : RfxBaseData(data, length) {
+RfxSetDataProfileData::RfxSetDataProfileData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    int num = m_length / sizeof(RIL_MtkDataProfileInfo *);
+    int num = m_length / sizeof(RIL_MtkDataProfileInfo*);
     if (num == 0 || data == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%s] The number of DataProfile is %d (if num != 0, means data is null)",
-                __FUNCTION__, num);
+        RFX_LOG_E(RFX_LOG_TAG,
+                  "[%s] The number of DataProfile is %d (if num != 0, means data is null)",
+                  __FUNCTION__, num);
         return;
     }
 
-    RIL_MtkDataProfileInfo **curPtr = (RIL_MtkDataProfileInfo **) data;
-    RIL_MtkDataProfileInfo **tmpPtr = (RIL_MtkDataProfileInfo **) calloc(num, sizeof(RIL_MtkDataProfileInfo *));
+    RIL_MtkDataProfileInfo** curPtr = (RIL_MtkDataProfileInfo**)data;
+    RIL_MtkDataProfileInfo** tmpPtr =
+            (RIL_MtkDataProfileInfo**)calloc(num, sizeof(RIL_MtkDataProfileInfo*));
     RFX_ASSERT(tmpPtr != NULL);
 
-    for (int i = 0; i < num; i++ ) {
-        RIL_MtkDataProfileInfo *dataPtr = (RIL_MtkDataProfileInfo *) calloc(1, sizeof(RIL_MtkDataProfileInfo));
+    for (int i = 0; i < num; i++) {
+        RIL_MtkDataProfileInfo* dataPtr =
+                (RIL_MtkDataProfileInfo*)calloc(1, sizeof(RIL_MtkDataProfileInfo));
         RFX_ASSERT(dataPtr != NULL);
 
         tmpPtr[i] = dataPtr;
 
-        //profileId
+        // profileId
         dataPtr->profileId = curPtr[i]->profileId;
-        //apn
+        // apn
         if ((curPtr[i])->apn != NULL) {
             asprintf(&dataPtr->apn, "%s", curPtr[i]->apn);
         } else {
             asprintf(&dataPtr->apn, "");
         }
-        //protocol
+        // protocol
         if ((curPtr[i])->protocol != NULL) {
             asprintf(&dataPtr->protocol, "%s", curPtr[i]->protocol);
         } else {
             asprintf(&dataPtr->protocol, "");
         }
-        //roamingProtocol
+        // roamingProtocol
         if ((curPtr[i])->roamingProtocol != NULL) {
             asprintf(&dataPtr->roamingProtocol, "%s", curPtr[i]->roamingProtocol);
         } else {
             asprintf(&dataPtr->roamingProtocol, "");
         }
-        //authType
+        // authType
         dataPtr->authType = curPtr[i]->authType;
-        //user
+        // user
         if ((curPtr[i])->user != NULL) {
             asprintf(&dataPtr->user, "%s", curPtr[i]->user);
         } else {
             asprintf(&dataPtr->user, "");
         }
-        //password
+        // password
         if ((curPtr[i])->password != NULL) {
             asprintf(&dataPtr->password, "%s", curPtr[i]->password);
         } else {
             asprintf(&dataPtr->password, "");
         }
-        //type
+        // type
         dataPtr->type = curPtr[i]->type;
-        //maxConnsTime
+        // maxConnsTime
         dataPtr->maxConnsTime = curPtr[i]->maxConnsTime;
-        //maxConns
+        // maxConns
         dataPtr->maxConns = curPtr[i]->maxConns;
-        //waitTime
+        // waitTime
         dataPtr->waitTime = curPtr[i]->waitTime;
-        //enabled
+        // enabled
         dataPtr->enabled = curPtr[i]->enabled;
-        //supportedTypesBitmask
+        // supportedTypesBitmask
         dataPtr->supportedTypesBitmask = curPtr[i]->supportedTypesBitmask;
-        //bearerBitmask
+        // bearerBitmask
         dataPtr->bearerBitmask = curPtr[i]->bearerBitmask;
-        //mtu
+        // mtu
         dataPtr->mtu = curPtr[i]->mtu;
-        //mvnoType
+        // mvnoType
         if ((curPtr[i])->mvnoType != NULL) {
             asprintf(&dataPtr->mvnoType, "%s", curPtr[i]->mvnoType);
         } else {
             asprintf(&dataPtr->mvnoType, "");
         }
-        //mvnoMatchData
+        // mvnoMatchData
         if ((curPtr[i])->mvnoMatchData != NULL) {
             asprintf(&dataPtr->mvnoMatchData, "%s", curPtr[i]->mvnoMatchData);
         } else {
             asprintf(&dataPtr->mvnoMatchData, "");
         }
-        //inactiveTimer
+        // inactiveTimer
         dataPtr->inactiveTimer = curPtr[i]->inactiveTimer;
     }
     m_data = tmpPtr;
 }
 
 RfxSetDataProfileData::~RfxSetDataProfileData() {
-    RIL_MtkDataProfileInfo** tmpPtr = (RIL_MtkDataProfileInfo **)m_data;
-    int num = m_length / sizeof(RIL_MtkDataProfileInfo *);
+    RIL_MtkDataProfileInfo** tmpPtr = (RIL_MtkDataProfileInfo**)m_data;
+    int num = m_length / sizeof(RIL_MtkDataProfileInfo*);
 
     if (tmpPtr != NULL) {
         // free memory
         for (int i = 0; i < num; i++) {
-            RIL_MtkDataProfileInfo *dataPtr = (RIL_MtkDataProfileInfo *) tmpPtr[i];
+            RIL_MtkDataProfileInfo* dataPtr = (RIL_MtkDataProfileInfo*)tmpPtr[i];
             RFX_ASSERT(dataPtr != NULL);
             FREEIF(dataPtr->apn);
             FREEIF(dataPtr->protocol);

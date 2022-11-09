@@ -25,23 +25,22 @@
 class RmcWpURCHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcWpURCHandler);
 
-    public:
-        RmcWpURCHandler(int slot_id, int channel_id);
-        virtual ~RmcWpURCHandler();
-        static int getSlotId();
-        static int getEcsraUrcParam(int index);
+  public:
+    RmcWpURCHandler(int slot_id, int channel_id);
+    virtual ~RmcWpURCHandler();
+    static int getSlotId();
+    static int getEcsraUrcParam(int index);
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-                RIL_RadioState radioState);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState);
 
-    private:
-        void handleWorldModeUrc(const sp<RfxMclMessage>& msg);
+  private:
+    void handleWorldModeUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        static int ecsraUrcParams[5];
-        static int mSlotId;
+  private:
+    static int ecsraUrcParams[5];
+    static int mSlotId;
 };
 
 #endif /*__RMC_WP_URC_HANDLER_H__*/

@@ -31,52 +31,46 @@
 #include "RfxFragmentEncoder.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::RefBase;
 using ::android::sp;
 using ::android::String8;
+using ::android::Thread;
 
 class RfxChannelContext;
 
 class RfxReader : public Thread {
-    public:
-        RfxReader(int fd, int channel_id, RfxChannelContext *context);
-        int getChannelId() const {
-            return m_channel_id;
-        }
-        void setChannelId(int channelId);
+  public:
+    RfxReader(int fd, int channel_id, RfxChannelContext* context);
+    int getChannelId() const { return m_channel_id; }
+    void setChannelId(int channelId);
 
-        RfxChannelContext* getChannelContext() const {
-            return m_context;
-        }
-        void setChannelContext(RfxChannelContext* context) {
-            m_context = context;
-        }
+    RfxChannelContext* getChannelContext() const { return m_context; }
+    void setChannelContext(RfxChannelContext* context) { m_context = context; }
 
-    private:
-        virtual bool threadLoop();
-        void readerLoop();
-        void readerLoopForFragData();
-        void processLine(const char *line);
-        char* readline(char *buffer);
-        void handleUnsolicited(RfxAtLine* line1, RfxAtLine* line2);
-        void handleFinalResponse(RfxAtLine *line);
-        int isSMSUnsolicited(const char *line);
-        char* findNextEOL(char *cur);
-        void  handleUserDataEvent(int clientId, char *data, size_t length);
-        void handleRequestAck();
-        void printLog(int level, String8 log);
+  private:
+    virtual bool threadLoop();
+    void readerLoop();
+    void readerLoopForFragData();
+    void processLine(const char* line);
+    char* readline(char* buffer);
+    void handleUnsolicited(RfxAtLine* line1, RfxAtLine* line2);
+    void handleFinalResponse(RfxAtLine* line);
+    int isSMSUnsolicited(const char* line);
+    char* findNextEOL(char* cur);
+    void handleUserDataEvent(int clientId, char* data, size_t length);
+    void handleRequestAck();
+    void printLog(int level, String8 log);
 
-    private:
-        sp<Looper> m_looper;
-        int m_fd;
-        int m_channel_id;
-        RfxChannelContext *m_context;
-        pthread_t m_threadId;
-        const char* mName;
-        char *m_pATBufferCur;
-        char m_aTBuffer[MAX_AT_RESPONSE+1];
+  private:
+    sp<Looper> m_looper;
+    int m_fd;
+    int m_channel_id;
+    RfxChannelContext* m_context;
+    pthread_t m_threadId;
+    const char* mName;
+    char* m_pATBufferCur;
+    char m_aTBuffer[MAX_AT_RESPONSE + 1];
 };
 #endif

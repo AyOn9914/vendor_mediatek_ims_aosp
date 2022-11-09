@@ -25,14 +25,14 @@ extern "C" {
 
 extern void rfx_init(void);
 
-extern void rfx_enqueue_request_message(int request, void *data, size_t datalen,
-        RIL_Token t, RIL_SOCKET_ID socketId);
+extern void rfx_enqueue_request_message(int request, void* data, size_t datalen, RIL_Token t,
+                                        RIL_SOCKET_ID socketId);
 
-extern void rfx_enqueue_request_message_client(int request, void *data, size_t datalen,
-        RIL_Token t, RIL_SOCKET_ID socketId);
+extern void rfx_enqueue_request_message_client(int request, void* data, size_t datalen, RIL_Token t,
+                                               RIL_SOCKET_ID socketId);
 
-extern void rfx_enqueue_sap_request_message(int request, void *data, size_t datalen,
-        RIL_Token t, RIL_SOCKET_ID socketId);
+extern void rfx_enqueue_sap_request_message(int request, void* data, size_t datalen, RIL_Token t,
+                                            RIL_SOCKET_ID socketId);
 
 extern void rfx_update_connection_state(RIL_SOCKET_ID socketId, int isConnected);
 #ifdef __cplusplus

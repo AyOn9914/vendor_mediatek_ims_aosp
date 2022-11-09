@@ -27,8 +27,8 @@
 
 #define RFX_LOG_TAG "SlotQueueEntry"
 
-#define RFX_ASYNC_SIGNAL_EMIT_LOOP_THRESHOLD    1000
-#define RFX_ASYNC_SIGNAL_EMIT_BURST_THRESHOLD   3000
+#define RFX_ASYNC_SIGNAL_EMIT_LOOP_THRESHOLD 1000
+#define RFX_ASYNC_SIGNAL_EMIT_BURST_THRESHOLD 3000
 
 /*****************************************************************************
  * Class RfxAsyncSignalQueue
@@ -37,12 +37,12 @@
 RFX_IMPLEMENT_CLASS(RFX_ASYNC_SIGNAL_QUEUE_CLASS_NAME, RfxAsyncSignalQueue, RfxObject);
 RFX_OBJ_IMPLEMENT_SINGLETON_CLASS(RfxAsyncSignalQueue);
 
-void RfxAsyncSignalQueue::putSlot(RfxObject *obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void *data) {
+void RfxAsyncSignalQueue::putSlot(RfxObject* obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void* data) {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(memFunc != NULL);
 
     // Cerate a new list entry
-    SlotQueueEntry *entry = new SlotQueueEntry(obj, memFunc, data);
+    SlotQueueEntry* entry = new SlotQueueEntry(obj, memFunc, data);
 
     // Add the slot to the tail of list
     if (m_list_tail != NULL) {
@@ -57,11 +57,11 @@ void RfxAsyncSignalQueue::putSlot(RfxObject *obj, RfxAsyncSlotObjMemFuncPtrEx me
 }
 
 void RfxAsyncSignalQueue::clear() {
-    SlotQueueEntry *i = m_list_head;
+    SlotQueueEntry* i = m_list_head;
     while (i != NULL) {
-        SlotQueueEntry *next = i->m_next;
+        SlotQueueEntry* next = i->m_next;
 
-        delete(i);
+        delete (i);
 
         i = next;
     }
@@ -84,16 +84,16 @@ void RfxAsyncSignalQueue::processEmit() {
             //  For example, emit so many post in one loop
             RFX_ASSERT(burstCountDown > 0);
             burstCountDown--;
-            SlotQueueEntry *entry = getSlot();
+            SlotQueueEntry* entry = getSlot();
             if (entry == NULL) {
                 // No more entry in the queue
                 break;
             }
 
             // The target is invalid, ignore it
-            RfxObject *obj = entry->m_target_ptr.promote().get();
+            RfxObject* obj = entry->m_target_ptr.promote().get();
             if (obj == NULL) {
-                delete(entry);
+                delete (entry);
                 continue;
             }
 
@@ -102,15 +102,15 @@ void RfxAsyncSignalQueue::processEmit() {
             RfxAsyncSlotObjMemFuncPtrEx callback = entry->m_callback;
             (obj->*callback)(entry->m_data);
 
-            delete(entry);
-        } // while (1)
+            delete (entry);
+        }  // while (1)
     } while (!isEmpty());
 
-    //VFX_LOG(VFX_INFO3, VFX_MMI_CHECK_UPDATE_END);
+    // VFX_LOG(VFX_INFO3, VFX_MMI_CHECK_UPDATE_END);
 }
 
-RfxAsyncSignalQueue::SlotQueueEntry *RfxAsyncSignalQueue::getSlot() {
-    SlotQueueEntry *first_entry = m_list_head;
+RfxAsyncSignalQueue::SlotQueueEntry* RfxAsyncSignalQueue::getSlot() {
+    SlotQueueEntry* first_entry = m_list_head;
     if (first_entry != NULL) {
         m_list_head = first_entry->m_next;
 

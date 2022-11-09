@@ -26,17 +26,14 @@
  * Class RmcBaseHandler
  *****************************************************************************/
 class RmcBaseHandler : public RfxBaseHandler {
-// Constructor / Destructor
-public:
-    RmcBaseHandler(int slotId, int channelId)
-        :RfxBaseHandler(slotId, channelId) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcBaseHandler(int slotId, int channelId) : RfxBaseHandler(slotId, channelId) {}
 
-    virtual ~RmcBaseHandler() {
-    }
+    virtual ~RmcBaseHandler() {}
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onHandleRequest(const sp<RfxMclMessage>& msg) {
         RmcMessageHandler* handler = onCreateReqHandler(msg);
         handleMessage(handler, msg);
@@ -47,13 +44,13 @@ protected:
         handleMessage(handler, msg);
     }
 
-// Overridable
-protected:
+    // Overridable
+  protected:
     // Create a RmcMessageHandler for a request from heap
     //
     // RETURNS: the message handler object
     virtual RmcMessageHandler* onCreateReqHandler(
-        const sp<RfxMclMessage>& msg      // [IN] RfxMclMessage for the request
+            const sp<RfxMclMessage>& msg  // [IN] RfxMclMessage for the request
     ) {
         RFX_UNUSED(msg);
         return NULL;
@@ -63,15 +60,15 @@ protected:
     //
     // RETURNS: the message handler object
     virtual RmcMessageHandler* onCreateUrcHandler(
-        const sp<RfxMclMessage>& msg     // [IN] RfxMclMessage for the urc
+            const sp<RfxMclMessage>& msg  // [IN] RfxMclMessage for the urc
     ) {
         RFX_UNUSED(msg);
         return NULL;
     }
 
-// Implementation
-private:
-    void destroyMessageHandler(RmcMessageHandler *h);
-    void handleMessage(RmcMessageHandler *h, const sp<RfxMclMessage>& msg);
+    // Implementation
+  private:
+    void destroyMessageHandler(RmcMessageHandler* h);
+    void handleMessage(RmcMessageHandler* h, const sp<RfxMclMessage>& msg);
 };
 #endif /* __RMC_CHANNEL_HANDLER_H__ */

@@ -26,16 +26,16 @@
  * Class RmcCdmaCardEsnMeidHdlr
  *****************************************************************************/
 class RmcCdmaCardEsnMeidHdlr : public RmcBaseUrcHandler {
-// Constructor / Destructor
-public:
-    RmcCdmaCardEsnMeidHdlr(RfxBaseHandler *h):RmcBaseUrcHandler(h) {}
+    // Constructor / Destructor
+  public:
+    RmcCdmaCardEsnMeidHdlr(RfxBaseHandler* h) : RmcBaseUrcHandler(h) {}
     virtual ~RmcCdmaCardEsnMeidHdlr() {}
 
-public:
-    virtual bool onHandleRawUrc(RfxAtLine * line);
-    virtual RmcBaseUrspData *onGetUrcData(int slotId);
+  public:
+    virtual bool onHandleRawUrc(RfxAtLine* line);
+    virtual RmcBaseUrspData* onGetUrcData(int slotId);
 
-private:
+  private:
     String8 m_oldEsnMe;
     String8 m_newEsnMe;
 };

@@ -24,6 +24,6 @@
 class RfxCallFailCauseData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCallFailCauseData);
 
-    public:
+  public:
 };
 #endif

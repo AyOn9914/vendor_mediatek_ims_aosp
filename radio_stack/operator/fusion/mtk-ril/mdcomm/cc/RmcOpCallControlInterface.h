@@ -18,15 +18,15 @@
 #define __RMC_OP_CALL_CONTROL_INTERFACE_H__
 
 // AT cmd
-#define AT_DIAL_FROM               (char*)"ATDF"
-#define AT_SET_ECC_CONFIG          (char*)"AT+ESCI"
-#define AT_DEVICE_SWITCH           (char*)"AT+ECT"
-#define AT_CANCEL_DEVICE_SWITCH    (char*)"AT+ECT"
-#define AT_SET_RTT_MODE            (char*)"AT+EIMSRTT"
+#define AT_DIAL_FROM (char*)"ATDF"
+#define AT_SET_ECC_CONFIG (char*)"AT+ESCI"
+#define AT_DEVICE_SWITCH (char*)"AT+ECT"
+#define AT_CANCEL_DEVICE_SWITCH (char*)"AT+ECT"
+#define AT_SET_RTT_MODE (char*)"AT+EIMSRTT"
 // URC
 
 // Constants
-#define MSG_TYPE_DEVICE_SWITCH                  3
-#define MSG_TYPE_CANCEL_DEVICE_SWITCH           4
+#define MSG_TYPE_DEVICE_SWITCH 3
+#define MSG_TYPE_CANCEL_DEVICE_SWITCH 4
 
 #endif

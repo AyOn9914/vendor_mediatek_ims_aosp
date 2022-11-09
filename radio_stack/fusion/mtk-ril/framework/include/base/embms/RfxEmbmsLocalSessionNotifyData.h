@@ -23,9 +23,10 @@
 class RfxEmbmsLocalSessionNotifyData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsLocalSessionNotifyData);
 
-    public:
-        RfxEmbmsLocalSessionNotifyData(RIL_EMBMS_LocalSessionNotify* data, int length);
-    private:
-        void copyData(RIL_EMBMS_LocalSessionNotify *data, int length);
+  public:
+    RfxEmbmsLocalSessionNotifyData(RIL_EMBMS_LocalSessionNotify* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_LocalSessionNotify* data, int length);
 };
 #endif /*RFX_EMBMS_LOCAL_SESSION_NOTIFY_DATA__H*/

@@ -33,7 +33,7 @@ class RmcCapabilitySwitchURCHandler : public RfxBaseHandler {
     virtual ~RmcCapabilitySwitchURCHandler();
 
   protected:
-    virtual void onHandleUrc(const sp<RfxMclMessage> &msg);
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
   private:
     static void lockReaderMutex(int channel_id);
@@ -42,8 +42,8 @@ class RmcCapabilitySwitchURCHandler : public RfxBaseHandler {
     bool checkIfSwitch();
 
   private:
-      static Mutex s_switch_urc_channel_mutex;
-      static int s_urc_count;
+    static Mutex s_switch_urc_channel_mutex;
+    static int s_urc_count;
 };
 
 #endif

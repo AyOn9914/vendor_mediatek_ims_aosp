@@ -22,16 +22,14 @@
 using namespace android;
 
 class RilMttsClient : public RilClient {
+  public:
+    RilMttsClient(int identity, char* socketName);
 
-    public:
-
-        RilMttsClient(int identity, char* socketName);
-
-        // Override
-        void processCommands(void *buffer, size_t buflen, int clientId);
-        void handleUnsolicited(int slotId, int unsolResponse, void *data,
-            size_t datalen, UrcDispatchRule rule);
-        bool isNeedToCache(int unsolResponse);
+    // Override
+    void processCommands(void* buffer, size_t buflen, int clientId);
+    void handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                           UrcDispatchRule rule);
+    bool isNeedToCache(int unsolResponse);
 };
 
 #endif /* __RIL_MTTSCLIENT_H__ */

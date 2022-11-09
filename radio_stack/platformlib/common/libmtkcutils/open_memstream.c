@@ -54,25 +54,25 @@
 #include <assert.h>
 
 #if 0
-# define DBUG(x) printf x
+#define DBUG(x) printf x
 #else
-# define DBUG(x) ((void)0)
+#define DBUG(x) ((void)0)
 #endif
 
 /*
  * Definition of a seekable, write-only memory stream.
  */
 typedef struct {
-    char**      bufp;       /* pointer to buffer pointer */
-    size_t*     sizep;      /* pointer to eof */
+    char** bufp;   /* pointer to buffer pointer */
+    size_t* sizep; /* pointer to eof */
 
-    size_t      allocSize;  /* size of buffer */
-    size_t      eof;        /* furthest point we've written to */
-    size_t      offset;     /* current write offset */
-    char        saved;      /* required by NUL handling */
+    size_t allocSize; /* size of buffer */
+    size_t eof;       /* furthest point we've written to */
+    size_t offset;    /* current write offset */
+    char saved;       /* required by NUL handling */
 } MemStream;
 
-#define kInitialSize    1024
+#define kInitialSize 1024
 
 /*
  * Ensure that we have enough storage to write "size" bytes at the
@@ -81,13 +81,11 @@ typedef struct {
  *
  * Returns 0 on success.
  */
-static int ensureCapacity(MemStream* stream, int writeSize)
-{
+static int ensureCapacity(MemStream* stream, int writeSize) {
     DBUG(("+++ ensureCap off=%d size=%d\n", stream->offset, writeSize));
 
     size_t neededSize = stream->offset + writeSize + 1;
-    if (neededSize <= stream->allocSize)
-        return 0;
+    if (neededSize <= stream->allocSize) return 0;
 
     size_t newSize;
 
@@ -95,16 +93,13 @@ static int ensureCapacity(MemStream* stream, int writeSize)
         newSize = kInitialSize;
     } else {
         newSize = stream->allocSize;
-        newSize += newSize / 2;             /* expand by 3/2 */
+        newSize += newSize / 2; /* expand by 3/2 */
     }
 
-    if (newSize < neededSize)
-        newSize = neededSize;
-    DBUG(("+++ realloc %p->%p to size=%d\n",
-        stream->bufp, *stream->bufp, newSize));
-    char* newBuf = (char*) realloc(*stream->bufp, newSize);
-    if (newBuf == NULL)
-        return -1;
+    if (newSize < neededSize) newSize = neededSize;
+    DBUG(("+++ realloc %p->%p to size=%d\n", stream->bufp, *stream->bufp, newSize));
+    char* newBuf = (char*)realloc(*stream->bufp, newSize);
+    if (newBuf == NULL) return -1;
 
     *stream->bufp = newBuf;
     stream->allocSize = newSize;
@@ -118,19 +113,15 @@ static int ensureCapacity(MemStream* stream, int writeSize)
  *
  * Returns the number of bytes written.
  */
-static int write_memstream(void* cookie, const char* buf, int size)
-{
-    MemStream* stream = (MemStream*) cookie;
+static int write_memstream(void* cookie, const char* buf, int size) {
+    MemStream* stream = (MemStream*)cookie;
 
-    if (ensureCapacity(stream, size) < 0)
-        return -1;
+    if (ensureCapacity(stream, size) < 0) return -1;
 
     /* seeked past EOF earlier? */
     if (stream->eof < stream->offset) {
-        DBUG(("+++ zero-fill gap from %d to %d\n",
-            stream->eof, stream->offset-1));
-        memset(*stream->bufp + stream->eof, '\0',
-            stream->offset - stream->eof);
+        DBUG(("+++ zero-fill gap from %d to %d\n", stream->eof, stream->offset - 1));
+        memset(*stream->bufp + stream->eof, '\0', stream->offset - stream->eof);
     }
 
     /* copy data, advance write pointer */
@@ -144,8 +135,8 @@ static int write_memstream(void* cookie, const char* buf, int size)
         stream->eof = stream->offset;
     } else {
         /* within previously-written area; save char we're about to stomp */
-        DBUG(("+++ within written area, saving '%c' at %d\n",
-            *(*stream->bufp + stream->offset), stream->offset));
+        DBUG(("+++ within written area, saving '%c' at %d\n", *(*stream->bufp + stream->offset),
+              stream->offset));
         stream->saved = *(*stream->bufp + stream->offset);
     }
     *(*stream->bufp + stream->offset) = '\0';
@@ -159,10 +150,9 @@ static int write_memstream(void* cookie, const char* buf, int size)
  *
  * Returns the new offset, or -1 on failure.
  */
-static fpos_t seek_memstream(void* cookie, fpos_t offset, int whence)
-{
-    MemStream* stream = (MemStream*) cookie;
-    off_t newPosn = (off_t) offset;
+static fpos_t seek_memstream(void* cookie, fpos_t offset, int whence) {
+    MemStream* stream = (MemStream*)cookie;
+    off_t newPosn = (off_t)offset;
 
     if (whence == SEEK_CUR) {
         newPosn += stream->offset;
@@ -170,11 +160,11 @@ static fpos_t seek_memstream(void* cookie, fpos_t offset, int whence)
         newPosn += stream->eof;
     }
 
-    if (newPosn < 0 || ((fpos_t)((size_t) newPosn)) != newPosn) {
+    if (newPosn < 0 || ((fpos_t)((size_t)newPosn)) != newPosn) {
         /* bad offset - negative or huge */
-        DBUG(("+++ bogus seek offset %ld\n", (long) newPosn));
+        DBUG(("+++ bogus seek offset %ld\n", (long)newPosn));
         errno = EINVAL;
-        return (fpos_t) -1;
+        return (fpos_t)-1;
     }
 
     if (stream->offset < stream->eof) {
@@ -182,12 +172,11 @@ static fpos_t seek_memstream(void* cookie, fpos_t offset, int whence)
          * We were pointing to an area we'd already written to, which means
          * we stomped on a character and must now restore it.
          */
-        DBUG(("+++ restoring char '%c' at %d\n",
-            stream->saved, stream->offset));
+        DBUG(("+++ restoring char '%c' at %d\n", stream->saved, stream->offset));
         *(*stream->bufp + stream->offset) = stream->saved;
     }
 
-    stream->offset = (size_t) newPosn;
+    stream->offset = (size_t)newPosn;
 
     if (stream->offset < stream->eof) {
         /*
@@ -211,8 +200,7 @@ static fpos_t seek_memstream(void* cookie, fpos_t offset, int whence)
 /*
  * Close the memstream.  We free everything but the data buffer.
  */
-static int close_memstream(void* cookie)
-{
+static int close_memstream(void* cookie) {
     free(cookie);
     return 0;
 }
@@ -220,8 +208,7 @@ static int close_memstream(void* cookie)
 /*
  * Prepare a memstream.
  */
-FILE* open_memstream(char** bufp, size_t* sizep)
-{
+FILE* open_memstream(char** bufp, size_t* sizep) {
     FILE* fp;
     MemStream* stream;
 
@@ -230,12 +217,10 @@ FILE* open_memstream(char** bufp, size_t* sizep)
         return NULL;
     }
 
-    stream = (MemStream*) calloc(1, sizeof(MemStream));
-    if (stream == NULL)
-        return NULL;
+    stream = (MemStream*)calloc(1, sizeof(MemStream));
+    if (stream == NULL) return NULL;
 
-    fp = funopen(stream,
-        NULL, write_memstream, seek_memstream, close_memstream);
+    fp = funopen(stream, NULL, write_memstream, seek_memstream, close_memstream);
     if (fp == NULL) {
         free(stream);
         return NULL;
@@ -248,9 +233,6 @@ FILE* open_memstream(char** bufp, size_t* sizep)
 
     return fp;
 }
-
-
-
 
 #if 0
 #define _GNU_SOURCE

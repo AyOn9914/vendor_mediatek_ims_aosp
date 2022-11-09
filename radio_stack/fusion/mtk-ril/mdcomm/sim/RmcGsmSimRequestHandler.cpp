@@ -36,53 +36,46 @@
 #include <cutils/properties.h>
 
 static const int ch1ReqList[] = {
-    RFX_MSG_REQUEST_GET_IMSI,
-    RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
-    RFX_MSG_REQUEST_SET_FACILITY_LOCK,
-    RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK,
-    RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK,
-    RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS,
-    RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS,
+        RFX_MSG_REQUEST_GET_IMSI,
+        RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
+        RFX_MSG_REQUEST_SET_FACILITY_LOCK,
+        RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK,
+        RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK,
+        RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS,
+        RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS,
 };
 
-static const int ch3ReqList[] = {
-};
+static const int ch3ReqList[] = {};
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxStringData, RFX_MSG_REQUEST_GET_IMSI);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData,
-        RFX_MSG_REQUEST_QUERY_FACILITY_LOCK);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData,
-        RFX_MSG_REQUEST_SET_FACILITY_LOCK);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData, RFX_MSG_REQUEST_QUERY_FACILITY_LOCK);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData, RFX_MSG_REQUEST_SET_FACILITY_LOCK);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
-        RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK);
+                                RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxSimMeLockCatData,
-        RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK);
+                                RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxIntsData,
-        RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS);
+                                RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxIntsData,
-        RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS);
+                                RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS);
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 
-RmcGsmSimRequestHandler::RmcGsmSimRequestHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id) {
+RmcGsmSimRequestHandler::RmcGsmSimRequestHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcGsmSimRequest"));
 }
 
-RmcGsmSimRequestHandler::~RmcGsmSimRequestHandler() {
-}
+RmcGsmSimRequestHandler::~RmcGsmSimRequestHandler() {}
 
-
-
-const int* RmcGsmSimRequestHandler::queryTable(int channel_id, int *record_num) {
-
+const int* RmcGsmSimRequestHandler::queryTable(int channel_id, int* record_num) {
     if (channel_id == RIL_CMD_PROXY_1) {
-        *record_num = sizeof(ch1ReqList)/sizeof(int);
+        *record_num = sizeof(ch1ReqList) / sizeof(int);
         return ch1ReqList;
     } else if (channel_id == RIL_CMD_PROXY_3) {
-        *record_num = sizeof(ch3ReqList)/sizeof(int);
+        *record_num = sizeof(ch3ReqList) / sizeof(int);
         return ch3ReqList;
     } else {
         // No request registered!
@@ -96,48 +89,44 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimRequestHandler::needHandle(
     int request = msg->getId();
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
 
-    switch(request) {
-        case RFX_MSG_REQUEST_GET_IMSI:
-            {
-                int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
-                char** pStrings = (char**)(msg->getData()->getData());
+    switch (request) {
+        case RFX_MSG_REQUEST_GET_IMSI: {
+            int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
+            char** pStrings = (char**)(msg->getData()->getData());
 
-                if (pStrings == NULL && (cardType & RFX_CARD_TYPE_SIM)) {
+            if (pStrings == NULL && (cardType & RFX_CARD_TYPE_SIM)) {
+                result = RmcSimBaseHandler::RESULT_NEED;
+            } else if (pStrings != NULL) {
+                String8 aid((pStrings[0] != NULL) ? pStrings[0] : "");
+                if (strncmp(aid.string(), "A0000000871002", 14) == 0 ||
+                    (aid.isEmpty() && (cardType & RFX_CARD_TYPE_SIM))) {
                     result = RmcSimBaseHandler::RESULT_NEED;
-                } else if (pStrings != NULL) {
-                    String8 aid((pStrings[0] != NULL)? pStrings[0] : "");
-                    if (strncmp(aid.string(), "A0000000871002", 14) == 0 ||
-                        (aid.isEmpty() && (cardType & RFX_CARD_TYPE_SIM))) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
                 }
             }
-            break;
+        } break;
         case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK:
-        case RFX_MSG_REQUEST_SET_FACILITY_LOCK:
-            {
-                int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
-                char** pStrings = (char**)(msg->getData()->getData());
-                char *pAid = ((request == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK)?
-                        pStrings[3] : pStrings[4]);
-                String8 aid((pAid != NULL)? pAid : "");
-                String8 facility(pStrings[0]);
-                String8 facFd("FD");
-                String8 facSc("SC");
+        case RFX_MSG_REQUEST_SET_FACILITY_LOCK: {
+            int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
+            char** pStrings = (char**)(msg->getData()->getData());
+            char* pAid =
+                    ((request == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK) ? pStrings[3] : pStrings[4]);
+            String8 aid((pAid != NULL) ? pAid : "");
+            String8 facility(pStrings[0]);
+            String8 facFd("FD");
+            String8 facSc("SC");
 
-                if (facility != facFd && facility != facSc) {
-                    logD(mTag, "No need to check aid for call barring, cardType: %x", cardType);
+            if (facility != facFd && facility != facSc) {
+                logD(mTag, "No need to check aid for call barring, cardType: %x", cardType);
+                result = RmcSimBaseHandler::RESULT_NEED;
+            } else if (aid.isEmpty() && (cardType & RFX_CARD_TYPE_SIM)) {
+                result = RmcSimBaseHandler::RESULT_NEED;
+            } else if (!aid.isEmpty()) {
+                if ((strncmp(aid.string(), "A0000000871002", 14) == 0) ||
+                    (strncmp(aid.string(), "A0000000871004", 14) == 0)) {
                     result = RmcSimBaseHandler::RESULT_NEED;
-                } else if (aid.isEmpty() && (cardType & RFX_CARD_TYPE_SIM)) {
-                    result = RmcSimBaseHandler::RESULT_NEED;
-                } else if (!aid.isEmpty()) {
-                    if ((strncmp(aid.string(), "A0000000871002", 14) == 0)
-                            || (strncmp(aid.string(), "A0000000871004", 14) == 0)) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
                 }
             }
-            break;
+        } break;
         case RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS:
@@ -154,7 +143,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimRequestHandler::needHandle(
 
 void RmcGsmSimRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_GET_IMSI:
             handleGetImsi(msg);
             break;
@@ -186,7 +175,7 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockUpdateSettings(const sp<RfxMcl
     char property_value_status[RFX_PROPERTY_VALUE_MAX] = {0};
     String8 pString((char*)(msg->getData()->getData()));
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxAtResponse> p_response1 = NULL;
@@ -195,12 +184,12 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockUpdateSettings(const sp<RfxMcl
     sp<RfxMclMessage> response;
     RIL_Errno ril_error = RIL_E_GENERIC_FAILURE;
     int result[2] = {0};
-    result[0] = 1;    // SUBSIDYLOCK COMMAND = 1
+    result[0] = 1;  // SUBSIDYLOCK COMMAND = 1
 
     // parse blob status to get lock status bit. 0 : SUBSIDYLOCK, 1: PERMANENT_UNLOCK
     int blob_status = (pString.string())[7] - '0';
     logD(mTag, "[SUBSIDY_LOCK]handleUpdateSimLockSettings update blob_status to: %d, strings %s\n",
-            blob_status, pString.string());
+         blob_status, pString.string());
 
     if (blob_status == 0) {
         logD(mTag, "[SUBSIDY_LOCK]blob update request to SUBSIDYLOCK");
@@ -208,8 +197,8 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockUpdateSettings(const sp<RfxMcl
         logD(mTag, "[SUBSIDY_LOCK]blob update request to PERMANENT_UNLOCK");
     }
 
-    cmd.append(String8::format("AT+ESLBLOB=1,%d,\"%s\"",
-            (unsigned int)((pString.size() + 1)), pString.string()));
+    cmd.append(String8::format("AT+ESLBLOB=1,%d,\"%s\"", (unsigned int)((pString.size() + 1)),
+                               pString.string()));
 
     p_response = atSendCommand(cmd.string());
     cmd.clear();
@@ -250,7 +239,7 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockUpdateSettings(const sp<RfxMcl
                 err = p_response1->getError();
                 if (err < 0 || p_response1->getSuccess() == 0) {
                     logE(mTag, "AT+EBTSAP=0 Fail");
-                   // ril_error = RIL_E_UNKNOWN_ERROR;
+                    // ril_error = RIL_E_UNKNOWN_ERROR;
                 }
                 cmd.clear();
 
@@ -273,26 +262,26 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockUpdateSettings(const sp<RfxMcl
 
     if (ril_error == RIL_E_SUCCESS) {
         logE(mTag, "update blob_status property");
-                if (blob_status == 1) {
-                    // PERMANENT UNLOCK CASE:
+        if (blob_status == 1) {
+            // PERMANENT UNLOCK CASE:
             // property_set("persist.subsidylock.lockstatus_ril", "0");
-                } else {
-                    // SUBSIDYLOCK CASE:
+        } else {
+            // SUBSIDYLOCK CASE:
             // property_set("persist.subsidylock.lockstatus_ril", "1");
         }
     }
 
 done:
-    result[1] = (int) ril_error;
+    result[1] = (int)ril_error;
     logD(mTag, "reqType = %d , result[1] = %d, ril_error = %d", result[0], result[1], ril_error);
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                            RfxIntsData((void*)result, 2*sizeof(int)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), ril_error, RfxIntsData((void*)result, 2 * sizeof(int)), msg, false);
     responseToTelCore(response);
 }
 
 void RmcGsmSimRequestHandler::handleReqSubsidyLockGetModemStatus(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
@@ -320,7 +309,7 @@ void RmcGsmSimRequestHandler::handleReqSubsidyLockGetModemStatus(const sp<RfxMcl
     // Get status
     result[1] = line->atTokNextint(&err);
     if (err < 0) {
-        result[1] = (int) ril_error;
+        result[1] = (int)ril_error;
         goto done;
     }
 
@@ -331,11 +320,11 @@ done:
     logD(mTag, "[SUBSIDY_LOCK]done.\n");
     if (p_response != NULL) {
         // logD(mTag, "[SUBSIDY_LOCK]status %s.\n", result[1]);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData((void*)result, 2*sizeof(int)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ril_error, RfxIntsData((void*)result, 2 * sizeof(int)), msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData(), msg, false);
+        response =
+                RfxMclMessage::obtainResponse(msg->getId(), ril_error, RfxIntsData(), msg, false);
     }
     responseToTelCore(response);
 }
@@ -343,7 +332,7 @@ done:
 void RmcGsmSimRequestHandler::handleGetImsi(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response = NULL;
     int err;
-    RfxStringData *pRspData = NULL;
+    RfxStringData* pRspData = NULL;
     sp<RfxMclMessage> response;
 
     p_response = atSendCommandNumeric("AT+CIMI");
@@ -351,13 +340,14 @@ void RmcGsmSimRequestHandler::handleGetImsi(const sp<RfxMclMessage>& msg) {
     err = p_response->getError();
     if (err < 0 || p_response->getSuccess() == 0) {
         response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                RfxStringData(NULL, 0), msg, false);
+                                                 RfxStringData(NULL, 0), msg, false);
     } else {
         String8 imsi(p_response->getIntermediates()->getLine());
         getMclStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_IMSI, imsi);
 
         response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxStringData((void*)imsi.string(), imsi.length()), msg, false);
+                                                 RfxStringData((void*)imsi.string(), imsi.length()),
+                                                 msg, false);
     }
     responseToTelCore(response);
 }
@@ -368,14 +358,14 @@ void RmcGsmSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& m
     int appTypeId = -1;
     int fdnServiceResult = -1;
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
-    RfxStringData *pRspData = NULL;
+    RfxStringData* pRspData = NULL;
     char** pStrings = (char**)(msg->getData()->getData());
     String8 facFd("FD");
     String8 facSc("SC");
     String8 facility(pStrings[0]);
-    String8 aid((pStrings[3] != NULL)? pStrings[3] : "");
+    String8 aid((pStrings[3] != NULL) ? pStrings[3] : "");
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ril_error = RIL_E_SIM_ERR;
 
@@ -483,19 +473,21 @@ void RmcGsmSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& m
             ril_error = RIL_E_SUCCESS;
             if (fdnServiceResult == -1) {
                 response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                        RfxIntsData((void*)&enable, sizeof(int)), msg, false);
+                                                         RfxIntsData((void*)&enable, sizeof(int)),
+                                                         msg, false);
             } else {
                 if (fdnServiceResult == 1 && enable == 0) {
                     fdnServiceResult = 0;
                 }
                 logD(mTag, "final FDN result: %d", fdnServiceResult);
-                response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                        RfxIntsData((void*)&fdnServiceResult, sizeof(int)), msg, false);
+                response = RfxMclMessage::obtainResponse(
+                        msg->getId(), ril_error, RfxIntsData((void*)&fdnServiceResult, sizeof(int)),
+                        msg, false);
             }
             responseToTelCore(response);
         }
 
-        if(count == 13) {
+        if (count == 13) {
             logE(mTag, "Set Facility Lock: CME_SIM_BUSY and time out.");
             goto error;
         }
@@ -503,8 +495,7 @@ void RmcGsmSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& m
 
     return;
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-            RfxIntsData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_error, RfxIntsData(), msg, false);
     responseToTelCore(response);
 }
 
@@ -521,11 +512,10 @@ void RmcGsmSimRequestHandler::handleSetSimNetworkLock(const sp<RfxMclMessage>& m
     char* gid1 = NULL;
     char* gid2 = NULL;
 
-    if (strings == NULL || strings[0] == NULL ||
-            strings[1] == NULL) {
-         ret = RIL_E_INVALID_ARGUMENTS;
-         logD(mTag, "handleSetSimNetworkLock invalid arguments.");
-         goto error;
+    if (strings == NULL || strings[0] == NULL || strings[1] == NULL) {
+        ret = RIL_E_INVALID_ARGUMENTS;
+        logD(mTag, "handleSetSimNetworkLock invalid arguments.");
+        goto error;
     }
 
     // strings[0]: cat
@@ -535,33 +525,33 @@ void RmcGsmSimRequestHandler::handleSetSimNetworkLock(const sp<RfxMclMessage>& m
     gid1 = (strings[4] == NULL) ? (char*)"" : (char*)strings[4];
     gid2 = (strings[5] == NULL) ? (char*)"" : (char*)strings[5];
 
-    logD(mTag, "simNetworkLock strings %s,%s,%s,%s,%s,%s \n",
-            strings[0], strings[1], key, imsi, gid1, gid2);
-    if(0 == strcmp (strings[1],"2")) { //add data
+    logD(mTag, "simNetworkLock strings %s,%s,%s,%s,%s,%s \n", strings[0], strings[1], key, imsi,
+         gid1, gid2);
+    if (0 == strcmp(strings[1], "2")) {  // add data
         if ((0 == strcmp(strings[0], "2")) || (0 == strcmp(strings[0], "5"))) {
-            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\",\"%s\"",
-                    strings[0], strings[1], key, imsi, gid1));
+            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\",\"%s\"", strings[0],
+                                       strings[1], key, imsi, gid1));
         } else if ((0 == strcmp(strings[0], "3")) || (0 == strcmp(strings[0], "6"))) {
-            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\",\"%s\",\"%s\"",
-                    strings[0], strings[1], key, imsi, gid1, gid2));
+            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\",\"%s\",\"%s\"", strings[0],
+                                       strings[1], key, imsi, gid1, gid2));
         } else {
             logD(mTag, "add data.");
-            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\"",
-                    strings[0], strings[1], key, imsi));
+            cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\",\"%s\"", strings[0], strings[1], key,
+                                       imsi));
         }
-    } else if (0 == strcmp (strings[1],"3") || //remove data
-             0 == strcmp (strings[1],"4")) { //disable data
+    } else if (0 == strcmp(strings[1], "3") ||  // remove data
+               0 == strcmp(strings[1], "4")) {  // disable data
         cmd.append(String8::format("AT+ESMLCK=%s,%s", strings[0], strings[1]));
-    } else if (0 == strcmp (strings[1],"0") ) { //unlock
-        sim_status = getSimStatus();//getSIMLockStatus(rid);
+    } else if (0 == strcmp(strings[1], "0")) {  // unlock
+        sim_status = getSimStatus();            // getSIMLockStatus(rid);
         logD(mTag, "unlock.");
         if ((UICC_NP == sim_status && (0 == strcmp(strings[0], "0"))) ||
-                (UICC_NSP == sim_status && (0 == strcmp(strings[0], "1")))  ||
-                (UICC_SP == sim_status && (0 == strcmp(strings[0], "2"))) ||
-                (UICC_CP == sim_status && (0 == strcmp(strings[0], "3"))) ||
-                (UICC_SIMP == sim_status && (0 == strcmp(strings[0], "4"))) ||
-                (UICC_NS_SP == sim_status && (0 == strcmp(strings[0], "5"))) ||
-                (UICC_SIM_C == sim_status && (0 == strcmp(strings[0], "6")))) {
+            (UICC_NSP == sim_status && (0 == strcmp(strings[0], "1"))) ||
+            (UICC_SP == sim_status && (0 == strcmp(strings[0], "2"))) ||
+            (UICC_CP == sim_status && (0 == strcmp(strings[0], "3"))) ||
+            (UICC_SIMP == sim_status && (0 == strcmp(strings[0], "4"))) ||
+            (UICC_NS_SP == sim_status && (0 == strcmp(strings[0], "5"))) ||
+            (UICC_SIM_C == sim_status && (0 == strcmp(strings[0], "6")))) {
             logE(mTag, "simsatus = %d, category = %s", sim_status, strings[0]);
             cmd.append(String8::format("AT+CPIN=\"%s\"", key));
             p_response = atSendCommand(cmd.string());
@@ -574,30 +564,32 @@ void RmcGsmSimRequestHandler::handleSetSimNetworkLock(const sp<RfxMclMessage>& m
             if (p_response->getSuccess() == 0) {
                 logE(mTag, "err = %d", p_response->atGetCmeError());
                 switch (p_response->atGetCmeError()) {
-                case CME_INCORRECT_PASSWORD:
-                    goto error;
-                    break;
-                case CME_SUCCESS:
-                    /* While p_response->success is 0, the CME_SUCCESS means CME ERROR:0 => it is phone failure */
-                    goto error;
-                    break;
-                default:
-                    sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                            m_slot_id, RfxVoidData());
-                    responseToTelCore(unsol);
-                    cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\"", strings[0], strings[1], key));
-                    break;
+                    case CME_INCORRECT_PASSWORD:
+                        goto error;
+                        break;
+                    case CME_SUCCESS:
+                        /* While p_response->success is 0, the CME_SUCCESS means CME ERROR:0 => it
+                         * is phone failure */
+                        goto error;
+                        break;
+                    default:
+                        sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(
+                                RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED, m_slot_id, RfxVoidData());
+                        responseToTelCore(unsol);
+                        cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\"", strings[0], strings[1],
+                                                   key));
+                        break;
                 }
             } else {
-                sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                        m_slot_id, RfxVoidData());
+                sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(
+                        RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED, m_slot_id, RfxVoidData());
                 responseToTelCore(unsol);
                 cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\"", strings[0], strings[1], key));
             }
         } else {
             cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\"", strings[0], strings[1], key));
         }
-    } else if (0 == strcmp (strings[1],"1")) { //lock
+    } else if (0 == strcmp(strings[1], "1")) {  // lock
         cmd.append(String8::format("AT+ESMLCK=%s,%s,\"%s\"", strings[0], strings[1], key));
     }
     p_response = atSendCommand(cmd.string());
@@ -624,15 +616,14 @@ void RmcGsmSimRequestHandler::handleSetSimNetworkLock(const sp<RfxMclMessage>& m
         ret = RIL_E_SUCCESS;
     }
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                        RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 void RmcGsmSimRequestHandler::handleQuerySimNetworkLock(const sp<RfxMclMessage>& msg) {
     int i = 0;
     int err = -1;
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     char *value, *tmpStr;
     RIL_SimMeLockInfo result;
     RIL_SimMeLockCatInfo lockstate;
@@ -654,62 +645,64 @@ void RmcGsmSimRequestHandler::handleQuerySimNetworkLock(const sp<RfxMclMessage>&
     }
     line = p_response->getIntermediates();
     line->atTokStart(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     for (i = 0; i < MAX_SIM_ME_LOCK_CAT_NUM; i++) {
         value = line->atTokChar(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].catagory = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].state = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].retry_cnt = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].autolock_cnt = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].num_set = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].total_set = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
         result.catagory[i].key_state = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
     }
     tmpStr = line->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
     strncpy(result.imsi, tmpStr, 15);
 
     result.isgid1 = line->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     tmpStr = line->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
     strncpy(result.gid1, tmpStr, 15);
 
     result.isgid2 = line->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     tmpStr = line->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     strncpy(result.gid2, tmpStr, 15);
     result.mnclength = line->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
-    lockstate.catagory= result.catagory[cat[0]].catagory;
+    lockstate.catagory = result.catagory[cat[0]].catagory;
     lockstate.state = result.catagory[cat[0]].state;
-    lockstate.retry_cnt= result.catagory[cat[0]].retry_cnt;
+    lockstate.retry_cnt = result.catagory[cat[0]].retry_cnt;
     lockstate.autolock_cnt = result.catagory[cat[0]].autolock_cnt;
     lockstate.num_set = result.catagory[cat[0]].num_set;
     lockstate.total_set = result.catagory[cat[0]].total_set;
     lockstate.key_state = result.catagory[cat[0]].key_state;
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxSimMeLockCatData((RIL_SimMeLockCatInfo*)&lockstate, sizeof(RIL_SimMeLockCatInfo)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxSimMeLockCatData((RIL_SimMeLockCatInfo*)&lockstate, sizeof(RIL_SimMeLockCatInfo)),
+            msg, false);
     responseToTelCore(response);
     return;
 error:
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxSimMeLockCatData(NULL, 0), msg, false);
+                                             RfxSimMeLockCatData(NULL, 0), msg, false);
     responseToTelCore(response);
 }
 
@@ -720,17 +713,17 @@ void RmcGsmSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& msg
     int fdnServiceResult = -1;
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
     int attemptsRemaining[4] = {0};
-    RfxStringData *pRspData = NULL;
+    RfxStringData* pRspData = NULL;
     char** pStrings = (char**)(msg->getData()->getData());
     String8 facFd("FD");
     String8 facSc("SC");
-    String8 facility((pStrings[0] != NULL)? pStrings[0] : "");
-    String8 lockStr((pStrings[1] != NULL)? pStrings[1] : "");
-    String8 pwd((pStrings[2] != NULL)? pStrings[2] : "");
-    String8 aid((pStrings[4] != NULL)? pStrings[4] : "");
+    String8 facility((pStrings[0] != NULL) ? pStrings[0] : "");
+    String8 lockStr((pStrings[1] != NULL) ? pStrings[1] : "");
+    String8 pwd((pStrings[2] != NULL) ? pStrings[2] : "");
+    String8 aid((pStrings[4] != NULL) ? pStrings[4] : "");
     String8 cmd("");
     sp<RfxMclMessage> response;
-    RmcSimPinPukCount *retry = NULL;
+    RmcSimPinPukCount* retry = NULL;
     RIL_Errno ril_error = RIL_E_SIM_ERR;
 
     if (facility.isEmpty()) {
@@ -754,7 +747,7 @@ void RmcGsmSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& msg
             goto error;
         }
         cmd.append(String8::format("AT+ECLCK=%d,\"%s\",%s,\"%s\"", appTypeId, facility.string(),
-                lockStr.string(), pwd.string()));
+                                   lockStr.string(), pwd.string()));
         p_response = atSendCommand(cmd);
         err = p_response->getError();
         cmd.clear();
@@ -807,16 +800,17 @@ void RmcGsmSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& msg
                 attemptsRemaining[0] = retry->pin2;
             }
             free(retry);
-            response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                    RfxIntsData((void*)attemptsRemaining, sizeof(int)), msg, false);
+            response = RfxMclMessage::obtainResponse(
+                    msg->getId(), ril_error, RfxIntsData((void*)attemptsRemaining, sizeof(int)),
+                    msg, false);
             responseToTelCore(response);
 
-            sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                    m_slot_id, RfxVoidData());
+            sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(
+                    RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED, m_slot_id, RfxVoidData());
             responseToTelCore(unsol);
         }
 
-        if(count == 13) {
+        if (count == 13) {
             logE(mTag, "Set Facility Lock: CME_SIM_BUSY and time out.");
             goto error;
         }
@@ -837,15 +831,16 @@ error:
         }
         free(retry);
         response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData((void*)attemptsRemaining, sizeof(int)), msg, false);
+                                                 RfxIntsData((void*)attemptsRemaining, sizeof(int)),
+                                                 msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData(), msg, false);
+        response =
+                RfxMclMessage::obtainResponse(msg->getId(), ril_error, RfxIntsData(), msg, false);
     }
     responseToTelCore(response);
 
     sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-            m_slot_id, RfxVoidData());
+                                                       m_slot_id, RfxVoidData());
     responseToTelCore(unsol);
 }
 

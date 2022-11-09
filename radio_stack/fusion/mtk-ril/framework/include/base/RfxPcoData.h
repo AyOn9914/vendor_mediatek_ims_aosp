@@ -29,7 +29,7 @@
 class RfxPcoData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxPcoData);
 
-private:
-    void copyString(char **dst, char *src);
+  private:
+    void copyString(char** dst, char* src);
 };
 #endif /* __RFX_PCO_DATA_H__ */

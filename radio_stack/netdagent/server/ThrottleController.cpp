@@ -39,20 +39,19 @@
 namespace android {
 namespace netdagent {
 
-ThrottleController::ThrottleController(){
+ThrottleController::ThrottleController() {
     mModemRx = -1;
     mModemTx = -1;
 }
 
-ThrottleController::~ThrottleController(){
-}
+ThrottleController::~ThrottleController() {}
 
-int ThrottleController::setInterfaceThrottle(const char *iface, int rxKbps, int txKbps) {
+int ThrottleController::setInterfaceThrottle(const char* iface, int rxKbps, int txKbps) {
     char cmd[512];
     char ifn[65];
 
     memset(ifn, 0, sizeof(ifn));
-    strncpy(ifn, iface, sizeof(ifn)-1);
+    strncpy(ifn, iface, sizeof(ifn) - 1);
 
     if (txKbps == -1) {
         reset(ifn);
@@ -88,7 +87,7 @@ int ThrottleController::setInterfaceThrottle(const char *iface, int rxKbps, int 
         goto fail;
     }
 
-    if(rxKbps == -1){
+    if (rxKbps == -1) {
         ALOGI("setInterfaceThrottle success but NO RX, ifn = %s", ifn);
         return 0;
     }
@@ -132,8 +131,10 @@ int ThrottleController::setInterfaceThrottle(const char *iface, int rxKbps, int 
     /*
      * Add filter to link <ifn> -> ifb0
      */
-    sprintf(cmd, "filter add dev %s parent ffff: protocol ip prio 10 u32 match "
-            "u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0", ifn);
+    sprintf(cmd,
+            "filter add dev %s parent ffff: protocol ip prio 10 u32 match "
+            "u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0",
+            ifn);
     if (execTcCmd(cmd)) {
         ALOGE("Failed to add ifb filter (%s)", strerror(errno));
         goto fail;
@@ -147,7 +148,7 @@ fail:
     return -1;
 }
 
-void ThrottleController::reset(const char *iface) {
+void ThrottleController::reset(const char* iface) {
     char cmd[128];
 
     ALOGI("reset %s qdisc", iface);
@@ -170,45 +171,42 @@ void ThrottleController::reset(const char *iface) {
     return;
 }
 
-int ThrottleController::getInterfaceRxThrottle(const char *iface, int *rx) {
+int ThrottleController::getInterfaceRxThrottle(const char* iface, int* rx) {
     ALOGI("getInterfaceRxThrottle %s", iface);
     *rx = 0;
     return 0;
 }
 
-int ThrottleController::getInterfaceTxThrottle(const char *iface, int *tx) {
+int ThrottleController::getInterfaceTxThrottle(const char* iface, int* tx) {
     ALOGI("getInterfaceTxThrottle %s", iface);
     *tx = 0;
     return 0;
 }
 
-int ThrottleController::getModemRxThrottle(int *rx) {
+int ThrottleController::getModemRxThrottle(int* rx) {
     *rx = mModemRx;
     return 0;
 }
 
-int ThrottleController::getModemTxThrottle(int *tx) {
+int ThrottleController::getModemTxThrottle(int* tx) {
     *tx = mModemTx;
     return 0;
 }
 
 int ThrottleController::setModemThrottle(int rxKbps, int txKbps) {
-    unsigned int n = 0; unsigned int mask = 0;
-    int idx = 0; unsigned int up = 0;
-    const char* iface_list[] = {
-      "ccmni0",
-      "ccmni1",
-      "ccmni2",
-      0
-    };
+    unsigned int n = 0;
+    unsigned int mask = 0;
+    int idx = 0;
+    unsigned int up = 0;
+    const char* iface_list[] = {"ccmni0", "ccmni1", "ccmni2", 0};
 
     mModemRx = rxKbps;
     mModemTx = txKbps;
     ifc_init();
-    while(iface_list[idx] != 0){
+    while (iface_list[idx] != 0) {
         up = 0;
         ifc_is_up(iface_list[idx], &up);
-        if(up == 1){
+        if (up == 1) {
             n++;
             mask |= (1 << idx);
             ALOGD("%s is up, n = %d, mask = 0x%x", iface_list[idx], n, mask);
@@ -216,20 +214,17 @@ int ThrottleController::setModemThrottle(int rxKbps, int txKbps) {
         idx++;
     }
     ifc_close();
-    if(n == 0){
+    if (n == 0) {
         ALOGE("setModemThrottle: no modem interface is up !");
         return -1;
     }
-    if(rxKbps >= 0)
-        rxKbps = rxKbps/n;
-    if(txKbps >= 0)
-        txKbps = txKbps/n;
+    if (rxKbps >= 0) rxKbps = rxKbps / n;
+    if (txKbps >= 0) txKbps = txKbps / n;
 
     idx = 0;
-    while(iface_list[idx] != 0){
-        if(mask & (1 << idx)){
-            ALOGD("setModemThrottle for %s: rx %d, tx %d !",
-            iface_list[idx], rxKbps, txKbps);
+    while (iface_list[idx] != 0) {
+        if (mask & (1 << idx)) {
+            ALOGD("setModemThrottle for %s: rx %d, tx %d !", iface_list[idx], rxKbps, txKbps);
             setInterfaceThrottle(iface_list[idx], rxKbps, txKbps);
         }
         idx++;
@@ -238,12 +233,12 @@ int ThrottleController::setModemThrottle(int rxKbps, int txKbps) {
     return 0;
 }
 
-int  ThrottleController::updateModemThrottle() {
-   if(mModemRx < 0 && mModemTx < 0){
-       ALOGW("updateModemThrottle warning: rx %d, tx %d !", mModemRx, mModemTx);
-       return -1;
-   }
-   return setModemThrottle(mModemRx, mModemTx);
+int ThrottleController::updateModemThrottle() {
+    if (mModemRx < 0 && mModemTx < 0) {
+        ALOGW("updateModemThrottle warning: rx %d, tx %d !", mModemRx, mModemTx);
+        return -1;
+    }
+    return setModemThrottle(mModemRx, mModemTx);
 }
 
 }  // namespace netdagent

@@ -31,35 +31,31 @@
 
 #define RFX_LOG_TAG "RmcOpImsControl"
 
- // register handler to channel
+// register handler to channel
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpImsControlRequestHandler, RIL_CMD_PROXY_1);
 
 // register request to RfxData
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_DIGITS_LINE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_SET_DIGITS_REG_STATUS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SWITCH_RCS_ROI_STATUS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_UPDATE_RCS_SESSION_INFO);
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_SET_DIGITS_LINE,
-    RFX_MSG_REQUEST_SET_DIGITS_REG_STATUS,
-    RFX_MSG_REQUEST_SWITCH_RCS_ROI_STATUS,
-    RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES,
-    RFX_MSG_REQUEST_UPDATE_RCS_SESSION_INFO
-};
+        RFX_MSG_REQUEST_SET_DIGITS_LINE, RFX_MSG_REQUEST_SET_DIGITS_REG_STATUS,
+        RFX_MSG_REQUEST_SWITCH_RCS_ROI_STATUS, RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES,
+        RFX_MSG_REQUEST_UPDATE_RCS_SESSION_INFO};
 
-RmcOpImsControlRequestHandler::RmcOpImsControlRequestHandler(
-    int slot_id, int channel_id) : RfxBaseHandler(slot_id, channel_id) {
+RmcOpImsControlRequestHandler::RmcOpImsControlRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     // register to handle request
     registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcOpImsControlRequestHandler::~RmcOpImsControlRequestHandler() {
-}
+RmcOpImsControlRequestHandler::~RmcOpImsControlRequestHandler() {}
 
-void RmcOpImsControlRequestHandler::onHandleTimer() {
-}
+void RmcOpImsControlRequestHandler::onHandleTimer() {}
 
 void RmcOpImsControlRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int requestId = msg->getId();
@@ -88,7 +84,6 @@ void RmcOpImsControlRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg
 }
 
 void RmcOpImsControlRequestHandler::setDigitsLine(const sp<RfxMclMessage>& msg) {
-
     /* AT+DIGITLINE=<account_id>,<serial_number>,<is_logout>,<has_next>,<is_native>,"<msisdn>","<token>"
      * <account_id>: 0: SIM1; 2: SIM2; 4:SIM3
      * <serial_number> a sequence number
@@ -107,30 +102,28 @@ void RmcOpImsControlRequestHandler::setDigitsLine(const sp<RfxMclMessage>& msg) 
     int isLogout = atoi(params[2]);
     int hasNext = atoi(params[3]);
     int isNative = atoi(params[4]);
-    char *msisdn = params[5];
+    char* msisdn = params[5];
 
     // Google HIDL service changes "" in java as null in cpp
-    char *sit = (params[6] == NULL) ? (char*)"" : params[6];
-
+    char* sit = (params[6] == NULL) ? (char*)"" : params[6];
 
     /* send RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO to rcs volte stack */
     /* -- start -- */
-    String8 urc = String8::format("%d,%d,%d,%d,%d,\"%s\",\"%s\"",
-        account, serial, isLogout, hasNext, isNative, msisdn, sit);
+    String8 urc = String8::format("%d,%d,%d,%d,%d,\"%s\",\"%s\"", account, serial, isLogout,
+                                  hasNext, isNative, msisdn, sit);
     sp<RfxMclMessage> urc_response;
-    urc_response = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO,
-        m_slot_id, RfxStringData((char *)urc.string()));
+    urc_response = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO, m_slot_id,
+                                            RfxStringData((char*)urc.string()));
     responseToTelCore(urc_response);
     /* -- end -- */
 
-    String8 cmd = String8::format("%s=%d,%d,%d,%d,%d,\"%s\",\"%s\"",
-        atCmd, account, serial, isLogout, hasNext, isNative, msisdn, sit);
+    String8 cmd = String8::format("%s=%d,%d,%d,%d,%d,\"%s\",\"%s\"", atCmd, account, serial,
+                                  isLogout, hasNext, isNative, msisdn, sit);
 
     handleCmdWithVoidResponse(msg, cmd);
 }
 
 void RmcOpImsControlRequestHandler::setDigitsRegStatus(const sp<RfxMclMessage>& msg) {
-
     char* digitsinfo = (char*)msg->getData()->getData();
 
     logD(RFX_LOG_TAG, "setDigitsRegStatus: %s", digitsinfo);
@@ -142,17 +135,17 @@ void RmcOpImsControlRequestHandler::setDigitsRegStatus(const sp<RfxMclMessage>& 
     int i = 0;
     bool appendPhoneId = true;
     int rfxMsg = RFX_MSG_UNSOL_DIGITS_LINE_INDICATION;
-    RfxAtLine *atLine = new RfxAtLine(digitsinfo, NULL);
+    RfxAtLine* atLine = new RfxAtLine(digitsinfo, NULL);
 
     int err = 0;
 
-    for(i; i < maxLen; i++) {
-        char *str = atLine->atTokNextstr(&err);
+    for (i; i < maxLen; i++) {
+        char* str = atLine->atTokNextstr(&err);
 
-        if(str == NULL) {
+        if (str == NULL) {
             logE(RFX_LOG_TAG, "There is something wrong with the digitsinfo");
         }
-        //logD(RFX_LOG_TAG, "setDigitsRegStatus: token[%d]=%s", i, str);
+        // logD(RFX_LOG_TAG, "setDigitsRegStatus: token[%d]=%s", i, str);
         data.push_back(str);
     }
 
@@ -166,15 +159,14 @@ void RmcOpImsControlRequestHandler::setDigitsRegStatus(const sp<RfxMclMessage>& 
 }
 
 void RmcOpImsControlRequestHandler::switchRcsRoiStatus(const sp<RfxMclMessage>& msg) {
-    int status = ((int *)msg->getData()->getData())[0];
+    int status = ((int*)msg->getData()->getData())[0];
     logD(RFX_LOG_TAG, "switchRcsRoiStatus:%d", status);
     int err = RIL_E_GENERIC_FAILURE;
     switch (status) {
         case 0:
-        case 1:
-        {
+        case 1: {
             sp<RfxAtResponse> p_response =
-                atSendCommand(String8::format("AT+EIMSRCS=%d", status + 3));
+                    atSendCommand(String8::format("AT+EIMSRCS=%d", status + 3));
             err = p_response->getError();
             if (err < 0 || p_response->getSuccess() == 0) {
                 logD(RFX_LOG_TAG, "switchRcsRoiStatus error:%d", err);
@@ -187,11 +179,8 @@ void RmcOpImsControlRequestHandler::switchRcsRoiStatus(const sp<RfxMclMessage>& 
             break;
     }
 
-    sp<RfxMclMessage> response
-        = RfxMclMessage::obtainResponse(msg->getId(),
-                                        err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE,
-                                        RfxVoidData(),
-                                        msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
@@ -203,32 +192,28 @@ void RmcOpImsControlRequestHandler::updateRcsCapabilities(const sp<RfxMclMessage
     logD(RFX_LOG_TAG, "updateRcsCapabilities mode:%s, featureTags:%s", mode, featureTags);
 
     sp<RfxAtResponse> p_response =
-        atSendCommand(String8::format("AT+EIMSRCS=%s,%s", mode, featureTags));
+            atSendCommand(String8::format("AT+EIMSRCS=%s,%s", mode, featureTags));
     err = p_response->getError();
     if (err < 0 || p_response->getSuccess() == 0) {
         logD(RFX_LOG_TAG, "switchRcsRoiStatus error:%d", err);
     }
 
-    sp<RfxMclMessage> response
-        = RfxMclMessage::obtainResponse(msg->getId(),
-                                        err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE,
-                                        RfxVoidData(),
-                                        msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
 void RmcOpImsControlRequestHandler::updateRcsSessionInfo(const sp<RfxMclMessage>& msg) {
-    int count = ((int *)msg->getData()->getData())[0];
+    int count = ((int*)msg->getData()->getData())[0];
     logD(RFX_LOG_TAG, "updateRcsSessionInfo count:%d", count);
     int err = RIL_E_GENERIC_FAILURE;
 
     switch (count) {
         case 0:
         case 1:
-        case 254:
-        {
+        case 254: {
             sp<RfxAtResponse> p_response =
-                atSendCommand(String8::format("AT+EIMSRCSCONN=%d", count));
+                    atSendCommand(String8::format("AT+EIMSRCSCONN=%d", count));
             err = p_response->getError();
             if (err < 0 || p_response->getSuccess() == 0) {
                 logD(RFX_LOG_TAG, "switchRcsRoiStatus error:%d", err);
@@ -240,10 +225,7 @@ void RmcOpImsControlRequestHandler::updateRcsSessionInfo(const sp<RfxMclMessage>
             logD(RFX_LOG_TAG, "updateRcsSessionInfo error, unsupport count");
             break;
     }
-    sp<RfxMclMessage> response
-        = RfxMclMessage::obtainResponse(msg->getId(),
-                                        err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE,
-                                        RfxVoidData(),
-                                        msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), err >= 0 ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE, RfxVoidData(), msg);
     responseToTelCore(response);
 }

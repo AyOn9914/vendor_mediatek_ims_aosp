@@ -36,17 +36,13 @@
 #include <sys/eventfd.h>
 #include <unistd.h>
 
-
 namespace android {
 
 // --- WeakMessageHandler ---
 
-WeakMessageHandler::WeakMessageHandler(const wp<MessageHandler>& handler) :
-        mHandler(handler) {
-}
+WeakMessageHandler::WeakMessageHandler(const wp<MessageHandler>& handler) : mHandler(handler) {}
 
-WeakMessageHandler::~WeakMessageHandler() {
-}
+WeakMessageHandler::~WeakMessageHandler() {}
 
 void WeakMessageHandler::handleMessage(const Message& message) {
     sp<MessageHandler> handler = mHandler.promote();
@@ -55,20 +51,15 @@ void WeakMessageHandler::handleMessage(const Message& message) {
     }
 }
 
-
 // --- SimpleLooperCallback ---
 
-SimpleLooperCallback::SimpleLooperCallback(Looper_callbackFunc callback) :
-        mCallback(callback) {
-}
+SimpleLooperCallback::SimpleLooperCallback(Looper_callbackFunc callback) : mCallback(callback) {}
 
-SimpleLooperCallback::~SimpleLooperCallback() {
-}
+SimpleLooperCallback::~SimpleLooperCallback() {}
 
 int SimpleLooperCallback::handleEvent(int fd, int events, void* data) {
     return mCallback(fd, events, data);
 }
-
 
 // --- Looper ---
 
@@ -81,13 +72,17 @@ static const int EPOLL_MAX_EVENTS = 16;
 static pthread_once_t gTLSOnce = PTHREAD_ONCE_INIT;
 static pthread_key_t gTLSKey = 0;
 
-Looper::Looper(bool allowNonCallbacks) :
-        mAllowNonCallbacks(allowNonCallbacks), mSendingMessage(false),
-        mPolling(false), mEpollFd(-1), mEpollRebuildRequired(false),
-        mNextRequestSeq(0), mResponseIndex(0), mNextMessageUptime(LLONG_MAX) {
+Looper::Looper(bool allowNonCallbacks)
+    : mAllowNonCallbacks(allowNonCallbacks),
+      mSendingMessage(false),
+      mPolling(false),
+      mEpollFd(-1),
+      mEpollRebuildRequired(false),
+      mNextRequestSeq(0),
+      mResponseIndex(0),
+      mNextMessageUptime(LLONG_MAX) {
     mWakeEventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-    LOG_ALWAYS_FATAL_IF(mWakeEventFd < 0, "Could not make wake event fd: %s",
-                        strerror(errno));
+    LOG_ALWAYS_FATAL_IF(mWakeEventFd < 0, "Could not make wake event fd: %s", strerror(errno));
 
     AutoMutex _l(mLock);
     rebuildEpollLocked();
@@ -101,11 +96,11 @@ Looper::~Looper() {
 }
 
 void Looper::initTLSKey() {
-    int result = pthread_key_create(& gTLSKey, threadDestructor);
+    int result = pthread_key_create(&gTLSKey, threadDestructor);
     LOG_ALWAYS_FATAL_IF(result != 0, "Could not allocate TLS key.");
 }
 
-void Looper::threadDestructor(void *st) {
+void Looper::threadDestructor(void* st) {
     Looper* const self = static_cast<Looper*>(st);
     if (self != NULL) {
         self->decStrong((void*)threadDestructor);
@@ -113,7 +108,7 @@ void Looper::threadDestructor(void *st) {
 }
 
 void Looper::setForThread(const sp<Looper>& looper) {
-    sp<Looper> old = getForThread(); // also has side-effect of initializing TLS
+    sp<Looper> old = getForThread();  // also has side-effect of initializing TLS
 
     if (looper != NULL) {
         looper->incStrong((void*)threadDestructor);
@@ -127,7 +122,7 @@ void Looper::setForThread(const sp<Looper>& looper) {
 }
 
 sp<Looper> Looper::getForThread() {
-    int result = pthread_once(& gTLSOnce, initTLSKey);
+    int result = pthread_once(&gTLSOnce, initTLSKey);
     LOG_ALWAYS_FATAL_IF(result != 0, "pthread_once failed");
 
     return (Looper*)pthread_getspecific(gTLSKey);
@@ -142,14 +137,12 @@ sp<Looper> Looper::prepare(int opts) {
     }
     if (looper->getAllowNonCallbacks() != allowNonCallbacks) {
         ALOGW("Looper already prepared for this thread with a different value for the "
-                "LOOPER_PREPARE_ALLOW_NON_CALLBACKS option.");
+              "LOOPER_PREPARE_ALLOW_NON_CALLBACKS option.");
     }
     return looper;
 }
 
-bool Looper::getAllowNonCallbacks() const {
-    return mAllowNonCallbacks;
-}
+bool Looper::getAllowNonCallbacks() const { return mAllowNonCallbacks; }
 
 void Looper::rebuildEpollLocked() {
     // Close old epoll instance if we have one.
@@ -165,10 +158,10 @@ void Looper::rebuildEpollLocked() {
     LOG_ALWAYS_FATAL_IF(mEpollFd < 0, "Could not create epoll instance: %s", strerror(errno));
 
     struct epoll_event eventItem;
-    memset(& eventItem, 0, sizeof(epoll_event)); // zero out unused members of data field union
+    memset(&eventItem, 0, sizeof(epoll_event));  // zero out unused members of data field union
     eventItem.events = EPOLLIN;
     eventItem.data.fd = mWakeEventFd;
-    int result = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, mWakeEventFd, & eventItem);
+    int result = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, mWakeEventFd, &eventItem);
     LOG_ALWAYS_FATAL_IF(result != 0, "Could not add wake event fd to epoll instance: %s",
                         strerror(errno));
 
@@ -177,10 +170,10 @@ void Looper::rebuildEpollLocked() {
         struct epoll_event eventItem;
         request.initEventItem(&eventItem);
 
-        int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, request.fd, & eventItem);
+        int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, request.fd, &eventItem);
         if (epollResult < 0) {
-            ALOGE("Error adding epoll events for fd %d while rebuilding epoll set: %s",
-                  request.fd, strerror(errno));
+            ALOGE("Error adding epoll events for fd %d while rebuilding epoll set: %s", request.fd,
+                  strerror(errno));
         }
     }
 }
@@ -207,8 +200,8 @@ int Looper::pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outDa
                 void* data = response.request.data;
 #if DEBUG_POLL_AND_WAKE
                 ALOGD("%p ~ pollOnce - returning signalled identifier %d: "
-                        "fd=%d, events=0x%x, data=%p",
-                        this, ident, fd, events, data);
+                      "fd=%d, events=0x%x, data=%p",
+                      this, ident, fd, events, data);
 #endif
                 if (outFd != NULL) *outFd = fd;
                 if (outEvents != NULL) *outEvents = events;
@@ -240,13 +233,13 @@ int Looper::pollInner(int timeoutMillis) {
     if (timeoutMillis != 0 && mNextMessageUptime != LLONG_MAX) {
         nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
         int messageTimeoutMillis = toMillisecondTimeoutDelay(now, mNextMessageUptime);
-        if (messageTimeoutMillis >= 0
-                && (timeoutMillis < 0 || messageTimeoutMillis < timeoutMillis)) {
+        if (messageTimeoutMillis >= 0 &&
+            (timeoutMillis < 0 || messageTimeoutMillis < timeoutMillis)) {
             timeoutMillis = messageTimeoutMillis;
         }
 #if DEBUG_POLL_AND_WAKE
         ALOGD("%p ~ pollOnce - next message in %" PRId64 "ns, adjusted timeout: timeoutMillis=%d",
-                this, mNextMessageUptime - now, timeoutMillis);
+              this, mNextMessageUptime - now, timeoutMillis);
 #endif
     }
 
@@ -318,11 +311,12 @@ int Looper::pollInner(int timeoutMillis) {
                 pushResponse(events, mRequests.valueAt(requestIndex));
             } else {
                 ALOGW("Ignoring unexpected epoll events 0x%x on fd %d that is "
-                        "no longer registered.", epollEvents, fd);
+                      "no longer registered.",
+                      epollEvents, fd);
             }
         }
     }
-Done: ;
+Done:;
 
     // Invoke pending message callbacks.
     mNextMessageUptime = LLONG_MAX;
@@ -334,7 +328,7 @@ Done: ;
             // We keep a strong reference to the handler until the call to handleMessage
             // finishes.  Then we drop it so that the handler can be deleted *before*
             // we reacquire our lock.
-            { // obtain handler
+            {  // obtain handler
                 sp<MessageHandler> handler = messageEnvelope.handler;
                 Message message = messageEnvelope.message;
                 mMessageEnvelopes.removeAt(0);
@@ -342,11 +336,11 @@ Done: ;
                 mLock.unlock();
 
 #if DEBUG_POLL_AND_WAKE || DEBUG_CALLBACKS
-                ALOGD("%p ~ pollOnce - sending message: handler=%p, what=%d",
-                        this, handler.get(), message.what);
+                ALOGD("%p ~ pollOnce - sending message: handler=%p, what=%d", this, handler.get(),
+                      message.what);
 #endif
                 handler->handleMessage(message);
-            } // release handler
+            }  // release handler
 
             mLock.lock();
             mSendingMessage = false;
@@ -370,7 +364,7 @@ Done: ;
             void* data = response.request.data;
 #if DEBUG_POLL_AND_WAKE || DEBUG_CALLBACKS
             ALOGD("%p ~ pollOnce - invoking fd event callback %p: fd=%d, events=0x%x, data=%p",
-                    this, response.request.callback.get(), fd, events, data);
+                  this, response.request.callback.get(), fd, events, data);
 #endif
             // Invoke the callback.  Note that the file descriptor may be closed by
             // the callback (and potentially even reused) before the function returns so
@@ -397,8 +391,8 @@ int Looper::pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outDat
         } while (result == POLL_CALLBACK);
         return result;
     } else {
-        nsecs_t endTime = systemTime(SYSTEM_TIME_MONOTONIC)
-                + milliseconds_to_nanoseconds(timeoutMillis);
+        nsecs_t endTime =
+                systemTime(SYSTEM_TIME_MONOTONIC) + milliseconds_to_nanoseconds(timeoutMillis);
 
         for (;;) {
             int result = pollOnce(timeoutMillis, outFd, outEvents, outData);
@@ -452,11 +446,11 @@ int Looper::addFd(int fd, int ident, int events, Looper_callbackFunc callback, v
 int Looper::addFd(int fd, int ident, int events, const sp<LooperCallback>& callback, void* data) {
 #if DEBUG_CALLBACKS
     ALOGD("%p ~ addFd - fd=%d, ident=%d, events=0x%x, callback=%p, data=%p", this, fd, ident,
-            events, callback.get(), data);
+          events, callback.get(), data);
 #endif
 
     if (!callback.get()) {
-        if (! mAllowNonCallbacks) {
+        if (!mAllowNonCallbacks) {
             ALOGE("Invalid attempt to set NULL callback but not allowed for this looper.");
             return -1;
         }
@@ -469,7 +463,7 @@ int Looper::addFd(int fd, int ident, int events, const sp<LooperCallback>& callb
         ident = POLL_CALLBACK;
     }
 
-    { // acquire lock
+    {  // acquire lock
         AutoMutex _l(mLock);
 
         Request request;
@@ -479,21 +473,21 @@ int Looper::addFd(int fd, int ident, int events, const sp<LooperCallback>& callb
         request.seq = mNextRequestSeq++;
         request.callback = callback;
         request.data = data;
-        if (mNextRequestSeq == -1) mNextRequestSeq = 0; // reserve sequence number -1
+        if (mNextRequestSeq == -1) mNextRequestSeq = 0;  // reserve sequence number -1
 
         struct epoll_event eventItem;
         request.initEventItem(&eventItem);
 
         ssize_t requestIndex = mRequests.indexOfKey(fd);
         if (requestIndex < 0) {
-            int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, & eventItem);
+            int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, &eventItem);
             if (epollResult < 0) {
                 ALOGE("Error adding epoll events for fd %d: %s", fd, strerror(errno));
                 return -1;
             }
             mRequests.add(fd, request);
         } else {
-            int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_MOD, fd, & eventItem);
+            int epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_MOD, fd, &eventItem);
             if (epollResult < 0) {
                 if (errno == ENOENT) {
                     // Tolerate ENOENT because it means that an older file descriptor was
@@ -511,13 +505,13 @@ int Looper::addFd(int fd, int ident, int events, const sp<LooperCallback>& callb
                     // call instead, but that approach carries others disadvantages.
 #if DEBUG_CALLBACKS
                     ALOGD("%p ~ addFd - EPOLL_CTL_MOD failed due to file descriptor "
-                            "being recycled, falling back on EPOLL_CTL_ADD: %s",
-                            this, strerror(errno));
+                          "being recycled, falling back on EPOLL_CTL_ADD: %s",
+                          this, strerror(errno));
 #endif
-                    epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, & eventItem);
+                    epollResult = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, &eventItem);
                     if (epollResult < 0) {
-                        ALOGE("Error modifying or adding epoll events for fd %d: %s",
-                                fd, strerror(errno));
+                        ALOGE("Error modifying or adding epoll events for fd %d: %s", fd,
+                              strerror(errno));
                         return -1;
                     }
                     scheduleEpollRebuildLocked();
@@ -528,20 +522,18 @@ int Looper::addFd(int fd, int ident, int events, const sp<LooperCallback>& callb
             }
             mRequests.replaceValueAt(requestIndex, request);
         }
-    } // release lock
+    }  // release lock
     return 1;
 }
 
-int Looper::removeFd(int fd) {
-    return removeFd(fd, -1);
-}
+int Looper::removeFd(int fd) { return removeFd(fd, -1); }
 
 int Looper::removeFd(int fd, int seq) {
 #if DEBUG_CALLBACKS
     ALOGD("%p ~ removeFd - fd=%d, seq=%d", this, fd, seq);
 #endif
 
-    { // acquire lock
+    {  // acquire lock
         AutoMutex _l(mLock);
         ssize_t requestIndex = mRequests.indexOfKey(fd);
         if (requestIndex < 0) {
@@ -551,8 +543,8 @@ int Looper::removeFd(int fd, int seq) {
         // Check the sequence number if one was given.
         if (seq != -1 && mRequests.valueAt(requestIndex).seq != seq) {
 #if DEBUG_CALLBACKS
-            ALOGD("%p ~ removeFd - sequence number mismatch, oldSeq=%d",
-                    this, mRequests.valueAt(requestIndex).seq);
+            ALOGD("%p ~ removeFd - sequence number mismatch, oldSeq=%d", this,
+                  mRequests.valueAt(requestIndex).seq);
 #endif
             return 0;
         }
@@ -577,7 +569,8 @@ int Looper::removeFd(int fd, int seq) {
                 // call instead, but that approach carries others disadvantages.
 #if DEBUG_CALLBACKS
                 ALOGD("%p ~ removeFd - EPOLL_CTL_DEL failed due to file descriptor "
-                        "being closed: %s", this, strerror(errno));
+                      "being closed: %s",
+                      this, strerror(errno));
 #endif
                 scheduleEpollRebuildLocked();
             } else {
@@ -590,7 +583,7 @@ int Looper::removeFd(int fd, int seq) {
                 return -1;
             }
         }
-    } // release lock
+    }  // release lock
     return 1;
 }
 
@@ -600,20 +593,20 @@ void Looper::sendMessage(const sp<MessageHandler>& handler, const Message& messa
 }
 
 void Looper::sendMessageDelayed(nsecs_t uptimeDelay, const sp<MessageHandler>& handler,
-        const Message& message) {
+                                const Message& message) {
     nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
     sendMessageAtTime(now + uptimeDelay, handler, message);
 }
 
 void Looper::sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler,
-        const Message& message) {
+                               const Message& message) {
 #if DEBUG_CALLBACKS
-    ALOGD("%p ~ sendMessageAtTime - uptime=%" PRId64 ", handler=%p, what=%d",
-            this, uptime, handler.get(), message.what);
+    ALOGD("%p ~ sendMessageAtTime - uptime=%" PRId64 ", handler=%p, what=%d", this, uptime,
+          handler.get(), message.what);
 #endif
 
     size_t i = 0;
-    { // acquire lock
+    {  // acquire lock
         AutoMutex _l(mLock);
 
         size_t messageCount = mMessageEnvelopes.size();
@@ -631,7 +624,7 @@ void Looper::sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler
         if (mSendingMessage) {
             return;
         }
-    } // release lock
+    }  // release lock
 
     // Wake the poll loop only when we enqueue a new message at the head.
     if (i == 0) {
@@ -644,16 +637,16 @@ void Looper::removeMessages(const sp<MessageHandler>& handler) {
     ALOGD("%p ~ removeMessages - handler=%p", this, handler.get());
 #endif
 
-    { // acquire lock
+    {  // acquire lock
         AutoMutex _l(mLock);
 
-        for (size_t i = mMessageEnvelopes.size(); i != 0; ) {
+        for (size_t i = mMessageEnvelopes.size(); i != 0;) {
             const MessageEnvelope& messageEnvelope = mMessageEnvelopes.itemAt(--i);
             if (messageEnvelope.handler == handler) {
                 mMessageEnvelopes.removeAt(i);
             }
         }
-    } // release lock
+    }  // release lock
 }
 
 void Looper::removeMessages(const sp<MessageHandler>& handler, int what) {
@@ -661,31 +654,28 @@ void Looper::removeMessages(const sp<MessageHandler>& handler, int what) {
     ALOGD("%p ~ removeMessages - handler=%p, what=%d", this, handler.get(), what);
 #endif
 
-    { // acquire lock
+    {  // acquire lock
         AutoMutex _l(mLock);
 
-        for (size_t i = mMessageEnvelopes.size(); i != 0; ) {
+        for (size_t i = mMessageEnvelopes.size(); i != 0;) {
             const MessageEnvelope& messageEnvelope = mMessageEnvelopes.itemAt(--i);
-            if (messageEnvelope.handler == handler
-                    && messageEnvelope.message.what == what) {
+            if (messageEnvelope.handler == handler && messageEnvelope.message.what == what) {
                 mMessageEnvelopes.removeAt(i);
             }
         }
-    } // release lock
+    }  // release lock
 }
 
-bool Looper::isPolling() const {
-    return mPolling;
-}
+bool Looper::isPolling() const { return mPolling; }
 
 void Looper::Request::initEventItem(struct epoll_event* eventItem) const {
     int epollEvents = 0;
     if (events & EVENT_INPUT) epollEvents |= EPOLLIN;
     if (events & EVENT_OUTPUT) epollEvents |= EPOLLOUT;
 
-    memset(eventItem, 0, sizeof(epoll_event)); // zero out unused members of data field union
+    memset(eventItem, 0, sizeof(epoll_event));  // zero out unused members of data field union
     eventItem->events = epollEvents;
     eventItem->data.fd = fd;
 }
 
-} // namespace android
+}  // namespace android

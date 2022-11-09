@@ -17,7 +17,6 @@
 #ifndef ANDROID_UTILS_FLATTENABLE_H
 #define ANDROID_UTILS_FLATTENABLE_H
 
-
 #include <stdint.h>
 #include <sys/types.h>
 #include <Errors.h>
@@ -25,53 +24,51 @@
 
 namespace android {
 
-
 class FlattenableUtils {
-public:
-    template<int N>
+  public:
+    template <int N>
     static size_t align(size_t size) {
-        COMPILE_TIME_ASSERT_FUNCTION_SCOPE( !(N & (N-1)) );
-        return (size + (N-1)) & ~(N-1);
+        COMPILE_TIME_ASSERT_FUNCTION_SCOPE(!(N & (N - 1)));
+        return (size + (N - 1)) & ~(N - 1);
     }
 
-    template<int N>
+    template <int N>
     static size_t align(void const*& buffer) {
-        COMPILE_TIME_ASSERT_FUNCTION_SCOPE( !(N & (N-1)) );
+        COMPILE_TIME_ASSERT_FUNCTION_SCOPE(!(N & (N - 1)));
         intptr_t b = intptr_t(buffer);
-        buffer = (void*)((intptr_t(buffer) + (N-1)) & ~(N-1));
+        buffer = (void*)((intptr_t(buffer) + (N - 1)) & ~(N - 1));
         return size_t(intptr_t(buffer) - b);
     }
 
-    template<int N>
+    template <int N>
     static size_t align(void*& buffer) {
-        return align<N>( const_cast<void const*&>(buffer) );
+        return align<N>(const_cast<void const*&>(buffer));
     }
 
     static void advance(void*& buffer, size_t& size, size_t offset) {
-        buffer = reinterpret_cast<void*>( intptr_t(buffer) + offset );
+        buffer = reinterpret_cast<void*>(intptr_t(buffer) + offset);
         size -= offset;
     }
 
     static void advance(void const*& buffer, size_t& size, size_t offset) {
-        buffer = reinterpret_cast<void const*>( intptr_t(buffer) + offset );
+        buffer = reinterpret_cast<void const*>(intptr_t(buffer) + offset);
         size -= offset;
     }
 
     // write a POD structure
-    template<typename T>
+    template <typename T>
     static void write(void*& buffer, size_t& size, const T& value) {
         *static_cast<T*>(buffer) = value;
         advance(buffer, size, sizeof(T));
     }
 
     // read a POD structure
-    template<typename T>
+    template <typename T>
     static void read(void const*& buffer, size_t& size, T& value) {
         value = *static_cast<T const*>(buffer);
         advance(buffer, size, sizeof(T));
     }
 };
-
 
 /*
  * The Flattenable protocol allows an object to serialize itself out
@@ -81,7 +78,7 @@ public:
 
 template <typename T>
 class Flattenable {
-public:
+  public:
     // size in bytes of the flattened object
     inline size_t getFlattenedSize() const;
 
@@ -105,22 +102,22 @@ public:
     inline status_t unflatten(void const*& buffer, size_t& size, int const*& fds, size_t& count);
 };
 
-template<typename T>
+template <typename T>
 inline size_t Flattenable<T>::getFlattenedSize() const {
     return static_cast<T const*>(this)->T::getFlattenedSize();
 }
-template<typename T>
+template <typename T>
 inline size_t Flattenable<T>::getFdCount() const {
     return static_cast<T const*>(this)->T::getFdCount();
 }
-template<typename T>
-inline status_t Flattenable<T>::flatten(
-        void*& buffer, size_t& size, int*& fds, size_t& count) const {
+template <typename T>
+inline status_t Flattenable<T>::flatten(void*& buffer, size_t& size, int*& fds,
+                                        size_t& count) const {
     return static_cast<T const*>(this)->T::flatten(buffer, size, fds, count);
 }
-template<typename T>
-inline status_t Flattenable<T>::unflatten(
-        void const*& buffer, size_t& size, int const*& fds, size_t& count) {
+template <typename T>
+inline status_t Flattenable<T>::unflatten(void const*& buffer, size_t& size, int const*& fds,
+                                          size_t& count) {
     return static_cast<T*>(this)->T::unflatten(buffer, size, fds, count);
 }
 
@@ -132,7 +129,7 @@ inline status_t Flattenable<T>::unflatten(
  */
 template <typename T>
 class LightFlattenable {
-public:
+  public:
     // returns whether this object always flatten into the same size.
     // for efficiency, this should always be inline.
     inline bool isFixedSize() const;
@@ -172,14 +169,10 @@ inline status_t LightFlattenable<T>::unflatten(void const* buffer, size_t size) 
  */
 template <typename T>
 class LightFlattenablePod : public LightFlattenable<T> {
-public:
-    inline bool isFixedSize() const {
-        return true;
-    }
+  public:
+    inline bool isFixedSize() const { return true; }
 
-    inline size_t getFlattenedSize() const {
-        return sizeof(T);
-    }
+    inline size_t getFlattenedSize() const { return sizeof(T); }
     inline status_t flatten(void* buffer, size_t size) const {
         if (size < sizeof(T)) return NO_MEMORY;
         *reinterpret_cast<T*>(buffer) = *static_cast<T const*>(this);
@@ -191,8 +184,6 @@ public:
     }
 };
 
-
-}; // namespace android
-
+};  // namespace android
 
 #endif /* ANDROID_UTILS_FLATTENABLE_H */

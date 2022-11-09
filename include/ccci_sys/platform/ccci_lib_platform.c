@@ -20,11 +20,8 @@
 #include <stdlib.h>
 #include "ccci_lib_platform.h"
 
+#define AB_PROPERTY_NAME "ro.boot.slot_suffix"
 
-#define AB_PROPERTY_NAME        "ro.boot.slot_suffix"
-
-void AB_image_get(char *buf)
-{
-    if (property_get(AB_PROPERTY_NAME, buf, NULL) == 0)
-        buf[0] = 0;
+void AB_image_get(char* buf) {
+    if (property_get(AB_PROPERTY_NAME, buf, NULL) == 0) buf[0] = 0;
 }

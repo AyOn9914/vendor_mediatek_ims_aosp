@@ -29,20 +29,19 @@ class RtcPhbController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcPhbController);
 
-public:
+  public:
     RtcPhbController();
     virtual ~RtcPhbController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
 
-private:
-    void onMdOffChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue);
+  private:
+    void onMdOffChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
 };
 
 #endif /* __RTC_PHB_CONTROLLER_H__ */

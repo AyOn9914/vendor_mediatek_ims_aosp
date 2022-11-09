@@ -15,23 +15,23 @@
  */
 
 #ifdef MTK_USE_HIDL
- {RIL_UNSOL_DIGITS_LINE_INDICATION, radio::digitsLineIndicationInd, WAKE_PARTIAL},
- {RIL_UNSOL_GET_TRN_INDICATION, radio::getTrnIndicationInd, WAKE_PARTIAL},
- // MTK-START: SIM TMO RSU
- {RIL_UNSOL_MELOCK_NOTIFICATION, radio::onSimMeLockEvent, WAKE_PARTIAL},
- // MTK-END
- {RIL_UNSOL_MODULATION_INFO, radio::responseModulationInfoInd, WAKE_PARTIAL},
- {RIL_UNSOL_RCS_DIGITS_LINE_INFO, radio::digitsLineIndication, WAKE_PARTIAL},
- {RIL_UNSOL_ENTER_SCBM, radio::enterSCBMInd, WAKE_PARTIAL},
- {RIL_UNSOL_EXIT_SCBM, radio::exitSCBMInd, WAKE_PARTIAL},
- {RIL_UNSOL_RSU_EVENT, radio::onRsuEvent, WAKE_PARTIAL},
+{RIL_UNSOL_DIGITS_LINE_INDICATION, radio::digitsLineIndicationInd, WAKE_PARTIAL},
+        {RIL_UNSOL_GET_TRN_INDICATION, radio::getTrnIndicationInd, WAKE_PARTIAL},
+        // MTK-START: SIM TMO RSU
+        {RIL_UNSOL_MELOCK_NOTIFICATION, radio::onSimMeLockEvent, WAKE_PARTIAL},
+        // MTK-END
+        {RIL_UNSOL_MODULATION_INFO, radio::responseModulationInfoInd, WAKE_PARTIAL},
+        {RIL_UNSOL_RCS_DIGITS_LINE_INFO, radio::digitsLineIndication, WAKE_PARTIAL},
+        {RIL_UNSOL_ENTER_SCBM, radio::enterSCBMInd, WAKE_PARTIAL},
+        {RIL_UNSOL_EXIT_SCBM, radio::exitSCBMInd, WAKE_PARTIAL},
+        {RIL_UNSOL_RSU_EVENT, radio::onRsuEvent, WAKE_PARTIAL},
 #else
- {RIL_UNSOL_DIGITS_LINE_INDICATION, responseStrings, WAKE_PARTIAL},
- {RIL_UNSOL_GET_TRN_INDICATION, responseStrings, WAKE_PARTIAL},
- // MTK-START: SIM TMO RSU
- {RIL_UNSOL_MELOCK_NOTIFICATION,responseInts, WAKE_PARTIAL},
- // MTK-END
- {RIL_UNSOL_ENTER_SCBM, responseVoid, WAKE_PARTIAL},
- {RIL_UNSOL_EXIT_SCBM, responseVoid, WAKE_PARTIAL},
- {RIL_UNSOL_RSU_EVENT, responseInts, WAKE_PARTIAL},
-#endif // MTK_USE_HIDL
+{RIL_UNSOL_DIGITS_LINE_INDICATION, responseStrings, WAKE_PARTIAL},
+        {RIL_UNSOL_GET_TRN_INDICATION, responseStrings, WAKE_PARTIAL},
+        // MTK-START: SIM TMO RSU
+        {RIL_UNSOL_MELOCK_NOTIFICATION, responseInts, WAKE_PARTIAL},
+        // MTK-END
+        {RIL_UNSOL_ENTER_SCBM, responseVoid, WAKE_PARTIAL},
+        {RIL_UNSOL_EXIT_SCBM, responseVoid, WAKE_PARTIAL},
+        {RIL_UNSOL_RSU_EVENT, responseInts, WAKE_PARTIAL},
+#endif  // MTK_USE_HIDL

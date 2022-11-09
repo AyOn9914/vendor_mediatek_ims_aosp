@@ -17,7 +17,6 @@
 #ifndef __RFX_PRECISE_CALL_STATE_H
 #define __RFX_PRECISE_CALL_STATE_H
 
-
 /*****************************************************************************
  * Include
  *****************************************************************************/
@@ -52,42 +51,40 @@ typedef enum {
     CALL_DIR_MT = 1,
 } CallDirection;
 
-
 typedef enum {
     ORIG_NONE = -1,
     ORIG_ACTIVE = 0,
     ORIG_HOLDING = 1,
-    ORIG_DIALING = 2,    /* MO call only */
-    ORIG_ALERTING = 3,   /* MO call only */
-    ORIG_INCOMING = 4,   /* MT call only */
-    ORIG_WAITING = 5,    /* MT call only */
+    ORIG_DIALING = 2,  /* MO call only */
+    ORIG_ALERTING = 3, /* MO call only */
+    ORIG_INCOMING = 4, /* MT call only */
+    ORIG_WAITING = 5,  /* MT call only */
     ORIG_DISCONNECTING = 6,
     ORIG_FOREGND_DISCONNECTING = 7,
     ORIG_BACKGND_DISCONNECTING = 8,
     ORIG_DISCONNECTED = 9,
 } OrigState;
 
-
 /*****************************************************************************
  * Class RfxPreciseCallState
  *****************************************************************************/
 
 class RfxPreciseCallState {
-public:
+  public:
     RfxPreciseCallState();
     virtual ~RfxPreciseCallState();
     static OrigState RILStateToOrigState(RIL_CallState state);
     bool isValid();
     void dump();
 
-public:
-    int             mSlot;
-    int             mCallId;
-    CallType        mCallType;
-    CallRat         mCallRat;
-    CallDirection   mCallDir;
-    String16        mCallNumber;
-    OrigState       mOrigState;
+  public:
+    int mSlot;
+    int mCallId;
+    CallType mCallType;
+    CallRat mCallRat;
+    CallDirection mCallDir;
+    String16 mCallNumber;
+    OrigState mOrigState;
 };
 
 #endif /* __RFX_PRECISE_CALL_STATE_H */

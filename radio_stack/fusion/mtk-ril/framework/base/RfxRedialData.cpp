@@ -20,15 +20,15 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxRedialData);
 
-RfxRedialData::RfxRedialData(void *data, int length) : RfxBaseData(data, length) {
-    RFX_Redial *dupData;
-    RFX_Redial *srcData = (RFX_Redial *)data;
+RfxRedialData::RfxRedialData(void* data, int length) : RfxBaseData(data, length) {
+    RFX_Redial* dupData;
+    RFX_Redial* srcData = (RFX_Redial*)data;
 
-    dupData = (RFX_Redial *)calloc(1, sizeof(RFX_Redial));
+    dupData = (RFX_Redial*)calloc(1, sizeof(RFX_Redial));
     RFX_ASSERT(dupData != NULL);
     mDialData = new RfxDialData(srcData->dial_data, sizeof(RIL_Dial));
 
-    dupData->dial_data = (RIL_Dial *)(mDialData->getData());
+    dupData->dial_data = (RIL_Dial*)(mDialData->getData());
     dupData->call_id = srcData->call_id;
 
     m_length = sizeof(RFX_Redial);
@@ -37,14 +37,14 @@ RfxRedialData::RfxRedialData(void *data, int length) : RfxBaseData(data, length)
     mCallId = srcData->call_id;
 }
 
-RfxRedialData::RfxRedialData(RIL_Dial *data, int callId) : RfxBaseData(NULL, 0) {
-    RFX_Redial *dupData;
+RfxRedialData::RfxRedialData(RIL_Dial* data, int callId) : RfxBaseData(NULL, 0) {
+    RFX_Redial* dupData;
 
-    dupData = (RFX_Redial *)calloc(1, sizeof(RFX_Redial));
+    dupData = (RFX_Redial*)calloc(1, sizeof(RFX_Redial));
     RFX_ASSERT(dupData != NULL);
     mDialData = new RfxDialData(data, sizeof(RIL_Dial));
 
-    dupData->dial_data = (RIL_Dial *)(mDialData->getData());
+    dupData->dial_data = (RIL_Dial*)(mDialData->getData());
     dupData->call_id = callId;
 
     m_length = sizeof(RFX_Redial);
@@ -55,7 +55,7 @@ RfxRedialData::RfxRedialData(RIL_Dial *data, int callId) : RfxBaseData(NULL, 0) 
 
 RfxRedialData::~RfxRedialData() {
     if (mDialData != NULL) {
-        delete(mDialData);
+        delete (mDialData);
     }
 
     if (m_data != NULL) {
@@ -64,8 +64,7 @@ RfxRedialData::~RfxRedialData() {
 }
 
 void RfxRedialData::dump() {
-    RFX_LOG_D("RfxRedialData",
-            "Dump mCallId:%d, number:%s",
-            mCallId,
-            (RfxRilUtils::isUserLoad() ? "[hidden]" : (((RFX_Redial *)m_data)->dial_data)->address));
+    RFX_LOG_D(
+            "RfxRedialData", "Dump mCallId:%d, number:%s", mCallId,
+            (RfxRilUtils::isUserLoad() ? "[hidden]" : (((RFX_Redial*)m_data)->dial_data)->address));
 }

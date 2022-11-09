@@ -28,8 +28,7 @@
 
 #define MAX_LOG_LEN 1024
 
-void mtkLogD(const char *tag, const char *fmt, ...)
-{
+void mtkLogD(const char* tag, const char* fmt, ...) {
     char buf[MAX_LOG_LEN];
     va_list args;
     va_start(args, fmt);
@@ -38,8 +37,7 @@ void mtkLogD(const char *tag, const char *fmt, ...)
     __android_log_buf_write(LOG_ID_RADIO, ANDROID_LOG_DEBUG, tag, buf);
 }
 
-void mtkLogV(const char *tag, const char *fmt, ...)
-{
+void mtkLogV(const char* tag, const char* fmt, ...) {
     char buf[MAX_LOG_LEN];
     va_list args;
     va_start(args, fmt);
@@ -48,8 +46,7 @@ void mtkLogV(const char *tag, const char *fmt, ...)
     __android_log_buf_write(LOG_ID_RADIO, ANDROID_LOG_VERBOSE, tag, buf);
 }
 
-void mtkLogI(const char *tag, const char *fmt, ...)
-{
+void mtkLogI(const char* tag, const char* fmt, ...) {
     char buf[MAX_LOG_LEN];
     va_list args;
     va_start(args, fmt);
@@ -58,8 +55,7 @@ void mtkLogI(const char *tag, const char *fmt, ...)
     __android_log_buf_write(LOG_ID_RADIO, ANDROID_LOG_INFO, tag, buf);
 }
 
-void mtkLogW(const char *tag, const char *fmt, ...)
-{
+void mtkLogW(const char* tag, const char* fmt, ...) {
     char buf[MAX_LOG_LEN];
     va_list args;
     va_start(args, fmt);
@@ -68,8 +64,7 @@ void mtkLogW(const char *tag, const char *fmt, ...)
     __android_log_buf_write(LOG_ID_RADIO, ANDROID_LOG_WARN, tag, buf);
 }
 
-void mtkLogE(const char *tag, const char *fmt, ...)
-{
+void mtkLogE(const char* tag, const char* fmt, ...) {
     char buf[MAX_LOG_LEN];
     va_list args;
     va_start(args, fmt);
@@ -78,7 +73,7 @@ void mtkLogE(const char *tag, const char *fmt, ...)
     __android_log_buf_write(LOG_ID_RADIO, ANDROID_LOG_ERROR, tag, buf);
 }
 
-void mtkAssert(char *pErrMsg) {
+void mtkAssert(char* pErrMsg) {
     if (pErrMsg) {
         LOG_ALWAYS_FATAL("%s", pErrMsg);
     } else {

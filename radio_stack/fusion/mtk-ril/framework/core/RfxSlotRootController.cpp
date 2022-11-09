@@ -26,39 +26,37 @@
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RfxSlotRootController", RfxSlotRootController, RfxController);
 
-RfxSlotRootController::RfxSlotRootController(int slot_id) :
-    m_cs_requests(NULL),
-    m_ps_requests(NULL) {
+RfxSlotRootController::RfxSlotRootController(int slot_id)
+    : m_cs_requests(NULL), m_ps_requests(NULL) {
     m_slot_id = slot_id;
 }
 
 RfxSlotRootController::~RfxSlotRootController() {
     if (m_cs_requests) {
-        delete(m_cs_requests);
+        delete (m_cs_requests);
     }
 
     if (m_ps_requests) {
-        delete(m_ps_requests);
+        delete (m_ps_requests);
     }
 }
 
-void RfxSlotRootController::regReqToCsRild(const int *request_id_list, size_t length) {
+void RfxSlotRootController::regReqToCsRild(const int* request_id_list, size_t length) {
     if (m_cs_requests == NULL) {
         m_cs_requests = new Vector<int>();
     }
     registerRequestInternal(request_id_list, length, m_cs_requests);
 }
 
-void RfxSlotRootController::regReqToPsRild(const int *request_id_list, size_t length) {
+void RfxSlotRootController::regReqToPsRild(const int* request_id_list, size_t length) {
     if (m_ps_requests == NULL) {
         m_ps_requests = new Vector<int>();
     }
     registerRequestInternal(request_id_list, length, m_ps_requests);
 }
 
-
-void RfxSlotRootController::registerRequestInternal(const int *request_id_list, size_t length,
-                                                    Vector<int> *list) {
+void RfxSlotRootController::registerRequestInternal(const int* request_id_list, size_t length,
+                                                    Vector<int>* list) {
     if (list == NULL) {
         RFX_ASSERT(0);
     }
@@ -70,8 +68,8 @@ void RfxSlotRootController::registerRequestInternal(const int *request_id_list, 
     registerToHandleRequest(request_id_list, length);
 }
 
-void RfxSlotRootController::unregisterRequestInternal(const int *request_id_list, size_t length,
-                                                      Vector<int> *list) {
+void RfxSlotRootController::unregisterRequestInternal(const int* request_id_list, size_t length,
+                                                      Vector<int>* list) {
     if (!list) {
         return;
     }
@@ -93,7 +91,6 @@ void RfxSlotRootController::unregisterRequestInternal(const int *request_id_list
 
     unregisterToHandleRequest(request_id_list, length);
 }
-
 
 bool RfxSlotRootController::onHandleRequest(const sp<RfxMessage>& message) {
     int id = message->getId();
@@ -137,7 +134,7 @@ bool RfxSlotRootController::onHandleRequest(const sp<RfxMessage>& message) {
             }
         }
     }
-    RFX_ASSERT(0); // the request not registered
+    RFX_ASSERT(0);  // the request not registered
     return false;
 }
 
@@ -161,6 +158,6 @@ bool RfxSlotRootController::onHandleResponse(const sp<RfxMessage>& message) {
             }
         }
     }
-    RFX_ASSERT(0); // the response not registered
+    RFX_ASSERT(0);  // the response not registered
     return false;
 }

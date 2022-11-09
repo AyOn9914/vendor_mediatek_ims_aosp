@@ -22,15 +22,15 @@
 
 WPFA_IMPLEMENT_DATA_CLASS(WpfaDriverVersionData);
 
-WpfaDriverVersionData::WpfaDriverVersionData(void *_data, int _length) :
-        WpfaDriverBaseData(_data, _length) {
+WpfaDriverVersionData::WpfaDriverVersionData(void* _data, int _length)
+    : WpfaDriverBaseData(_data, _length) {
     if (_data != NULL) {
-        wifiproxy_ap_md_filter_ver_t *pSendMsg = (wifiproxy_ap_md_filter_ver_t*)_data;
-        wifiproxy_ap_md_filter_ver_t *pData = (wifiproxy_ap_md_filter_ver_t *)calloc(1,
-                    sizeof(wifiproxy_ap_md_filter_ver_t));
+        wifiproxy_ap_md_filter_ver_t* pSendMsg = (wifiproxy_ap_md_filter_ver_t*)_data;
+        wifiproxy_ap_md_filter_ver_t* pData =
+                (wifiproxy_ap_md_filter_ver_t*)calloc(1, sizeof(wifiproxy_ap_md_filter_ver_t));
 
         if (pData == NULL) {
-            mtkLogD(WPFA_D_LOG_TAG,"pData is null, return.");
+            mtkLogD(WPFA_D_LOG_TAG, "pData is null, return.");
             return;
         }
 
@@ -38,7 +38,7 @@ WpfaDriverVersionData::WpfaDriverVersionData(void *_data, int _length) :
         pData->md_filter_ver = pSendMsg->md_filter_ver;
         pData->dl_buffer_size = pSendMsg->dl_buffer_size;
         pData->ul_buffer_size = pSendMsg->ul_buffer_size;
-        mData = (void* )pData;
+        mData = (void*)pData;
         mLength = _length;
     }
 }

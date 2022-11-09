@@ -26,10 +26,11 @@
 /*****************************************************************************
  * Class RmcOpDcReqHandler
  *****************************************************************************/
-class RmcOpDcImsReqHandler: public RmcDcImsReqHandler {
+class RmcOpDcImsReqHandler : public RmcDcImsReqHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpDcImsReqHandler);
-    public:
-        RmcOpDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager);
-        virtual ~RmcOpDcImsReqHandler();
+
+  public:
+    RmcOpDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager);
+    virtual ~RmcOpDcImsReqHandler();
 };
 #endif /* __RMC_OP_DC_IMS_REQ_HANDLER_H__ */

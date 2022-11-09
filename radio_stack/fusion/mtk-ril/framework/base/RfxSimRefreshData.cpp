@@ -18,13 +18,13 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimRefreshData);
 
-RfxSimRefreshData::RfxSimRefreshData(void *data, int length) : RfxBaseData(data, length) {
+RfxSimRefreshData::RfxSimRefreshData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    RIL_SimRefreshResponse_v7 *dupData;
-    RIL_SimRefreshResponse_v7 *srcData = (RIL_SimRefreshResponse_v7*)data;
+    RIL_SimRefreshResponse_v7* dupData;
+    RIL_SimRefreshResponse_v7* srcData = (RIL_SimRefreshResponse_v7*)data;
     int strLength;
 
-    dupData = (RIL_SimRefreshResponse_v7 *)calloc(1, sizeof(RIL_SimRefreshResponse_v7));
+    dupData = (RIL_SimRefreshResponse_v7*)calloc(1, sizeof(RIL_SimRefreshResponse_v7));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_SimRefreshResponse_v7));
     m_data = dupData;
@@ -41,14 +41,14 @@ RfxSimRefreshData::RfxSimRefreshData(void *data, int length) : RfxBaseData(data,
     }
 
     strLength = strlen(srcData->aid) + 1;
-    dupData->aid = (char *)calloc(strLength, sizeof(char));
+    dupData->aid = (char*)calloc(strLength, sizeof(char));
     RFX_ASSERT(dupData->aid != NULL);
     memcpy(dupData->aid, srcData->aid, strLength);
 }
 
 RfxSimRefreshData::~RfxSimRefreshData() {
     // free
-    RIL_SimRefreshResponse_v7 *data = (RIL_SimRefreshResponse_v7*)m_data;
+    RIL_SimRefreshResponse_v7* data = (RIL_SimRefreshResponse_v7*)m_data;
     free(data->aid);
     free(m_data);
 }

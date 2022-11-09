@@ -17,7 +17,6 @@
 #ifndef _VILTE_CAMERA_SOURCE_H_
 #define _VILTE_CAMERA_SOURCE_H_
 
-
 #include <ui/GraphicBuffer.h>
 #include <gui/Surface.h>
 #include <media/stagefright/foundation/AHandler.h>
@@ -31,24 +30,19 @@
 #include "EncoderSource.h"
 #include "VTCameraSource.h"
 /*
-*1) video and audio NTP should use the audio video buffer generate time(calc from device reboot)
-*2) video NTP is using the video timestamp,so video timestamp should use the camera generated timestamp directly
-*    2.1) not set camerasource mStartTimeUs in start(meta)
-*    2.2) set vilte mode to camerasource to use camera generated timestamp directly
-*3)
-*
-*
-*/
+ *1) video and audio NTP should use the audio video buffer generate time(calc from device reboot)
+ *2) video NTP is using the video timestamp,so video timestamp should use the camera generated
+ *timestamp directly 2.1) not set camerasource mStartTimeUs in start(meta) 2.2) set vilte mode to
+ *camerasource to use camera generated timestamp directly 3)
+ *
+ *
+ */
 
-
-namespace android
-{
+namespace android {
 using android::status_t;
-
 
 class MediaProfiles;
 struct ALooper;
-
 
 typedef struct video_enc_fmt_t {
     int32_t maxBitrate;
@@ -67,11 +61,9 @@ typedef struct video_enc_fmt_t {
     int32_t interfaceType;
 } video_enc_fmt;
 
-
 struct Source : public AHandler {
-public:
-
-    //for uplayer interact
+  public:
+    // for uplayer interact
     enum {
         kWhatError = 0,
         kWhatResolutionNotify = 1,
@@ -80,76 +72,72 @@ public:
 
     enum {
         Error_Bitrate_Drop_Down_Fail = 1,
-	  Error_Camera_Restart = 2,
+        Error_Camera_Restart = 2,
     };
 
-
-
-    //for top level flow control
-    Source(int32_t multiId,uint32_t simID,uint32_t operatorID);
-    void     SetNotify(const sp<AMessage> &notify);    //first call after new Source
+    // for top level flow control
+    Source(int32_t multiId, uint32_t simID, uint32_t operatorID);
+    void SetNotify(const sp<AMessage>& notify);  // first call after new Source
     status_t Start();
     status_t Stop();
-    //for turn off video
+    // for turn off video
     status_t Pause();
     status_t Resume();
-    status_t setSourceConfig(video_enc_fmt * settings);
+    status_t setSourceConfig(video_enc_fmt* settings);
 
-
-    //for cvo and rotate support
+    // for cvo and rotate support
     status_t setDeviceRoateDegree(int32_t degree);
 
-    status_t setCurrentCameraInfo(int32_t facing, int32_t degree,int32_t hal);
+    status_t setCurrentCameraInfo(int32_t facing, int32_t degree, int32_t hal);
     status_t disableCVO(bool disable);
 
-    //for avpf
-    status_t setAvpfParamters(const sp<AMessage> &params);
-    //tmmbr ajust bitrate
+    // for avpf
+    status_t setAvpfParamters(const sp<AMessage>& params);
+    // tmmbr ajust bitrate
     status_t adjustEncBitRate(int32_t expect_bitrate);
 
     status_t getBufferQueueProducer(sp<IGraphicBufferProducer>* outBufferProducer);
 
-protected:
+  protected:
     virtual ~Source();
-    virtual void onMessageReceived(const sp<AMessage> &msg);
+    virtual void onMessageReceived(const sp<AMessage>& msg);
 
-private:
-    enum  {
-        IDLE                = 0x01,
-        INITED              = 0x02,
-        STARTED         = 0x04 ,
-        PAUSED              = 0x08,        //pause encoder for turn off video
-        STOPPED             = 0x10,     //stop
-        UPDATING              = 0x20, //update config
+  private:
+    enum {
+        IDLE = 0x01,
+        INITED = 0x02,
+        STARTED = 0x04,
+        PAUSED = 0x08,    // pause encoder for turn off video
+        STOPPED = 0x10,   // stop
+        UPDATING = 0x20,  // update config
     };
-    enum  {
-        Update_Fps              = 0x01,//only some parameter changes:bitrate,fps...
-        Update_Bitrate          = 0x02 ,//need reconfig camera preview : W,H change
-        //whether we should change the preview size during video call?
-        Update_IFrameInterval   = 0x04,
-        Update_CodecType        = 0x08,
-        Update_ProfileLevel     = 0x10,
+    enum {
+        Update_Fps = 0x01,      // only some parameter changes:bitrate,fps...
+        Update_Bitrate = 0x02,  // need reconfig camera preview : W,H change
+        // whether we should change the preview size during video call?
+        Update_IFrameInterval = 0x04,
+        Update_CodecType = 0x08,
+        Update_ProfileLevel = 0x10,
 
-        Update_Resolution_Up     = 0x100 ,//need reconfig encoder,W H
-        Update_Resolution_Down  =0x200 ,
-        Update_Resolution              = Update_Resolution_Up|Update_Resolution_Down,
-        Update_RotationDegree   = 0x400,
+        Update_Resolution_Up = 0x100,  // need reconfig encoder,W H
+        Update_Resolution_Down = 0x200,
+        Update_Resolution = Update_Resolution_Up | Update_Resolution_Down,
+        Update_RotationDegree = 0x400,
     };
-
 
     enum {
-        //internal use
-        kWhatStart  = 10,
-        kWhatStop   ,
-        kWhatPause  ,
-        kWhatResume  ,
+        // internal use
+        kWhatStart = 10,
+        kWhatStop,
+        kWhatPause,
+        kWhatResume,
         kWhatInitUpdate,
 
         kWhatSetAvpfParams,
         kWhatAdjustEncBitrate,
 
         kWhatSourceNotify,
-        kWhatCodecAvpfFeedBack ,
+        kWhatCodecAvpfFeedBack,
         kWhatClearBufferQueue,
     };
 
@@ -161,8 +149,8 @@ private:
     };
 
     /*
-        0: Front-facing camera, facing the user. If camera direction is unknown then this value is used.
-        1: Back-facing camera, facing away from the user.
+        0: Front-facing camera, facing the user. If camera direction is unknown then this value is
+       used. 1: Back-facing camera, facing away from the user.
 
     *///opposite to hal1
     enum {
@@ -170,68 +158,68 @@ private:
         CAMERA_FACING_FRONT = 0,
     };
 
-    //for debug multi instance
+    // for debug multi instance
     int32_t mMultiInstanceID;
     uint32_t mSimID;
     uint32_t mOperatorID;
-    int32_t  mState;
+    int32_t mState;
     sp<AMessage> mNotify;
     Mutex mLock;
 
-    //basic
+    // basic
 
     sp<EncoderSource> mEncoderSource;
     sp<VTCameraSource> mCameraSource;
     int32_t mChooseCameraFacing;
-    int32_t mChooseCameraDegree;//for encoder
+    int32_t mChooseCameraDegree;  // for encoder
     int32_t mChooseCameraHal;
-    int32_t mDeviceDegree;//for record device dree
-    int32_t mRotateTarget;  //for encoder
-    int32_t mRotateDegree;//for encoder
-    int32_t mRotateMethod;//for encoder
+    int32_t mDeviceDegree;  // for record device dree
+    int32_t mRotateTarget;  // for encoder
+    int32_t mRotateDegree;  // for encoder
+    int32_t mRotateMethod;  // for encoder
 
-    //encoder
+    // encoder
     video_enc_fmt_t mVideoConfigSettings;
     int32_t mColorFormat;
     sp<AMessage> mEncoderOutputFormat;
 
-    //owner looper
+    // owner looper
     sp<ALooper> mLooper;
     sp<ALooper> mEncoderLooper;
 
     enum Resolution_Change_Algorithm {
-        Encode_DYNAMIC_CHANGE = 1,//send follow the sensor setting
-        Encode_CAMERA_RESET     = 2,
+        Encode_DYNAMIC_CHANGE = 1,  // send follow the sensor setting
+        Encode_CAMERA_RESET = 2,
     };
-    int32_t mResChangeAlgorithm;  //for mResChangeAlgorithm
-    //for resolution change
+    int32_t mResChangeAlgorithm;  // for mResChangeAlgorithm
+    // for resolution change
 
     bool mDisbaleResolutionChange;
     int32_t mResolutionChangeIntervalS;
     int64_t mResolutionChangeTimeUs;
     video_encoder mVideoEncoder;
 
-    static int32_t gInstanceCount   ;
+    static int32_t gInstanceCount;
 
-    status_t initLooper_l();//internal initialize
+    status_t initLooper_l();  // internal initialize
     status_t stop_l();
     status_t setupVideoEncoder(sp<MediaSource> cameraSource);
-    status_t  postAsynAndWaitReturnError(const sp<AMessage> &msg);
+    status_t postAsynAndWaitReturnError(const sp<AMessage>& msg);
 
-    //for update
-    status_t checkSaveSourceConfig(video_enc_fmt * settings);
-    int32_t compareSettingChange(video_enc_fmt * settings);
-    //for app
-    //native handle the preview,not need notify app the preview displayer orientation degree
-    void notifyResolutionDegree(int32_t width,int32_t height,int32_t degree = 0);
+    // for update
+    status_t checkSaveSourceConfig(video_enc_fmt* settings);
+    int32_t compareSettingChange(video_enc_fmt* settings);
+    // for app
+    // native handle the preview,not need notify app the preview displayer orientation degree
+    void notifyResolutionDegree(int32_t width, int32_t height, int32_t degree = 0);
     status_t startEncoderSource_l();
     status_t stopEncoderSource_l();
-    //notify error
+    // notify error
     void notifyError(int32_t errorType);
-    void refineWhByRotationDegree(int32_t* width, int32_t* height,int32_t degree);
+    void refineWhByRotationDegree(int32_t* width, int32_t* height, int32_t degree);
     status_t setSourceResolutionDegree();
-    status_t  resetRotateDegree();
-    //for change bitrate
+    status_t resetRotateDegree();
+    // for change bitrate
     /*
     1) return changeType , let resetByUpdateConfig to handle change logic
     */
@@ -239,9 +227,9 @@ private:
     status_t resetByUpdateConfig(int32_t changeType);
     status_t setCodecParameters(int32_t changeType);
     status_t adjustEncBitRate_l(int32_t expect_bitrate);
-    //for signal
-    int32_t  adjustEncBySignal();
-    int32_t  mBeginSignal;
+    // for signal
+    int32_t adjustEncBySignal();
+    int32_t mBeginSignal;
 };
-}
+}  // namespace android
 #endif  // _VILTE_CAMERA_SOURCE_H_

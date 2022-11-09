@@ -41,9 +41,9 @@ class RtcCapabilityGetController : public RfxController {
     void updateRadioCapability(int cslot, int session_id);
     void updateRadioCapabilityForWMChange(int world_mode);
 
-// Override
+    // Override
   protected:
-    virtual bool onHandleUrc(const sp<RfxMessage> &message);
+    virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual void onInit();
 
   private:

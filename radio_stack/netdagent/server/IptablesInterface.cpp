@@ -46,19 +46,17 @@ static void logExecError(const char* argv[], int res, int status) {
     ALOGE("exec() res=%d, status=%d for %s", res, status, args.c_str());
 }
 
-static int execCommand(int argc, const char *argv[], bool silent) {
+static int execCommand(int argc, const char* argv[], bool silent) {
     int res;
     int status;
 
-    res = android_fork_execvp(argc, (char **)argv, &status, false, !silent);
+    res = android_fork_execvp(argc, (char**)argv, &status, false, !silent);
     if (res || !WIFEXITED(status) || WEXITSTATUS(status)) {
         if (!silent) {
             logExecError(argv, res, status);
         }
-        if (res)
-            return res;
-        if (!WIFEXITED(status))
-            return ECHILD;
+        if (res) return res;
+        if (!WIFEXITED(status)) return ECHILD;
     }
     return WEXITSTATUS(status);
 }
@@ -73,7 +71,7 @@ static int execIptables(IptablesTarget target, bool silent, va_list args) {
     argsList.push_back("-w");
 
     do {
-        arg = va_arg(args, const char *);
+        arg = va_arg(args, const char*);
         argsList.push_back(arg);
     } while (arg);
 
@@ -85,7 +83,7 @@ static int execIptables(IptablesTarget target, bool silent, va_list args) {
     }
 
 #ifdef MTK_DEBUG
-    const char** temp = argv + 1; //skip argv[0]
+    const char** temp = argv + 1;  // skip argv[0]
     std::string debug = "";
     while (*temp) {
         debug += *temp;
@@ -123,14 +121,14 @@ int execIptablesSilently(IptablesTarget target, ...) {
     return res;
 }
 
-static int execNdcCmd(const char *command, bool silent, va_list args) {
+static int execNdcCmd(const char* command, bool silent, va_list args) {
     /* Read arguments from incoming va_list; we expect the list to be NULL terminated. */
     std::list<const char*> argsList;
     argsList.push_back(NULL);
     const char* arg;
     argsList.push_back(command);
     do {
-        arg = va_arg(args, const char *);
+        arg = va_arg(args, const char*);
         argsList.push_back(arg);
     } while (arg);
 
@@ -142,7 +140,7 @@ static int execNdcCmd(const char *command, bool silent, va_list args) {
     }
 
 #ifdef MTK_DEBUG
-    const char** temp = argv + 1; //skip argv[0]
+    const char** temp = argv + 1;  // skip argv[0]
     std::string debug = "";
     while (*temp) {
         debug += *temp;
@@ -156,10 +154,9 @@ static int execNdcCmd(const char *command, bool silent, va_list args) {
     argv[0] = NDC_PATH;
     res = execCommand(argsList.size(), argv, silent);
     return res;
-
 }
 
-int execNdcCmd(const char *command, ...) {
+int execNdcCmd(const char* command, ...) {
     va_list args;
     va_start(args, command);
     int res = execNdcCmd(command, false, args);
@@ -175,7 +172,7 @@ static int execIpCmd(int family, bool silent, va_list args) {
     const char* arg;
 
     do {
-        arg = va_arg(args, const char *);
+        arg = va_arg(args, const char*);
         argsList.push_back(arg);
     } while (arg);
 
@@ -187,7 +184,7 @@ static int execIpCmd(int family, bool silent, va_list args) {
     }
 
 #ifdef MTK_DEBUG
-    const char** temp = argv + 2; //skip argv[0] and argv[1]
+    const char** temp = argv + 2;  // skip argv[0] and argv[1]
     std::string debug = "";
     while (*temp) {
         debug += *temp;
@@ -208,7 +205,6 @@ static int execIpCmd(int family, bool silent, va_list args) {
         res |= execCommand(argsList.size(), argv, silent);
     }
     return res;
-
 }
 
 int execIpCmd(int family, ...) {
@@ -219,43 +215,42 @@ int execIpCmd(int family, ...) {
     return res;
 }
 
-int system_nosh(const char *command)
-{
+int system_nosh(const char* command) {
     char buffer[255];
-    char *argp[32];
+    char* argp[32];
     int res;
-    char *next = buffer;
-    char *tmp;
+    char* next = buffer;
+    char* tmp;
     int i = 0;
 
-    if (!command)           /* just checking... */
-        return(1);
+    if (!command) /* just checking... */
+        return (1);
 
     /*
      * The command to argp splitting is from code that was
      * reverted in Change: 11b4e9b2
      */
     if (strnlen(command, sizeof(buffer) - 1) == sizeof(buffer) - 1) {
-        //ALOGE("command line too long while processing: %s", command);
+        // ALOGE("command line too long while processing: %s", command);
         errno = E2BIG;
         return -1;
     }
-    strncpy(buffer, command, strlen(command)+1); // Command len is already checked.
+    strncpy(buffer, command, strlen(command) + 1);  // Command len is already checked.
     while ((tmp = strsep(&next, " "))) {
         argp[i++] = tmp;
         if (i == 32) {
-            //ALOGE("argument overflow while processing: %s", command);
+            // ALOGE("argument overflow while processing: %s", command);
             errno = E2BIG;
             return -1;
         }
     }
     argp[i] = NULL;
-    res = android_fork_execvp(i, (char **)argp, NULL, false, false);
+    res = android_fork_execvp(i, (char**)argp, NULL, false, false);
     return res;
 }
 
-int execTcCmd(const char *cmd) {
-    char *buffer;
+int execTcCmd(const char* cmd) {
+    char* buffer;
     size_t len = strnlen(cmd, 255);
     int res;
 
@@ -274,8 +269,8 @@ int execTcCmd(const char *cmd) {
     return res;
 }
 
-void createChildChains(IptablesTarget target, const char* table, const char* op, const char* parentChain,
-        const char** childChains) {
+void createChildChains(IptablesTarget target, const char* table, const char* op,
+                       const char* parentChain, const char** childChains) {
     const char** childChain = childChains;
     do {
         // Order is important:

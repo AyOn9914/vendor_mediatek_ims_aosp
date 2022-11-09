@@ -27,30 +27,26 @@
 
 RFX_IMPLEMENT_CLASS("RtcOpSuppServController", RtcOpSuppServController, RfxController);
 
-RtcOpSuppServController::RtcOpSuppServController() {
-}
+RtcOpSuppServController::RtcOpSuppServController() {}
 
-RtcOpSuppServController::~RtcOpSuppServController() {
-}
+RtcOpSuppServController::~RtcOpSuppServController() {}
 
 void RtcOpSuppServController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_SEND_USSI_FROM,
-        RFX_MSG_REQUEST_CANCEL_USSI_FROM,
+            RFX_MSG_REQUEST_SEND_USSI_FROM,
+            RFX_MSG_REQUEST_CANCEL_USSI_FROM,
     };
 
-    const int urc_id_list[] = {
-    };
+    const int urc_id_list[] = {};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(request_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(request_id_list) / sizeof(const int));
 }
-
 
 bool RtcOpSuppServController::onHandleRequest(const sp<RfxMessage>& message) {
     requestToMcl(message);
@@ -66,10 +62,10 @@ bool RtcOpSuppServController::onHandleResponse(const sp<RfxMessage>& message) {
 }
 
 bool RtcOpSuppServController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                     bool isModemPowerOff, int radioState) {
     RFX_UNUSED(message);
     logD(RFX_LOG_TAG, "onCheckIfRejectMessage isModemPowerOff %d, radioState: %d",
-            (isModemPowerOff == false) ? 0 : 1, radioState);
+         (isModemPowerOff == false) ? 0 : 1, radioState);
 
     /* If WFC is enabled, bypass all SS requests. */
     if (RfxRilUtils::isWfcEnable(message->getSlotId())) {
@@ -77,9 +73,8 @@ bool RtcOpSuppServController::onCheckIfRejectMessage(const sp<RfxMessage>& messa
     }
 
     /* If WFC is not enabled and radio is off. reject the request in request_id_list*/
-    if (radioState == (int)RADIO_STATE_UNAVAILABLE ||
-            radioState == (int)RADIO_STATE_OFF ||
-            isModemPowerOff == true) {
+    if (radioState == (int)RADIO_STATE_UNAVAILABLE || radioState == (int)RADIO_STATE_OFF ||
+        isModemPowerOff == true) {
         return true;
     }
 

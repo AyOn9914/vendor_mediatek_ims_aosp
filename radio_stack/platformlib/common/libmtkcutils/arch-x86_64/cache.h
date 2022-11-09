@@ -15,8 +15,8 @@
  */
 
 /* Values are optimized for Silvermont */
-#define SHARED_CACHE_SIZE    (1024*1024)    /* Silvermont L2 Cache */
-#define DATA_CACHE_SIZE    (24*1024)    /* Silvermont L1 Data Cache */
+#define SHARED_CACHE_SIZE (1024 * 1024) /* Silvermont L2 Cache */
+#define DATA_CACHE_SIZE (24 * 1024)     /* Silvermont L1 Data Cache */
 
-#define SHARED_CACHE_SIZE_HALF    (SHARED_CACHE_SIZE / 2)
-#define DATA_CACHE_SIZE_HALF    (DATA_CACHE_SIZE / 2)
+#define SHARED_CACHE_SIZE_HALF (SHARED_CACHE_SIZE / 2)
+#define DATA_CACHE_SIZE_HALF (DATA_CACHE_SIZE / 2)

@@ -22,60 +22,60 @@
 class RmcRadioRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcRadioRequestHandler);
 
-    public:
-        RmcRadioRequestHandler(int slotId, int channelId);
-        virtual ~RmcRadioRequestHandler();
+  public:
+    RmcRadioRequestHandler(int slotId, int channelId);
+    virtual ~RmcRadioRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestRadioPower(const sp<RfxMclMessage> &msg);
+  private:
+    void requestRadioPower(const sp<RfxMclMessage>& msg);
 
-        int isModemRadioOn();
+    int isModemRadioOn();
 
-        void enableMdProtocol();
+    void enableMdProtocol();
 
-        void enableSilentReboot();
+    void enableSilentReboot();
 
-        void resetIpoProperty();
+    void resetIpoProperty();
 
-        void updateSupportDSBP();
+    void updateSupportDSBP();
 
-        void updateDataCallPrefer();
+    void updateDataCallPrefer();
 
-        // External SIM [Start]
-        int queryModemVsimCapability();
-        void requestSwitchExternalSim();
-        void initVsimConfiguration();
-        void requestSetAkaSim();
-        // External SIM [End]
+    // External SIM [Start]
+    int queryModemVsimCapability();
+    void requestSwitchExternalSim();
+    void initVsimConfiguration();
+    void requestSetAkaSim();
+    // External SIM [End]
 
-        // Update RAT Before Radio on [Start]
-        void sendERAT();
-        // Update RAT Before Radio on[End]
+    // Update RAT Before Radio on [Start]
+    void sendERAT();
+    // Update RAT Before Radio on[End]
 
-        // SIM switch [Start]
-        int queryMainProtocol();
-        void resetRadio();
-        // SIM switch [End]
+    // SIM switch [Start]
+    int queryMainProtocol();
+    void resetRadio();
+    // SIM switch [End]
 
-        void bootupSetRadioPower(const sp<RfxMclMessage> &msg);
-        int isNormalBootUp();
+    void bootupSetRadioPower(const sp<RfxMclMessage>& msg);
+    int isNormalBootUp();
 
-        bool isUnderCryptKeeper();
+    bool isUnderCryptKeeper();
 
-        void initMdStatusReader();
-        static void getResetLock();
-        static void releaseResetLock();
-        static void* mdStatusReaderLoop(void* params);
-        static void sendUrcToTelCor(char* buffer);
+    void initMdStatusReader();
+    static void getResetLock();
+    static void releaseResetLock();
+    static void* mdStatusReaderLoop(void* params);
+    static void sendUrcToTelCor(char* buffer);
 
-    private:
-        pthread_t mMdStatsuReaderThread;
+  private:
+    pthread_t mMdStatsuReaderThread;
 };
 #endif

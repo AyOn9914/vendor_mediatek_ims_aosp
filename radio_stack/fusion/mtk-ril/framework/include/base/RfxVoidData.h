@@ -22,7 +22,7 @@
 class RfxVoidData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxVoidData);
 
-    public:
-         RfxVoidData();
+  public:
+    RfxVoidData();
 };
 #endif

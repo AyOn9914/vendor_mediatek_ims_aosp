@@ -27,27 +27,25 @@
  * Define
  *****************************************************************************/
 
-#define RFX_UNUSED(x)                  ((void)(x))
+#define RFX_UNUSED(x) ((void)(x))
 
-#define RFX_FLAG_SET(_v, _flags)            \
-    do                                     \
-    {                                      \
-        (_v) |= (_flags);                   \
+#define RFX_FLAG_SET(_v, _flags) \
+    do {                         \
+        (_v) |= (_flags);        \
     } while (0)
 
-#define RFX_FLAG_CLEAR(_v, _flags)          \
-    do                                     \
-    {                                      \
-        (_v) &= ~(_flags);                  \
+#define RFX_FLAG_CLEAR(_v, _flags) \
+    do {                           \
+        (_v) &= ~(_flags);         \
     } while (0)
 
-#define RFX_FLAG_HAS(_v, _flags)         (((_v) & (_flags)) != 0)
+#define RFX_FLAG_HAS(_v, _flags) (((_v) & (_flags)) != 0)
 
-#define RFX_FLAG_HAS_ALL(_v, _flags)     (((_v) & (_flags)) == (_flags))
+#define RFX_FLAG_HAS_ALL(_v, _flags) (((_v) & (_flags)) == (_flags))
 
-#define RFX_DECLARE_NO_COPY_CLASS(_class_name)         \
-    private:                                           \
-        _class_name(const _class_name&);               \
-        _class_name &operator = (const _class_name &)
+#define RFX_DECLARE_NO_COPY_CLASS(_class_name) \
+  private:                                     \
+    _class_name(const _class_name&);           \
+    _class_name& operator=(const _class_name&)
 
-#endif // __RFX_BASICS_H__
+#endif  // __RFX_BASICS_H__

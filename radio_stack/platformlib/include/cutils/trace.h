@@ -48,35 +48,35 @@ __BEGIN_DECLS
  *
  * Keep these in sync with frameworks/base/core/java/android/os/Trace.java.
  */
-#define ATRACE_TAG_NEVER            0       // This tag is never enabled.
-#define ATRACE_TAG_ALWAYS           (1<<0)  // This tag is always enabled.
-#define ATRACE_TAG_GRAPHICS         (1<<1)
-#define ATRACE_TAG_INPUT            (1<<2)
-#define ATRACE_TAG_VIEW             (1<<3)
-#define ATRACE_TAG_WEBVIEW          (1<<4)
-#define ATRACE_TAG_WINDOW_MANAGER   (1<<5)
-#define ATRACE_TAG_ACTIVITY_MANAGER (1<<6)
-#define ATRACE_TAG_SYNC_MANAGER     (1<<7)
-#define ATRACE_TAG_AUDIO            (1<<8)
-#define ATRACE_TAG_VIDEO            (1<<9)
-#define ATRACE_TAG_CAMERA           (1<<10)
-#define ATRACE_TAG_HWUI             (1<<11)
-#define ATRACE_TAG_PERF             (1<<12)
-#define ATRACE_TAG_HAL              (1<<13)
-#define ATRACE_TAG_APP              (1<<14)
-#define ATRACE_TAG_RESOURCES        (1<<15)
-#define ATRACE_TAG_DALVIK           (1<<16)
-#define ATRACE_TAG_RS               (1<<17)
-#define ATRACE_TAG_BIONIC           (1<<18)
-#define ATRACE_TAG_POWER            (1<<19)
-#define ATRACE_TAG_PACKAGE_MANAGER  (1<<20)
-#define ATRACE_TAG_SYSTEM_SERVER    (1<<21)
-#define ATRACE_TAG_DATABASE         (1<<22)
-#define ATRACE_TAG_NETWORK          (1<<23)
-#define ATRACE_TAG_LAST             ATRACE_TAG_NETWORK
+#define ATRACE_TAG_NEVER 0          // This tag is never enabled.
+#define ATRACE_TAG_ALWAYS (1 << 0)  // This tag is always enabled.
+#define ATRACE_TAG_GRAPHICS (1 << 1)
+#define ATRACE_TAG_INPUT (1 << 2)
+#define ATRACE_TAG_VIEW (1 << 3)
+#define ATRACE_TAG_WEBVIEW (1 << 4)
+#define ATRACE_TAG_WINDOW_MANAGER (1 << 5)
+#define ATRACE_TAG_ACTIVITY_MANAGER (1 << 6)
+#define ATRACE_TAG_SYNC_MANAGER (1 << 7)
+#define ATRACE_TAG_AUDIO (1 << 8)
+#define ATRACE_TAG_VIDEO (1 << 9)
+#define ATRACE_TAG_CAMERA (1 << 10)
+#define ATRACE_TAG_HWUI (1 << 11)
+#define ATRACE_TAG_PERF (1 << 12)
+#define ATRACE_TAG_HAL (1 << 13)
+#define ATRACE_TAG_APP (1 << 14)
+#define ATRACE_TAG_RESOURCES (1 << 15)
+#define ATRACE_TAG_DALVIK (1 << 16)
+#define ATRACE_TAG_RS (1 << 17)
+#define ATRACE_TAG_BIONIC (1 << 18)
+#define ATRACE_TAG_POWER (1 << 19)
+#define ATRACE_TAG_PACKAGE_MANAGER (1 << 20)
+#define ATRACE_TAG_SYSTEM_SERVER (1 << 21)
+#define ATRACE_TAG_DATABASE (1 << 22)
+#define ATRACE_TAG_NETWORK (1 << 23)
+#define ATRACE_TAG_LAST ATRACE_TAG_NETWORK
 
 // Reserved for initialization.
-#define ATRACE_TAG_NOT_READY        (1ULL<<63)
+#define ATRACE_TAG_NOT_READY (1ULL << 63)
 
 #define ATRACE_TAG_VALID_MASK ((ATRACE_TAG_LAST - 1) | ATRACE_TAG_LAST)
 
@@ -140,8 +140,7 @@ extern int atrace_marker_fd;
  * This can be explicitly run to avoid setup delay on first trace function.
  */
 #define ATRACE_INIT() atrace_init()
-static inline void atrace_init()
-{
+static inline void atrace_init() {
     if (CC_UNLIKELY(!atomic_load_explicit(&atrace_is_ready, memory_order_acquire))) {
         atrace_setup();
     }
@@ -153,8 +152,7 @@ static inline void atrace_init()
  * Every trace function calls this, which ensures atrace_init is run.
  */
 #define ATRACE_GET_ENABLED_TAGS() atrace_get_enabled_tags()
-static inline uint64_t atrace_get_enabled_tags()
-{
+static inline uint64_t atrace_get_enabled_tags() {
     atrace_init();
     return atrace_enabled_tags;
 }
@@ -165,8 +163,7 @@ static inline uint64_t atrace_get_enabled_tags()
  * It can be used as a guard condition around more expensive trace calculations.
  */
 #define ATRACE_ENABLED() atrace_is_tag_enabled(ATRACE_TAG)
-static inline uint64_t atrace_is_tag_enabled(uint64_t tag)
-{
+static inline uint64_t atrace_is_tag_enabled(uint64_t tag) {
     return atrace_get_enabled_tags() & tag;
 }
 
@@ -175,8 +172,7 @@ static inline uint64_t atrace_is_tag_enabled(uint64_t tag)
  * This is often used to time function execution.
  */
 #define ATRACE_BEGIN(name) atrace_begin(ATRACE_TAG, name)
-static inline void atrace_begin(uint64_t tag, const char* name)
-{
+static inline void atrace_begin(uint64_t tag, const char* name) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         void atrace_begin_body(const char*);
         atrace_begin_body(name);
@@ -188,8 +184,7 @@ static inline void atrace_begin(uint64_t tag, const char* name)
  * This should match up (and occur after) a corresponding ATRACE_BEGIN.
  */
 #define ATRACE_END() atrace_end(ATRACE_TAG)
-static inline void atrace_end(uint64_t tag)
-{
+static inline void atrace_end(uint64_t tag) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         char c = 'E';
         write(atrace_marker_fd, &c, 1);
@@ -203,11 +198,8 @@ static inline void atrace_end(uint64_t tag)
  * simultaneous events. The name and cookie used to begin an event must be
  * used to end it.
  */
-#define ATRACE_ASYNC_BEGIN(name, cookie) \
-    atrace_async_begin(ATRACE_TAG, name, cookie)
-static inline void atrace_async_begin(uint64_t tag, const char* name,
-        int32_t cookie)
-{
+#define ATRACE_ASYNC_BEGIN(name, cookie) atrace_async_begin(ATRACE_TAG, name, cookie)
+static inline void atrace_async_begin(uint64_t tag, const char* name, int32_t cookie) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         void atrace_async_begin_body(const char*, int32_t);
         atrace_async_begin_body(name, cookie);
@@ -219,8 +211,7 @@ static inline void atrace_async_begin(uint64_t tag, const char* name,
  * This should have a corresponding ATRACE_ASYNC_BEGIN.
  */
 #define ATRACE_ASYNC_END(name, cookie) atrace_async_end(ATRACE_TAG, name, cookie)
-static inline void atrace_async_end(uint64_t tag, const char* name, int32_t cookie)
-{
+static inline void atrace_async_end(uint64_t tag, const char* name, int32_t cookie) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         void atrace_async_end_body(const char*, int32_t);
         atrace_async_end_body(name, cookie);
@@ -235,9 +226,8 @@ static inline void atrace_async_end(uint64_t tag, const char* name, int32_t cook
 /*
  * M: Performance tracer to reduce Systrace overhead
  */
-#define ATRACE_INT_PERF(name, value) atrace_int(ATRACE_TAG|ATRACE_TAG_PERF, name, value)
-static inline void atrace_int(uint64_t tag, const char* name, int32_t value)
-{
+#define ATRACE_INT_PERF(name, value) atrace_int(ATRACE_TAG | ATRACE_TAG_PERF, name, value)
+static inline void atrace_int(uint64_t tag, const char* name, int32_t value) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         void atrace_int_body(const char*, int32_t);
         atrace_int_body(name, value);
@@ -249,8 +239,7 @@ static inline void atrace_int(uint64_t tag, const char* name, int32_t value)
  * counter. This can be used to track how a value changes over time.
  */
 #define ATRACE_INT64(name, value) atrace_int64(ATRACE_TAG, name, value)
-static inline void atrace_int64(uint64_t tag, const char* name, int64_t value)
-{
+static inline void atrace_int64(uint64_t tag, const char* name, int64_t value) {
     if (CC_UNLIKELY(atrace_is_tag_enabled(tag))) {
         void atrace_int64_body(const char*, int64_t);
         atrace_int64_body(name, value);
@@ -259,4 +248,4 @@ static inline void atrace_int64(uint64_t tag, const char* name, int64_t value)
 
 __END_DECLS
 
-#endif // _LIBS_CUTILS_TRACE_H
+#endif  // _LIBS_CUTILS_TRACE_H

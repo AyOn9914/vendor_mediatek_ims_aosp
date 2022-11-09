@@ -23,10 +23,11 @@
 class RfxStringData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxStringData);
 
-    public:
-        RfxStringData();
-        RfxStringData(char data[]);
-    private:
-        void copyString(char *data, int length);
+  public:
+    RfxStringData();
+    RfxStringData(char data[]);
+
+  private:
+    void copyString(char* data, int length);
 };
 #endif

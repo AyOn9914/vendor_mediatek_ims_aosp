@@ -24,22 +24,21 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcImsProvisioningUrcHandler, RIL_CMD_PROXY_URC);
 // register data
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_GET_PROVISION_DONE);
 
-RmcImsProvisioningUrcHandler::RmcImsProvisioningUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcImsProvisioningUrcHandler::RmcImsProvisioningUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcImsProvisioningUrcHandler constructor");
     int m_slot_id = slot_id;
     int m_channel_id = channel_id;
     const char* urc[] = {
-        "+EPVSGET",
+            "+EPVSGET",
     };
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcImsProvisioningUrcHandler::~RmcImsProvisioningUrcHandler() {
-}
+RmcImsProvisioningUrcHandler::~RmcImsProvisioningUrcHandler() {}
 
 void RmcImsProvisioningUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    if(strStartsWith(msg->getRawUrc()->getLine(), "+EPVSGET")) {
+    if (strStartsWith(msg->getRawUrc()->getLine(), "+EPVSGET")) {
         handleProvisionValueReceived(msg);
     }
 }

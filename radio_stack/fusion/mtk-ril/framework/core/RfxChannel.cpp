@@ -19,8 +19,7 @@
 
 #define RFX_LOG_TAG "RfxChannel"
 
-RfxChannel::RfxChannel(int channelId, char *muxPath) :
-        mChannelId(channelId), mMuxPath(muxPath) {
+RfxChannel::RfxChannel(int channelId, char* muxPath) : mChannelId(channelId), mMuxPath(muxPath) {
     if (RfxRilUtils::getRilRunMode() == RIL_RUN_MODE_MOCK) {
         RFX_LOG_D(RFX_LOG_TAG, "RfxChannel, change ChannelFd For GT");
         mFd = RfxChannelManager::getChannelFdForGT(channelId);
@@ -30,7 +29,8 @@ RfxChannel::RfxChannel(int channelId, char *muxPath) :
                 mFd = open(mMuxPath, O_RDWR);
                 if (mFd < 0) {
                     perror("opening AT interface. retrying...");
-                    RFX_LOG_E(RFX_LOG_TAG, "could not connect to %s: %s", mMuxPath, strerror(errno));
+                    RFX_LOG_E(RFX_LOG_TAG, "could not connect to %s: %s", mMuxPath,
+                              strerror(errno));
                     sleep(10);
                     /* never returns */
                 } else {
@@ -57,9 +57,7 @@ void RfxChannel::run() {
     mSender->run(String8::format("RfxSender_%d", mChannelId).string());
 }
 
-void RfxChannel::enqueueMessage(const sp<RfxMclMessage>& msg) {
-    mSender->enqueueMessage(msg);
-}
+void RfxChannel::enqueueMessage(const sp<RfxMclMessage>& msg) { mSender->enqueueMessage(msg); }
 
 void RfxChannel::enqueueMessageFront(const sp<RfxMclMessage>& msg) {
     mSender->enqueueMessageFront(msg);

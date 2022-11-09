@@ -17,8 +17,7 @@
 #ifndef ENCODECAP_H
 #define ENCODECAP_H
 
-enum resolution_type
-{
+enum resolution_type {
     Resolution_VGA = 0,
     Resolution_QVGA = 1,
     Resolution_QQVGA = 2,
@@ -32,16 +31,18 @@ typedef enum CONFIG_VCODECCAPTYPE {
 } CONFIG_INDEXTYPE;
 
 int32_t getAdaptativeEncodeInfo(uint32_t modify_expected_bitrate, uint32_t minbitrate,
-                                          uint32_t init_framerate, uint32_t *target_framerate);
+                                uint32_t init_framerate, uint32_t* target_framerate);
 
+int32_t getH264AdaptativeEncodeInfo(uint32_t expected_bitrate, uint32_t* target_bitrate,
+                                    uint32_t minbitrate, uint32_t init_framerate,
+                                    uint32_t* target_framerate, uint32_t AdaptiveResolution = 0,
+                                    uint32_t init_resolution = 0, uint32_t width = 0,
+                                    uint32_t height = 0, uint32_t* target_width = 0,
+                                    uint32_t* target_height = 0);
 
-int32_t getH264AdaptativeEncodeInfo(uint32_t expected_bitrate, uint32_t *target_bitrate, uint32_t minbitrate,
-                                          uint32_t init_framerate, uint32_t *target_framerate,
-                                          uint32_t AdaptiveResolution = 0, uint32_t init_resolution = 0, uint32_t width = 0, uint32_t height = 0,
-                                          uint32_t *target_width = 0, uint32_t *target_height = 0);
-
-int32_t getHEVCAdaptativeEncodeInfo(uint32_t expected_bitrate, uint32_t *target_bitrate, uint32_t minbitrate,
-                                          uint32_t init_framerate, uint32_t *target_framerate);
+int32_t getHEVCAdaptativeEncodeInfo(uint32_t expected_bitrate, uint32_t* target_bitrate,
+                                    uint32_t minbitrate, uint32_t init_framerate,
+                                    uint32_t* target_framerate);
 
 int32_t SetcEncodeconfig(int32_t config_index, int32_t param);
 

@@ -24,8 +24,9 @@
 /*****************************************************************************
  * Class RmcCdmaBcRangeParser
  *****************************************************************************/
-void RmcCdmaBcRangeParser::split(char *src, const char *sep, char dest[][MAX_RANGE_CHARACTER], int* num) {
-    char *next;
+void RmcCdmaBcRangeParser::split(char* src, const char* sep, char dest[][MAX_RANGE_CHARACTER],
+                                 int* num) {
+    char* next;
     int count = 0;
     if (src == NULL || strlen(src) == 0) {
         return;
@@ -40,15 +41,15 @@ void RmcCdmaBcRangeParser::split(char *src, const char *sep, char dest[][MAX_RAN
         count++;
         next = strtok(NULL, sep);
     }
-    *num =count;
+    *num = count;
 }
 
-char* RmcCdmaBcRangeParser::trim(char *s) {
+char* RmcCdmaBcRangeParser::trim(char* s) {
     int i;
     if (s == NULL) {
         return NULL;
     }
-    char *start = NULL;
+    char* start = NULL;
     while (*s) {
         if ((*s != '\t') && (*s != '\n') && (*s != ' ')) {
             start = s;
@@ -69,7 +70,7 @@ char* RmcCdmaBcRangeParser::trim(char *s) {
     return start;
 }
 
-char* RmcCdmaBcRangeParser::skipQuote(char *s) {
+char* RmcCdmaBcRangeParser::skipQuote(char* s) {
     int i;
     if (s == NULL) {
         return NULL;
@@ -84,9 +85,7 @@ char* RmcCdmaBcRangeParser::skipQuote(char *s) {
     return s;
 }
 
-
-
-int RmcCdmaBcRangeParser::getRangeFromModem(char *cateogry, Range *r) {
+int RmcCdmaBcRangeParser::getRangeFromModem(char* cateogry, Range* r) {
     char ranges[MAX_RANGE][MAX_RANGE_CHARACTER];
     memset(ranges, 0, sizeof(ranges));
     int num;
@@ -101,14 +100,13 @@ int RmcCdmaBcRangeParser::getRangeFromModem(char *cateogry, Range *r) {
         if (n == VALID_RANGE_ENDPOINT_NUM) {
             r[validNum].start = atoi(range[0]);
             r[validNum].end = atoi(range[1]);
-            validNum ++;
+            validNum++;
         }
     }
     return validNum;
 }
 
-
-void RmcCdmaBcRangeParser::getRange(Vector<Range> &range, SortedVector<int> &input) {
+void RmcCdmaBcRangeParser::getRange(Vector<Range>& range, SortedVector<int>& input) {
     int num = 0;
     int i;
     int start = input[0];

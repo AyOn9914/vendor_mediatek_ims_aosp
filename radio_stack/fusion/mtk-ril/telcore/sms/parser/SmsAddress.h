@@ -25,14 +25,14 @@
  * Class SmsMessage
  *****************************************************************************/
 class SmsAddress {
-public:
+  public:
     SmsAddress();
     string getAddressString();
     bool isAlphanumeric();
     bool isNetworkSpecific();
     bool couldBeEmailGateway();
 
-public:
+  public:
     static const int TON_UNKNOWN;
     static const int TON_INTERNATIONAL;
     static const int TON_NATIONAL;
@@ -42,7 +42,7 @@ public:
     static const int TON_ABBREVIATED;
     int mTon;
     string mAddress;
-    BYTE *mOrigBytes;
+    BYTE* mOrigBytes;
 };
 
 #endif /* __SMS_ADDRESS_H__ */

@@ -28,15 +28,15 @@
 class RmcDcUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcDcUrcHandler);
 
-    public:
-        RmcDcUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcDcUrcHandler();
+  public:
+    RmcDcUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcDcUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void notifyUrcHandlerRegistrationDone();
+  private:
+    void notifyUrcHandlerRegistrationDone();
 };
 #endif /* __RMC_DC_URC_HANDLER_H__ */

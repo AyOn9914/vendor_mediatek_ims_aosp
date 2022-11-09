@@ -23,7 +23,6 @@
 #include "RfxController.h"
 #include "carrierconfig.h"
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
@@ -32,34 +31,31 @@ class RtcCarrierConfigController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcCarrierConfigController);
 
-public:
+  public:
     RtcCarrierConfigController();
     virtual ~RtcCarrierConfigController();
     bool responseToRilj(const sp<RfxMessage>& message);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
 
-private:
-    void onUiccGsmMccMncChanged(RfxStatusKeyEnum key,
-            RfxVariant oldValue, RfxVariant value);
-    void onUiccCdmaMccMncChanged(RfxStatusKeyEnum key,
-            RfxVariant oldValue, RfxVariant value);
-    void onCardTypeChanged(RfxStatusKeyEnum key,
-            RfxVariant oldValue, RfxVariant value);
+  private:
+    void onUiccGsmMccMncChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
+    void onUiccCdmaMccMncChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
+    void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
     void onNwsModeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
-    void loadConfiguration(const char *mccmnc);
+    void loadConfiguration(const char* mccmnc);
 
     /* Native Carrier Config */
-    void *dlHandle;
+    void* dlHandle;
     unsigned int (*fnGetKeyCount)(const char*);
     int (*fnGetValuesByMccMnc)(const char*, CarrierConfigValue*);
-    void freeCarrierConfigValue(CarrierConfigValue *data, int count);
+    void freeCarrierConfigValue(CarrierConfigValue* data, int count);
 };
 
 #endif /* __RFX_CARRIER_CONFIG_CONTROLLER_H__ */

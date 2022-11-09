@@ -22,10 +22,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxActivityData);
 
-RfxActivityData::RfxActivityData(void *data, int length) : RfxBaseData(data, length) {
+RfxActivityData::RfxActivityData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
     if (data != NULL) {
-        m_data = (RIL_ActivityStatsInfo *)calloc(1, sizeof(RIL_ActivityStatsInfo));
+        m_data = (RIL_ActivityStatsInfo*)calloc(1, sizeof(RIL_ActivityStatsInfo));
         if (m_data == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;

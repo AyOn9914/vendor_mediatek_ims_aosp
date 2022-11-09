@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxRadioCapabilityData);
 
-RfxRadioCapabilityData::RfxRadioCapabilityData(void *data, int length) : RfxBaseData(data, length) {
+RfxRadioCapabilityData::RfxRadioCapabilityData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
     if (data == NULL) {
         m_data = NULL;

@@ -29,34 +29,34 @@ void RfxDataCloneManager::init() {
 }
 
 void RfxDataCloneManager::registerRequestId(RfxCopyDataByDataFuncptr copyByData,
-        RfxCopyDataByObjFuncptr copyByObj, int id) {
+                                            RfxCopyDataByObjFuncptr copyByObj, int id) {
     init();
     RFX_LOG_D(RFX_LOG_TAG, "registerRequestId: id: %s(%d)", RFX_ID_TO_STR(id), id);
     s_self->registerInternal(s_self->m_request_list, copyByData, copyByObj, id);
 }
 
 void RfxDataCloneManager::registerResponseId(RfxCopyDataByDataFuncptr copyByData,
-        RfxCopyDataByObjFuncptr copyByObj, int id) {
+                                             RfxCopyDataByObjFuncptr copyByObj, int id) {
     init();
     RFX_LOG_D(RFX_LOG_TAG, "registerResponseId: id: %s(%d)", RFX_ID_TO_STR(id), id);
     s_self->registerInternal(s_self->m_response_list, copyByData, copyByObj, id);
 }
 
 void RfxDataCloneManager::registerUrcId(RfxCopyDataByDataFuncptr copyByData,
-        RfxCopyDataByObjFuncptr copyByObj, int id) {
+                                        RfxCopyDataByObjFuncptr copyByObj, int id) {
     init();
     RFX_LOG_D(RFX_LOG_TAG, "registerUrcId: id: %s(%d)", RFX_ID_TO_STR(id), id);
     s_self->registerInternal(s_self->m_urc_list, copyByData, copyByObj, id);
 }
 
 void RfxDataCloneManager::registerEventId(RfxCopyDataByDataFuncptr copyByData,
-        RfxCopyDataByObjFuncptr copyByObj, int id) {
+                                          RfxCopyDataByObjFuncptr copyByObj, int id) {
     init();
     RFX_LOG_D(RFX_LOG_TAG, "registerEventId: id: %s(%d)", RFX_ID_TO_STR(id), id);
     s_self->registerInternal(s_self->m_event_list, copyByData, copyByObj, id);
 }
 
-RfxBaseData* RfxDataCloneManager::copyData(int id, void *data, int length, int type) {
+RfxBaseData* RfxDataCloneManager::copyData(int id, void* data, int length, int type) {
     SortedVector<RfxDataCloneEntry> entry = s_self->findDataCloneEntryList(type);
     RfxCopyDataByDataFuncptr ptr = s_self->findCopyDataByDataFuncptr(entry, id);
     if (ptr != NULL) {
@@ -70,7 +70,7 @@ RfxBaseData* RfxDataCloneManager::copyData(int id, void *data, int length, int t
     return NULL;
 }
 
-RfxBaseData* RfxDataCloneManager::copyData(int id, const RfxBaseData *data, int type) {
+RfxBaseData* RfxDataCloneManager::copyData(int id, const RfxBaseData* data, int type) {
     SortedVector<RfxDataCloneEntry> entry = s_self->findDataCloneEntryList(type);
     RfxCopyDataByObjFuncptr ptr = s_self->findCopyDataByObjFuncptr(entry, id);
     if (ptr != NULL) {
@@ -83,9 +83,9 @@ RfxBaseData* RfxDataCloneManager::copyData(int id, const RfxBaseData *data, int 
     return NULL;
 }
 
-void RfxDataCloneManager::registerInternal(SortedVector<RfxDataCloneEntry> &list,
-        RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj,
-        int id) {
+void RfxDataCloneManager::registerInternal(SortedVector<RfxDataCloneEntry>& list,
+                                           RfxCopyDataByDataFuncptr copyByData,
+                                           RfxCopyDataByObjFuncptr copyByObj, int id) {
     RfxCopyDataByDataFuncptr dataFuncptr = copyByData;
     RfxCopyDataByObjFuncptr objFuncptr = copyByObj;
 
@@ -103,8 +103,9 @@ void RfxDataCloneManager::registerInternal(SortedVector<RfxDataCloneEntry> &list
     RFX_LOG_D(RFX_LOG_TAG, "id = %d, copyByData = %p, copyByObj = %p", id, copyByData, copyByObj);
 }
 
-const RfxDataCloneEntry& RfxDataCloneManager::findDataCloneEntry(SortedVector<RfxDataCloneEntry> &list,
-        RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj, int id) {
+const RfxDataCloneEntry& RfxDataCloneManager::findDataCloneEntry(
+        SortedVector<RfxDataCloneEntry>& list, RfxCopyDataByDataFuncptr copyByData,
+        RfxCopyDataByObjFuncptr copyByObj, int id) {
     RfxDataCloneEntry query_entry(copyByData, copyByObj, id);
     ssize_t index = list.indexOf(query_entry);
     if (index >= 0) {
@@ -123,10 +124,11 @@ const RfxDataCloneEntry& RfxDataCloneManager::findDataCloneEntry(SortedVector<Rf
 }
 
 RfxCopyDataByDataFuncptr RfxDataCloneManager::findCopyDataByDataFuncptr(
-        SortedVector<RfxDataCloneEntry> &entry, int id) {
+        SortedVector<RfxDataCloneEntry>& entry, int id) {
     const RfxDataCloneEntry& result = findDataCloneEntry(entry, NULL, NULL, id);
     if (/*result != NULL &&*/ result != RfxDataCloneEntry()) {
-        // RFX_LOG_D(RFX_LOG_TAG, "findCopyDataByObjFuncptr, result dataPtr = %p, objPtr = %p, id = %d",
+        // RFX_LOG_D(RFX_LOG_TAG, "findCopyDataByObjFuncptr, result dataPtr = %p, objPtr = %p, id =
+        // %d",
         //         result.m_copyByData, result.m_copyByObj, result.m_id);
         return result.m_copyByData;
     }
@@ -135,10 +137,11 @@ RfxCopyDataByDataFuncptr RfxDataCloneManager::findCopyDataByDataFuncptr(
 }
 
 RfxCopyDataByObjFuncptr RfxDataCloneManager::findCopyDataByObjFuncptr(
-        SortedVector<RfxDataCloneEntry> &entry, int id) {
+        SortedVector<RfxDataCloneEntry>& entry, int id) {
     const RfxDataCloneEntry& result = findDataCloneEntry(entry, NULL, NULL, id);
     if (/*result != NULL &&*/ result != RfxDataCloneEntry()) {
-        // RFX_LOG_D(RFX_LOG_TAG, "findCopyDataByObjFuncptr, result dataPtr = %p, objPtr = %p, id = %d",
+        // RFX_LOG_D(RFX_LOG_TAG, "findCopyDataByObjFuncptr, result dataPtr = %p, objPtr = %p, id =
+        // %d",
         //         result.m_copyByData, result.m_copyByObj, result.m_id);
         return result.m_copyByObj;
     }
@@ -147,7 +150,7 @@ RfxCopyDataByObjFuncptr RfxDataCloneManager::findCopyDataByObjFuncptr(
 }
 
 SortedVector<RfxDataCloneEntry> RfxDataCloneManager::findDataCloneEntryList(int type) {
-    switch(type) {
+    switch (type) {
         case REQUEST:
             return m_request_list;
         case RESPONSE:

@@ -22,10 +22,10 @@ RFX_IMPLEMENT_DATA_CLASS(RfxCertMsgData);
 
 #define RFX_LOG_TAG "RfxCertMsgData"
 
-RfxCertMsgData::RfxCertMsgData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCertMsgData::RfxCertMsgData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_CertMsg* pOriginal = (RIL_CertMsg *) data;
-        RIL_CertMsg* pData = (RIL_CertMsg *) calloc(1, sizeof(RIL_CertMsg));
+        RIL_CertMsg* pOriginal = (RIL_CertMsg*)data;
+        RIL_CertMsg* pData = (RIL_CertMsg*)calloc(1, sizeof(RIL_CertMsg));
         if (pData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
@@ -34,7 +34,7 @@ RfxCertMsgData::RfxCertMsgData(void *data, int length) : RfxBaseData(data, lengt
         pData->uid = pOriginal->uid;
         pData->certLength = pOriginal->certLength;
         if (pOriginal->cert != NULL) {
-            pData->cert = (char *)calloc(1, pData->certLength+1);
+            pData->cert = (char*)calloc(1, pData->certLength + 1);
             if (pData->cert == NULL) {
                 mtkLogD(RFX_LOG_TAG, "OOM");
                 return;
@@ -44,7 +44,7 @@ RfxCertMsgData::RfxCertMsgData(void *data, int length) : RfxBaseData(data, lengt
         }
         pData->msgLength = pOriginal->msgLength;
         if (pOriginal->msg != NULL) {
-            pData->msg = (char *)calloc(1, pData->msgLength+1);
+            pData->msg = (char*)calloc(1, pData->msgLength + 1);
             if (pData->msg == NULL) {
                 mtkLogD(RFX_LOG_TAG, "OOM");
                 return;
@@ -53,7 +53,7 @@ RfxCertMsgData::RfxCertMsgData(void *data, int length) : RfxBaseData(data, lengt
             pData->msg[pData->msgLength] = '\0';
         }
 
-        m_data = (void *) pData;
+        m_data = (void*)pData;
         m_length = length;
     }
 }
@@ -61,7 +61,7 @@ RfxCertMsgData::RfxCertMsgData(void *data, int length) : RfxBaseData(data, lengt
 RfxCertMsgData::~RfxCertMsgData() {
     // free memory
     if (m_data != NULL) {
-        RIL_CertMsg* pData = (RIL_CertMsg *) m_data;
+        RIL_CertMsg* pData = (RIL_CertMsg*)m_data;
         if (pData->cert != NULL) {
             free(pData->cert);
         }

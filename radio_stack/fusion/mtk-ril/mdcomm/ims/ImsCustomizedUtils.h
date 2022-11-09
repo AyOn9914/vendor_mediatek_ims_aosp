@@ -24,9 +24,9 @@
 using ::android::String8;
 
 class ImsCustomizedUtils {
-    public:
-        static bool isSupportCustomizedUserAgent();
-        static String8 getCustomizedUserAgent(String8 format, int slotId);
+  public:
+    static bool isSupportCustomizedUserAgent();
+    static String8 getCustomizedUserAgent(String8 format, int slotId);
 };
 
 #endif /*__RMC_IMS_CUSTOMIZED_HANDLER_H__*/

@@ -33,60 +33,58 @@ using namespace std;
 
 template <typename T>
 class Ril_queue {
-
-   /**
+    /**
      * Mutex attribute used in queue mutex initialization.
      */
     pthread_mutexattr_t attr;
 
-   /**
+    /**
      * Queue mutex variable for synchronized queue access.
      */
     pthread_mutex_t mutex_instance;
 
-   /**
+    /**
      * Condition to be waited on for dequeuing.
      */
     pthread_cond_t cond;
 
-   /**
+    /**
      * Front of the queue.
      */
-    T *front;
+    T* front;
 
-    public:
+  public:
+    /**
+     * Remove the first element of the queue.
+     *
+     * @return first element of the queue.
+     */
+    T* dequeue(void);
 
-       /**
-         * Remove the first element of the queue.
-         *
-         * @return first element of the queue.
-         */
-        T* dequeue(void);
+    /**
+     * Add a request to the front of the queue.
+     *
+     * @param Request to be added.
+     */
+    void enqueue(T* request);
 
-       /**
-         * Add a request to the front of the queue.
-         *
-         * @param Request to be added.
-         */
-        void enqueue(T* request);
+    /**
+     * Check if the queue is empty.
+     */
+    int empty(void);
 
-       /**
-         * Check if the queue is empty.
-         */
-        int empty(void);
+    /**
+     * Check and remove an element with a particular message id and token.
+     *
+     * @param Request message id.
+     * @param Request token.
+     */
+    int checkAndDequeue(MsgId id, int token);
 
-       /**
-         * Check and remove an element with a particular message id and token.
-         *
-         * @param Request message id.
-         * @param Request token.
-         */
-        int checkAndDequeue( MsgId id, int token);
-
-       /**
-         * Queue constructor.
-         */
-        Ril_queue(void);
+    /**
+     * Queue constructor.
+     */
+    Ril_queue(void);
 };
 
 template <typename T>
@@ -102,11 +100,11 @@ T* Ril_queue<T>::dequeue(void) {
     T* temp = NULL;
 
     pthread_mutex_lock(&mutex_instance);
-    while(empty()) {
+    while (empty()) {
         pthread_cond_wait(&cond, &mutex_instance);
     }
     temp = this->front;
-    if(NULL != this->front->p_next) {
+    if (NULL != this->front->p_next) {
         this->front = this->front->p_next;
     } else {
         this->front = NULL;
@@ -118,10 +116,9 @@ T* Ril_queue<T>::dequeue(void) {
 
 template <typename T>
 void Ril_queue<T>::enqueue(T* request) {
-
     pthread_mutex_lock(&mutex_instance);
 
-    if(NULL == this->front) {
+    if (NULL == this->front) {
         this->front = request;
         request->p_next = NULL;
     } else {
@@ -139,7 +136,7 @@ int Ril_queue<T>::checkAndDequeue(MsgId id, int token) {
 
     pthread_mutex_lock(&mutex_instance);
 
-    for(T **ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
+    for (T** ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
         if (token == (*ppCur)->token && id == (*ppCur)->curr->id) {
             ret = 1;
             temp = *ppCur;
@@ -154,11 +151,9 @@ int Ril_queue<T>::checkAndDequeue(MsgId id, int token) {
     return ret;
 }
 
-
 template <typename T>
 int Ril_queue<T>::empty(void) {
-
-    if(this->front == NULL) {
+    if (this->front == NULL) {
         return 1;
     } else {
         return 0;

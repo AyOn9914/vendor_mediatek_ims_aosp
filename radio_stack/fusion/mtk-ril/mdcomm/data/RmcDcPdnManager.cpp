@@ -33,9 +33,11 @@
  * access model.
  */
 
-RmcDcPdnManager::RmcDcPdnManager(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id), mPdnTableSize(0),
-        m_pPdnInfo(NULL), mNumOfConnectedPdn(0) {
+RmcDcPdnManager::RmcDcPdnManager(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id),
+      mPdnTableSize(0),
+      m_pPdnInfo(NULL),
+      mNumOfConnectedPdn(0) {
     initPdnTable();
     initAtCmds();
 }
@@ -51,11 +53,11 @@ RmcDcPdnManager::~RmcDcPdnManager() {
 void RmcDcPdnManager::initPdnTable() {
     mPdnTableSize = getModemSupportPdnNumber();
     if (m_pPdnInfo == NULL) {
-        m_pPdnInfo = (PdnInfo*) calloc(mPdnTableSize, sizeof(PdnInfo));
+        m_pPdnInfo = (PdnInfo*)calloc(mPdnTableSize, sizeof(PdnInfo));
         RFX_ASSERT(m_pPdnInfo != NULL);
         clearAllPdnInfo();
         RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: pdnTableSize = %d, m_pPdnInfo = %p", m_slot_id,
-                __FUNCTION__, mPdnTableSize, m_pPdnInfo);
+                  __FUNCTION__, mPdnTableSize, m_pPdnInfo);
     }
 }
 
@@ -73,16 +75,14 @@ void RmcDcPdnManager::initAtCmds() {
     }
 }
 
-int RmcDcPdnManager::getPdnTableSize() {
-    return mPdnTableSize;
-}
+int RmcDcPdnManager::getPdnTableSize() { return mPdnTableSize; }
 
 // Get PDN info, it is a copy of PDN info in the table.
 PdnInfo RmcDcPdnManager::getPdnInfo(int aid) {
     RFX_ASSERT(validateAid(aid));
     if (DEBUG_MORE_INFO) {
-        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: aid = %d, pdnInfo = %s", m_slot_id, __FUNCTION__,
-                aid, pdnInfoToString(&m_pPdnInfo[aid]).string());
+        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: aid = %d, pdnInfo = %s", m_slot_id, __FUNCTION__, aid,
+                  pdnInfoToString(&m_pPdnInfo[aid]).string());
     }
     return m_pPdnInfo[aid];
 }
@@ -129,7 +129,7 @@ void RmcDcPdnManager::clearPdnInfo(PdnInfo* info) {
     info->mtu = 0;  // means not be specified
     info->reason = NO_CAUSE;
     info->deactReason = NO_REASON;
-    info->rat = 1; // 1: cellular
+    info->rat = 1;  // 1: cellular
     info->pdnType = INVALID_PDN_TYPE;
     info->profileId = -1;
     info->sscMode = SSC_UNKNOWN;
@@ -147,7 +147,7 @@ void RmcDcPdnManager::updatePdnActiveStatus(int aid, int pdnActiveStatus) {
 }
 
 void RmcDcPdnManager::updateIpAddress(int aid, const char* ipv4Addr, int index,
-        const char* ipv6Addr) {
+                                      const char* ipv6Addr) {
     RFX_ASSERT(validateAid(aid));
     if (ipv4Addr != NULL) {
         snprintf(m_pPdnInfo[aid].addressV4, MAX_IPV4_ADDRESS_LENGTH, "%s", ipv4Addr);
@@ -158,8 +158,8 @@ void RmcDcPdnManager::updateIpAddress(int aid, const char* ipv4Addr, int index,
     }
 }
 
-void RmcDcPdnManager::updateDns(int aid, int v4DnsNumber, int v6DnsNumber,
-        const char** v4Dns, const char** v6Dns) {
+void RmcDcPdnManager::updateDns(int aid, int v4DnsNumber, int v6DnsNumber, const char** v4Dns,
+                                const char** v6Dns) {
     RFX_ASSERT(validateAid(aid));
     for (int i = 0; i < v4DnsNumber; i++) {
         snprintf(m_pPdnInfo[aid].dnsV4[i], MAX_IPV4_ADDRESS_LENGTH, "%s", *(v4Dns + i));
@@ -178,15 +178,15 @@ void RmcDcPdnManager::updateAndNotifyPdnConnectStatusChanged() {
         }
     }
 
-    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: mNumOfConnectedPdn = %d, numOfConnectedPdn = %d.",
-            m_slot_id, __FUNCTION__, mNumOfConnectedPdn, numOfConnectedPdn);
+    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: mNumOfConnectedPdn = %d, numOfConnectedPdn = %d.", m_slot_id,
+              __FUNCTION__, mNumOfConnectedPdn, numOfConnectedPdn);
     if (mNumOfConnectedPdn != numOfConnectedPdn) {
         if (numOfConnectedPdn > 0) {
             getMclStatusManager()->setIntValue(RFX_STATUS_KEY_DATA_CONNECTION,
-                    DATA_STATE_CONNECTED);
+                                               DATA_STATE_CONNECTED);
         } else {
             getMclStatusManager()->setIntValue(RFX_STATUS_KEY_DATA_CONNECTION,
-                    DATA_STATE_DISCONNECTED);
+                                               DATA_STATE_DISCONNECTED);
         }
     }
     mNumOfConnectedPdn = numOfConnectedPdn;
@@ -194,22 +194,19 @@ void RmcDcPdnManager::updateAndNotifyPdnConnectStatusChanged() {
 
 void RmcDcPdnManager::dumpAllPdnInfo() {
     for (int i = 0; i < mPdnTableSize; i++) {
-        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: %s", m_slot_id,
-                __FUNCTION__, pdnInfoToString(&m_pPdnInfo[i]).string());
+        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: %s", m_slot_id, __FUNCTION__,
+                  pdnInfoToString(&m_pPdnInfo[i]).string());
     }
 }
 
 String8 RmcDcPdnManager::pdnInfoToString(PdnInfo* pdnInfo) {
     String8 cmd("");
 
-    cmd.append(String8::format("PdnInfo{transIntfId=%d, primaryAid=%d, aid=%d, apnName=%s, "
-            "active=%d, addrV4=%s, ",
-            pdnInfo->transIntfId,
-            pdnInfo->primaryAid,
-            pdnInfo->aid,
-            pdnInfo->apn,
-            pdnInfo->active,
-            pdnInfo->addressV4));
+    cmd.append(
+            String8::format("PdnInfo{transIntfId=%d, primaryAid=%d, aid=%d, apnName=%s, "
+                            "active=%d, addrV4=%s, ",
+                            pdnInfo->transIntfId, pdnInfo->primaryAid, pdnInfo->aid, pdnInfo->apn,
+                            pdnInfo->active, pdnInfo->addressV4));
 
     cmd.append(String8::format("addrV6="));
     for (int i = 0; i < MAX_NUM_IPV6_ADDRESS_NUMBER; i++) {
@@ -219,14 +216,10 @@ String8 RmcDcPdnManager::pdnInfoToString(PdnInfo* pdnInfo) {
         cmd.append(String8::format("%s", pdnInfo->addressV6[i]));
     }
 
-    cmd.append(String8::format(", mtu=%d, rat=%d, reason=%d, deactReason=%d, pdnType=%d, profileId=%d, sscMode=%d}",
-            pdnInfo->mtu,
-            pdnInfo->rat,
-            pdnInfo->reason,
-            pdnInfo->deactReason,
-            pdnInfo->pdnType,
-            pdnInfo->profileId,
-            pdnInfo->sscMode));
+    cmd.append(String8::format(
+            ", mtu=%d, rat=%d, reason=%d, deactReason=%d, pdnType=%d, profileId=%d, sscMode=%d}",
+            pdnInfo->mtu, pdnInfo->rat, pdnInfo->reason, pdnInfo->deactReason, pdnInfo->pdnType,
+            pdnInfo->profileId, pdnInfo->sscMode));
 
     return cmd;
 }
@@ -237,7 +230,7 @@ int RmcDcPdnManager::getModemSupportPdnNumber() {
     sp<RfxAtResponse> p_response;
     int maxPdnSupportNumer = 0;
     int err = 0;
-    RfxAtLine *p_cur = NULL;
+    RfxAtLine* p_cur = NULL;
     int rid = m_slot_id;
 
     p_response = atSendCommandMultiline("AT+CGDCONT=?", "+CGDCONT:");
@@ -249,59 +242,57 @@ int RmcDcPdnManager::getModemSupportPdnNumber() {
         //  +CGDCONT: (0-10),"IP",,,(0),(0),(0-1),...
         //  +CGDCONT: (0-10),"IPV6",,,(0),(0),(0-1),...
         //  +CGDCONT: (0-10),"IPV4V6",,,(0),(0),(0-1),...
-        for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur =
-                p_cur->getNext()) {
+        for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
             p_cur->atTokStart(&err);
             if (err < 0) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start",
-                        rid, __FUNCTION__);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start", rid, __FUNCTION__);
                 continue;
             }
 
             char* range;
             char* tok;
             char* restOfString;
-            int value[2] = { 0 };
+            int value[2] = {0};
             int count = 0;
             range = p_cur->atTokNextstr(&err);
             if (err < 0) {
                 RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing range of MD support pdn",
-                        rid, __FUNCTION__);
+                          rid, __FUNCTION__);
                 continue;
             }
 
             if (range != NULL) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] the MD support pdn range:%s",
-                        rid, __FUNCTION__, range);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] the MD support pdn range:%s", rid, __FUNCTION__,
+                          range);
             }
 
             tok = strtok_r(range, "(-)", &restOfString);
             while (tok != NULL) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] the %d's token is %s",
-                        rid, __FUNCTION__, count + 1, tok);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] the %d's token is %s", rid, __FUNCTION__,
+                          count + 1, tok);
                 value[count] = atoi(tok);
                 count++;
                 tok = strtok_r(restOfString, "(-)", &restOfString);
             }
 
             if (DEBUG_MORE_INFO) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] Support range is (%d - %d)",
-                        rid, __FUNCTION__, value[0], value[1]);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] Support range is (%d - %d)", rid, __FUNCTION__,
+                          value[0], value[1]);
             }
 
             maxPdnSupportNumer = value[1] - value[0] + 1;
         }
     }
 
-    RFX_LOG_V(RFX_LOG_TAG, "[%d][%s] maxPdnSupportNumer = %d",
-            rid, __FUNCTION__, maxPdnSupportNumer);
+    RFX_LOG_V(RFX_LOG_TAG, "[%d][%s] maxPdnSupportNumer = %d", rid, __FUNCTION__,
+              maxPdnSupportNumer);
     if (0 >= maxPdnSupportNumer) {
         goto error;
     }
     return maxPdnSupportNumer;
 
 error:
-    RFX_LOG_E(RFX_LOG_TAG, "RIL%d %s error: return default number  = %d.",
-            m_slot_id, __FUNCTION__, DEFAULT_PDN_TABLE_SIZE);
+    RFX_LOG_E(RFX_LOG_TAG, "RIL%d %s error: return default number  = %d.", m_slot_id, __FUNCTION__,
+              DEFAULT_PDN_TABLE_SIZE);
     return DEFAULT_PDN_TABLE_SIZE;
 }

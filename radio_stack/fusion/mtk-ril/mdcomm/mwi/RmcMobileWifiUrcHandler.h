@@ -22,26 +22,26 @@
 class RmcMobileWifiUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcMobileWifiUrcHandler);
 
-    public:
-        RmcMobileWifiUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcMobileWifiUrcHandler();
+  public:
+    RmcMobileWifiUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcMobileWifiUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void onNotifyWfcWifiRoveout(const sp<RfxMclMessage>& msg);
-        void onNotifyPdnHandover(const sp<RfxMclMessage>& msg);
-        void onNotifyActiveWifiPdnCount(const sp<RfxMclMessage>& msg);
-        void onNotifyWifiRssiMonitoringConfig(const sp<RfxMclMessage>& msg);
-        void onNotifyWifiPdnError(const sp<RfxMclMessage>& msg);
-        void onNotifyGeoRequest(const sp<RfxMclMessage>& msg);
-        void onNotifyNattKeepAliveChanged(const sp<RfxMclMessage>& msg);
-        void onNotifyWifiPingRequest(const sp<RfxMclMessage>& msg);
-        void onNotifyWifiPdnOOS(const sp<RfxMclMessage>& msg);
-        void onNotifyWifiLock(const sp<RfxMclMessage>& msg);
-        void onNotifySsacStatus(const sp<RfxMclMessage>& msg);
+  private:
+    void onNotifyWfcWifiRoveout(const sp<RfxMclMessage>& msg);
+    void onNotifyPdnHandover(const sp<RfxMclMessage>& msg);
+    void onNotifyActiveWifiPdnCount(const sp<RfxMclMessage>& msg);
+    void onNotifyWifiRssiMonitoringConfig(const sp<RfxMclMessage>& msg);
+    void onNotifyWifiPdnError(const sp<RfxMclMessage>& msg);
+    void onNotifyGeoRequest(const sp<RfxMclMessage>& msg);
+    void onNotifyNattKeepAliveChanged(const sp<RfxMclMessage>& msg);
+    void onNotifyWifiPingRequest(const sp<RfxMclMessage>& msg);
+    void onNotifyWifiPdnOOS(const sp<RfxMclMessage>& msg);
+    void onNotifyWifiLock(const sp<RfxMclMessage>& msg);
+    void onNotifySsacStatus(const sp<RfxMclMessage>& msg);
 };
 
 #endif

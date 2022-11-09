@@ -34,9 +34,9 @@
 #define RAF_WCDMA_GROUP (RAF_HS_GROUP | RAF_UMTS | RAF_TD_SCDMA)
 
 typedef enum {
-    RADIO_GENERATION_2G     = 0,
-    RADIO_GENERATION_3G     = 1,
-    RADIO_GENERATION_4G     = 2
+    RADIO_GENERATION_2G = 0,
+    RADIO_GENERATION_3G = 1,
+    RADIO_GENERATION_4G = 2
 } Rmc_RadioGenerationType;
 
 /*****************************************************************************
@@ -44,16 +44,14 @@ typedef enum {
  *****************************************************************************/
 
 class RmcCapabilitySwitchUtil {
-
   public:
     static int getMaxRadioGeneration(int radio_capability);
     static int getMajorSim();
     static int isDisableCapabilitySwitch();
     static int getAdjustedRaf(int raf);
-    static bool isMessageBeforeCapabilitySwitch(const sp<RfxMclMessage> &msg);
+    static bool isMessageBeforeCapabilitySwitch(const sp<RfxMclMessage>& msg);
     static bool isDssNoResetSupport();
     static bool isDisableC2kCapability();
-
 };
 
 #endif /* __RMC_CAPABILITY_SWITCH_UTIL_H__ */

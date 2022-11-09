@@ -18,28 +18,27 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxStringsData);
 
-RfxStringsData::RfxStringsData() : RfxBaseData(NULL, 0) {
-}
+RfxStringsData::RfxStringsData() : RfxBaseData(NULL, 0) {}
 
-RfxStringsData::RfxStringsData(void *data, int length) : RfxBaseData(data, length)  {
+RfxStringsData::RfxStringsData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
         m_length = length;
-        int countStrings = length/sizeof(char *);
-        copyStrings((char **)data, countStrings);
+        int countStrings = length / sizeof(char*);
+        copyStrings((char**)data, countStrings);
     }
 }
 
-RfxStringsData::RfxStringsData(char **data, int countStrings) :
-        RfxBaseData(data, countStrings * sizeof(char *)) {
+RfxStringsData::RfxStringsData(char** data, int countStrings)
+    : RfxBaseData(data, countStrings * sizeof(char*)) {
     if (data != NULL) {
-        m_length = countStrings * sizeof(char *);
+        m_length = countStrings * sizeof(char*);
         copyStrings(data, countStrings);
     }
 }
 
-void RfxStringsData::copyStrings(char **data, int countStrings) {
-    char **pStrings = (char **) calloc(countStrings, sizeof(char *));
-    if(pStrings != NULL) {
+void RfxStringsData::copyStrings(char** data, int countStrings) {
+    char** pStrings = (char**)calloc(countStrings, sizeof(char*));
+    if (pStrings != NULL) {
         for (int i = 0; i < countStrings; i++) {
             if (data[i] != NULL) {
                 pStrings[i] = strdup(data[i]);
@@ -54,8 +53,8 @@ void RfxStringsData::copyStrings(char **data, int countStrings) {
 RfxStringsData::~RfxStringsData() {
     // free
     if (m_data) {
-        char **pTmp = (char **) m_data;
-        int countStrings = m_length/sizeof(char *);
+        char** pTmp = (char**)m_data;
+        int countStrings = m_length / sizeof(char*);
         for (int i = 0; i < countStrings; i++) {
             if (pTmp[i]) {
                 free(pTmp[i]);

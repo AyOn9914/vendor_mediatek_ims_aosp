@@ -38,35 +38,35 @@ typedef enum {
 } ModeSwitchState;
 
 typedef struct {
-        int card_type[MAX_RFX_SLOT_ID];
-        int card_state[MAX_RFX_SLOT_ID];
-        bool isCt3GDualMode[MAX_RFX_SLOT_ID];
-        int rat_mode[MAX_RFX_SLOT_ID];
-        Vector<int> switchQueue;
-        int ct3gStatus[MAX_RFX_SLOT_ID];
+    int card_type[MAX_RFX_SLOT_ID];
+    int card_state[MAX_RFX_SLOT_ID];
+    bool isCt3GDualMode[MAX_RFX_SLOT_ID];
+    int rat_mode[MAX_RFX_SLOT_ID];
+    Vector<int> switchQueue;
+    int ct3gStatus[MAX_RFX_SLOT_ID];
 } ModeSwitchInfo;
 
 typedef struct {
-        int card_type;
-        int card_state;
-        bool isCt3GDualMode;
-        int rat_mode;
-        /* Indicate who triggers to switch: AP or GMSS
-         * and switching to which card type: SIM or RUIM.
-         * value type: int
-         *  -1: default
-         *  1: AP_TRIGGER_SWITCH_SIM
-         *  2: GMSS_TRIGGER_SWITCH_SIM
-         *  3: AP_TRIGGER_SWITCH_RUIM
-         *  4: GMSS_TRIGGER_SWITCH_RUIM
-         */
-        int ct3gStatus;
+    int card_type;
+    int card_state;
+    bool isCt3GDualMode;
+    int rat_mode;
+    /* Indicate who triggers to switch: AP or GMSS
+     * and switching to which card type: SIM or RUIM.
+     * value type: int
+     *  -1: default
+     *  1: AP_TRIGGER_SWITCH_SIM
+     *  2: GMSS_TRIGGER_SWITCH_SIM
+     *  3: AP_TRIGGER_SWITCH_RUIM
+     *  4: GMSS_TRIGGER_SWITCH_RUIM
+     */
+    int ct3gStatus;
 } RatSwitchInfo;
 
 class RtcModeSwitchController : public RfxController {
     RFX_DECLARE_CLASS(RtcModeSwitchController);
 
-public:
+  public:
     RtcModeSwitchController();
     virtual ~RtcModeSwitchController();
     virtual void onInit();
@@ -74,47 +74,46 @@ public:
     void onCardTypeReady(int* card_type, int* card_state, int slotNum);
     int getCCapabilitySlotId();
 
-public:
+  public:
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
-            int radioState);
+                                        int radioState);
 
-private:
+  private:
     class PendingSwitchRecord {
-        public:
-            PendingSwitchRecord();
-            void cancel();
-            void save(int* card_type, int* card_state, bool* isCt3GDualMode,
-                    int* rat_mode, int slotNum, int* ct3gStatus);
-            bool isPendingState();
-            int updateCardStateIfRecordCovered(int card_state, int slotId);
+      public:
+        PendingSwitchRecord();
+        void cancel();
+        void save(int* card_type, int* card_state, bool* isCt3GDualMode, int* rat_mode, int slotNum,
+                  int* ct3gStatus);
+        bool isPendingState();
+        int updateCardStateIfRecordCovered(int card_state, int slotId);
 
-        public:
-            bool m_hasPendingRecord;
-            int m_pending_card_type[MAX_RFX_SLOT_ID];
-            int m_pending_card_state[MAX_RFX_SLOT_ID];
-            bool m_pending_isCt3gDualMode[MAX_RFX_SLOT_ID];
-            int m_pending_rat_mode[MAX_RFX_SLOT_ID];
-            int m_pending_ct3gStatus[MAX_RFX_SLOT_ID];
+      public:
+        bool m_hasPendingRecord;
+        int m_pending_card_type[MAX_RFX_SLOT_ID];
+        int m_pending_card_state[MAX_RFX_SLOT_ID];
+        bool m_pending_isCt3gDualMode[MAX_RFX_SLOT_ID];
+        int m_pending_rat_mode[MAX_RFX_SLOT_ID];
+        int m_pending_ct3gStatus[MAX_RFX_SLOT_ID];
     };
 
-private:
-    bool isEnableSwitchMode(int* card_type, int* card_state, bool* is_ct3g_dualmode,
-            int* rat_mode, int slotNum, int* ct3gStatus);
+  private:
+    bool isEnableSwitchMode(int* card_type, int* card_state, bool* is_ct3g_dualmode, int* rat_mode,
+                            int slotNum, int* ct3gStatus);
     void onModemOffStateChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
-            RfxVariant value);
+                                RfxVariant value);
     void onCapabilityReported(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
-            RfxVariant value);
+                              RfxVariant value);
     void onCallCountChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
-            RfxVariant value);
-    void onIccidChanged(int slotId, RfxStatusKeyEnum key, RfxVariant oldValue,
-            RfxVariant value);
+                            RfxVariant value);
+    void onIccidChanged(int slotId, RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
     int getCallingSlot();
     int getCallingSlotWithCChangeCase();
     void handlePendedByCall(int slotId);
-    void enterModeSwitch(int* card_type, int* card_state,  bool* is_ct3g_dualmode, int* rat_mode,
-            int slotNum, int* ct3gStatus);
+    void enterModeSwitch(int* card_type, int* card_state, bool* is_ct3g_dualmode, int* rat_mode,
+                         int slotNum, int* ct3gStatus);
     void startSwitchMode();
     void finishSwitchMode();
     void setupSwitchQueue();
@@ -146,7 +145,7 @@ private:
     void handlePendedByEMCS(int slotId);
     void onEMCSChanged(int slotId, RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
 
-private:
+  private:
     // Update mCCapabilitySlot must update its system property.
     int mCCapabilitySlot;
     int mOldCCapabilitySlot;

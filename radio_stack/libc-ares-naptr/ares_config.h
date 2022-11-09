@@ -19,7 +19,7 @@
 
 /* define this if ares is built for a big endian system */
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#  define ARES_BIG_ENDIAN 1
+#define ARES_BIG_ENDIAN 1
 #endif
 
 /* when building as static part of libcurl */
@@ -44,7 +44,7 @@
 #define GETNAMEINFO_QUAL_ARG1 const
 
 /* Define to the type of arg 1 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG1 struct sockaddr *
+#define GETNAMEINFO_TYPE_ARG1 struct sockaddr*
 
 /* Define to the type of arg 2 for getnameinfo. */
 #define GETNAMEINFO_TYPE_ARG2 socklen_t
@@ -164,7 +164,7 @@
 #define HAVE_IOCTLSOCKET_CAMEL 1
 
 /* Define to 1 if you have a working IoctlSocket camel case FIONBIO function.
-   */
+ */
 #define HAVE_IOCTLSOCKET_CAMEL_FIONBIO 1
 
 /* Define to 1 if you have a working ioctlsocket FIONBIO function. */
@@ -345,7 +345,7 @@
 #undef HAVE_WS2TCPIP_H
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+ */
 #undef LT_OBJDIR
 
 /* Define to 1 if you are building a native Windows target. */
@@ -430,7 +430,7 @@
 #define RECV_TYPE_ARG1 int
 
 /* Define to the type of arg 2 for recv. */
-#define RECV_TYPE_ARG2 void *
+#define RECV_TYPE_ARG2 void*
 
 /* Define to the type of arg 3 for recv. */
 #define RECV_TYPE_ARG3 size_t
@@ -451,7 +451,7 @@
 #define SEND_TYPE_ARG1 int
 
 /* Define to the type of arg 2 for send. */
-#define SEND_TYPE_ARG2 void *
+#define SEND_TYPE_ARG2 void*
 
 /* Define to the type of arg 3 for send. */
 #define SEND_TYPE_ARG3 size_t
@@ -498,18 +498,18 @@
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD
-# if defined __BIG_ENDIAN__
-#  define WORDS_BIGENDIAN 1
-# endif
+#if defined __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#endif
 #else
-# ifndef WORDS_BIGENDIAN
-#  undef WORDS_BIGENDIAN
-# endif
+#ifndef WORDS_BIGENDIAN
+#undef WORDS_BIGENDIAN
+#endif
 #endif
 
 /* Define to 1 if OS is AIX. */
 #ifndef _ALL_SOURCE
-#  undef _ALL_SOURCE
+#undef _ALL_SOURCE
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */

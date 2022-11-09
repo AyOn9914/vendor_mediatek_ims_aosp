@@ -30,15 +30,14 @@
  * Class RtcEmbmsAtController
  *****************************************************************************/
 
-#define EMBMS_ASSERT(_c)       assert(_c)
+#define EMBMS_ASSERT(_c) assert(_c)
 #define EMBMS_UNUSED(x) ((void)(x))
 
-extern "C" int strStartsWith(const char *line, const char *prefix);
+extern "C" int strStartsWith(const char* line, const char* prefix);
 
 /*****************************************************************************
  * PRIVATE ENUM
  *****************************************************************************/
-
 
 /*****************************************************************************
  * Class RtcEmbmsAtController
@@ -46,29 +45,29 @@ extern "C" int strStartsWith(const char *line, const char *prefix);
 class RtcEmbmsAtController : public RfxController {
     RFX_DECLARE_CLASS(RtcEmbmsAtController);  // Required: declare this class
 
-public:
+  public:
     RtcEmbmsAtController();
 
     virtual ~RtcEmbmsAtController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual void handleRequestDefault(const sp<RfxMessage>& request);
 
-
-private:
+  private:
     // Private functions
     bool isEmbmsSupported();
-    int strStartsWith(const char *line, const char *prefix);
-    void responseToSocket(const sp<RfxMessage>& msg, const char *responseStr);
-    void urcToSocket(const sp<RfxMessage>& msg, const char *responseStr, const char *responseStr_mask);
+    int strStartsWith(const char* line, const char* prefix);
+    void responseToSocket(const sp<RfxMessage>& msg, const char* responseStr);
+    void urcToSocket(const sp<RfxMessage>& msg, const char* responseStr,
+                     const char* responseStr_mask);
     void responseErrorString(const sp<RfxMessage>& msg);
     void handleAtRequest(const sp<RfxMessage>& request);
     void handleAtResponse(const sp<RfxMessage>& response);
@@ -85,8 +84,7 @@ private:
     void handleGetCoverageResponse(const sp<RfxMessage>& response);
 
     void requestAtSetAvailbility(const sp<RfxMessage>& request);
-    void requestAtActivate(const sp<RfxMessage>& request,
-        embms_at_activesession_enum type);
+    void requestAtActivate(const sp<RfxMessage>& request, embms_at_activesession_enum type);
     void handleStartSessionResponse(const sp<RfxMessage>& response);
     void handleStartSessionUrc(const sp<RfxMessage>& message);
     void handleStopSessionResponse(const sp<RfxMessage>& response);
@@ -101,19 +99,17 @@ private:
     void handleSaiUrc(const sp<RfxMessage>& message);
     int getCoverageState(int status);
 
-    void onMainCapabilityChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onDefaultDataChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
+    void onMainCapabilityChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onDefaultDataChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-private:
+  private:
     // Private members
     Vector<RtcEmbmsSessionInfo*>* mSessionInfoList;
     bool mIsActiveSession;
     bool mIsFlightOn;
     bool mIsEmbmsSupport;
     bool mEmbmsEnabled;
-    int  mSdkVersion; //XX.YY.ZZ
+    int mSdkVersion;  // XX.YY.ZZ
 };
 
 #endif /* __RP_DATA_CONTROLLER_H__ */

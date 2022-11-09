@@ -18,13 +18,13 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxDialFromData);
 
-RfxDialFromData::RfxDialFromData(void *data, int length) : RfxBaseData(data, length)  {
+RfxDialFromData::RfxDialFromData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    RIL_DialFrom *dupData;
-    RIL_DialFrom *srcData = (RIL_DialFrom*)data;
+    RIL_DialFrom* dupData;
+    RIL_DialFrom* srcData = (RIL_DialFrom*)data;
     int strLength;
 
-    dupData = (RIL_DialFrom *)calloc(1, sizeof(RIL_DialFrom));
+    dupData = (RIL_DialFrom*)calloc(1, sizeof(RIL_DialFrom));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_DialFrom));
     m_data = dupData;
@@ -34,7 +34,7 @@ RfxDialFromData::RfxDialFromData(void *data, int length) : RfxBaseData(data, len
         return;
     }
     strLength = strlen(srcData->address) + 1;
-    dupData->address = (char *)calloc(strLength, sizeof(char));
+    dupData->address = (char*)calloc(strLength, sizeof(char));
     RFX_ASSERT(dupData->address != NULL);
     memset(dupData->address, 0, strLength);
     memcpy(dupData->address, srcData->address, strLength);
@@ -44,7 +44,7 @@ RfxDialFromData::RfxDialFromData(void *data, int length) : RfxBaseData(data, len
         return;
     }
     strLength = strlen(srcData->fromAddress) + 1;
-    dupData->fromAddress = (char *)calloc(strLength, sizeof(char));
+    dupData->fromAddress = (char*)calloc(strLength, sizeof(char));
     RFX_ASSERT(dupData->fromAddress != NULL);
     memset(dupData->fromAddress, 0, strLength);
     memcpy(dupData->fromAddress, srcData->fromAddress, strLength);
@@ -58,7 +58,7 @@ RfxDialFromData::RfxDialFromData(void *data, int length) : RfxBaseData(data, len
 
 RfxDialFromData::~RfxDialFromData() {
     // free
-    RIL_DialFrom *data = (RIL_DialFrom*)m_data;
+    RIL_DialFrom* data = (RIL_DialFrom*)m_data;
     if (data != NULL) {
         if (data->address != NULL) {
             free(data->address);

@@ -25,21 +25,21 @@
 class RmcHelloURCHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcHelloURCHandler);
 
-    public:
-        RmcHelloURCHandler(int slot_id, int channel_id);
-        virtual ~RmcHelloURCHandler();
+  public:
+    RmcHelloURCHandler(int slot_id, int channel_id);
+    virtual ~RmcHelloURCHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg) {}
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg) {}
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleModemState(const sp<RfxMclMessage>& msg);
+  private:
+    void handleModemState(const sp<RfxMclMessage>& msg);
 };
 
 #endif

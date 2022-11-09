@@ -32,21 +32,19 @@
 #include <sysutils/SocketClient.h>
 
 #define CtrlPipe_Shutdown 0
-#define CtrlPipe_Wakeup   1
+#define CtrlPipe_Wakeup 1
 
-SocketListener::SocketListener(const char *socketName, bool listen) {
+SocketListener::SocketListener(const char* socketName, bool listen) {
     init(socketName, -1, listen, false);
 }
 
-SocketListener::SocketListener(int socketFd, bool listen) {
-    init(NULL, socketFd, listen, false);
-}
+SocketListener::SocketListener(int socketFd, bool listen) { init(NULL, socketFd, listen, false); }
 
-SocketListener::SocketListener(const char *socketName, bool listen, bool useCmdNum) {
+SocketListener::SocketListener(const char* socketName, bool listen, bool useCmdNum) {
     init(socketName, -1, listen, useCmdNum);
 }
 
-void SocketListener::init(const char *socketName, int socketFd, bool listen, bool useCmdNum) {
+void SocketListener::init(const char* socketName, int socketFd, bool listen, bool useCmdNum) {
     mListen = listen;
     mSocketName = socketName;
     mSock = socketFd;
@@ -56,8 +54,7 @@ void SocketListener::init(const char *socketName, int socketFd, bool listen, boo
 }
 
 SocketListener::~SocketListener() {
-    if (mSocketName && mSock > -1)
-        close(mSock);
+    if (mSocketName && mSock > -1) close(mSock);
 
     if (mCtrlPipe[0] != -1) {
         close(mCtrlPipe[0]);
@@ -71,20 +68,16 @@ SocketListener::~SocketListener() {
     delete mClients;
 }
 
-int SocketListener::startListener() {
-    return startListener(4);
-}
+int SocketListener::startListener() { return startListener(4); }
 
 int SocketListener::startListener(int backlog) {
-
     if (!mSocketName && mSock == -1) {
         SLOGE("Failed to start unbound listener");
         errno = EINVAL;
         return -1;
     } else if (mSocketName) {
         if ((mSock = android_get_control_socket(mSocketName)) < 0) {
-            SLOGE("Obtaining file descriptor socket '%s' failed: %s",
-                 mSocketName, strerror(errno));
+            SLOGE("Obtaining file descriptor socket '%s' failed: %s", mSocketName, strerror(errno));
             return -1;
         }
         SLOGV("got mSock = %d for %s", mSock, mSocketName);
@@ -112,7 +105,7 @@ int SocketListener::startListener(int backlog) {
 
 int SocketListener::stopListener() {
     char c = CtrlPipe_Shutdown;
-    int  rc;
+    int rc;
 
     rc = TEMP_FAILURE_RETRY(write(mCtrlPipe[1], &c, 1));
     if (rc != 1) {
@@ -120,7 +113,7 @@ int SocketListener::stopListener() {
         return -1;
     }
 
-    void *ret;
+    void* ret;
     if (pthread_join(mThread, &ret)) {
         SLOGE("Error joining to listener thread (%s)", strerror(errno));
         return -1;
@@ -143,8 +136,8 @@ int SocketListener::stopListener() {
     return 0;
 }
 
-void *SocketListener::threadStart(void *obj) {
-    SocketListener *me = reinterpret_cast<SocketListener *>(obj);
+void* SocketListener::threadStart(void* obj) {
+    SocketListener* me = reinterpret_cast<SocketListener*>(obj);
 
     me->runListener();
     pthread_exit(NULL);
@@ -152,10 +145,9 @@ void *SocketListener::threadStart(void *obj) {
 }
 
 void SocketListener::runListener() {
-
     SocketClientCollection pendingList;
 
-    while(1) {
+    while (1) {
         SocketClientCollection::iterator it;
         fd_set read_fds;
         int rc = 0;
@@ -169,8 +161,7 @@ void SocketListener::runListener() {
         }
 
         FD_SET(mCtrlPipe[0], &read_fds);
-        if (mCtrlPipe[0] > max)
-            max = mCtrlPipe[0];
+        if (mCtrlPipe[0] > max) max = mCtrlPipe[0];
 
         pthread_mutex_lock(&mClientsLock);
         for (it = mClients->begin(); it != mClients->end(); ++it) {
@@ -184,8 +175,7 @@ void SocketListener::runListener() {
         pthread_mutex_unlock(&mClientsLock);
         SLOGD("mListen=%d, max=%d, mSocketName=%s", mListen, max, mSocketName);
         if ((rc = select(max + 1, &read_fds, NULL, NULL, NULL)) < 0) {
-            if (errno == EINTR)
-                continue;
+            if (errno == EINTR) continue;
             SLOGE("select failed (%s) mListen=%d, max=%d", strerror(errno), mListen, max);
             sleep(1);
             continue;
@@ -269,7 +259,7 @@ bool SocketListener::release(SocketClient* c, bool wakeup) {
     return ret;
 }
 
-void SocketListener::sendBroadcast(int code, const char *msg, bool addErrno) {
+void SocketListener::sendBroadcast(int code, const char* msg, bool addErrno) {
     SocketClientCollection safeList;
 
     /* Add all active clients to the safe list first */
@@ -297,7 +287,7 @@ void SocketListener::sendBroadcast(int code, const char *msg, bool addErrno) {
     }
 }
 
-void SocketListener::runOnEachSocket(SocketClientCommand *command) {
+void SocketListener::runOnEachSocket(SocketClientCommand* command) {
     SocketClientCollection safeList;
 
     /* Add all active clients to the safe list first */

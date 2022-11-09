@@ -22,20 +22,20 @@
 
 WPFA_IMPLEMENT_DATA_CLASS(WpfaDriverAcceptData);
 
-WpfaDriverAcceptData::WpfaDriverAcceptData(void *_data, int _length) :
-        WpfaDriverBaseData(_data, _length) {
+WpfaDriverAcceptData::WpfaDriverAcceptData(void* _data, int _length)
+    : WpfaDriverBaseData(_data, _length) {
     if (_data != NULL) {
-        wifiproxy_a2m_reg_reply_t *pSendMsg = (wifiproxy_a2m_reg_reply_t*)_data;
-        wifiproxy_a2m_reg_reply_t *pData = (wifiproxy_a2m_reg_reply_t *)calloc(1,
-                    sizeof(wifiproxy_a2m_reg_reply_t));
+        wifiproxy_a2m_reg_reply_t* pSendMsg = (wifiproxy_a2m_reg_reply_t*)_data;
+        wifiproxy_a2m_reg_reply_t* pData =
+                (wifiproxy_a2m_reg_reply_t*)calloc(1, sizeof(wifiproxy_a2m_reg_reply_t));
 
         if (pData == NULL) {
-            mtkLogD(WPFA_D_LOG_TAG,"pData is null, return.");
+            mtkLogD(WPFA_D_LOG_TAG, "pData is null, return.");
             return;
         }
         pData->fid = pSendMsg->fid;
         pData->error_cause = pSendMsg->error_cause;
-        mData = (void* )pData;
+        mData = (void*)pData;
         mLength = _length;
     }
 }

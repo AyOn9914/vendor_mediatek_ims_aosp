@@ -29,21 +29,20 @@
 class RtcEmbmsControllerProxy : public RfxController {
     RFX_DECLARE_CLASS(RtcEmbmsControllerProxy);  // Required: declare this class
 
-public:
+  public:
     RtcEmbmsControllerProxy();
     virtual ~RtcEmbmsControllerProxy();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
 
-    void onRadioStateChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
+    void onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-private:
+  private:
     // Private members
-    RfxController *mActiveEmbmsController;
+    RfxController* mActiveEmbmsController;
 };
 
 #endif /* __RTC_EMBMS_CONTROLLER_PROXY_H__ */

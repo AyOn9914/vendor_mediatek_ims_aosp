@@ -20,14 +20,15 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVtCallStatusData);
 
-RfxVtCallStatusData::RfxVtCallStatusData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxVtCallStatusData::RfxVtCallStatusData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_VT_CALL_STATUS_UPDATE *pCallStatus = (RIL_VT_CALL_STATUS_UPDATE*)_data;
-        RIL_VT_CALL_STATUS_UPDATE *pData = (RIL_VT_CALL_STATUS_UPDATE *)calloc(1, sizeof(RIL_VT_CALL_STATUS_UPDATE));
+        RIL_VT_CALL_STATUS_UPDATE* pCallStatus = (RIL_VT_CALL_STATUS_UPDATE*)_data;
+        RIL_VT_CALL_STATUS_UPDATE* pData =
+                (RIL_VT_CALL_STATUS_UPDATE*)calloc(1, sizeof(RIL_VT_CALL_STATUS_UPDATE));
 
-        pData->phone        = pCallStatus->phone;
-        pData->call_id      = pCallStatus->call_id;
-        pData->call_state   = pCallStatus->call_state;
+        pData->phone = pCallStatus->phone;
+        pData->call_id = pCallStatus->call_id;
+        pData->call_state = pCallStatus->call_state;
 
         if (pCallStatus->data != NULL) {
             asprintf(&pData->data, "%s", pCallStatus->data);

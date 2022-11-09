@@ -27,7 +27,7 @@
 #include <stdio.h>
 
 #if !defined(_WIN32)
-# include <pthread.h>
+#include <pthread.h>
 #endif
 
 #include <utils/Vector.h>
@@ -56,7 +56,7 @@ void add_sysprop_change_callback(sysprop_change_callback cb, int priority) {
     info.callback = cb;
     info.priority = priority;
     bool added = false;
-    for (size_t i=0; i<gSyspropList->size(); i++) {
+    for (size_t i = 0; i < gSyspropList->size(); i++) {
         if (priority >= gSyspropList->itemAt(i).priority) {
             gSyspropList->insertAt(info, i);
             added = true;
@@ -79,11 +79,11 @@ void report_sysprop_change() {
     }
     pthread_mutex_unlock(&gSyspropMutex);
 
-    //ALOGI("Reporting sysprop change to %d listeners", listeners.size());
-    for (size_t i=0; i<listeners.size(); i++) {
+    // ALOGI("Reporting sysprop change to %d listeners", listeners.size());
+    for (size_t i = 0; i < listeners.size(); i++) {
         listeners[i].callback();
     }
 #endif
 }
 
-}; // namespace android
+};  // namespace android

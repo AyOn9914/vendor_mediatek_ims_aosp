@@ -20,14 +20,13 @@
 #include "RilClient.h"
 
 class RilClientQueue {
-    public:
-        RilClientQueue();
-        RilClientQueue(RilClient* client);
-        virtual ~RilClientQueue();
-        RilClient* client;
-        RilClientQueue* nextClient;
-        RilClientQueue* prevClient;
+  public:
+    RilClientQueue();
+    RilClientQueue(RilClient* client);
+    virtual ~RilClientQueue();
+    RilClient* client;
+    RilClientQueue* nextClient;
+    RilClientQueue* prevClient;
 };
-
 
 #endif /* __RIL_CLIENT_QUEUE_H__ */

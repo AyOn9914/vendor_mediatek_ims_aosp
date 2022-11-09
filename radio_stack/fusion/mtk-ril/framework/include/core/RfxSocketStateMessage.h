@@ -26,20 +26,18 @@
 /*****************************************************************************
  * Class RfxSocketStateMessage
  *****************************************************************************/
-class RfxSocketStateMessage : public virtual RefBase
-{
-
-public:
-    RfxSocketStateMessage(RILD_RadioTechnology_Group groupId, bool isConnected, int slotId, int socFd) :
-            mGroupId(groupId), mIsConnected(isConnected), mSlotId(slotId), mSocketFd(socFd) {
-    }
+class RfxSocketStateMessage : public virtual RefBase {
+  public:
+    RfxSocketStateMessage(RILD_RadioTechnology_Group groupId, bool isConnected, int slotId,
+                          int socFd)
+        : mGroupId(groupId), mIsConnected(isConnected), mSlotId(slotId), mSocketFd(socFd) {}
 
     RILD_RadioTechnology_Group getGroupId() { return mGroupId; }
     bool getIsConnected() { return mIsConnected; }
     int getSlotId() { return mSlotId; }
     int getSocketFd() { return mSocketFd; }
 
-private:
+  private:
     RILD_RadioTechnology_Group mGroupId;
     bool mIsConnected;
     int mSlotId;

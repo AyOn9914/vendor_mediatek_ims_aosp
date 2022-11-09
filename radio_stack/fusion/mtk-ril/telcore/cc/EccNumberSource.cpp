@@ -25,24 +25,24 @@
 
 #define RFX_LOG_TAG "EccNumberSource"
 
-#define MAX_PROP_CHARS       50
-#define MCC_CHAR_LEN         3
-#define PLMN_CHAR_LEN        6
-#define PLMN_CHAR_MIN_LEN    5
-#define MAX_ECC_NUM          16
-#define MAX_ECC_BUF_SIZE     (MAX_ECC_NUM * 8 + 1)
-#define MAX_REGION_SIZE      10
+#define MAX_PROP_CHARS 50
+#define MCC_CHAR_LEN 3
+#define PLMN_CHAR_LEN 6
+#define PLMN_CHAR_MIN_LEN 5
+#define MAX_ECC_NUM 16
+#define MAX_ECC_BUF_SIZE (MAX_ECC_NUM * 8 + 1)
+#define MAX_REGION_SIZE 10
 
 typedef struct {
-    string name;    // Region name
-    string mccList; // Mcc list in this region separate by ',', Ex: "440,460"
+    string name;     // Region name
+    string mccList;  // Mcc list in this region separate by ',', Ex: "440,460"
 } Region;
 
 // Customize region here
 static Region sRegionTable[MAX_REGION_SIZE] = {
-    {"APAC", "505"}, // Australia
-    {"LATAM", "724"},// Brazilian
-    {"EMEA", "234"}  // UK
+        {"APAC", "505"},   // Australia
+        {"LATAM", "724"},  // Brazilian
+        {"EMEA", "234"}    // UK
 };
 
 /*****************************************************************************
@@ -53,18 +53,13 @@ EccNumberSource::EccNumberSource(int slotId) {
     mEccList.clear();
 }
 
-EccNumberSource::~EccNumberSource() {
-}
+EccNumberSource::~EccNumberSource() {}
 
 bool EccNumberSource::addEmergencyNumber(EmergencyNumber ecc, string plmn, bool isSimInsert) {
     if (ECC_DEBUG == 1) {
-        RFX_LOG_V(RFX_LOG_TAG, "[%d][%s] current PLMN: %s, eccNumber:[%s,%s,%s,%d,%d]",
-                mSlotId, __FUNCTION__, plmn.c_str(),
-                ecc.number.c_str(),
-                ecc.mcc.c_str(),
-                ecc.mnc.c_str(),
-                ecc.categories,
-                ecc.condition);
+        RFX_LOG_V(RFX_LOG_TAG, "[%d][%s] current PLMN: %s, eccNumber:[%s,%s,%s,%d,%d]", mSlotId,
+                  __FUNCTION__, plmn.c_str(), ecc.number.c_str(), ecc.mcc.c_str(), ecc.mnc.c_str(),
+                  ecc.categories, ecc.condition);
     }
 
     // PLMN match for:
@@ -73,14 +68,13 @@ bool EccNumberSource::addEmergencyNumber(EmergencyNumber ecc, string plmn, bool 
     // 3. Common ECC (No PLMN info in xml)
     // And condition matches
     if (((plmn == (ecc.mcc + ecc.mnc)) ||
-            ((ecc.mnc == "FF" || ecc.mnc == "FFF") &&
-            ecc.mcc == plmn.substr(0, MCC_CHAR_LEN)) ||
-            (ecc.mcc == "" && ecc.mnc == "")) &&
-            ((isSimInsert && ecc.condition > 0) ||
-            (!isSimInsert && ecc.condition != CONDITION_SIM_ONLY))) {
+         ((ecc.mnc == "FF" || ecc.mnc == "FFF") && ecc.mcc == plmn.substr(0, MCC_CHAR_LEN)) ||
+         (ecc.mcc == "" && ecc.mnc == "")) &&
+        ((isSimInsert && ecc.condition > 0) ||
+         (!isSimInsert && ecc.condition != CONDITION_SIM_ONLY))) {
         if (ECC_DEBUG == 1) {
             RFX_LOG_V(RFX_LOG_TAG, "[%d][%s] eccNumber match, add: %s", mSlotId, __FUNCTION__,
-                ecc.number.c_str());
+                      ecc.number.c_str());
         }
         mEccList.push_back(ecc);
         return true;
@@ -88,7 +82,7 @@ bool EccNumberSource::addEmergencyNumber(EmergencyNumber ecc, string plmn, bool 
     return false;
 }
 
-void EccNumberSource::addToEccList(vector<EmergencyNumber> &list) {
+void EccNumberSource::addToEccList(vector<EmergencyNumber>& list) {
     for (int i = 0; i < (int)mEccList.size(); i++) {
         if (!findAndMerge(mEccList[i], list)) {
             list.push_back(mEccList[i]);
@@ -96,7 +90,7 @@ void EccNumberSource::addToEccList(vector<EmergencyNumber> &list) {
     }
 }
 
-bool EccNumberSource::findAndMerge(EmergencyNumber number, vector<EmergencyNumber> &list) {
+bool EccNumberSource::findAndMerge(EmergencyNumber number, vector<EmergencyNumber>& list) {
     for (int i = 0; i < (int)list.size(); i++) {
         if (isSimilar(number, list[i])) {
             if (getPriority(number) > getPriority(list[i])) {
@@ -106,18 +100,18 @@ bool EccNumberSource::findAndMerge(EmergencyNumber number, vector<EmergencyNumbe
                 list[i].mnc = number.mnc;
             } else if (getPriority(number) == getPriority(list[i])) {
                 // Operator specific ECC has higher priperity then country ECC
-                if (list[i].mcc == number.mcc &&
-                        number.mnc != "" && number.mnc != "FFF" && number.mnc != "FF") {
+                if (list[i].mcc == number.mcc && number.mnc != "" && number.mnc != "FFF" &&
+                    number.mnc != "FF") {
                     list[i].categories = number.categories;
                     list[i].condition = number.condition;
                     list[i].mnc = number.mnc;
                 }
             } else {
                 // Over CDMA SIM ECC service category by XML configure
-                if (((number.sources & SOURCE_CONFIG)
-                        && (number.categories != ECC_CATEGORY_NOT_DEFINED))
-                        && ((list[i].sources & SOURCE_SIM)
-                        && (list[i].categories == ECC_CATEGORY_NOT_DEFINED))) {
+                if (((number.sources & SOURCE_CONFIG) &&
+                     (number.categories != ECC_CATEGORY_NOT_DEFINED)) &&
+                    ((list[i].sources & SOURCE_SIM) &&
+                     (list[i].categories == ECC_CATEGORY_NOT_DEFINED))) {
                     list[i].categories = number.categories;
                 }
             }
@@ -147,11 +141,9 @@ int EccNumberSource::getPriority(EmergencyNumber number) {
     if (number.sources & SOURCE_SIM) {
         priority += 1 << 2;
     }
-    if (number.sources & SOURCE_CONFIG ||
-            number.sources & SOURCE_OEM_PROPERTY ||
-            number.sources & SOURCE_FRAMEWORK ||
-            number.sources & SOURCE_TEST ||
-            number.sources & SOURCE_CTA) {
+    if (number.sources & SOURCE_CONFIG || number.sources & SOURCE_OEM_PROPERTY ||
+        number.sources & SOURCE_FRAMEWORK || number.sources & SOURCE_TEST ||
+        number.sources & SOURCE_CTA) {
         priority += 1 << 1;
     }
     if (number.sources & SOURCE_DEFAULT) {
@@ -163,12 +155,9 @@ int EccNumberSource::getPriority(EmergencyNumber number) {
 /*****************************************************************************
  * Class SimEccNumberSource
  *****************************************************************************/
-SimEccNumberSource::SimEccNumberSource(int slotId) : EccNumberSource(slotId) {
+SimEccNumberSource::SimEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-}
-
-SimEccNumberSource::~SimEccNumberSource() {
-}
+SimEccNumberSource::~SimEccNumberSource() {}
 
 bool SimEccNumberSource::update(string gsmEccList, string cdmaEccList) {
     char eccList[MAX_ECC_BUF_SIZE] = {0};
@@ -178,7 +167,7 @@ bool SimEccNumberSource::update(string gsmEccList, string cdmaEccList) {
     mEccList.clear();
 
     if (gsmEccList != "") {
-        strncpy(eccList, (const char *)gsmEccList.c_str(), MAX_ECC_BUF_SIZE - 1);
+        strncpy(eccList, (const char*)gsmEccList.c_str(), MAX_ECC_BUF_SIZE - 1);
         if (strlen(eccList) > 0) {
             ecc = strtok(eccList, ",;");
             while (ecc != NULL) {
@@ -198,7 +187,7 @@ bool SimEccNumberSource::update(string gsmEccList, string cdmaEccList) {
         }
     }
     if (cdmaEccList != "") {
-        strncpy(eccList, (const char *)cdmaEccList.c_str(), MAX_ECC_BUF_SIZE - 1);
+        strncpy(eccList, (const char*)cdmaEccList.c_str(), MAX_ECC_BUF_SIZE - 1);
         if (strlen(eccList) > 0) {
             ecc = strtok(eccList, ",");
             while (ecc != NULL) {
@@ -222,11 +211,9 @@ bool SimEccNumberSource::update(string gsmEccList, string cdmaEccList) {
 /*****************************************************************************
  * Class NetworkEccNumberSource
  *****************************************************************************/
-NetworkEccNumberSource::NetworkEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+NetworkEccNumberSource::NetworkEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-NetworkEccNumberSource::~NetworkEccNumberSource() {
-}
+NetworkEccNumberSource::~NetworkEccNumberSource() {}
 
 bool NetworkEccNumberSource::update() {
     char eccList[RFX_PROPERTY_VALUE_MAX] = {0};
@@ -257,18 +244,14 @@ bool NetworkEccNumberSource::update() {
     return true;
 }
 
-void NetworkEccNumberSource::clear() {
-    mEccList.clear();
-}
+void NetworkEccNumberSource::clear() { mEccList.clear(); }
 
 /*****************************************************************************
  * Class DefaultEccNumberSource
  *****************************************************************************/
-DefaultEccNumberSource::DefaultEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+DefaultEccNumberSource::DefaultEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-DefaultEccNumberSource::~DefaultEccNumberSource() {
-}
+DefaultEccNumberSource::~DefaultEccNumberSource() {}
 
 bool DefaultEccNumberSource::update(bool isSimInsert) {
     char eccList[MAX_ECC_BUF_SIZE] = {0};
@@ -277,9 +260,9 @@ bool DefaultEccNumberSource::update(bool isSimInsert) {
     mEccList.clear();
 
     if (isSimInsert) {
-        strncpy(eccList, (const char *)ECC_DEFAULT, MAX_ECC_BUF_SIZE - 1);
+        strncpy(eccList, (const char*)ECC_DEFAULT, MAX_ECC_BUF_SIZE - 1);
     } else {
-        strncpy(eccList, (const char *)ECC_DEFAULT_NO_SIM, MAX_ECC_BUF_SIZE - 1);
+        strncpy(eccList, (const char*)ECC_DEFAULT_NO_SIM, MAX_ECC_BUF_SIZE - 1);
     }
 
     ecc = strtok(eccList, ",");
@@ -301,11 +284,9 @@ bool DefaultEccNumberSource::update(bool isSimInsert) {
 /*****************************************************************************
  * Class XmlEccNumberSource
  *****************************************************************************/
-XmlEccNumberSource::XmlEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+XmlEccNumberSource::XmlEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-XmlEccNumberSource::~XmlEccNumberSource() {
-}
+XmlEccNumberSource::~XmlEccNumberSource() {}
 
 bool XmlEccNumberSource::update(string plmn, bool isSimInsert) {
     char maskPlmn[PLMN_CHAR_LEN + 1] = {0};
@@ -313,7 +294,7 @@ bool XmlEccNumberSource::update(string plmn, bool isSimInsert) {
         maskString((char*)plmn.c_str(), maskPlmn, 2, '*');
     }
     RFX_LOG_D(RFX_LOG_TAG, "[XML][%d][%s] START for plmn: %s, isSimInsert: %d", mSlotId,
-            __FUNCTION__, maskPlmn, isSimInsert);
+              __FUNCTION__, maskPlmn, isSimInsert);
 
     // Skip update for invalid PLMN case
     if ("FFFFFF" == plmn) {
@@ -366,7 +347,7 @@ bool XmlEccNumberSource::update(string plmn, bool isSimInsert) {
                 string mccList = getMccList(attrValue);
                 if (mccList.length() > 0) {
                     if (plmn.length() > MCC_CHAR_LEN &&
-                            mccList.find(plmn.substr(0, MCC_CHAR_LEN)) != string::npos) {
+                        mccList.find(plmn.substr(0, MCC_CHAR_LEN)) != string::npos) {
                         // Found mcc in region, replace with current PLMN
                         eccNumber.mcc = plmn.substr(0, MCC_CHAR_LEN);
                         eccNumber.mnc = plmn.substr(MCC_CHAR_LEN, string::npos);
@@ -392,7 +373,7 @@ bool XmlEccNumberSource::update(string plmn, bool isSimInsert) {
 
     if (ECC_DEBUG == 1) {
         RFX_LOG_V(RFX_LOG_TAG, "[XML][%d][%s] END size: %d", mSlotId, __FUNCTION__,
-                (int)mEccList.size());
+                  (int)mEccList.size());
     }
     return true;
 }
@@ -416,7 +397,7 @@ string XmlEccNumberSource::getConfigFilePath() {
 
     if (ECC_DEBUG == 1) {
         RFX_LOG_V(RFX_LOG_TAG, "[XML][%d][%s] optr: %s, ECC filePath: %s", mSlotId, __FUNCTION__,
-                optr, filePath.c_str());
+                  optr, filePath.c_str());
     }
     return filePath;
 }
@@ -424,9 +405,8 @@ string XmlEccNumberSource::getConfigFilePath() {
 string XmlEccNumberSource::getMccList(string region) {
     for (int i = 0; i < MAX_REGION_SIZE; i++) {
         if (region == sRegionTable[i].name) {
-            RFX_LOG_D(RFX_LOG_TAG, "[XML][%d][%s] found mccList: %s for %s",
-                    mSlotId, __FUNCTION__, sRegionTable[i].mccList.c_str(),
-                    sRegionTable[i].name.c_str());
+            RFX_LOG_D(RFX_LOG_TAG, "[XML][%d][%s] found mccList: %s for %s", mSlotId, __FUNCTION__,
+                      sRegionTable[i].mccList.c_str(), sRegionTable[i].name.c_str());
             return sRegionTable[i].mccList;
         }
     }
@@ -441,10 +421,9 @@ FrameworkEccNumberSource::FrameworkEccNumberSource(int slotId) : EccNumberSource
     mEccListNoCard = String8("");
 }
 
-FrameworkEccNumberSource::~FrameworkEccNumberSource() {
-}
+FrameworkEccNumberSource::~FrameworkEccNumberSource() {}
 
-void FrameworkEccNumberSource::set(const char *eccWithSim, const char *eccNoSim) {
+void FrameworkEccNumberSource::set(const char* eccWithSim, const char* eccNoSim) {
     if (eccWithSim != NULL) {
         mEccListWithCard = String8(eccWithSim);
     }
@@ -457,7 +436,7 @@ bool FrameworkEccNumberSource::update(bool isSimInsert) {
     mEccList.clear();
 
     String8 eccListString = isSimInsert ? mEccListWithCard : mEccListNoCard;
-    char* eccList = (char *)strdup(eccListString.string());
+    char* eccList = (char*)strdup(eccListString.string());
     char* eccCategory = NULL;
     char* ecc = NULL;
     if (eccList != NULL) {
@@ -474,7 +453,7 @@ bool FrameworkEccNumberSource::update(bool isSimInsert) {
 
                 // Support setting emergency number with category,
                 // the format is <service category>+<number>, e.g. 1+110
-                char *plusChar = strchr(ecc, '+');
+                char* plusChar = strchr(ecc, '+');
                 if (plusChar != NULL) {
                     eccCategory = ecc;
                     *plusChar = '\0';
@@ -495,17 +474,15 @@ bool FrameworkEccNumberSource::update(bool isSimInsert) {
 /*****************************************************************************
  * Class OemPropertyEccNumberSource
  *****************************************************************************/
-OemPropertyEccNumberSource::OemPropertyEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+OemPropertyEccNumberSource::OemPropertyEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-OemPropertyEccNumberSource::~OemPropertyEccNumberSource() {
-}
+OemPropertyEccNumberSource::~OemPropertyEccNumberSource() {}
 
 bool OemPropertyEccNumberSource::update(string currentPlmn, bool isSimInsert) {
     mEccList.clear();
 
     RFX_LOG_I(RFX_LOG_TAG, "[Property][%d][%s] START for plmn: %s, isSimInsert: %d", mSlotId,
-            __FUNCTION__, currentPlmn.c_str(), isSimInsert);
+              __FUNCTION__, currentPlmn.c_str(), isSimInsert);
 
     char eccCount[MAX_PROP_CHARS] = {0};
     char eccNumber[MAX_PROP_CHARS] = {0};
@@ -581,16 +558,14 @@ bool OemPropertyEccNumberSource::update(string currentPlmn, bool isSimInsert) {
 /*****************************************************************************
  * Class TestEccNumberSource
  *****************************************************************************/
-TestEccNumberSource::TestEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+TestEccNumberSource::TestEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-TestEccNumberSource::~TestEccNumberSource() {
-}
+TestEccNumberSource::~TestEccNumberSource() {}
 
 bool TestEccNumberSource::update(bool isSimInsert) {
     if (ECC_DEBUG == 1) {
-        RFX_LOG_V(RFX_LOG_TAG, "[TEST][%d][%s] isSimInsert: %d",
-                mSlotId, __FUNCTION__, isSimInsert);
+        RFX_LOG_V(RFX_LOG_TAG, "[TEST][%d][%s] isSimInsert: %d", mSlotId, __FUNCTION__,
+                  isSimInsert);
     }
     if (!isSimInsert) {
         // Test ECC only works when SIM insert
@@ -625,11 +600,9 @@ bool TestEccNumberSource::update(bool isSimInsert) {
 /*****************************************************************************
  * Class CtaEccNumberSource
  *****************************************************************************/
-CtaEccNumberSource::CtaEccNumberSource(int slotId) : EccNumberSource(slotId) {
-}
+CtaEccNumberSource::CtaEccNumberSource(int slotId) : EccNumberSource(slotId) {}
 
-CtaEccNumberSource::~CtaEccNumberSource() {
-}
+CtaEccNumberSource::~CtaEccNumberSource() {}
 
 bool CtaEccNumberSource::update(bool isNeed) {
     char eccList[MAX_ECC_BUF_SIZE] = {0};
@@ -638,7 +611,7 @@ bool CtaEccNumberSource::update(bool isNeed) {
     mEccList.clear();
 
     if (isNeed) {
-        strncpy(eccList, (const char *)ECC_CTA, MAX_ECC_BUF_SIZE - 1);
+        strncpy(eccList, (const char*)ECC_CTA, MAX_ECC_BUF_SIZE - 1);
         ecc = strtok(eccList, ",");
         while (ecc != NULL) {
             EmergencyNumber en;

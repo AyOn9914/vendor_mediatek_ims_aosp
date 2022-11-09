@@ -23,31 +23,32 @@ class RfxAtLine;
 
 // This class provide the general function for request handler
 class RmcCallControlBaseHandler : public RfxBaseHandler {
-    public:
-        RmcCallControlBaseHandler(int slot_id, int channel_id);
-        virtual ~RmcCallControlBaseHandler();
-    protected:
-        /*
-         * Convert clir mode to the clir prefix
-         */
-        char* getClirPrefix(int clir);
-        /*
-         * Response a void data with error to the TCL
-         */
-        void responseVoidDataToTcl(const sp<RfxMclMessage>& msg, RIL_Errno err);
+  public:
+    RmcCallControlBaseHandler(int slot_id, int channel_id);
+    virtual ~RmcCallControlBaseHandler();
 
-        void setVDSAuto(bool isAuto, bool isEcc);
-        void enableVDSReport(bool enable = true);
-        bool hasImsCall(int slotId);
+  protected:
+    /*
+     * Convert clir mode to the clir prefix
+     */
+    char* getClirPrefix(int clir);
+    /*
+     * Response a void data with error to the TCL
+     */
+    void responseVoidDataToTcl(const sp<RfxMclMessage>& msg, RIL_Errno err);
 
-        char* extractSipUri(char *num);
+    void setVDSAuto(bool isAuto, bool isEcc);
+    void enableVDSReport(bool enable = true);
+    bool hasImsCall(int slotId);
 
-        bool isGsmRat();
-        bool isCdmaRat();
-        String8 handleNumberWithPause(char* number);
-        String8 handleNumberWithClirString(String8 number);
-        bool isVzWProject();
-        int handleClirSpecial(bool isEcc, int clir, char* number);
+    char* extractSipUri(char* num);
+
+    bool isGsmRat();
+    bool isCdmaRat();
+    String8 handleNumberWithPause(char* number);
+    String8 handleNumberWithClirString(String8 number);
+    bool isVzWProject();
+    int handleClirSpecial(bool isEcc, int clir, char* number);
 };
 
 #endif

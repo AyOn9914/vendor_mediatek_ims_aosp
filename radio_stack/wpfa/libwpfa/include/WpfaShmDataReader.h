@@ -16,7 +16,6 @@ using namespace std;
  * =============================================================================
  */
 
-
 /*
  * =============================================================================
  *                     typedef
@@ -30,20 +29,19 @@ using namespace std;
  */
 
 class WpfaShmDataReader {
-public:
+  public:
     WpfaShmDataReader();
     virtual ~WpfaShmDataReader();
 
-    bool init(WpfaRingBuffer *ringBuf);
+    bool init(WpfaRingBuffer* ringBuf);
     void start();
 
-protected:
-
-private:
-    WpfaRingBuffer *mWpfaRingBuffer;
+  protected:
+  private:
+    WpfaRingBuffer* mWpfaRingBuffer;
 
     pthread_t mReaderThread;
-    static void *readerThreadStart(void *arg);
+    static void* readerThreadStart(void* arg);
     void runReaderLoop();
 };
 

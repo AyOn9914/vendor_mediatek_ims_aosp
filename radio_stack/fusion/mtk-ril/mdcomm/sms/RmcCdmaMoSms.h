@@ -28,83 +28,76 @@
 class RmcCdmaMoSmsMessage : public RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaMoSmsMessage);
 
-public:
-    int getMsgRef() const {
-        return m_msgRef;
-    }
+  public:
+    int getMsgRef() const { return m_msgRef; }
 
-    int getMsgErrCode() const {
-        return m_errCode;
-    }
+    int getMsgErrCode() const { return m_errCode; }
 
-    const RIL_CDMA_SMS_Message& getMessage() const {
-        return m_msg;
-    }
+    const RIL_CDMA_SMS_Message& getMessage() const { return m_msg; }
 
-public:
-    RmcCdmaMoSmsMessage(RIL_CDMA_SMS_Message *msg);
+  public:
+    RmcCdmaMoSmsMessage(RIL_CDMA_SMS_Message* msg);
 
-protected:
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
-    virtual bool onHandleIntermediates(RfxAtLine * line, RfxBaseHandler * h);
-    virtual void onHandleFinalResponseForError(RfxAtLine * line,RfxBaseHandler * h);
+  protected:
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
+    virtual bool onHandleIntermediates(RfxAtLine* line, RfxBaseHandler* h);
+    virtual void onHandleFinalResponseForError(RfxAtLine* line, RfxBaseHandler* h);
 
-// Overridable
-protected:
-    virtual bool onGetPdu(String8 &hexPdu, String8 &address);
+    // Overridable
+  protected:
+    virtual bool onGetPdu(String8& hexPdu, String8& address);
 
-private:
+  private:
     RIL_CDMA_SMS_Message m_msg;
     int m_msgRef;
     int m_errCode;
 
-// Implement
-private:
-    const int TELESERVICE_WMT       = 0x1002;
-    const int TELESERVICE_WEMT      = 0x1005;
-    const int ERROR_RUIM_ABSENT     = 107;
-    const int ERROR_FDN_CHECK       = 14;
-    const int ERROR_CLASS_TEMP      = 2;
+    // Implement
+  private:
+    const int TELESERVICE_WMT = 0x1002;
+    const int TELESERVICE_WEMT = 0x1005;
+    const int ERROR_RUIM_ABSENT = 107;
+    const int ERROR_FDN_CHECK = 14;
+    const int ERROR_CLASS_TEMP = 2;
     const int ERROR_CLASS_PERMANENT = 3;
 
-    bool isCtSimCard(RfxBaseHandler * h);
-    void preProcessMessage(RfxBaseHandler * h);
-
+    bool isCtSimCard(RfxBaseHandler* h);
+    void preProcessMessage(RfxBaseHandler* h);
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaMoSmsOverImsMessage
  *****************************************************************************/
-class RmcCdmaMoSmsOverImsMessage: public RmcCdmaMoSmsMessage {
+class RmcCdmaMoSmsOverImsMessage : public RmcCdmaMoSmsMessage {
     RFX_DECLARE_DATA_CLASS(RmcCdmaMoSmsOverImsMessage);
-protected:
-    virtual bool onGetPdu(String8 &hexPdu, String8 &address);
-};
 
+  protected:
+    virtual bool onGetPdu(String8& hexPdu, String8& address);
+};
 
 /*****************************************************************************
  * Class RmcCdmaMoSmsRsp
  *****************************************************************************/
 class RmcCdmaMoSmsRsp : public RmcVoidRsp {
     RFX_DECLARE_DATA_CLASS(RmcCdmaMoSmsRsp);
-public:
+
+  public:
     RmcCdmaMoSmsRsp(int msgRef, int errCode, RIL_Errno e);
 
-private:
+  private:
     RIL_SMS_Response m_response;
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaMoSmsHdlr
  *****************************************************************************/
 class RmcCdmaMoSmsHdlr : public RmcBaseRequestHandler {
-public:
-    RmcCdmaMoSmsHdlr(RfxBaseHandler *h) :RmcBaseRequestHandler(h){}
+  public:
+    RmcCdmaMoSmsHdlr(RfxBaseHandler* h) : RmcBaseRequestHandler(h) {}
     virtual ~RmcCdmaMoSmsHdlr() {}
-public:
-    virtual RmcBaseRspData *onGetRspData(RmcBaseReqData *req);
+
+  public:
+    virtual RmcBaseRspData* onGetRspData(RmcBaseReqData* req);
 };
 
 #endif /* __RMC_CDMA_MO_SMS_H__ */

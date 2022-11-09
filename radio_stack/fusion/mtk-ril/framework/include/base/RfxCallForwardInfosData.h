@@ -20,7 +20,6 @@
 #include "RfxBaseData.h"
 #include <telephony/ril.h>
 
-
 class RfxCallForwardInfosData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCallForwardInfosData);
 };

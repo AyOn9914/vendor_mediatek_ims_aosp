@@ -36,18 +36,16 @@ NetAgentService* NetAgentService::sInstance = NULL;
 
 const char* NetAgentService::CCMNI_IFNAME_CCMNI = "ccmni";
 
-//pthread_condattr_t NetAgentService::s_cond_attr;
-//pthread_cond_t NetAgentService::s_cond;
-//pthread_mutex_t NetAgentService::s_mutex;
+// pthread_condattr_t NetAgentService::s_cond_attr;
+// pthread_cond_t NetAgentService::s_cond;
+// pthread_mutex_t NetAgentService::s_mutex;
 struct thread_args {
-    NetAgentService *instance;
-    NA_ARP_INFO *arp;
+    NetAgentService* instance;
+    NA_ARP_INFO* arp;
     struct result_naptr_in_netagent* result_list;
 };
 
-NetAgentService::NetAgentService() {
-    init();
-}
+NetAgentService::NetAgentService() { init(); }
 
 void NetAgentService::init() {
     mReaderThread = 0;
@@ -64,7 +62,7 @@ void NetAgentService::init() {
     m_lTransIntfId.clear();
     isMultiHomingFeatureSupport = false;
 
-    //Initialize thread of NAPTR
+    // Initialize thread of NAPTR
     pthread_condattr_init(&s_cond_attr);
     pthread_condattr_setclock(&s_cond_attr, CLOCK_MONOTONIC);
     pthread_cond_init(&s_cond, &s_cond_attr);
@@ -85,22 +83,22 @@ void NetAgentService::init() {
 }
 
 NetAgentService::~NetAgentService() {
-    if (NA_DEINIT(m_pNetAgentIoObj) != NETAGENT_IO_RET_SUCCESS ) {
+    if (NA_DEINIT(m_pNetAgentIoObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] deinit NetAgent io socket fail", __FUNCTION__);
     }
 
-    NetAgentReqInfo *pTmp = NULL;
+    NetAgentReqInfo* pTmp = NULL;
     while (m_pNetAgentReqInfo != NULL) {
-       pTmp = m_pNetAgentReqInfo;
-       m_pNetAgentReqInfo = m_pNetAgentReqInfo->pNext;
-       freeNetAgentCmdObj(pTmp);
-       FREEIF(pTmp);
+        pTmp = m_pNetAgentReqInfo;
+        m_pNetAgentReqInfo = m_pNetAgentReqInfo->pNext;
+        freeNetAgentCmdObj(pTmp);
+        FREEIF(pTmp);
     }
 
     if (m_pRouteHandler != NULL) {
         if (m_pRouteHandler->stop() < 0) {
-            NA_LOG_E("[%s] Unable to stop route NetlinkEventHandler: %s",
-                    __FUNCTION__, strerror(errno));
+            NA_LOG_E("[%s] Unable to stop route NetlinkEventHandler: %s", __FUNCTION__,
+                     strerror(errno));
         }
         delete m_pRouteHandler;
         m_pRouteHandler = NULL;
@@ -147,20 +145,20 @@ void NetAgentService::startEventLoop(void) {
     if (ret != 0) {
         NA_LOG_E("[%s] failed to create event thread ret:%d", __FUNCTION__, ret);
     } else {
-        NA_LOG_D("[%s] create event thread OK ret:%d, mEventThread:%ld",
-                __FUNCTION__, ret, mEventThread);
+        NA_LOG_D("[%s] create event thread OK ret:%d, mEventThread:%ld", __FUNCTION__, ret,
+                 mEventThread);
     }
 }
 
-void *NetAgentService::eventThreadStart(void *arg) {
-    NetAgentService *me = reinterpret_cast<NetAgentService *>(arg);
+void* NetAgentService::eventThreadStart(void* arg) {
+    NetAgentService* me = reinterpret_cast<NetAgentService*>(arg);
     me->runEventLoop();
     return NULL;
 }
 
 void NetAgentService::runEventLoop() {
     while (1) {
-        NetAgentReqInfo *pReq = NULL;
+        NetAgentReqInfo* pReq = NULL;
 
         pthread_mutex_lock(&mDispatchMutex);
         pReq = dequeueReqInfo();
@@ -186,20 +184,20 @@ void NetAgentService::startReaderLoop(void) {
     if (ret != 0) {
         NA_LOG_E("[%s] failed to create reader thread ret:%d", __FUNCTION__, ret);
     } else {
-        NA_LOG_D("[%s] create reader thread OK ret:%d, mReaderThread:%ld",
-                __FUNCTION__, ret, mReaderThread);
+        NA_LOG_D("[%s] create reader thread OK ret:%d, mReaderThread:%ld", __FUNCTION__, ret,
+                 mReaderThread);
     }
 }
 
-void *NetAgentService::readerThreadStart(void *arg) {
-    NetAgentService *me = reinterpret_cast<NetAgentService *>(arg);
+void* NetAgentService::readerThreadStart(void* arg) {
+    NetAgentService* me = reinterpret_cast<NetAgentService*>(arg);
     me->runReaderLoop();
     return NULL;
 }
 
 void NetAgentService::runReaderLoop() {
     while (1) {
-        void *pNetAgentCmdObj = NULL;
+        void* pNetAgentCmdObj = NULL;
 
         // Receive URC reported from DDM.
         NA_CMD_RECV(m_pNetAgentIoObj, pNetAgentCmdObj);
@@ -272,9 +270,10 @@ void NetAgentService::handleEvent(NetAgentReqInfo* pReqInfo) {
     freeNetAgentCmdObj(pReqInfo);
 }
 
-NetAgentReqInfo *NetAgentService::createNetAgentReqInfo(void* obj, REQUEST_TYPE reqType, NA_CMD cmd) {
+NetAgentReqInfo* NetAgentService::createNetAgentReqInfo(void* obj, REQUEST_TYPE reqType,
+                                                        NA_CMD cmd) {
     NetAgentReqInfo* pNewReqInfo = NULL;
-    pNewReqInfo = (NetAgentReqInfo *)calloc(1, sizeof(NetAgentReqInfo));
+    pNewReqInfo = (NetAgentReqInfo*)calloc(1, sizeof(NetAgentReqInfo));
     if (pNewReqInfo == NULL) {
         NA_LOG_E("[%s] can't allocate NetAgentReqInfo", __FUNCTION__);
         return NULL;
@@ -288,8 +287,8 @@ NetAgentReqInfo *NetAgentService::createNetAgentReqInfo(void* obj, REQUEST_TYPE 
 }
 
 void NetAgentService::enqueueReqInfo(void* obj, REQUEST_TYPE reqType) {
-    NetAgentReqInfo *pNew = NULL;
-    NetAgentReqInfo *pCurrent = NULL;
+    NetAgentReqInfo* pNew = NULL;
+    NetAgentReqInfo* pCurrent = NULL;
     NA_CMD cmd;
 
     if (getCommand(obj, reqType, &cmd) < 0) {
@@ -309,7 +308,7 @@ void NetAgentService::enqueueReqInfo(void* obj, REQUEST_TYPE reqType) {
         pthread_cond_broadcast(&mDispatchCond);
     } else {
         pCurrent = m_pNetAgentReqInfo;
-        while(pCurrent != NULL) {
+        while (pCurrent != NULL) {
             if (pCurrent->pNext == NULL) {
                 pCurrent->pNext = pNew;
                 break;
@@ -320,8 +319,8 @@ void NetAgentService::enqueueReqInfo(void* obj, REQUEST_TYPE reqType) {
     pthread_mutex_unlock(&mDispatchMutex);
 }
 
-NetAgentReqInfo *NetAgentService::dequeueReqInfo() {
-    NetAgentReqInfo *pCurrent = m_pNetAgentReqInfo;
+NetAgentReqInfo* NetAgentService::dequeueReqInfo() {
+    NetAgentReqInfo* pCurrent = m_pNetAgentReqInfo;
 
     if (pCurrent != NULL) {
         m_pNetAgentReqInfo = pCurrent->pNext;
@@ -332,7 +331,7 @@ NetAgentReqInfo *NetAgentService::dequeueReqInfo() {
 void NetAgentService::syncCapabilityToModem() {
     NA_LOG_D("[%s]", __FUNCTION__);
 
-    NetEventReqInfo *pNetEventObj = (NetEventReqInfo *)calloc(1, sizeof(NetEventReqInfo));
+    NetEventReqInfo* pNetEventObj = (NetEventReqInfo*)calloc(1, sizeof(NetEventReqInfo));
 
     if (pNetEventObj == NULL) {
         NA_LOG_E("[%s] can't allocate rild event obj", __FUNCTION__);
@@ -344,7 +343,7 @@ void NetAgentService::syncCapabilityToModem() {
 
 void NetAgentService::setCapabilityToModem(NetAgentReqInfo* pReqInfo) {
     UNUSED(pReqInfo);
-    void *pNetAgentCmdObj = NA_CMD_SYNC_CAPABILITY_ALLOC();
+    void* pNetAgentCmdObj = NA_CMD_SYNC_CAPABILITY_ALLOC();
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] fail", __FUNCTION__);
     }
@@ -354,7 +353,7 @@ void NetAgentService::setCapabilityToModem(NetAgentReqInfo* pReqInfo) {
 void NetAgentService::syncNAPTRCapabilityToModem() {
     NA_LOG_D("[%s]", __FUNCTION__);
 
-    NetEventReqInfo *pNetEventObj = (NetEventReqInfo *)calloc(1, sizeof(NetEventReqInfo));
+    NetEventReqInfo* pNetEventObj = (NetEventReqInfo*)calloc(1, sizeof(NetEventReqInfo));
 
     if (pNetEventObj == NULL) {
         NA_LOG_E("[%s] can't allocate rild event obj", __FUNCTION__);
@@ -366,21 +365,21 @@ void NetAgentService::syncNAPTRCapabilityToModem() {
 
 void NetAgentService::setNAPTRCapabilityToModem(NetAgentReqInfo* pReqInfo) {
     UNUSED(pReqInfo);
-    void *pNetAgentCmdObj = NA_CMD_SYNC_NAPTR_CAPABILITY_ALLOC();
+    void* pNetAgentCmdObj = NA_CMD_SYNC_NAPTR_CAPABILITY_ALLOC();
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] fail", __FUNCTION__);
     }
     NA_CMD_FREE(pNetAgentCmdObj);
 }
 
-void NetAgentService::setNwIntfDown(const char *interfaceName) {
+void NetAgentService::setNwIntfDown(const char* interfaceName) {
     ifc_reset_connections(interfaceName, RESET_ALL_ADDRESSES);
     ifc_remove_default_route(interfaceName);
     ifc_disable(interfaceName);
 }
 
-void NetAgentService::resetNwIntfMtu(const char *interfaceName) {
-    char *cmd = NULL;
+void NetAgentService::resetNwIntfMtu(const char* interfaceName) {
+    char* cmd = NULL;
     NA_LOG_I("[%s] reset mtu size for interface %s", __FUNCTION__, interfaceName);
     asprintf(&cmd, "ifconfig %s mtu %d", interfaceName, 1500);
     if (cmd != NULL) {
@@ -408,7 +407,7 @@ void NetAgentService::nwIntfIoctlInit() {
 
     sock6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
     if (sock6_fd < 0) {
-        sock6_fd = -errno;    /* save errno for later */
+        sock6_fd = -errno; /* save errno for later */
         NA_LOG_E("[%s] couldn't create IPv6 socket: errno=%d", __FUNCTION__, errno);
     }
 }
@@ -422,51 +421,51 @@ void NetAgentService::nwIntfIoctlDeInit() {
 
 /* For setting IFF_UP: nwIntfSetFlags(s, &ifr, IFF_UP, 0) */
 /* For setting IFF_DOWN: nwIntfSetFlags(s, &ifr, 0, IFF_UP) */
-void NetAgentService::nwIntfSetFlags(int s, struct ifreq *ifr, int set, int clr) {
+void NetAgentService::nwIntfSetFlags(int s, struct ifreq* ifr, int set, int clr) {
     int ret = 0;
 
     ret = ioctl(s, SIOCGIFFLAGS, ifr);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCGIFFLAGS:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCGIFFLAGS:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
         return;
     }
 
     ifr->ifr_flags = (ifr->ifr_flags & (~clr)) | set;
     ret = ioctl(s, SIOCSIFFLAGS, ifr);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCSIFFLAGS:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCSIFFLAGS:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
     }
 }
 
-inline void NetAgentService::nwIntfInitSockAddrIn(struct sockaddr_in *sin, const char *addr) {
+inline void NetAgentService::nwIntfInitSockAddrIn(struct sockaddr_in* sin, const char* addr) {
     sin->sin_family = AF_INET;
     sin->sin_port = 0;
     sin->sin_addr.s_addr = inet_addr(addr);
 }
 
-void NetAgentService::nwIntfSetAddr(int s, struct ifreq *ifr, const char *addr) {
+void NetAgentService::nwIntfSetAddr(int s, struct ifreq* ifr, const char* addr) {
     int ret = 0;
 
     NA_LOG_D("[%s] configure IPv4 adress : %s", __FUNCTION__, addr);
-    nwIntfInitSockAddrIn((struct sockaddr_in *) &ifr->ifr_addr, addr);
+    nwIntfInitSockAddrIn((struct sockaddr_in*)&ifr->ifr_addr, addr);
     ret = ioctl(s, SIOCSIFADDR, ifr);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCSIFADDR:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCSIFADDR:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
     }
 }
 
-void NetAgentService::nwIntfSetIpv6Addr(int s, struct ifreq *ifr, const char *addr) {
+void NetAgentService::nwIntfSetIpv6Addr(int s, struct ifreq* ifr, const char* addr) {
     struct in6_ifreq ifreq6;
     int ret = 0;
 
     NA_LOG_D("[%s] configure IPv6 adress : %s", __FUNCTION__, addr);
     ret = ioctl(s, SIOCGIFINDEX, ifr);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCGIFINDEX:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCGIFINDEX:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
         return;
     }
 
@@ -481,8 +480,8 @@ void NetAgentService::nwIntfSetIpv6Addr(int s, struct ifreq *ifr, const char *ad
 
     ret = ioctl(s, SIOCSIFADDR, &ifreq6);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCSIFADDR:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCSIFADDR:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
     }
 }
 
@@ -498,7 +497,7 @@ const char* NetAgentService::getCcmniInterfaceName(int rid) {
     return CCMNI_IFNAME_CCMNI;
 }
 
-//Configure the IP address to the CCMNI interface.
+// Configure the IP address to the CCMNI interface.
 void NetAgentService::configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATUS config) {
     struct ifreq ifr;
     unsigned int interfaceId = 0;
@@ -506,7 +505,7 @@ void NetAgentService::configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATU
     NA_IFST state;
     char addressV4[MAX_IPV4_ADDRESS_LENGTH] = {0};
     char addressV6[MAX_IPV6_ADDRESS_LENGTH] = {0};
-    char *reason = NULL;
+    char* reason = NULL;
 
     NA_GET_IFST_STATE(config, state);
 
@@ -527,16 +526,17 @@ void NetAgentService::configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATU
     }
 
     if (config == UPDATE) {
-        if (NA_GET_IP_CHANGE_REASON(pReqInfo->pNetAgentCmdObj, &reason) != NETAGENT_IO_RET_SUCCESS) {
+        if (NA_GET_IP_CHANGE_REASON(pReqInfo->pNetAgentCmdObj, &reason) !=
+            NETAGENT_IO_RET_SUCCESS) {
             NA_LOG_E("[%s] fail to get IP change reason", __FUNCTION__);
             reason = NULL;
         }
 
         NA_LOG_I("[%s] update interface %d, addr type : %s(%d), ip change reason: %s", __FUNCTION__,
-                interfaceId, addrTypeToString(addrType), addrType, reason != NULL ? reason : "");
+                 interfaceId, addrTypeToString(addrType), addrType, reason != NULL ? reason : "");
     } else {
-        NA_LOG_D("[%s] interface %d to %s, addr type : %s(%d)", __FUNCTION__,
-                interfaceId, config ? "UP" : "DOWN", addrTypeToString(addrType), addrType);
+        NA_LOG_D("[%s] interface %d to %s, addr type : %s(%d)", __FUNCTION__, interfaceId,
+                 config ? "UP" : "DOWN", addrTypeToString(addrType), addrType);
     }
 
     memset(&ifr, 0, sizeof(struct ifreq));
@@ -603,14 +603,13 @@ void NetAgentService::configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATU
     if (config == UPDATE) {
         // Send ipupdate confirm to DDM.
         if (strlen(addressV4) > 0) {
-            if (addrType == NETAGENT_IO_ADDR_TYPE_IPv4
-                    || addrType == NETAGENT_IO_ADDR_TYPE_IPv4v6) {
+            if (addrType == NETAGENT_IO_ADDR_TYPE_IPv4 ||
+                addrType == NETAGENT_IO_ADDR_TYPE_IPv4v6) {
                 unsigned int addrV4_;
-                if (NA_GET_ADDR_V4(pReqInfo->pNetAgentCmdObj, &addrV4_) == NETAGENT_IO_RET_SUCCESS) {
-                    confirmIpUpdate(interfaceId,
-                            NETAGENT_IO_ADDR_TYPE_IPv4,
-                            &addrV4_,
-                            INVALID_IPV6_PREFIX_LENGTH);
+                if (NA_GET_ADDR_V4(pReqInfo->pNetAgentCmdObj, &addrV4_) ==
+                    NETAGENT_IO_RET_SUCCESS) {
+                    confirmIpUpdate(interfaceId, NETAGENT_IO_ADDR_TYPE_IPv4, &addrV4_,
+                                    INVALID_IPV6_PREFIX_LENGTH);
                 } else {
                     NA_LOG_E("[%s] error occurs when get addressV4", __FUNCTION__);
                 }
@@ -627,7 +626,7 @@ void NetAgentService::configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATU
 
     if (config == DISABLE) {
         NA_LOG_D("[%s] remove transIntfId %d from the list and last ReqInfo", __FUNCTION__,
-                getTransIntfId(interfaceId));
+                 getTransIntfId(interfaceId));
         m_lTransIntfId.remove(getTransIntfId(interfaceId));
         if (m_pRouteHandler != NULL) {
             m_pRouteHandler->removeLastReqInfo(interfaceId);
@@ -642,7 +641,7 @@ void NetAgentService::configureMTUSize(NetAgentReqInfo* pReqInfo) {
     unsigned int interfaceId = 0;
     unsigned int mtuSize = 0;
     char mtu[MAX_MTU_SIZE_LENGTH] = {0};
-    char *cmd = NULL;
+    char* cmd = NULL;
 
     if (NA_GET_IF_ID(pReqInfo->pNetAgentCmdObj, &interfaceId) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] fail to get interface id", __FUNCTION__);
@@ -697,8 +696,8 @@ void NetAgentService::configureIpAdd(NetAgentReqInfo* pReqInfo) {
     }
 
     // print log
-    NA_LOG_D("[%s] add ip addr to %d, addr type : %s(%d), %s", __FUNCTION__,
-            interfaceId, addrTypeToString(addrType), addrType, addressV6);
+    NA_LOG_D("[%s] add ip addr to %d, addr type : %s(%d), %s", __FUNCTION__, interfaceId,
+             addrTypeToString(addrType), addrType, addressV6);
 
     memset(&ifr, 0, sizeof(struct ifreq));
     snprintf(ifr.ifr_name, IFNAMSIZ, "%s%d", getCcmniInterfaceName(), interfaceId);
@@ -707,11 +706,11 @@ void NetAgentService::configureIpAdd(NetAgentReqInfo* pReqInfo) {
         // check if link local address
         if (!isIpv6Global(addressV6)) {
             // disable RS
-            //configureRSTimes(interfaceId, 0);
+            // configureRSTimes(interfaceId, 0);
             // set link local address to kernel
             ifc_add_address(ifr.ifr_name, addressV6, IPV6_REFIX_LENGTH);
             NA_LOG_D("[%s] add link local address: %s", __FUNCTION__, addressV6);
-            //string to binary (addressV6 -> addrV6_ll)
+            // string to binary (addressV6 -> addrV6_ll)
             if (convertIpv6ToBinary(addrV6_binary, addressV6) < 0) {
                 NA_LOG_E("[%s] fail to convert ipv6 address to binary", __FUNCTION__);
                 return;
@@ -721,7 +720,8 @@ void NetAgentService::configureIpAdd(NetAgentReqInfo* pReqInfo) {
             } else {
                 result = 0;
             }
-            confirmIpAddOrDel(interfaceId, NETAGENT_IO_CMD_IPADD, result, addrType, addrV6_binary, INVALID_IPV6_PREFIX_LENGTH);
+            confirmIpAddOrDel(interfaceId, NETAGENT_IO_CMD_IPADD, result, addrType, addrV6_binary,
+                              INVALID_IPV6_PREFIX_LENGTH);
         } else {
             NA_LOG_E("[%s] is not link local address", __FUNCTION__);
             return;
@@ -763,8 +763,8 @@ void NetAgentService::configureIpDel(NetAgentReqInfo* pReqInfo) {
     }
 
     // print log
-    NA_LOG_D("[%s] del ip addr to %d, addr type : %s(%d), %s", __FUNCTION__,
-            interfaceId, addrTypeToString(addrType), addrType, addressV6);
+    NA_LOG_D("[%s] del ip addr to %d, addr type : %s(%d), %s", __FUNCTION__, interfaceId,
+             addrTypeToString(addrType), addrType, addressV6);
 
     memset(&ifr, 0, sizeof(struct ifreq));
     snprintf(ifr.ifr_name, IFNAMSIZ, "%s%d", getCcmniInterfaceName(), interfaceId);
@@ -773,7 +773,7 @@ void NetAgentService::configureIpDel(NetAgentReqInfo* pReqInfo) {
         ifc_del_address(ifr.ifr_name, addressV6, IPV6_REFIX_LENGTH);
         NA_LOG_D("[%s] del IP address: %s", __FUNCTION__, addressV6);
 
-        //string to binary (addressV6 -> addrV6_ll)
+        // string to binary (addressV6 -> addrV6_ll)
         if (convertIpv6ToBinary(addrV6_binary, addressV6) < 0) {
             NA_LOG_E("[%s] fail to convert ipv6 address to binary", __FUNCTION__);
             return;
@@ -783,21 +783,21 @@ void NetAgentService::configureIpDel(NetAgentReqInfo* pReqInfo) {
         } else {
             result = 0;
         }
-        recordPdnIpInfo(interfaceId, addrType,addressV4, addressV6);
-        confirmIpAddOrDel(interfaceId, NETAGENT_IO_CMD_IPDEL, result, addrType, addrV6_binary, INVALID_IPV6_PREFIX_LENGTH);
+        recordPdnIpInfo(interfaceId, addrType, addressV4, addressV6);
+        confirmIpAddOrDel(interfaceId, NETAGENT_IO_CMD_IPDEL, result, addrType, addrV6_binary,
+                          INVALID_IPV6_PREFIX_LENGTH);
     } else {
         NA_LOG_E("[%s] not get address", __FUNCTION__);
         return;
     }
 }
 
-
 void NetAgentService::configureRSTimes(int interfaceId) {
-    char *cmd = NULL;
-    char rs_times[PROPERTY_VALUE_MAX] = { 0 };
+    char* cmd = NULL;
+    char rs_times[PROPERTY_VALUE_MAX] = {0};
     property_get("persist.vendor.ril.rs_times", rs_times, "3");
-    asprintf(&cmd, "echo %s > /proc/sys/net/ipv6/conf/%s%d/router_solicitations",
-            rs_times, getCcmniInterfaceName(), interfaceId);
+    asprintf(&cmd, "echo %s > /proc/sys/net/ipv6/conf/%s%d/router_solicitations", rs_times,
+             getCcmniInterfaceName(), interfaceId);
     if (cmd != NULL) {
         NA_LOG_D("[%s] cmd = %s", __FUNCTION__, cmd);
         system(cmd);
@@ -808,9 +808,9 @@ void NetAgentService::configureRSTimes(int interfaceId) {
 }
 
 void NetAgentService::configureRSTimes(int interfaceId, int times) {
-    char *cmd = NULL;
-    asprintf(&cmd, "echo %d > /proc/sys/net/ipv6/conf/%s%d/router_solicitations",
-            times, getCcmniInterfaceName(), interfaceId);
+    char* cmd = NULL;
+    asprintf(&cmd, "echo %d > /proc/sys/net/ipv6/conf/%s%d/router_solicitations", times,
+             getCcmniInterfaceName(), interfaceId);
     if (cmd != NULL) {
         NA_LOG_D("[%s] cmd = %s", __FUNCTION__, cmd);
         system(cmd);
@@ -821,143 +821,141 @@ void NetAgentService::configureRSTimes(int interfaceId, int times) {
 }
 
 void NetAgentService::queryArp(NetAgentReqInfo* pReqInfo) {
-        /*+EWIFIMAC: <ifname>, <ip>*/
-        thread_args * args;
-        NA_LOG_D("[%s] Enter NETAGENT_IO_CMD_ARP_QUERY event", __FUNCTION__);
-        NA_ARP_INFO *arp = (NA_ARP_INFO *)
-                calloc(1, sizeof(NA_ARP_INFO));
+    /*+EWIFIMAC: <ifname>, <ip>*/
+    thread_args* args;
+    NA_LOG_D("[%s] Enter NETAGENT_IO_CMD_ARP_QUERY event", __FUNCTION__);
+    NA_ARP_INFO* arp = (NA_ARP_INFO*)calloc(1, sizeof(NA_ARP_INFO));
 
-        if (!arp) {
-            NA_LOG_E("[%s] fail to alloc ARP info", __FUNCTION__);
-            return;
-        }
-        if ((NA_GET_ARP(pReqInfo->pNetAgentCmdObj, arp)) != NETAGENT_IO_RET_SUCCESS) {
-            NA_LOG_E("[%s] fail to get ARP info", __FUNCTION__);
-            free(arp);
-            return;
-        }
-        args = (thread_args*) calloc(1, sizeof(thread_args));
-        if (!args) {
-            NA_LOG_E("[%s] fail to alloc thread_args info", __FUNCTION__);
-            free(arp);
-            return;
-        }
-        args->instance = this;
-        args->arp = arp;
-        pthread_t mArpThread;
-        pthread_create(&mArpThread, NULL, NetAgentService::queryArpThread, args);
+    if (!arp) {
+        NA_LOG_E("[%s] fail to alloc ARP info", __FUNCTION__);
+        return;
+    }
+    if ((NA_GET_ARP(pReqInfo->pNetAgentCmdObj, arp)) != NETAGENT_IO_RET_SUCCESS) {
+        NA_LOG_E("[%s] fail to get ARP info", __FUNCTION__);
+        free(arp);
+        return;
+    }
+    args = (thread_args*)calloc(1, sizeof(thread_args));
+    if (!args) {
+        NA_LOG_E("[%s] fail to alloc thread_args info", __FUNCTION__);
+        free(arp);
+        return;
+    }
+    args->instance = this;
+    args->arp = arp;
+    pthread_t mArpThread;
+    pthread_create(&mArpThread, NULL, NetAgentService::queryArpThread, args);
 }
 
-void * NetAgentService::queryArpThread(void *arg) {
-        thread_args *args = (thread_args *) arg;
-        NA_ARP_INFO * arp = args->arp;
-        void *pNetAgentCmdObj = 0;
-        pNetAgentCmdObj = NA_CMD_ARP_RESULT_ALLOC(arp);
-        if (pNetAgentCmdObj) {
-            //enque the result, thus, at cmd sent in same thread.
-            args->instance->enqueueReqInfo(pNetAgentCmdObj, REQUEST_TYPE_DDM);
-        }
-        free (arp);
-        free (args);
-        return NULL;
+void* NetAgentService::queryArpThread(void* arg) {
+    thread_args* args = (thread_args*)arg;
+    NA_ARP_INFO* arp = args->arp;
+    void* pNetAgentCmdObj = 0;
+    pNetAgentCmdObj = NA_CMD_ARP_RESULT_ALLOC(arp);
+    if (pNetAgentCmdObj) {
+        // enque the result, thus, at cmd sent in same thread.
+        args->instance->enqueueReqInfo(pNetAgentCmdObj, REQUEST_TYPE_DDM);
+    }
+    free(arp);
+    free(args);
+    return NULL;
 }
 
 void NetAgentService::sendArpResult(NetAgentReqInfo* pReqInfo) {
-        if (NA_CMD_SEND(m_pNetAgentIoObj, pReqInfo->pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
-            NA_LOG_E("[%s] send ARP Result info fail", __FUNCTION__);
-        }
+    if (NA_CMD_SEND(m_pNetAgentIoObj, pReqInfo->pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
+        NA_LOG_E("[%s] send ARP Result info fail", __FUNCTION__);
+    }
 }
 
 void NetAgentService::queryNAPTR(NetAgentReqInfo* pReqInfo) {
-        /*+ENAPTR: <trans_id(not same as transferid)>,<mod_id>,<fqdn>*/
-        int ret = 0;
-        NA_LOG_D("[%s] Enter NETAGENT_IO_CMD_NAPTR_QUERY event", __FUNCTION__);
-        NA_NAPTR_INFO *m_naptr = (NA_NAPTR_INFO *)calloc(1, sizeof(NA_NAPTR_INFO));
-        memset(m_naptr, 0, sizeof(NA_NAPTR_INFO));
-        if ((NA_GET_NAPTR(pReqInfo->pNetAgentCmdObj, m_naptr)) != NETAGENT_IO_RET_SUCCESS) {
-            NA_LOG_E("[%s] fail to get NAPTR info", __FUNCTION__);
-            free(m_naptr);
-            //should add at cmd to handle the urc fail
-            return;
-        }
+    /*+ENAPTR: <trans_id(not same as transferid)>,<mod_id>,<fqdn>*/
+    int ret = 0;
+    NA_LOG_D("[%s] Enter NETAGENT_IO_CMD_NAPTR_QUERY event", __FUNCTION__);
+    NA_NAPTR_INFO* m_naptr = (NA_NAPTR_INFO*)calloc(1, sizeof(NA_NAPTR_INFO));
+    memset(m_naptr, 0, sizeof(NA_NAPTR_INFO));
+    if ((NA_GET_NAPTR(pReqInfo->pNetAgentCmdObj, m_naptr)) != NETAGENT_IO_RET_SUCCESS) {
+        NA_LOG_E("[%s] fail to get NAPTR info", __FUNCTION__);
+        free(m_naptr);
+        // should add at cmd to handle the urc fail
+        return;
+    }
 
-        NA_LOG_D("[%s] get NAPTR trans_id: %d, moduleid: %s, fqdn: %s from URC", __FUNCTION__,
-                       m_naptr->trans_id, m_naptr->mod_id, m_naptr->fqdn);
-        m_naptrMap[m_naptr->trans_id] = m_naptr;
+    NA_LOG_D("[%s] get NAPTR trans_id: %d, moduleid: %s, fqdn: %s from URC", __FUNCTION__,
+             m_naptr->trans_id, m_naptr->mod_id, m_naptr->fqdn);
+    m_naptrMap[m_naptr->trans_id] = m_naptr;
 
-        struct result_naptr_in_netagent* result_list = NULL;
-        result_list = (result_naptr_in_netagent*)calloc(1, sizeof(result_naptr_in_netagent));
-        memset(result_list, 0, sizeof(result_naptr_in_netagent));
+    struct result_naptr_in_netagent* result_list = NULL;
+    result_list = (result_naptr_in_netagent*)calloc(1, sizeof(result_naptr_in_netagent));
+    memset(result_list, 0, sizeof(result_naptr_in_netagent));
 
-        result_list->trans_id = m_naptr->trans_id;
-        strncpy(result_list->mod_id, m_naptr->mod_id, sizeof(result_list->mod_id)-1);
+    result_list->trans_id = m_naptr->trans_id;
+    strncpy(result_list->mod_id, m_naptr->mod_id, sizeof(result_list->mod_id) - 1);
 
-        thread_args args;
-        args.instance = this;
-        args.result_list = result_list;
-        struct timespec ts;
-        if (clock_gettime(CLOCK_MONOTONIC, &ts) != -1) {
-            ts.tv_sec += 5;
-        }
+    thread_args args;
+    args.instance = this;
+    args.result_list = result_list;
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != -1) {
+        ts.tv_sec += 5;
+    }
 
-        pthread_t mNAPTRThread;
-        pthread_mutex_lock(&s_mutex);
-        pthread_create(&mNAPTRThread, NULL, NetAgentService::naptrThreadStart, &args);
-        ret = pthread_cond_timedwait(&s_cond, &s_mutex, &ts);
-        pthread_mutex_unlock(&s_mutex);
-        if (ret == ETIMEDOUT) {
-             NA_LOG_E("[%s] Force to quit child thread due to timeout", __FUNCTION__);
-             result_list->result = 0;
-             respondNAPTRinfo(NETAGENT_IO_CMD_NAPTR_SEND, result_list);
-             pthread_kill(mNAPTRThread , 0);
-        }
+    pthread_t mNAPTRThread;
+    pthread_mutex_lock(&s_mutex);
+    pthread_create(&mNAPTRThread, NULL, NetAgentService::naptrThreadStart, &args);
+    ret = pthread_cond_timedwait(&s_cond, &s_mutex, &ts);
+    pthread_mutex_unlock(&s_mutex);
+    if (ret == ETIMEDOUT) {
+        NA_LOG_E("[%s] Force to quit child thread due to timeout", __FUNCTION__);
+        result_list->result = 0;
+        respondNAPTRinfo(NETAGENT_IO_CMD_NAPTR_SEND, result_list);
+        pthread_kill(mNAPTRThread, 0);
+    }
 }
 
-void *NetAgentService::naptrThreadStart(void *arg) {
-    thread_args *args =(thread_args*)arg;
+void* NetAgentService::naptrThreadStart(void* arg) {
+    thread_args* args = (thread_args*)arg;
     NA_LOG_D("[%s] Threads created", __FUNCTION__);
     args->instance->getNAPTRinfo(args->result_list);
     return NULL;
 }
 
-void NetAgentService::getNAPTRinfo(struct result_naptr_in_netagent *result_list) {
+void NetAgentService::getNAPTRinfo(struct result_naptr_in_netagent* result_list) {
     NA_LOG_D("[%s] Entering getNAPTRinfo", __FUNCTION__);
 
     unsigned int* ret_val = NULL;
 
-    struct records_naptr* ptr = NULL, *result_getrecords = NULL;
+    struct records_naptr *ptr = NULL, *result_getrecords = NULL;
     if (result_list == NULL) {
         NA_LOG_D("[%s] Exiting getNAPTRinfo due to result_list==NULL", __FUNCTION__);
         return;
-        }
+    }
     NA_LOG_D("[%s] result_list->trans_id=%d, m_naptrMap[result_list->trans_id]->fqdn=%s ",
-        __FUNCTION__,result_list->trans_id, m_naptrMap[result_list->trans_id]->fqdn);
+             __FUNCTION__, result_list->trans_id, m_naptrMap[result_list->trans_id]->fqdn);
     int result = 0;
 
-
-    result = mtk_aes_getrecords(m_naptrMap[result_list->trans_id]->fqdn, NULL, NULL, &result_getrecords);
+    result = mtk_aes_getrecords(m_naptrMap[result_list->trans_id]->fqdn, NULL, NULL,
+                                &result_getrecords);
 
     if (result != 1) {
         NA_LOG_E("[%s] mtk_aes_getrecords error! result = %d", __FUNCTION__, result);
-        result_list->result = 0; //for MD part
+        result_list->result = 0;  // for MD part
         result_list->flags = "";
         result_list->service = "";
         result_list->regexp = "";
-        NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s ",
-            __FUNCTION__,result_list->trans_id, result_list->mod_id,result_list->result,
-            result_list->order,result_list->pref,result_list->flags,result_list->service,
-            result_list->regexp,result_list->fqdn);
+        NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s ", __FUNCTION__,
+                 result_list->trans_id, result_list->mod_id, result_list->result,
+                 result_list->order, result_list->pref, result_list->flags, result_list->service,
+                 result_list->regexp, result_list->fqdn);
         respondNAPTRinfo(NETAGENT_IO_CMD_NAPTR_SEND, result_list);
 
         pthread_mutex_lock(&s_mutex);
         pthread_cond_signal(&s_cond);
         pthread_mutex_unlock(&s_mutex);
-        pthread_exit((void *)ret_val);
+        pthread_exit((void*)ret_val);
 
-    }
-    else {
+    } else {
         ptr = result_getrecords;
-    // AT+ENAPTR=<trans_id>,<mod_id>,<result>,<order>,<pref>,<flags>,<service>,<regexp>,<replacement>
+        // AT+ENAPTR=<trans_id>,<mod_id>,<result>,<order>,<pref>,<flags>,<service>,<regexp>,<replacement>
         do {
             result_list->result = 1;
             result_list->order = ptr->order;
@@ -981,18 +979,18 @@ void NetAgentService::getNAPTRinfo(struct result_naptr_in_netagent *result_list)
                 result_list->regexp = ptr->regexp;
             }
 
-            strncpy(result_list->fqdn, ptr->fqdn, sizeof(result_list->fqdn)-1);
-            NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s",
-                __FUNCTION__,result_list->trans_id, result_list->mod_id,result_list->result,
-                result_list->order,result_list->pref,result_list->flags,result_list->service,
-                result_list->regexp,result_list->fqdn);
+            strncpy(result_list->fqdn, ptr->fqdn, sizeof(result_list->fqdn) - 1);
+            NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s", __FUNCTION__,
+                     result_list->trans_id, result_list->mod_id, result_list->result,
+                     result_list->order, result_list->pref, result_list->flags,
+                     result_list->service, result_list->regexp, result_list->fqdn);
             respondNAPTRinfo(NETAGENT_IO_CMD_NAPTR_SEND, result_list);
             ptr = ptr->next;
 
-        } while(ptr);
+        } while (ptr);
 
-        //when ptr=NULL, means all records are received and send
-        //send an end command to MD
+        // when ptr=NULL, means all records are received and send
+        // send an end command to MD
         result_list->result = 1;
         result_list->order = 0;
         result_list->pref = 0;
@@ -1000,10 +998,10 @@ void NetAgentService::getNAPTRinfo(struct result_naptr_in_netagent *result_list)
         result_list->service = "";
         result_list->regexp = "";
         memset(result_list->fqdn, 0, sizeof(result_list->fqdn));
-        NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s ",
-            __FUNCTION__,result_list->trans_id, result_list->mod_id,result_list->result,
-            result_list->order,result_list->pref,result_list->flags,result_list->service,
-            result_list->regexp,result_list->fqdn);
+        NA_LOG_D("[%s] AT+ENAPTR= %d, %s, %d, %d, %d, %s, %s, %s ,%s ", __FUNCTION__,
+                 result_list->trans_id, result_list->mod_id, result_list->result,
+                 result_list->order, result_list->pref, result_list->flags, result_list->service,
+                 result_list->regexp, result_list->fqdn);
         respondNAPTRinfo(NETAGENT_IO_CMD_NAPTR_SEND, result_list);
 
         mtk_aes_getrecords_free(result_getrecords);
@@ -1014,12 +1012,13 @@ void NetAgentService::getNAPTRinfo(struct result_naptr_in_netagent *result_list)
         pthread_mutex_lock(&s_mutex);
         pthread_cond_signal(&s_cond);
         pthread_mutex_unlock(&s_mutex);
-        pthread_exit((void *)ret_val);
+        pthread_exit((void*)ret_val);
     }
 }
 
-void NetAgentService::respondNAPTRinfo(netagent_io_cmd_e cmd, struct result_naptr_in_netagent* result_list) {
-    void *pNetAgentCmdObj = 0;
+void NetAgentService::respondNAPTRinfo(netagent_io_cmd_e cmd,
+                                       struct result_naptr_in_netagent* result_list) {
+    void* pNetAgentCmdObj = 0;
     pNetAgentCmdObj = NA_CMD_NAPTR_ALLOC(cmd, result_list);
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] send NAPTR info fail", __FUNCTION__);
@@ -1029,7 +1028,7 @@ void NetAgentService::respondNAPTRinfo(netagent_io_cmd_e cmd, struct result_napt
 
 bool NetAgentService::clearNAPTRMapInfo(unsigned int trans_id) {
     if (m_naptrMap.count(trans_id) > 0) {
-        NA_NAPTR_INFO *m_naptr = m_naptrMap[trans_id];
+        NA_NAPTR_INFO* m_naptr = m_naptrMap[trans_id];
         m_naptrMap.erase(trans_id);
         if (m_naptr != NULL) {
             free(m_naptr);
@@ -1105,13 +1104,14 @@ void NetAgentService::reserveTcpUdpPort(NetAgentReqInfo* pReqInfo) {
         } else {
             if (interfaceId != -1) {
                 if (interfaceId == 99) {
-                    strncpy(ifrName, WIFI_IF_NAME, IFNAMSIZ-1);
+                    strncpy(ifrName, WIFI_IF_NAME, IFNAMSIZ - 1);
                 } else {
                     snprintf(ifrName, IFNAMSIZ, "%s%d", getCcmniInterfaceName(), interfaceId);
                 }
-                if (setsockopt(socketFD, SOL_SOCKET, SO_BINDTODEVICE, ifrName, strlen(ifrName)) < 0) {
-                    NA_LOG_E("[%s] Unable to set SO_BINDTODEVICE option: %s",
-                            __FUNCTION__, strerror(errno));
+                if (setsockopt(socketFD, SOL_SOCKET, SO_BINDTODEVICE, ifrName, strlen(ifrName)) <
+                    0) {
+                    NA_LOG_E("[%s] Unable to set SO_BINDTODEVICE option: %s", __FUNCTION__,
+                             strerror(errno));
                     close(socketFD);
                     socketFD = -1;
                 }
@@ -1123,9 +1123,9 @@ void NetAgentService::reserveTcpUdpPort(NetAgentReqInfo* pReqInfo) {
                     socketAddrV4.sin_port = htons(port);
                     getIpv4Address(pReqInfo->pNetAgentCmdObj, addressV4);
                     socketAddrV4.sin_addr.s_addr = inet_addr(addressV4);
-                    if (bind(socketFD, (struct sockaddr *) &socketAddrV4, sizeof(socketAddrV4)) < 0) {
-                        NA_LOG_E("[%s] Unable to bind socket with v4 addresss: %s",
-                                __FUNCTION__, strerror(errno));
+                    if (bind(socketFD, (struct sockaddr*)&socketAddrV4, sizeof(socketAddrV4)) < 0) {
+                        NA_LOG_E("[%s] Unable to bind socket with v4 addresss: %s", __FUNCTION__,
+                                 strerror(errno));
                         close(socketFD);
                         socketFD = -1;
                     }
@@ -1135,9 +1135,9 @@ void NetAgentService::reserveTcpUdpPort(NetAgentReqInfo* pReqInfo) {
                     socketAddrV6.sin6_port = htons(port);
                     getIpv6Address(pReqInfo->pNetAgentCmdObj, addressV6);
                     inet_pton(AF_INET6, addressV6, &(socketAddrV6.sin6_addr));
-                    if (bind(socketFD, (struct sockaddr *) &socketAddrV6, sizeof(socketAddrV6)) < 0) {
-                        NA_LOG_E("[%s] Unable to bind socket with v6 address: %s",
-                                __FUNCTION__, strerror(errno));
+                    if (bind(socketFD, (struct sockaddr*)&socketAddrV6, sizeof(socketAddrV6)) < 0) {
+                        NA_LOG_E("[%s] Unable to bind socket with v6 address: %s", __FUNCTION__,
+                                 strerror(errno));
                         close(socketFD);
                         socketFD = -1;
                     }
@@ -1153,7 +1153,7 @@ void NetAgentService::reserveTcpUdpPort(NetAgentReqInfo* pReqInfo) {
     confirmTcpUdpRsvn(transactionId, cmd, rsvnAction, response);
 }
 
-int NetAgentService::nanl_open(struct nanl_handle *nah, int protocol) {
+int NetAgentService::nanl_open(struct nanl_handle* nah, int protocol) {
     int sndbuf = 32768;
     int rcvbuf = 1024 * 1024;
     int one = 1;
@@ -1181,12 +1181,12 @@ int NetAgentService::nanl_open(struct nanl_handle *nah, int protocol) {
     memset(&nah->local, 0, sizeof(nah->local));
     nah->local.nl_family = AF_NETLINK;
 
-    if (bind(nah->fd, (struct sockaddr *)&nah->local, sizeof(nah->local)) < 0) {
+    if (bind(nah->fd, (struct sockaddr*)&nah->local, sizeof(nah->local)) < 0) {
         NA_LOG_E("[%s] Cannot bind netlink socket: %s(%d)", __FUNCTION__, strerror(errno), errno);
         return -1;
     }
     addr_len = sizeof(nah->local);
-    if (getsockname(nah->fd, (struct sockaddr *)&nah->local, &addr_len) < 0) {
+    if (getsockname(nah->fd, (struct sockaddr*)&nah->local, &addr_len) < 0) {
         NA_LOG_E("[%s] Cannot getsockname: %s(%d)", __FUNCTION__, strerror(errno), errno);
         return -1;
     }
@@ -1202,21 +1202,18 @@ int NetAgentService::nanl_open(struct nanl_handle *nah, int protocol) {
     return 0;
 }
 
-int NetAgentService::nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n,
-        struct nlmsghdr *answer, size_t maxlen) {
+int NetAgentService::nanl_talk(struct nanl_handle* nah, struct nlmsghdr* n, struct nlmsghdr* answer,
+                               size_t maxlen) {
     int status;
     unsigned int seq = 0;
-    struct nlmsghdr *h;
-    struct sockaddr_nl nladdr = { .nl_family = AF_NETLINK };
-    struct iovec iov = {
-        .iov_base = n,
-        .iov_len = n->nlmsg_len
-    };
+    struct nlmsghdr* h;
+    struct sockaddr_nl nladdr = {.nl_family = AF_NETLINK};
+    struct iovec iov = {.iov_base = n, .iov_len = n->nlmsg_len};
     struct msghdr msg = {
-        .msg_name = &nladdr,
-        .msg_namelen = sizeof(nladdr),
-        .msg_iov = &iov,
-        .msg_iovlen = 1,
+            .msg_name = &nladdr,
+            .msg_namelen = sizeof(nladdr),
+            .msg_iov = &iov,
+            .msg_iovlen = 1,
     };
     char buf[32768] = {};
 
@@ -1251,7 +1248,7 @@ int NetAgentService::nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n,
             NA_LOG_E("[%s] sender address length == %d", __FUNCTION__, msg.msg_namelen);
             return -1;
         }
-        for (h = (struct nlmsghdr *)buf; status >= (int)sizeof(*h); ) {
+        for (h = (struct nlmsghdr*)buf; status >= (int)sizeof(*h);) {
             int len = h->nlmsg_len;
             int l = len - sizeof(*h);
 
@@ -1264,15 +1261,15 @@ int NetAgentService::nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n,
                 return -1;
             }
 
-            if (nladdr.nl_pid != 0 ||h->nlmsg_pid != nah->local.nl_pid ||h->nlmsg_seq != seq) {
+            if (nladdr.nl_pid != 0 || h->nlmsg_pid != nah->local.nl_pid || h->nlmsg_seq != seq) {
                 /* Don't forget to skip that message. */
                 status -= NLMSG_ALIGN(len);
-                h = (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
+                h = (struct nlmsghdr*)((char*)h + NLMSG_ALIGN(len));
                 continue;
             }
 
             if (h->nlmsg_type == NLMSG_ERROR) {
-                struct nlmsgerr *err = (struct nlmsgerr *)NLMSG_DATA(h);
+                struct nlmsgerr* err = (struct nlmsgerr*)NLMSG_DATA(h);
 
                 if (l < (int)sizeof(struct nlmsgerr)) {
                     NA_LOG_E("[%s] ERROR truncated", __FUNCTION__);
@@ -1300,7 +1297,7 @@ int NetAgentService::nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n,
             NA_LOG_E("[%s] Unexpected reply!!!", __FUNCTION__);
 
             status -= NLMSG_ALIGN(len);
-            h = (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
+            h = (struct nlmsghdr*)((char*)h + NLMSG_ALIGN(len));
         }
 
         if (msg.msg_flags & MSG_TRUNC) {
@@ -1315,7 +1312,7 @@ int NetAgentService::nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n,
     }
 }
 
-void NetAgentService::nanl_close(struct nanl_handle *nah) {
+void NetAgentService::nanl_close(struct nanl_handle* nah) {
     if (nah->fd >= 0) {
         close(nah->fd);
         nah->fd = -1;
@@ -1330,7 +1327,7 @@ void NetAgentService::reserveSpi(NetAgentReqInfo* pReqInfo) {
             struct xfrm_usersa_id xsid;
         };
     } req = {
-        .n.nlmsg_flags = NLM_F_REQUEST,
+            .n.nlmsg_flags = NLM_F_REQUEST,
     };
     unsigned int transactionId;
     unsigned int action;
@@ -1374,19 +1371,21 @@ void NetAgentService::reserveSpi(NetAgentReqInfo* pReqInfo) {
         memset(&req.xsid.daddr, 0, sizeof(req.xsid.daddr));
         if (addrType == NETAGENT_IO_ADDR_TYPE_IPv4) {
             req.xsid.family = AF_INET;
-            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) != NETAGENT_IO_RET_SUCCESS) {
+            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi dst v4 addr", __FUNCTION__);
                 return;
             }
             memcpy(&req.xsid.daddr, &v4Address, sizeof(v4Address));
         } else {
             req.xsid.family = AF_INET6;
-            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) != NETAGENT_IO_RET_SUCCESS) {
+            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi dst v6 addr", __FUNCTION__);
                 return;
             }
             convertIpv6ToString(v6AddressString, v6Address);
-            convertIpv6ToBinary((unsigned int *)&req.xsid.daddr, v6AddressString);
+            convertIpv6ToBinary((unsigned int*)&req.xsid.daddr, v6AddressString);
         }
     } else {
         req.n.nlmsg_len = NLMSG_LENGTH(sizeof(req.xspi));
@@ -1395,30 +1394,34 @@ void NetAgentService::reserveSpi(NetAgentReqInfo* pReqInfo) {
         memset(&req.xspi.info.id.daddr, 0, sizeof(req.xspi.info.id.daddr));
         if (addrType == NETAGENT_IO_ADDR_TYPE_IPv4) {
             req.xspi.info.family = AF_INET;
-            if (NA_GET_SPI_SRC_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) != NETAGENT_IO_RET_SUCCESS) {
+            if (NA_GET_SPI_SRC_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi src v4 addr", __FUNCTION__);
                 return;
             }
             memcpy(&req.xspi.info.saddr, &v4Address, sizeof(v4Address));
-            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) != NETAGENT_IO_RET_SUCCESS) {
+            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, &v4Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi dst v4 addr", __FUNCTION__);
                 return;
             }
             memcpy(&req.xspi.info.id.daddr, &v4Address, sizeof(v4Address));
         } else {
             req.xspi.info.family = AF_INET6;
-            if (NA_GET_SPI_SRC_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) != NETAGENT_IO_RET_SUCCESS) {
+            if (NA_GET_SPI_SRC_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi src v6 addr", __FUNCTION__);
                 return;
             }
             convertIpv6ToString(v6AddressString, v6Address);
-            convertIpv6ToBinary((unsigned int *)&req.xspi.info.saddr, v6AddressString);
-            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) != NETAGENT_IO_RET_SUCCESS) {
+            convertIpv6ToBinary((unsigned int*)&req.xspi.info.saddr, v6AddressString);
+            if (NA_GET_SPI_DST_ADDR(pReqInfo->pNetAgentCmdObj, v6Address) !=
+                NETAGENT_IO_RET_SUCCESS) {
                 NA_LOG_E("[%s] fail to get spi dst v6 addr", __FUNCTION__);
                 return;
             }
             convertIpv6ToString(v6AddressString, v6Address);
-            convertIpv6ToBinary((unsigned int *)&req.xspi.info.id.daddr, v6AddressString);
+            convertIpv6ToBinary((unsigned int*)&req.xspi.info.id.daddr, v6AddressString);
         }
         req.xspi.info.id.proto = protocol;
         req.xspi.info.mode = mode;
@@ -1443,13 +1446,13 @@ void NetAgentService::reserveSpi(NetAgentReqInfo* pReqInfo) {
             }
         } else {
             char res_buf[NLMSG_BUF_SIZE] = {};
-            struct nlmsghdr *res_n = (struct nlmsghdr *)res_buf;
+            struct nlmsghdr* res_n = (struct nlmsghdr*)res_buf;
 
             if (nanl_talk(&nah, &req.n, res_n, sizeof(res_buf)) < 0) {
                 NA_LOG_E("[%s] fail to nanl_talk()", __FUNCTION__);
                 confirmSpi(transactionId, action, 0);
             } else {
-                struct xfrm_usersa_info *xsinfo = (struct xfrm_usersa_info *)NLMSG_DATA(res_n);
+                struct xfrm_usersa_info* xsinfo = (struct xfrm_usersa_info*)NLMSG_DATA(res_n);
                 unsigned int spi = ntohl(xsinfo->id.spi);
                 NA_LOG_D("[%s] spi: %d", __FUNCTION__, spi);
                 confirmSpi(transactionId, action, spi);
@@ -1467,13 +1470,13 @@ void NetAgentService::configureIPv6AddrGenMode(int interfaceId) {
     if (0 == strcasecmp(optr, "OP07")) {
         const char UNINITIALIZED[] = "uninitialized";
         const char KEY_STABLE_SECRET[] = "persist.vendor.radio.stable_secret";
-        char stable_secret[PROPERTY_VALUE_MAX] = { 0 };
+        char stable_secret[PROPERTY_VALUE_MAX] = {0};
         int fd = 0;
-        const char *PATH_RANDOM_IPV6_ADDRESS = "/dev/random";
+        const char* PATH_RANDOM_IPV6_ADDRESS = "/dev/random";
         in6_addr addr = {};
         char strRandomIPv6Address[INET6_ADDRSTRLEN] = {0};
         int ret = 0;
-        char *pathStableSecret = NULL;
+        char* pathStableSecret = NULL;
 
         property_get(KEY_STABLE_SECRET, stable_secret, UNINITIALIZED);
 
@@ -1483,13 +1486,13 @@ void NetAgentService::configureIPv6AddrGenMode(int interfaceId) {
             fd = open(PATH_RANDOM_IPV6_ADDRESS, O_RDONLY);
             if (fd < 0) {
                 NA_LOG_E("[%s] Failed to open '%s': %s", __FUNCTION__, PATH_RANDOM_IPV6_ADDRESS,
-                        strerror(errno));
+                         strerror(errno));
                 return;
             }
             ret = read(fd, &addr, sizeof(addr));
             if (ret <= 0) {
                 NA_LOG_E("[%s] Failed to read '%s': %s", __FUNCTION__, PATH_RANDOM_IPV6_ADDRESS,
-                        strerror(errno));
+                         strerror(errno));
                 close(fd);
                 return;
             }
@@ -1512,7 +1515,7 @@ void NetAgentService::configureIPv6AddrGenMode(int interfaceId) {
 
         // Store the random secret to '/proc/sys/net/ipv6/conf/ccmniX/stable_secret'.
         asprintf(&pathStableSecret, "/proc/sys/net/ipv6/conf/%s%d/stable_secret",
-                getCcmniInterfaceName(), interfaceId);
+                 getCcmniInterfaceName(), interfaceId);
         if (NULL == pathStableSecret) {
             NA_LOG_E("[%s] pathStableSecret is NULL", __FUNCTION__);
             return;
@@ -1520,14 +1523,14 @@ void NetAgentService::configureIPv6AddrGenMode(int interfaceId) {
         fd = open(pathStableSecret, O_CLOEXEC | O_WRONLY);
         if (fd < 0) {
             NA_LOG_E("[%s] Failed to open '%s': %s", __FUNCTION__, pathStableSecret,
-                    strerror(errno));
+                     strerror(errno));
             free(pathStableSecret);
             return;
         }
         ret = write(fd, strRandomIPv6Address, strlen(strRandomIPv6Address));
         if (ret <= 0) {
             NA_LOG_E("[%s] Failed to write '%s': %s", __FUNCTION__, pathStableSecret,
-                    strerror(errno));
+                     strerror(errno));
             free(pathStableSecret);
             close(fd);
             return;
@@ -1557,12 +1560,14 @@ void NetAgentService::updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo) {
         return;
     }
 
-    if (m_pRouteHandler->getIpv6PrefixLength(pReqInfo->pNetAgentCmdObj, &ipv6PrefixLength) != NETLINK_RET_SUCCESS) {
+    if (m_pRouteHandler->getIpv6PrefixLength(pReqInfo->pNetAgentCmdObj, &ipv6PrefixLength) !=
+        NETLINK_RET_SUCCESS) {
         NA_LOG_E("[%s] fail to get ipv6PrefixLength", __FUNCTION__);
         return;
     }
 
-    if (m_pRouteHandler->getInterfaceId(pReqInfo->pNetAgentCmdObj, &interfaceId) != NETLINK_RET_SUCCESS) {
+    if (m_pRouteHandler->getInterfaceId(pReqInfo->pNetAgentCmdObj, &interfaceId) !=
+        NETLINK_RET_SUCCESS) {
         NA_LOG_E("[%s] fail to get interfaceId", __FUNCTION__);
         return;
     }
@@ -1573,21 +1578,24 @@ void NetAgentService::updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo) {
     }
 
     if (isIpv6Global(address)) {
-        if (m_pRouteHandler->hasLastReqInfoChanged(pReqInfo->pNetAgentCmdObj) == NETLINK_RET_REQ_INFO_NO_CHANGED
-                && mIfChgForIPV6Count == 0) {
-            NA_LOG_I("[%s] pReqInfo is not changed, un-answered ifchg is 0, no need to notify DDM", __FUNCTION__);
+        if (m_pRouteHandler->hasLastReqInfoChanged(pReqInfo->pNetAgentCmdObj) ==
+                    NETLINK_RET_REQ_INFO_NO_CHANGED &&
+            mIfChgForIPV6Count == 0) {
+            NA_LOG_I("[%s] pReqInfo is not changed, un-answered ifchg is 0, no need to notify DDM",
+                     __FUNCTION__);
             return;
         }
 
         if (action == ACTION_ADDR_REMOVED) {
-            if (isRemovedIPv6RequestByModem(interfaceId, address) == true){
+            if (isRemovedIPv6RequestByModem(interfaceId, address) == true) {
                 reomvePdnIpInfo(interfaceId, address);
                 NA_LOG_D("[%s] Don't notify ip be removed is request from modem", __FUNCTION__);
                 return;
             }
 
             if (isNeedNotifyIPv6RemovedToModem(interfaceId, address) == false) {
-                if (m_pRouteHandler->setLastReqInfo(pReqInfo->pNetAgentCmdObj) != NETLINK_RET_SUCCESS) {
+                if (m_pRouteHandler->setLastReqInfo(pReqInfo->pNetAgentCmdObj) !=
+                    NETLINK_RET_SUCCESS) {
                     NA_LOG_E("[%s] fail to set last pReqInfo", __FUNCTION__);
                 }
                 NA_LOG_I("[%s] Don't notify ho source ip be removed to modem", __FUNCTION__);
@@ -1611,7 +1619,8 @@ void NetAgentService::updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo) {
         if (isMultiHomingFeatureSupport) {
             cmd = (action == ACTION_ADDR_UPDATED) ? NETAGENT_IO_CMD_IPADD : NETAGENT_IO_CMD_IPDEL;
             result = 99;
-            confirmIpAddOrDel(interfaceId, cmd, result, NETAGENT_IO_ADDR_TYPE_IPv6, addrV6_, ipv6PrefixLength);
+            confirmIpAddOrDel(interfaceId, cmd, result, NETAGENT_IO_ADDR_TYPE_IPv6, addrV6_,
+                              ipv6PrefixLength);
         } else {
             confirmIpUpdate(interfaceId, NETAGENT_IO_ADDR_TYPE_IPv6, addrV6_, ipv6PrefixLength);
         }
@@ -1624,7 +1633,7 @@ void NetAgentService::updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo) {
     }
 }
 
-bool NetAgentService::isNoRA(const char *ipv6Addr, NA_RA *flag) {
+bool NetAgentService::isNoRA(const char* ipv6Addr, NA_RA* flag) {
     if (ipv6Addr) {
         if (strncasecmp("FE80::5A:5A:5A:22", ipv6Addr, strlen("FE80::5A:5A:5A:22")) == 0) {
             *flag = NETAGENT_IO_NO_RA_REFRESH;
@@ -1659,10 +1668,9 @@ void NetAgentService::handlePdnHandoverControl(NetAgentReqInfo* pReqInfo) {
 
     NA_ADDR_TYPE addrType = hoInfo.addr_type;
     if (NETAGENT_IO_HO_STATE_START == hoInfo.hostate) {
-        NA_LOG_D("[%s] tid: %d, hostate: %s, result: %s, src_ran: %s, tgt_ran: %s",
-                __FUNCTION__, tranId, hoStateToString(hoInfo.hostate),
-                hoResultToString(hoInfo.is_succ), ranTypeToString(hoInfo.src_ran),
-                ranTypeToString(hoInfo.tgt_ran));
+        NA_LOG_D("[%s] tid: %d, hostate: %s, result: %s, src_ran: %s, tgt_ran: %s", __FUNCTION__,
+                 tranId, hoStateToString(hoInfo.hostate), hoResultToString(hoInfo.is_succ),
+                 ranTypeToString(hoInfo.src_ran), ranTypeToString(hoInfo.tgt_ran));
         if (NETAGENT_IO_HO_RESULT_SUCCESS == hoInfo.is_succ) {
             switch (addrType) {
                 case NETAGENT_IO_ADDR_TYPE_IPv4:
@@ -1682,15 +1690,14 @@ void NetAgentService::handlePdnHandoverControl(NetAgentReqInfo* pReqInfo) {
         }
 
     } else if (NETAGENT_IO_HO_STATE_STOP == hoInfo.hostate) {
-        bool needFlushIpsecPolicy =
-                hoInfo.is_succ == NETAGENT_IO_HO_RESULT_SUCCESS &&
-                hoInfo.src_ran == NETAGENT_IO_HO_RAN_WIFI &&
-                hoInfo.tgt_ran == NETAGENT_IO_HO_RAN_MOBILE;
+        bool needFlushIpsecPolicy = hoInfo.is_succ == NETAGENT_IO_HO_RESULT_SUCCESS &&
+                                    hoInfo.src_ran == NETAGENT_IO_HO_RAN_WIFI &&
+                                    hoInfo.tgt_ran == NETAGENT_IO_HO_RAN_MOBILE;
 
         NA_LOG_D("[%s] tid: %d, hostate: %s, result: %s, src_ran: %s, tgt_ran: %s, flush_ipsec: %d",
-                __FUNCTION__, tranId, hoStateToString(hoInfo.hostate),
-                hoResultToString(hoInfo.is_succ), ranTypeToString(hoInfo.src_ran),
-                ranTypeToString(hoInfo.tgt_ran), needFlushIpsecPolicy);
+                 __FUNCTION__, tranId, hoStateToString(hoInfo.hostate),
+                 hoResultToString(hoInfo.is_succ), ranTypeToString(hoInfo.src_ran),
+                 ranTypeToString(hoInfo.tgt_ran), needFlushIpsecPolicy);
 
         if (needFlushIpsecPolicy) {
             clearIpsec(interfaceId);
@@ -1700,12 +1707,12 @@ void NetAgentService::handlePdnHandoverControl(NetAgentReqInfo* pReqInfo) {
     }
 }
 
-NetAgentPdnInfo *NetAgentService::recordPdnHandoverInfo(
-        unsigned int interfaceId, NA_ADDR_TYPE addrType, char *addressV4, char *addressV6) {
-
-    NetAgentPdnInfo *pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
+NetAgentPdnInfo* NetAgentService::recordPdnHandoverInfo(unsigned int interfaceId,
+                                                        NA_ADDR_TYPE addrType, char* addressV4,
+                                                        char* addressV6) {
+    NetAgentPdnInfo* pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
     if (pPdnSrcInfo == NULL) {
-        pPdnSrcInfo = (NetAgentPdnInfo *)calloc(1, sizeof(NetAgentPdnInfo));
+        pPdnSrcInfo = (NetAgentPdnInfo*)calloc(1, sizeof(NetAgentPdnInfo));
         if (pPdnSrcInfo == NULL) {
             NA_LOG_E("[%s] can't allocate NetAgentPdnInfo", __FUNCTION__);
             return NULL;
@@ -1718,19 +1725,19 @@ NetAgentPdnInfo *NetAgentService::recordPdnHandoverInfo(
     switch (addrType) {
         case NETAGENT_IO_ADDR_TYPE_IPv4:
             memcpy(pPdnSrcInfo->addressV4, addressV4, MAX_IPV4_ADDRESS_LENGTH);
-            NA_LOG_D("[%s] interfaceId: %d, addrType: %s, addressV4: %s",
-                    __FUNCTION__, interfaceId, addrTypeToString(addrType), addressV4);
+            NA_LOG_D("[%s] interfaceId: %d, addrType: %s, addressV4: %s", __FUNCTION__, interfaceId,
+                     addrTypeToString(addrType), addressV4);
             break;
         case NETAGENT_IO_ADDR_TYPE_IPv6:
             memcpy(pPdnSrcInfo->addressV6, addressV6, MAX_IPV6_ADDRESS_LENGTH);
-            NA_LOG_D("[%s] interfaceId: %d, addrType: %s, addressV6: %s",
-                    __FUNCTION__, interfaceId, addrTypeToString(addrType), addressV4);
+            NA_LOG_D("[%s] interfaceId: %d, addrType: %s, addressV6: %s", __FUNCTION__, interfaceId,
+                     addrTypeToString(addrType), addressV4);
             break;
         case NETAGENT_IO_ADDR_TYPE_IPv4v6:
             memcpy(pPdnSrcInfo->addressV4, addressV4, MAX_IPV4_ADDRESS_LENGTH);
             memcpy(pPdnSrcInfo->addressV6, addressV6, MAX_IPV6_ADDRESS_LENGTH);
             NA_LOG_D("[%s] interfaceId: %d, addrType: %s, addressV4: %s, addressV6: %s",
-                    __FUNCTION__, interfaceId, addrTypeToString(addrType), addressV4, addressV6);
+                     __FUNCTION__, interfaceId, addrTypeToString(addrType), addressV4, addressV6);
             break;
         default:
             // No address, shall not go to here.
@@ -1741,7 +1748,7 @@ NetAgentPdnInfo *NetAgentService::recordPdnHandoverInfo(
     return pPdnSrcInfo;
 }
 
-NetAgentPdnInfo *NetAgentService::getPdnHandoverInfo(unsigned int interfaceId) {
+NetAgentPdnInfo* NetAgentService::getPdnHandoverInfo(unsigned int interfaceId) {
     if (m_pdnHoInfoMap.count(interfaceId) > 0) {
         return m_pdnHoInfoMap[interfaceId];
     }
@@ -1750,7 +1757,7 @@ NetAgentPdnInfo *NetAgentService::getPdnHandoverInfo(unsigned int interfaceId) {
 
 bool NetAgentService::clearPdnHandoverInfo(unsigned int interfaceId) {
     if (m_pdnHoInfoMap.count(interfaceId) > 0) {
-        NetAgentPdnInfo *pPdnSrcInfo = m_pdnHoInfoMap[interfaceId];
+        NetAgentPdnInfo* pPdnSrcInfo = m_pdnHoInfoMap[interfaceId];
         m_pdnHoInfoMap.erase(interfaceId);
         if (pPdnSrcInfo != NULL) {
             free(pPdnSrcInfo);
@@ -1762,7 +1769,7 @@ bool NetAgentService::clearPdnHandoverInfo(unsigned int interfaceId) {
 }
 
 void NetAgentService::clearIpsec(unsigned int interfaceId) {
-    NetAgentPdnInfo *pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
+    NetAgentPdnInfo* pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
     if (pPdnSrcInfo != NULL) {
         switch (pPdnSrcInfo->addrType) {
             case NETAGENT_IO_ADDR_TYPE_IPv4:
@@ -1790,7 +1797,7 @@ void NetAgentService::updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo) {
     NA_ADDR_TYPE addrType;
     char addressV4[MAX_IPV4_ADDRESS_LENGTH] = {0};
     char addressV6[MAX_IPV6_ADDRESS_LENGTH] = {0};
-    char *reason = NULL;
+    char* reason = NULL;
     unsigned int addrV4_;
     unsigned int addrV6_[4];
 
@@ -1810,8 +1817,8 @@ void NetAgentService::updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo) {
         reason = NULL;
     }
 
-    NA_LOG_I("[%s] update interface %d, addr type : %s(%d), reason: %s", __FUNCTION__,
-                interfaceId, addrTypeToString(addrType), addrType, reason != NULL ? reason : "");
+    NA_LOG_I("[%s] update interface %d, addr type : %s(%d), reason: %s", __FUNCTION__, interfaceId,
+             addrTypeToString(addrType), addrType, reason != NULL ? reason : "");
 
     memset(&ifr, 0, sizeof(struct ifreq));
     snprintf(ifr.ifr_name, IFNAMSIZ, "%s%d", getCcmniInterfaceName(), interfaceId);
@@ -1851,7 +1858,7 @@ void NetAgentService::updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo) {
             break;
     }
 
-    NetAgentPdnInfo *pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
+    NetAgentPdnInfo* pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
     if (pPdnSrcInfo == NULL) {
         NA_LOG_E("[%s] Can't find NetAgentPdnInfo for tid: %d", __FUNCTION__, interfaceId);
         return;
@@ -1868,19 +1875,19 @@ void NetAgentService::updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo) {
             NA_LOG_D("[%s] remove addressV6: %s", __FUNCTION__, pPdnSrcInfo->addressV6);
             break;
         case NETAGENT_IO_ADDR_TYPE_IPv4v6:
-            if(addrType == NETAGENT_IO_ADDR_TYPE_IPv4) {
+            if (addrType == NETAGENT_IO_ADDR_TYPE_IPv4) {
                 ifc_del_address(ifr.ifr_name, pPdnSrcInfo->addressV4, IPV4_REFIX_LENGTH);
-                NA_LOG_D("[%s] remove addressV4: %s because only addressV4 change",
-                        __FUNCTION__, pPdnSrcInfo->addressV4);
-            } else if(addrType == NETAGENT_IO_ADDR_TYPE_IPv6) {
+                NA_LOG_D("[%s] remove addressV4: %s because only addressV4 change", __FUNCTION__,
+                         pPdnSrcInfo->addressV4);
+            } else if (addrType == NETAGENT_IO_ADDR_TYPE_IPv6) {
                 ifc_del_address(ifr.ifr_name, pPdnSrcInfo->addressV6, IPV6_REFIX_LENGTH);
-                NA_LOG_D("[%s] remove addressV6: %s because only addressV6 change",
-                        __FUNCTION__, pPdnSrcInfo->addressV6);
+                NA_LOG_D("[%s] remove addressV6: %s because only addressV6 change", __FUNCTION__,
+                         pPdnSrcInfo->addressV6);
             } else {
                 ifc_del_address(ifr.ifr_name, pPdnSrcInfo->addressV4, IPV4_REFIX_LENGTH);
                 ifc_del_address(ifr.ifr_name, pPdnSrcInfo->addressV6, IPV6_REFIX_LENGTH);
-                NA_LOG_D("[%s] remove addressV4: %s, addressV6: %s",
-                        __FUNCTION__, pPdnSrcInfo->addressV4, pPdnSrcInfo->addressV6);
+                NA_LOG_D("[%s] remove addressV4: %s, addressV6: %s", __FUNCTION__,
+                         pPdnSrcInfo->addressV4, pPdnSrcInfo->addressV6);
             }
             break;
         default:
@@ -1888,14 +1895,12 @@ void NetAgentService::updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo) {
             break;
     }
 
-    //send comfirm to modem
+    // send comfirm to modem
     switch (addrType) {
         case NETAGENT_IO_ADDR_TYPE_IPv4:
         case NETAGENT_IO_ADDR_TYPE_IPv4v6:
-            confirmIpUpdate(interfaceId,
-                    NETAGENT_IO_ADDR_TYPE_IPv4,
-                    &addrV4_,
-                    INVALID_IPV6_PREFIX_LENGTH);
+            confirmIpUpdate(interfaceId, NETAGENT_IO_ADDR_TYPE_IPv4, &addrV4_,
+                            INVALID_IPV6_PREFIX_LENGTH);
             break;
         default:
             // No address, shall not go to here.
@@ -1912,9 +1917,8 @@ of interface before handover.
 @param delAddr IPv6 address be removed from kernel
 */
 bool NetAgentService::isNeedNotifyIPv6RemovedToModem(unsigned int interfaceId, char* delAddr) {
-
     unsigned int addrV6_[4];
-    NetAgentPdnInfo *pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
+    NetAgentPdnInfo* pPdnSrcInfo = getPdnHandoverInfo(interfaceId);
 
     if (pPdnSrcInfo == NULL) {
         NA_LOG_E("[%s] can not found PdnSrcInfo", __FUNCTION__);
@@ -1931,14 +1935,15 @@ bool NetAgentService::isNeedNotifyIPv6RemovedToModem(unsigned int interfaceId, c
             if (convertIpv6ToBinary(addrV6_, delAddr) < 0) {
                 NA_LOG_E("[%s] fail to convert ipv6 address to binary", __FUNCTION__);
                 return true;
-             }
+            }
 
             if (convertIpv6ToString(delAddr, addrV6_) < 0) {
                 NA_LOG_E("[%s] error occurs when converting ipv6 to string", __FUNCTION__);
                 return true;
             }
 
-            NA_LOG_I("[%s] compare PdnSrcInfo IPv6:%s, Netlink removed IPv6:%s", __FUNCTION__, pPdnSrcInfo->addressV6, delAddr);
+            NA_LOG_I("[%s] compare PdnSrcInfo IPv6:%s, Netlink removed IPv6:%s", __FUNCTION__,
+                     pPdnSrcInfo->addressV6, delAddr);
             if (strncmp(delAddr, pPdnSrcInfo->addressV6, strlen(delAddr)) == 0) {
                 return false;
             }
@@ -1950,8 +1955,9 @@ bool NetAgentService::isNeedNotifyIPv6RemovedToModem(unsigned int interfaceId, c
     return true;
 }
 
-void NetAgentService::confirmInterfaceState(unsigned int interfaceId, NA_IFST state, NA_ADDR_TYPE addrType) {
-    void *pNetAgentCmdObj = 0;
+void NetAgentService::confirmInterfaceState(unsigned int interfaceId, NA_IFST state,
+                                            NA_ADDR_TYPE addrType) {
+    void* pNetAgentCmdObj = 0;
 
     int nTransIntfId = getTransIntfId(interfaceId);
     if (INVALID_TRANS_INTF_ID != nTransIntfId) {
@@ -1965,8 +1971,9 @@ void NetAgentService::confirmInterfaceState(unsigned int interfaceId, NA_IFST st
     }
 }
 
-void NetAgentService::confirmIpUpdate(unsigned int interfaceId, NA_ADDR_TYPE addrType, unsigned int* addr, int ipv6PrefixLength) {
-    void *pNetAgentCmdObj = 0;
+void NetAgentService::confirmIpUpdate(unsigned int interfaceId, NA_ADDR_TYPE addrType,
+                                      unsigned int* addr, int ipv6PrefixLength) {
+    void* pNetAgentCmdObj = 0;
 
     int nTransIntfId = getTransIntfId(interfaceId);
     if (INVALID_TRANS_INTF_ID != nTransIntfId) {
@@ -1984,7 +1991,7 @@ void NetAgentService::confirmIpUpdate(unsigned int interfaceId, NA_ADDR_TYPE add
 }
 
 void NetAgentService::confirmNoRA(unsigned int interfaceId, NA_RA flag) {
-    void *pNetAgentCmdObj = 0;
+    void* pNetAgentCmdObj = 0;
 
     int nTransIntfId = getTransIntfId(interfaceId);
     if (INVALID_TRANS_INTF_ID != nTransIntfId) {
@@ -2001,40 +2008,44 @@ void NetAgentService::confirmNoRA(unsigned int interfaceId, NA_RA flag) {
 void NetAgentService::confirmPdnHandoverControl(unsigned int tranId) {
     NA_LOG_D("[%s] tranId %d", __FUNCTION__, tranId);
 
-    void *pNetAgentCmdObj = NA_CMD_PDNHO_ALLOC(tranId);
+    void* pNetAgentCmdObj = NA_CMD_PDNHO_ALLOC(tranId);
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] send PDN handover confirm fail", __FUNCTION__);
     }
     NA_CMD_FREE(pNetAgentCmdObj);
 }
 
-void NetAgentService::confirmIpAddOrDel(unsigned int interfaceId, netagent_io_cmd_e cmd, int result, NA_ADDR_TYPE addrType, unsigned int* addr, int ipv6PrefixLength) {
-    void *pNetAgentCmdObj = 0;
+void NetAgentService::confirmIpAddOrDel(unsigned int interfaceId, netagent_io_cmd_e cmd, int result,
+                                        NA_ADDR_TYPE addrType, unsigned int* addr,
+                                        int ipv6PrefixLength) {
+    void* pNetAgentCmdObj = 0;
 
     int nTransIntfId = getTransIntfId(interfaceId);
     if (INVALID_TRANS_INTF_ID != nTransIntfId) {
-        pNetAgentCmdObj = NA_CMD_IP_ADD_DEL_ALLOC(nTransIntfId, cmd, result, addrType, addr, ipv6PrefixLength);
+        pNetAgentCmdObj = NA_CMD_IP_ADD_DEL_ALLOC(nTransIntfId, cmd, result, addrType, addr,
+                                                  ipv6PrefixLength);
         if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
-           NA_LOG_E("[%s] send IpUpdate confirm fail", __FUNCTION__);
+            NA_LOG_E("[%s] send IpUpdate confirm fail", __FUNCTION__);
         }
         NA_CMD_FREE(pNetAgentCmdObj);
     } else {
-        NA_LOG_E("[%s] can't get transaction id, ignore to send cinfirm, cmd:%d", __FUNCTION__, cmd);
+        NA_LOG_E("[%s] can't get transaction id, ignore to send cinfirm, cmd:%d", __FUNCTION__,
+                 cmd);
     }
 }
 
 void NetAgentService::confirmTcpUdpRsvn(unsigned int transactionId, NA_CMD cmd,
-        unsigned int rsvnAction, unsigned int response) {
-    void *pNetAgentCmdObj = NA_CMD_RSVN_ALLOC(transactionId, cmd, rsvnAction, response);
+                                        unsigned int rsvnAction, unsigned int response) {
+    void* pNetAgentCmdObj = NA_CMD_RSVN_ALLOC(transactionId, cmd, rsvnAction, response);
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] send TcpUdpRsvn confirm fail", __FUNCTION__);
     }
     NA_CMD_FREE(pNetAgentCmdObj);
 }
 
-void NetAgentService::confirmSpi(unsigned int transactionId,
-        unsigned int spiAction, unsigned int response) {
-    void *pNetAgentCmdObj = NA_CMD_SPI_ALLOC(transactionId, spiAction, response);
+void NetAgentService::confirmSpi(unsigned int transactionId, unsigned int spiAction,
+                                 unsigned int response) {
+    void* pNetAgentCmdObj = NA_CMD_SPI_ALLOC(transactionId, spiAction, response);
     if (NA_CMD_SEND(m_pNetAgentIoObj, pNetAgentCmdObj) != NETAGENT_IO_RET_SUCCESS) {
         NA_LOG_E("[%s] send spi confirm fail", __FUNCTION__);
     }
@@ -2042,16 +2053,15 @@ void NetAgentService::confirmSpi(unsigned int transactionId,
 }
 
 void NetAgentService::startNetlinkEventHandler(void) {
-    if ((m_pRouteHandler = setupSocket(&mRouteSock, NETLINK_ROUTE,
-                                      RTMGRP_IPV6_IFADDR | RTMGRP_IPV6_PREFIX,
-                                      NetlinkListener::NETLINK_FORMAT_BINARY)) == NULL) {
+    if ((m_pRouteHandler =
+                 setupSocket(&mRouteSock, NETLINK_ROUTE, RTMGRP_IPV6_IFADDR | RTMGRP_IPV6_PREFIX,
+                             NetlinkListener::NETLINK_FORMAT_BINARY)) == NULL) {
         NA_LOG_E("[%s] setup socket fail", __FUNCTION__);
     }
 }
 
-NetlinkEventHandler *NetAgentService::setupSocket(int *sock, int netlinkFamily,
-        int groups, int format) {
-
+NetlinkEventHandler* NetAgentService::setupSocket(int* sock, int netlinkFamily, int groups,
+                                                  int format) {
     struct sockaddr_nl nladdr;
     int sz = 64 * 1024;
     int on = 1;
@@ -2067,26 +2077,26 @@ NetlinkEventHandler *NetAgentService::setupSocket(int *sock, int netlinkFamily,
     }
 
     if (setsockopt(*sock, SOL_SOCKET, SO_RCVBUFFORCE, &sz, sizeof(sz)) < 0) {
-        NA_LOG_E("[%s] Unable to set uevent socket SO_RCVBUFFORCE option: %s",
-                __FUNCTION__, strerror(errno));
+        NA_LOG_E("[%s] Unable to set uevent socket SO_RCVBUFFORCE option: %s", __FUNCTION__,
+                 strerror(errno));
         close(*sock);
         return NULL;
     }
 
     if (setsockopt(*sock, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on)) < 0) {
-        NA_LOG_E("[%s] Unable to set uevent socket SO_PASSCRED option: %s",
-                __FUNCTION__, strerror(errno));
+        NA_LOG_E("[%s] Unable to set uevent socket SO_PASSCRED option: %s", __FUNCTION__,
+                 strerror(errno));
         close(*sock);
         return NULL;
     }
 
-    if (bind(*sock, (struct sockaddr *) &nladdr, sizeof(nladdr)) < 0) {
+    if (bind(*sock, (struct sockaddr*)&nladdr, sizeof(nladdr)) < 0) {
         NA_LOG_E("[%s] Unable to bind netlink socket: %s", __FUNCTION__, strerror(errno));
         close(*sock);
         return NULL;
     }
 
-    NetlinkEventHandler *handler = new NetlinkEventHandler(this, *sock, format);
+    NetlinkEventHandler* handler = new NetlinkEventHandler(this, *sock, format);
     if (handler == NULL) {
         NA_LOG_E("[%s] new NetlinkEventHandler fail", __FUNCTION__);
         close(*sock);
@@ -2104,7 +2114,7 @@ NetlinkEventHandler *NetAgentService::setupSocket(int *sock, int netlinkFamily,
     return handler;
 }
 
-bool NetAgentService::isIpv6Global(const char *ipv6Addr) {
+bool NetAgentService::isIpv6Global(const char* ipv6Addr) {
     if (ipv6Addr) {
         struct sockaddr_in6 sa;
         int ret = 0;
@@ -2156,7 +2166,7 @@ bool NetAgentService::isIpv6Global(const char *ipv6Addr) {
     return false;
 }
 
-int NetAgentService::getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD *cmd) {
+int NetAgentService::getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD* cmd) {
     if (reqType == REQUEST_TYPE_DDM) {
         if (NA_CMD_TYPE(obj, cmd) != NETAGENT_IO_RET_SUCCESS) {
             NA_LOG_E("[%s] get %s command fail", __FUNCTION__, reqTypeToString(reqType));
@@ -2168,7 +2178,7 @@ int NetAgentService::getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD *cmd) {
             return -1;
         }
     } else if (reqType == REQUEST_TYPE_NETAGENT) {
-        NetEventReqInfo *pNetEventReqInfo = (NetEventReqInfo *)obj;
+        NetEventReqInfo* pNetEventReqInfo = (NetEventReqInfo*)obj;
         *cmd = pNetEventReqInfo->cmd;
     } else {
         NA_LOG_E("[%s] request is %s(%d)", __FUNCTION__, reqTypeToString(reqType), reqType);
@@ -2177,7 +2187,7 @@ int NetAgentService::getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD *cmd) {
     return 0;
 }
 
-void NetAgentService::getIpv4Address(void *obj, char *addressV4) {
+void NetAgentService::getIpv4Address(void* obj, char* addressV4) {
     unsigned int addrV4_;
     if (NA_GET_ADDR_V4(obj, &addrV4_) == NETAGENT_IO_RET_SUCCESS) {
         if (addrV4_ != 0) {
@@ -2192,7 +2202,7 @@ void NetAgentService::getIpv4Address(void *obj, char *addressV4) {
     }
 }
 
-void NetAgentService::getIpv6Address(void *obj, char *addressV6) {
+void NetAgentService::getIpv6Address(void* obj, char* addressV6) {
     unsigned int addrV6_[4];
     if (NA_GET_ADDR_V6(obj, addrV6_) == NETAGENT_IO_RET_SUCCESS) {
         if (!(addrV6_[0] == 0 && addrV6_[1] == 0 && addrV6_[2] == 0 && addrV6_[3] == 0)) {
@@ -2207,12 +2217,12 @@ void NetAgentService::getIpv6Address(void *obj, char *addressV6) {
     }
 }
 
-void NetAgentService::getIpv4v6Address(void *obj, char *addressV4, char *addressV6) {
+void NetAgentService::getIpv4v6Address(void* obj, char* addressV4, char* addressV6) {
     getIpv4Address(obj, addressV4);
     getIpv6Address(obj, addressV6);
 }
 
-int NetAgentService::convertIpv6ToBinary(unsigned int *output, char *input) {
+int NetAgentService::convertIpv6ToBinary(unsigned int* output, char* input) {
     int ret = 1;
     struct in6_addr v6Address;
     memset(&v6Address, 0, sizeof(v6Address));
@@ -2225,31 +2235,33 @@ int NetAgentService::convertIpv6ToBinary(unsigned int *output, char *input) {
     return -1;
 }
 
-int NetAgentService::convertIpv4ToString(char *output, unsigned int *input) {
-    unsigned char *address = reinterpret_cast<unsigned char *>(input);
+int NetAgentService::convertIpv4ToString(char* output, unsigned int* input) {
+    unsigned char* address = reinterpret_cast<unsigned char*>(input);
     if (output == NULL || address == NULL) {
-        NA_LOG_E("[%s] null occurs on output = %s or addressV4 = %s", __FUNCTION__, output, address);
+        NA_LOG_E("[%s] null occurs on output = %s or addressV4 = %s", __FUNCTION__, output,
+                 address);
         return -1;
     }
-    sprintf(output, "%d.%d.%d.%d", *address, *(address+1), *(address+2), *(address+3));
+    sprintf(output, "%d.%d.%d.%d", *address, *(address + 1), *(address + 2), *(address + 3));
     return 0;
 }
 
-int NetAgentService::convertIpv6ToString(char *output, unsigned int *input) {
-    unsigned char *address = reinterpret_cast<unsigned char *>(input);
+int NetAgentService::convertIpv6ToString(char* output, unsigned int* input) {
+    unsigned char* address = reinterpret_cast<unsigned char*>(input);
     if (output == NULL || address == NULL) {
-        NA_LOG_E("[%s] null occurs on output = %s or addressV6 = %s", __FUNCTION__, output, address);
+        NA_LOG_E("[%s] null occurs on output = %s or addressV6 = %s", __FUNCTION__, output,
+                 address);
         return -1;
     }
     sprintf(output, "%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X:%02X%02X",
-            *address, *(address+1), *(address+2), *(address+3),
-            *(address+4), *(address+5), *(address+6), *(address+7),
-            *(address+8), *(address+9), *(address+10), *(address+11),
-            *(address+12), *(address+13), *(address+14), *(address+15));
+            *address, *(address + 1), *(address + 2), *(address + 3), *(address + 4),
+            *(address + 5), *(address + 6), *(address + 7), *(address + 8), *(address + 9),
+            *(address + 10), *(address + 11), *(address + 12), *(address + 13), *(address + 14),
+            *(address + 15));
     return 0;
 }
 
-void NetAgentService::freeNetAgentCmdObj(NetAgentReqInfo *pReqInfo) {
+void NetAgentService::freeNetAgentCmdObj(NetAgentReqInfo* pReqInfo) {
     if (pReqInfo->reqType == REQUEST_TYPE_DDM) {
         NA_CMD_FREE(pReqInfo->pNetAgentCmdObj);
     } else if (pReqInfo->reqType == REQUEST_TYPE_NETLINK) {
@@ -2260,9 +2272,9 @@ void NetAgentService::freeNetAgentCmdObj(NetAgentReqInfo *pReqInfo) {
 }
 
 void NetAgentService::setNetworkTransmitState(int state, int transIntfId,
-        const sp<NetActionBase>& action) {
+                                              const sp<NetActionBase>& action) {
     if (isTransIntfIdMatched(transIntfId)) {
-        NetEventReqInfo *pNetEventObj = (NetEventReqInfo *)calloc(1, sizeof(NetEventReqInfo));
+        NetEventReqInfo* pNetEventObj = (NetEventReqInfo*)calloc(1, sizeof(NetEventReqInfo));
         if (pNetEventObj == NULL) {
             NA_LOG_E("[%s] can't allocate rild event obj", __FUNCTION__);
             action->ack(false);
@@ -2281,7 +2293,7 @@ void NetAgentService::setNetworkTransmitState(int state, int transIntfId,
 }
 
 void NetAgentService::configureNetworkTransmitState(NetAgentReqInfo* pReqInfo) {
-    NetEventReqInfo *pNetEventObj = (NetEventReqInfo *)pReqInfo->pNetAgentCmdObj;
+    NetEventReqInfo* pNetEventObj = (NetEventReqInfo*)pReqInfo->pNetAgentCmdObj;
     setNwTxqState(pNetEventObj->parameter.snts.interfaceId, pNetEventObj->parameter.snts.state);
     pNetEventObj->action->ack(true);
 }
@@ -2307,8 +2319,8 @@ void NetAgentService::setNwTxqState(int interfaceId, int state) {
 
     ret = ioctl(ctl_sock, SIOCSTXQSTATE, &ifr);
     if (ret < 0) {
-        NA_LOG_E("[%s] error in set SIOCSTXQSTATE:%d - %d:%s",
-                __FUNCTION__, ret, errno, strerror(errno));
+        NA_LOG_E("[%s] error in set SIOCSTXQSTATE:%d - %d:%s", __FUNCTION__, ret, errno,
+                 strerror(errno));
     } else {
         NA_LOG_I("[%s] set state as %d, ret: %d", __FUNCTION__, state, ret);
     }
@@ -2347,70 +2359,97 @@ int NetAgentService::getTransIntfId(int interfaceId) {
     return INVALID_TRANS_INTF_ID;
 }
 
-const char *NetAgentService::cmdToString(NA_CMD cmd) {
+const char* NetAgentService::cmdToString(NA_CMD cmd) {
     switch (cmd) {
-        case NETAGENT_IO_CMD_IFST: return "IFST";
-        case NETAGENT_IO_CMD_IPUPDATE: return "IPUPDATE";
-        case NETAGENT_IO_CMD_IFUP: return "IFUP";
-        case NETAGENT_IO_CMD_IFDOWN: return "IFDOWN";
-        case NETAGENT_IO_CMD_IFCHG: return "IFCHG";
-        case NETAGENT_IO_CMD_IFSTATE: return "IFSTATE";
-        case NETAGENT_IO_CMD_SETMTU: return "SETMTU";
-        case NETAGENT_IO_CMD_SYNC_CAPABILITY: return "SYNCCAP";
-        case NETAGENT_IO_CMD_PDNHO: return "PDNHO";
-        case NETAGENT_IO_CMD_IPCHG: return "IPCHG";
-        default: return "UNKNOWN";
+        case NETAGENT_IO_CMD_IFST:
+            return "IFST";
+        case NETAGENT_IO_CMD_IPUPDATE:
+            return "IPUPDATE";
+        case NETAGENT_IO_CMD_IFUP:
+            return "IFUP";
+        case NETAGENT_IO_CMD_IFDOWN:
+            return "IFDOWN";
+        case NETAGENT_IO_CMD_IFCHG:
+            return "IFCHG";
+        case NETAGENT_IO_CMD_IFSTATE:
+            return "IFSTATE";
+        case NETAGENT_IO_CMD_SETMTU:
+            return "SETMTU";
+        case NETAGENT_IO_CMD_SYNC_CAPABILITY:
+            return "SYNCCAP";
+        case NETAGENT_IO_CMD_PDNHO:
+            return "PDNHO";
+        case NETAGENT_IO_CMD_IPCHG:
+            return "IPCHG";
+        default:
+            return "UNKNOWN";
     }
 }
 
-const char *NetAgentService::addrTypeToString(NA_ADDR_TYPE addrType) {
+const char* NetAgentService::addrTypeToString(NA_ADDR_TYPE addrType) {
     switch (addrType) {
-        case NETAGENT_IO_ADDR_TYPE_IPv4: return "IPV4";
-        case NETAGENT_IO_ADDR_TYPE_IPv6: return "IPV6";
-        case NETAGENT_IO_ADDR_TYPE_IPv4v6: return "IPV4V6";
-        default: return "UNKNOWN";
+        case NETAGENT_IO_ADDR_TYPE_IPv4:
+            return "IPV4";
+        case NETAGENT_IO_ADDR_TYPE_IPv6:
+            return "IPV6";
+        case NETAGENT_IO_ADDR_TYPE_IPv4v6:
+            return "IPV4V6";
+        default:
+            return "UNKNOWN";
     }
 }
 
-const char *NetAgentService::reqTypeToString(REQUEST_TYPE reqType) {
+const char* NetAgentService::reqTypeToString(REQUEST_TYPE reqType) {
     switch (reqType) {
-        case REQUEST_TYPE_DDM: return "DDM";
-        case REQUEST_TYPE_NETLINK: return "NETLINK";
-        case REQUEST_TYPE_NETAGENT: return "NETAGENT";
-        default: return "UNKNOWN";
+        case REQUEST_TYPE_DDM:
+            return "DDM";
+        case REQUEST_TYPE_NETLINK:
+            return "NETLINK";
+        case REQUEST_TYPE_NETAGENT:
+            return "NETAGENT";
+        default:
+            return "UNKNOWN";
     }
 }
 
-const char *NetAgentService::ranTypeToString(NA_RAN_TYPE ranType) {
+const char* NetAgentService::ranTypeToString(NA_RAN_TYPE ranType) {
     switch (ranType) {
-        case NETAGENT_IO_HO_RAN_MOBILE: return "MOBILE";
-        case NETAGENT_IO_HO_RAN_WIFI: return "WIFI";
-        default: return "UNKNOWN";
+        case NETAGENT_IO_HO_RAN_MOBILE:
+            return "MOBILE";
+        case NETAGENT_IO_HO_RAN_WIFI:
+            return "WIFI";
+        default:
+            return "UNKNOWN";
     }
 }
 
-const char *NetAgentService::hoStateToString(int state) {
+const char* NetAgentService::hoStateToString(int state) {
     switch (state) {
-        case 0: return "START";
-        case 1: return "STOP";
-        default: return "UNKNOWN";
+        case 0:
+            return "START";
+        case 1:
+            return "STOP";
+        default:
+            return "UNKNOWN";
     }
 }
 
-const char *NetAgentService::hoResultToString(int result) {
+const char* NetAgentService::hoResultToString(int result) {
     switch (result) {
-        case 0: return "FAIL";
-        case 1: return "SUCCESS";
-        default: return "UNKNOWN";
+        case 0:
+            return "FAIL";
+        case 1:
+            return "SUCCESS";
+        default:
+            return "UNKNOWN";
     }
 }
 
-void NetAgentService::recordPdnIpInfo(
-        unsigned int interfaceId, NA_ADDR_TYPE addrType, char *addressV4, char *addressV6) {
+void NetAgentService::recordPdnIpInfo(unsigned int interfaceId, NA_ADDR_TYPE addrType,
+                                      char* addressV4, char* addressV6) {
+    NetAgentIpInfo* pPdnIpInfo;
 
-    NetAgentIpInfo *pPdnIpInfo;
-
-    pPdnIpInfo = (NetAgentIpInfo *)calloc(1, sizeof(NetAgentIpInfo));
+    pPdnIpInfo = (NetAgentIpInfo*)calloc(1, sizeof(NetAgentIpInfo));
     if (pPdnIpInfo == NULL) {
         NA_LOG_E("[%s] can't allocate NetAgentIpInfo", __FUNCTION__);
         return;
@@ -2422,8 +2461,8 @@ void NetAgentService::recordPdnIpInfo(
         // only save addressV6 now
         case NETAGENT_IO_ADDR_TYPE_IPv6:
             memcpy(pPdnIpInfo->addressV6, addressV6, MAX_IPV6_ADDRESS_LENGTH);
-            NA_LOG_D("[%s] interfaceId: %d, addrType: %d, addressV6: %s",
-                    __FUNCTION__, interfaceId, addrType, addressV6);
+            NA_LOG_D("[%s] interfaceId: %d, addrType: %d, addressV6: %s", __FUNCTION__, interfaceId,
+                     addrType, addressV6);
             break;
         default:
             // No address, shall not go to here.
@@ -2440,8 +2479,8 @@ bool NetAgentService::clearPdnIpInfo(unsigned int interfaceId) {
 
     while (i != m_IpInfoList.end()) {
         NetAgentIpInfo ipInfo = *i;
-        NA_LOG_D("[%s] interfaceId: %d, addressV6: %s",
-                __FUNCTION__, ipInfo.interfaceId, ipInfo.addressV6);
+        NA_LOG_D("[%s] interfaceId: %d, addressV6: %s", __FUNCTION__, ipInfo.interfaceId,
+                 ipInfo.addressV6);
         if (ipInfo.interfaceId == interfaceId) {
             m_IpInfoList.erase(i++);
         } else {
@@ -2451,11 +2490,11 @@ bool NetAgentService::clearPdnIpInfo(unsigned int interfaceId) {
     return true;
 }
 
-bool NetAgentService::isRemovedIPv6RequestByModem(unsigned int interfaceId, char *delAddr) {
+bool NetAgentService::isRemovedIPv6RequestByModem(unsigned int interfaceId, char* delAddr) {
     NetAgentIpInfoList::iterator i;
     unsigned int addrV6_[4];
 
-    for (i = m_IpInfoList.begin (); i != m_IpInfoList.end (); i++) {
+    for (i = m_IpInfoList.begin(); i != m_IpInfoList.end(); i++) {
         NetAgentIpInfo ipInfo = *i;
         if (ipInfo.interfaceId == interfaceId) {
             // compare PdnIpInfo IPv6 and Netlink removed IPv6:
@@ -2469,8 +2508,8 @@ bool NetAgentService::isRemovedIPv6RequestByModem(unsigned int interfaceId, char
                 return false;
             }
 
-            NA_LOG_I("[%s] compare NetAgentIpInfo IPv6:%s, Netlink removed IPv6:%s",
-                    __FUNCTION__, ipInfo.addressV6, delAddr);
+            NA_LOG_I("[%s] compare NetAgentIpInfo IPv6:%s, Netlink removed IPv6:%s", __FUNCTION__,
+                     ipInfo.addressV6, delAddr);
             if (strncmp(delAddr, ipInfo.addressV6, strlen(delAddr)) == 0) {
                 return true;
             }
@@ -2479,11 +2518,11 @@ bool NetAgentService::isRemovedIPv6RequestByModem(unsigned int interfaceId, char
     return false;
 }
 
-bool NetAgentService::reomvePdnIpInfo(unsigned int interfaceId, char *addressV6){
+bool NetAgentService::reomvePdnIpInfo(unsigned int interfaceId, char* addressV6) {
     NetAgentIpInfoList::iterator i;
     unsigned int addrV6_[4];
 
-    for (i = m_IpInfoList.begin (); i != m_IpInfoList.end (); i++) {
+    for (i = m_IpInfoList.begin(); i != m_IpInfoList.end(); i++) {
         NetAgentIpInfo ipInfo = *i;
         if (ipInfo.interfaceId == interfaceId) {
             // compare PdnIpInfo IPv6 and Netlink removed IPv6:
@@ -2497,8 +2536,8 @@ bool NetAgentService::reomvePdnIpInfo(unsigned int interfaceId, char *addressV6)
                 return false;
             }
 
-            NA_LOG_D("[%s] remove NetAgentIpInfo interfaceId: %d, addressV6: %s",
-                    __FUNCTION__, ipInfo.interfaceId, ipInfo.addressV6);
+            NA_LOG_D("[%s] remove NetAgentIpInfo interfaceId: %d, addressV6: %s", __FUNCTION__,
+                     ipInfo.interfaceId, ipInfo.addressV6);
             if (strncmp(addressV6, ipInfo.addressV6, strlen(addressV6)) == 0) {
                 m_IpInfoList.erase(i++);
                 return true;

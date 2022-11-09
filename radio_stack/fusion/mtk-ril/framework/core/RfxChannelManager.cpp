@@ -19,7 +19,7 @@
 
 #define RFX_LOG_TAG "RfxChannelMgr"
 
-RfxChannelManager *RfxChannelManager::sSelf = NULL;
+RfxChannelManager* RfxChannelManager::sSelf = NULL;
 int RfxChannelManager::sFdsForGt[RIL_SUPPORT_CHANNELS];
 int RfxChannelManager::sMainSim = 1;
 
@@ -40,9 +40,7 @@ void RfxChannelManager::setChannelFdForGT(int* testChannelFd) {
     }
 }
 
-int RfxChannelManager::getChannelFdForGT(int channelId) {
-    return sFdsForGt[channelId];
-}
+int RfxChannelManager::getChannelFdForGT(int channelId) { return sFdsForGt[channelId]; }
 
 void RfxChannelManager::init() {
     sSelf = new RfxChannelManager();
@@ -57,17 +55,15 @@ void RfxChannelManager::init() {
 }
 
 RfxSender* RfxChannelManager::getSender(int channelId) {
-   RFX_ASSERT(channelId >= 0 && channelId < getSupportChannels());
-   return sSelf->mChannels[channelId]->getSender();
+    RFX_ASSERT(channelId >= 0 && channelId < getSupportChannels());
+    return sSelf->mChannels[channelId]->getSender();
 }
 
-RfxChannel* RfxChannelManager::getChannel(int channelId) {
-    return sSelf->mChannels[channelId];
-}
+RfxChannel* RfxChannelManager::getChannel(int channelId) { return sSelf->mChannels[channelId]; }
 
 int RfxChannelManager::getSupportChannels() {
     int supportChannels = 0;
-    switch(RfxRilUtils::rfxGetSimCount()) {
+    switch (RfxRilUtils::rfxGetSimCount()) {
         case 2:
             supportChannels = RIL_CHANNEL_SET3_OFFSET;
             break;
@@ -110,7 +106,7 @@ void RfxChannelManager::initMuxPath() {
         }
     }
 #endif
-    memcpy(muxPath, muxPathInit, RIL_SUPPORT_CHANNELS*RIL_SUPPORT_CHANNELS_MAX_NAME_LEN);
+    memcpy(muxPath, muxPathInit, RIL_SUPPORT_CHANNELS * RIL_SUPPORT_CHANNELS_MAX_NAME_LEN);
     if (RFX_SLOT_COUNT >= 2) {
         int targetSim = 0;
 
@@ -123,14 +119,14 @@ void RfxChannelManager::initMuxPath() {
         RFX_LOG_D(RFX_LOG_TAG, "targetSim : %d", targetSim);
         sMainSim = targetSim;
 
-        if(targetSim*RIL_CHANNEL_OFFSET > getSupportChannels()) {
+        if (targetSim * RIL_CHANNEL_OFFSET > getSupportChannels()) {
             RFX_LOG_E(RFX_LOG_TAG, "!!!! targetSim*RIL_CHANNEL_OFFSET > RIL_SUPPORT_CHANNELS");
             RFX_ASSERT(0);
         } else if (targetSim != 1) {
             switchMuxPath(targetSim);
         }
     }
-    for(int i = 0; i < getSupportChannels(); i++) {
+    for (int i = 0; i < getSupportChannels(); i++) {
         RFX_LOG_D(RFX_LOG_TAG, "mux_path[%d] = %s", i, muxPath[i]);
     }
     RFX_LOG_D(RFX_LOG_TAG, "initMuxPath end");
@@ -141,26 +137,25 @@ void RfxChannelManager::switchMuxPath(int majorSim) {
         char mux_path_tmp[RIL_CHANNEL_OFFSET][RIL_SUPPORT_CHANNELS_MAX_NAME_LEN] = {{0}};
         // exchange mux channel for SIM switch
         // -1 is special handle for ViLTE IMS channel, they do not need to switch path
-        for(int i = 0; i < RIL_CHANNEL_OFFSET-1; i++) {
-            strncpy(mux_path_tmp[i], muxPath[(majorSim-1)*RIL_CHANNEL_OFFSET+i],
-                    RIL_SUPPORT_CHANNELS_MAX_NAME_LEN-1);
-            strncpy(muxPath[(majorSim-1)*RIL_CHANNEL_OFFSET+i], muxPath[i],
-                    RIL_SUPPORT_CHANNELS_MAX_NAME_LEN-1);
-            strncpy(muxPath[i], mux_path_tmp[i],
-                    RIL_SUPPORT_CHANNELS_MAX_NAME_LEN-1);
+        for (int i = 0; i < RIL_CHANNEL_OFFSET - 1; i++) {
+            strncpy(mux_path_tmp[i], muxPath[(majorSim - 1) * RIL_CHANNEL_OFFSET + i],
+                    RIL_SUPPORT_CHANNELS_MAX_NAME_LEN - 1);
+            strncpy(muxPath[(majorSim - 1) * RIL_CHANNEL_OFFSET + i], muxPath[i],
+                    RIL_SUPPORT_CHANNELS_MAX_NAME_LEN - 1);
+            strncpy(muxPath[i], mux_path_tmp[i], RIL_SUPPORT_CHANNELS_MAX_NAME_LEN - 1);
         }
     } else {
         int supportChannels = getSupportChannels();
         int j = RIL_CHANNEL_OFFSET;
-        for(int i = 0; i < supportChannels; i++) {
-            if (i / RIL_CHANNEL_OFFSET == majorSim - 1) {  // copy major sim
+        for (int i = 0; i < supportChannels; i++) {
+            if (i / RIL_CHANNEL_OFFSET == majorSim - 1) {     // copy major sim
                 if (i % RIL_CHANNEL_OFFSET != RIL_CMD_IMS) {  // skip ViLTE IMS channel
                     strncpy(muxPath[i], muxPathInit[i % RIL_CHANNEL_OFFSET],
-                            RIL_SUPPORT_CHANNELS_MAX_NAME_LEN-1);
+                            RIL_SUPPORT_CHANNELS_MAX_NAME_LEN - 1);
                 }
-            } else {  // copy others
+            } else {                                          // copy others
                 if (j % RIL_CHANNEL_OFFSET != RIL_CMD_IMS) {  // skip ViLTE IMS channel
-                    strncpy(muxPath[i], muxPathInit[j], RIL_SUPPORT_CHANNELS_MAX_NAME_LEN-1);
+                    strncpy(muxPath[i], muxPathInit[j], RIL_SUPPORT_CHANNELS_MAX_NAME_LEN - 1);
                 }
                 j++;
             }
@@ -400,6 +395,4 @@ void RfxChannelManager::initOtherChannel() {
     }
 }
 
-int RfxChannelManager::getMainChannelSim() {
-    return sMainSim;
-}
+int RfxChannelManager::getMainChannelSim() { return sMainSim; }

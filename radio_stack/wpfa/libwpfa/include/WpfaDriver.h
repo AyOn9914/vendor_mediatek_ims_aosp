@@ -35,17 +35,17 @@ using ::android::Mutex;
  * =============================================================================
  */
 #define DRIVER_TID_START (0)
-#define DRIVER_TID_END   (99)
+#define DRIVER_TID_END (99)
 
 #ifndef WPFA_D_ASSERT
-#define WPFA_D_ASSERT(_expr)                                                        \
-        do {                                                                        \
-            if (!(_expr)) {                                                         \
-                mtkLogE("Wpfa", "DRIVER_ASSERT:%s, %d", __FILE__, __LINE__);        \
-                mtkAssert(NULL);                                                    \
-                exit(0);                                                            \
-            }                                                                       \
-        } while(0)
+#define WPFA_D_ASSERT(_expr)                                             \
+    do {                                                                 \
+        if (!(_expr)) {                                                  \
+            mtkLogE("Wpfa", "DRIVER_ASSERT:%s, %d", __FILE__, __LINE__); \
+            mtkAssert(NULL);                                             \
+            exit(0);                                                     \
+        }                                                                \
+    } while (0)
 #endif
 
 /*
@@ -54,12 +54,12 @@ using ::android::Mutex;
  * =============================================================================
  */
 
- /**
+/**
  * callback function prototype
  */
-typedef int(*CallbackFunc)(void *);
+typedef int (*CallbackFunc)(void*);
 
- /**
+/**
  * callback function structure
  */
 struct CallbackStruc {
@@ -72,25 +72,23 @@ struct CallbackStruc {
  * =============================================================================
  */
 class WpfaDriver {
-public:
+  public:
     WpfaDriver();
     virtual ~WpfaDriver();
-    static WpfaDriver *getInstance();
+    static WpfaDriver* getInstance();
     void init();
 
     int registerCallback(event_id_enum eventId, CallbackFunc callbackFunc);
     int unregisterCallback(event_id_enum eventId);
-    int notifyCallback(event_id_enum eventId, void *notifyArg);
+    int notifyCallback(event_id_enum eventId, void* notifyArg);
 
     int notifyWpfaInit();
     int notifyWpfaVersion(uint16_t apVer, uint16_t mdVer);
 
-    int sendDataPackageToModem(WpfaRingBuffer *ringBuffer);
+    int sendDataPackageToModem(WpfaRingBuffer* ringBuffer);
 
-protected:
-
-
-private:
+  protected:
+  private:
     int checkDriverAdapterState();
     int checkShmControllerState();
     int addCallback(event_id_enum eventId, CallbackFunc callbackFunc);
@@ -101,16 +99,15 @@ private:
     /**
      * singleton pattern
      */
-    static WpfaDriver *sInstance;
+    static WpfaDriver* sInstance;
     static Mutex sWpfaDriverInitMutex;
 
     std::map<int, CallbackStruc> mapCallbackFunc;
 
-    WpfaDriverAdapter *mWpfaDriverAdapter;
-    WpfaShmSynchronizer *mWpfaShmSynchronizer;
+    WpfaDriverAdapter* mWpfaDriverAdapter;
+    WpfaShmSynchronizer* mWpfaShmSynchronizer;
 
     uint16_t mDriverTid;
-
 };
 
 #endif /* end of WPAF_DRIVER_H */

@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimStatusData);
 
-RfxSimStatusData::RfxSimStatusData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimStatusData::RfxSimStatusData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_CardStatus_v8 *pCard = (RIL_CardStatus_v8*)_data;
-        RIL_CardStatus_v8 *pData = (RIL_CardStatus_v8*)calloc(1, sizeof(RIL_CardStatus_v8));
+        RIL_CardStatus_v8* pCard = (RIL_CardStatus_v8*)_data;
+        RIL_CardStatus_v8* pData = (RIL_CardStatus_v8*)calloc(1, sizeof(RIL_CardStatus_v8));
         RFX_ASSERT(pData != NULL);
         pData->card_state = pCard->card_state;
         pData->universal_pin_state = pCard->universal_pin_state;
@@ -39,8 +39,8 @@ RfxSimStatusData::RfxSimStatusData(void *_data, int _length) : RfxBaseData(_data
                 asprintf(&pData->applications[i].aid_ptr, "%s", pCard->applications[i].aid_ptr);
             }
             if (pCard->applications[i].app_label_ptr != NULL) {
-                asprintf(&pData->applications[i].app_label_ptr,
-                        "%s", pCard->applications[i].app_label_ptr);
+                asprintf(&pData->applications[i].app_label_ptr, "%s",
+                         pCard->applications[i].app_label_ptr);
             }
             pData->applications[i].pin1 = pCard->applications[i].pin1;
             pData->applications[i].pin1_replaced = pCard->applications[i].pin1_replaced;
@@ -57,7 +57,7 @@ RfxSimStatusData::RfxSimStatusData(void *_data, int _length) : RfxBaseData(_data
         }
 
         // Parameter add from android radio hidl v1.4
-        if (pCard->eid!= NULL) {
+        if (pCard->eid != NULL) {
             asprintf(&pData->eid, "%s", pCard->eid);
         }
 
@@ -68,7 +68,7 @@ RfxSimStatusData::RfxSimStatusData(void *_data, int _length) : RfxBaseData(_data
 
 RfxSimStatusData::~RfxSimStatusData() {
     if (m_data != NULL) {
-        RIL_CardStatus_v8 *pData = (RIL_CardStatus_v8*)m_data;
+        RIL_CardStatus_v8* pData = (RIL_CardStatus_v8*)m_data;
 
         for (int i = 0; i < pData->num_applications; i++) {
             if (pData->applications[i].aid_ptr != NULL) {

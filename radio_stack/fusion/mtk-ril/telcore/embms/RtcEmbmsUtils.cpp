@@ -36,14 +36,12 @@ extern int RFX_SLOT_COUNT;
  * Class RtcEmbmsUtils
  *****************************************************************************/
 
-RtcEmbmsUtils::RtcEmbmsUtils() {
-}
+RtcEmbmsUtils::RtcEmbmsUtils() {}
 
-RtcEmbmsUtils::~RtcEmbmsUtils() {
-}
+RtcEmbmsUtils::~RtcEmbmsUtils() {}
 
-RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTransId(
-                    Vector<RtcEmbmsSessionInfo*>* list, int trans_id, int* pIndex) {
+RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTransId(Vector<RtcEmbmsSessionInfo*>* list,
+                                                         int trans_id, int* pIndex) {
     RtcEmbmsSessionInfo* pSessionInfo = NULL;
     *pIndex = -1;
 
@@ -64,8 +62,8 @@ RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTransId(
     return pSessionInfo;
 }
 
-RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTmgi(
-                    Vector<RtcEmbmsSessionInfo*>* list, int tmgi_len, char* pTmgi, int* pIndex) {
+RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTmgi(Vector<RtcEmbmsSessionInfo*>* list,
+                                                      int tmgi_len, char* pTmgi, int* pIndex) {
     RtcEmbmsSessionInfo* pSessionInfo = NULL;
     *pIndex = -1;
 
@@ -74,7 +72,7 @@ RtcEmbmsSessionInfo* RtcEmbmsUtils::findSessionByTmgi(
         for (int i = 0; i < size; i++) {
             pSessionInfo = list->itemAt(i);
             RFX_LOG_D(RFX_LOG_TAG, "tmgi[%d]:[%s],len[%d]", i, pSessionInfo->mTmgi,
-                pSessionInfo->mTmgiLen);
+                      pSessionInfo->mTmgiLen);
             if (pSessionInfo->mTmgiLen == tmgi_len) {
                 if (strcmp(pSessionInfo->mTmgi, pTmgi) == 0) {
                     *pIndex = i;
@@ -101,7 +99,7 @@ void RtcEmbmsUtils::freeSessionList(Vector<RtcEmbmsSessionInfo*>* list) {
 }
 
 int RtcEmbmsUtils::getDefaultDataSlotId() {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     // Default get slot 0 StatusManager.
     int data = root->getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_DEFAULT_DATA_SIM);
     // For log too much issue, only print log in your local code.
@@ -109,18 +107,17 @@ int RtcEmbmsUtils::getDefaultDataSlotId() {
     return data;
 }
 
-bool RtcEmbmsUtils::revertTmgi(const uint8_t* input, char * output, int length) {
+bool RtcEmbmsUtils::revertTmgi(const uint8_t* input, char* output, int length) {
     int i = 0;
     char tmp_char;
     RFX_LOG_D(RFX_LOG_TAG, "start revertTmgi");
 
-    if (input == NULL || length !=  EMBMS_MAX_BYTES_TMGI) {
+    if (input == NULL || length != EMBMS_MAX_BYTES_TMGI) {
         printf("revertTmgi error: input null or wrong len\n");
         return false;
     }
-    int result = sprintf(output, "%02X%02X%02X%02X%02X%02X",
-        input[0], input[1], input[2],
-        input[3], input[4], input[5]);
+    int result = sprintf(output, "%02X%02X%02X%02X%02X%02X", input[0], input[1], input[2], input[3],
+                         input[4], input[5]);
     if (result < 0) {
         RFX_LOG_E(RFX_LOG_TAG, "sprintf fail for output");
     }
@@ -149,9 +146,9 @@ bool RtcEmbmsUtils::revertTmgi(const uint8_t* input, char * output, int length) 
     return true;
 }
 
-bool RtcEmbmsUtils::convertTmgi(const char * input, uint8_t* output) {
+bool RtcEmbmsUtils::convertTmgi(const char* input, uint8_t* output) {
     int inputLen = 0, i = 0;
-    char tmpTmgiStr[EMBMS_MAX_LEN_TMGI+1];
+    char tmpTmgiStr[EMBMS_MAX_LEN_TMGI + 1];
     uint8_t tmpValue = 0, tmpValue2;
     RFX_LOG_D(RFX_LOG_TAG, "start convertTmgi");
     memset(tmpTmgiStr, 0, sizeof(tmpTmgiStr));
@@ -163,7 +160,7 @@ bool RtcEmbmsUtils::convertTmgi(const char * input, uint8_t* output) {
 
     inputLen = strlen(input);
 
-    if (inputLen !=  EMBMS_MAX_LEN_TMGI && inputLen != (EMBMS_MAX_LEN_TMGI - 1)) {
+    if (inputLen != EMBMS_MAX_LEN_TMGI && inputLen != (EMBMS_MAX_LEN_TMGI - 1)) {
         RFX_LOG_E(RFX_LOG_TAG, "convertTmgi error: wrong len");
         return false;
     } else if (inputLen == EMBMS_MAX_LEN_TMGI - 1) {
@@ -189,11 +186,8 @@ bool RtcEmbmsUtils::convertTmgi(const char * input, uint8_t* output) {
             RFX_LOG_E(RFX_LOG_TAG, "sscanf fail");
         }
     }
-    RFX_LOG_D(RFX_LOG_TAG, "convertTmgi from [%s] to [%02X%02X%02X%02X%02X%02X]",
-        input, output[0]
-        , output[1], output[2]
-        , output[3], output[4]
-        , output[5]);
+    RFX_LOG_D(RFX_LOG_TAG, "convertTmgi from [%s] to [%02X%02X%02X%02X%02X%02X]", input, output[0],
+              output[1], output[2], output[3], output[4], output[5]);
     return true;
 }
 
@@ -261,7 +255,7 @@ char* RtcEmbmsUtils::addLogMask(int input) {
         out[0] = '*';
         return out;
     }
-    for (int i = 0; i < (len/2); ++i) {
+    for (int i = 0; i < (len / 2); ++i) {
         out[i] = '*';
     }
     return out;

@@ -25,11 +25,11 @@
 
 using namespace std;
 
-#define DEFAULT_AT_TIMEOUT_MIN "5" // 5 mins
+#define DEFAULT_AT_TIMEOUT_MIN "5"  // 5 mins
 
-static const char *s_atcmd_log_reduction[] = {
-    "AT+ESIMAPP",
-    "+ESIMAPP",
+static const char* s_atcmd_log_reduction[] = {
+        "AT+ESIMAPP",
+        "+ESIMAPP",
 };
 
 typedef struct {
@@ -38,7 +38,7 @@ typedef struct {
 } ATTimeout;
 
 static ATTimeout sAtTimeout[] = {
-    #include "RfxAtCommandTimeout.h"
+#include "RfxAtCommandTimeout.h"
 };
 
 #define RFX_LOG_TAG "AT"
@@ -48,23 +48,23 @@ void RfxSender::MclMessageHandler::handleMessage(const Message& message) {
     sender->processMessage(msg);
 }
 
-RfxSender::RfxSender(int fd, int channel_id, RfxChannelContext *context) :
-        m_fd(fd), m_channel_id(channel_id), m_context(context) {
+RfxSender::RfxSender(int fd, int channel_id, RfxChannelContext* context)
+    : m_fd(fd), m_channel_id(channel_id), m_context(context) {
     mNeedWaitLooper = true;
     sem_init(&mWaitLooperSem, 0, 0);
     memset(&m_threadId, 0, sizeof(pthread_t));
     // read default timeout form property
-    char property_timeout[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_timeout[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get("vendor.ril.atsend.timeout", property_timeout, DEFAULT_AT_TIMEOUT_MIN);
-    m_atTimeoutMsec = atoi(property_timeout) * 60 * 1000; // min -> msec
+    m_atTimeoutMsec = atoi(property_timeout) * 60 * 1000;  // min -> msec
     rfx_property_get("persist.vendor.ril.fuzzy", property_timeout, "0");
     mIsFuzzyTesting = atoi(property_timeout);
     // default max timeout is 6s
     rfx_property_get("persist.vendor.ril.fuzzy.timeout", property_timeout, "6000000");
     mFuzzyTestingTimeout = atoi(property_timeout);
     mName = RfxChannelManager::channelIdToString(channel_id);
-    if ((m_channel_id%RIL_CHANNEL_OFFSET )== RIL_CMD_IMS) {
+    if ((m_channel_id % RIL_CHANNEL_OFFSET) == RIL_CMD_IMS) {
         sendUserData(RIL_IMS_Client_ADMIN, 1, NULL, 0);
     }
 }
@@ -88,7 +88,7 @@ void RfxSender::enqueueMessageFront(const sp<RfxMclMessage>& msg) {
     RfxSender* sender = this;
     sp<MessageHandler> handler = new MclMessageHandler(sender, msg);
     m_looper->sendMessageAtTime(MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_HIGH, handler,
-            m_dummy_msg);
+                                m_dummy_msg);
 }
 
 void RfxSender::processMessage(const sp<RfxMclMessage>& msg) {
@@ -120,21 +120,21 @@ bool RfxSender::threadLoop() {
     sem_post(&mWaitLooperSem);
 
     // read default timeout form property
-    char property_timeout[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_timeout[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.atsend.timeout", property_timeout, DEFAULT_AT_TIMEOUT_MIN);
-    m_atTimeoutMsec = atoi(property_timeout) * 60 * 1000; // min -> msec
+    m_atTimeoutMsec = atoi(property_timeout) * 60 * 1000;  // min -> msec
     m_threadId = pthread_self();
     mName = RfxChannelManager::channelIdToString(m_channel_id);
 
-    printLog(DEBUG,
-            String8::format("threadLoop. RfxSender %s init, channel id = %d", mName, m_channel_id));
+    printLog(DEBUG, String8::format("threadLoop. RfxSender %s init, channel id = %d", mName,
+                                    m_channel_id));
     RfxHandlerManager::initHandler(m_channel_id);
     if ((m_channel_id % RIL_CHANNEL_OFFSET) == 0) {
         printLog(ERROR, String8::format("threadLoop. Urc init done"));
         RfxChannelManager::urcRegisterDone();
     }
     if ((RfxRilUtils::getRilRunMode() == RIL_RUN_MODE_MOCK) &&
-            ((m_channel_id % RIL_CHANNEL_OFFSET ) != RIL_CMD_IMS)) {
+        ((m_channel_id % RIL_CHANNEL_OFFSET) != RIL_CMD_IMS)) {
         atSendCommand(String8::format("UT_%d", m_channel_id));
     }
 
@@ -144,7 +144,7 @@ bool RfxSender::threadLoop() {
         printLog(DEBUG, String8::format("threadLoop, result = %d", result));
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    RFX_ASSERT(0); // Can't go here
+    RFX_ASSERT(0);  // Can't go here
     return true;
 }
 
@@ -161,90 +161,80 @@ sp<Looper> RfxSender::waitLooper() {
     return m_looper;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandSinglelineAck (const char *command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, SINGLELINE, responsePrefix,
-            0, ackToken);
-    if (outResponse->getError() == 0 &&
-            outResponse->getSuccess() > 0 &&
-            outResponse->getIntermediates() == NULL) {
+sp<RfxAtResponse> RfxSender::atSendCommandSinglelineAck(const char* command,
+                                                        const char* responsePrefix,
+                                                        RIL_Token ackToken) {
+    sp<RfxAtResponse> outResponse =
+            atSendCommandFullAck(command, SINGLELINE, responsePrefix, 0, ackToken);
+    if (outResponse->getError() == 0 && outResponse->getSuccess() > 0 &&
+        outResponse->getIntermediates() == NULL) {
         /* successful command must have an intermediate response */
         outResponse->setError(AT_ERROR_INVALID_RESPONSE);
     }
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandSingleline (const char *command,
-        const char *responsePrefix) {
+sp<RfxAtResponse> RfxSender::atSendCommandSingleline(const char* command,
+                                                     const char* responsePrefix) {
     return atSendCommandSinglelineAck(command, responsePrefix, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandNumericAck (const char *command,
-        RIL_Token ackToken) {
-    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, NUMERIC,
-            NULL, 0, ackToken);
-    if (outResponse->getError() == 0 &&
-            outResponse->getSuccess() > 0 &&
-            outResponse->getIntermediates() == NULL) {
+sp<RfxAtResponse> RfxSender::atSendCommandNumericAck(const char* command, RIL_Token ackToken) {
+    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, NUMERIC, NULL, 0, ackToken);
+    if (outResponse->getError() == 0 && outResponse->getSuccess() > 0 &&
+        outResponse->getIntermediates() == NULL) {
         /* successful command must have an intermediate response */
         outResponse->setError(AT_ERROR_INVALID_RESPONSE);
     }
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandNumeric (const char *command) {
+sp<RfxAtResponse> RfxSender::atSendCommandNumeric(const char* command) {
     return atSendCommandNumericAck(command, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandMultilineAck (const char *command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, MULTILINE,
-            responsePrefix, 0, ackToken);
+sp<RfxAtResponse> RfxSender::atSendCommandMultilineAck(const char* command,
+                                                       const char* responsePrefix,
+                                                       RIL_Token ackToken) {
+    sp<RfxAtResponse> outResponse =
+            atSendCommandFullAck(command, MULTILINE, responsePrefix, 0, ackToken);
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandMultiline (const char *command,
-        const char *responsePrefix) {
+sp<RfxAtResponse> RfxSender::atSendCommandMultiline(const char* command,
+                                                    const char* responsePrefix) {
     return atSendCommandMultilineAck(command, responsePrefix, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandAck (const char *command,
-        RIL_Token ackToken) {
-    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, NO_RESULT,
-            NULL, 0, ackToken);
+sp<RfxAtResponse> RfxSender::atSendCommandAck(const char* command, RIL_Token ackToken) {
+    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, NO_RESULT, NULL, 0, ackToken);
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommand (const char *command) {
+sp<RfxAtResponse> RfxSender::atSendCommand(const char* command) {
     return atSendCommandAck(command, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandRawAck (const char *command,
-        RIL_Token ackToken) {
-    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, RAW,
-            NULL, 0, ackToken);
+sp<RfxAtResponse> RfxSender::atSendCommandRawAck(const char* command, RIL_Token ackToken) {
+    sp<RfxAtResponse> outResponse = atSendCommandFullAck(command, RAW, NULL, 0, ackToken);
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandRaw (const char *command) {
+sp<RfxAtResponse> RfxSender::atSendCommandRaw(const char* command) {
     return atSendCommandRawAck(command, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandFullAck(const char *command, AtCommandType type,
-        const char *responsePrefix, long long timeoutMsec, RIL_Token ackToken) {
+sp<RfxAtResponse> RfxSender::atSendCommandFullAck(const char* command, AtCommandType type,
+                                                  const char* responsePrefix, long long timeoutMsec,
+                                                  RIL_Token ackToken) {
     // check modem state
-    bool mdOff = RfxMclStatusManager::getNonSlotMclStatusManager()
-            ->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF, false);
-    if (mdOff &&
-            !strstr(command, "EPOF") &&
-            !strstr(command, "EPON") &&
-            !strstr(command, "ESIMAUTH") &&
-            !strstr(command, "EAUTH") &&
-            // External SIM [Start]
-            !strstr(command, "ERSA") &&
-            !strstr(command, "EIMSPDN") &&
-            !strstr(command, "EAPNACT") &&
-            !strstr(command, "EMDT")) {
+    bool mdOff = RfxMclStatusManager::getNonSlotMclStatusManager()->getBoolValue(
+            RFX_STATUS_KEY_MODEM_POWER_OFF, false);
+    if (mdOff && !strstr(command, "EPOF") && !strstr(command, "EPON") &&
+        !strstr(command, "ESIMAUTH") && !strstr(command, "EAUTH") &&
+        // External SIM [Start]
+        !strstr(command, "ERSA") && !strstr(command, "EIMSPDN") && !strstr(command, "EAPNACT") &&
+        !strstr(command, "EMDT")) {
         sp<RfxAtResponse> outResponse = new RfxAtResponse();
         outResponse->setSuccess(0);
         outResponse->setError(AT_ERROR_RADIO_UNAVAILABLE);
@@ -258,7 +248,7 @@ sp<RfxAtResponse> RfxSender::atSendCommandFullAck(const char *command, AtCommand
     int mode = -1;
     const char* modeIndex = strstr(command, "EFUN=");
     if (modeIndex != NULL) {
-        mode = atoi(modeIndex+5);
+        mode = atoi(modeIndex + 5);
         if (mode != 0) {
             RfxRilUtils::triggerCCCIIoctlEx(CCCI_IOC_SET_EFUN, &mode);
             printLog(DEBUG, String8::format("Low Power: mdoe = %d", mode));
@@ -266,25 +256,24 @@ sp<RfxAtResponse> RfxSender::atSendCommandFullAck(const char *command, AtCommand
     }
 
     timeoutMsec = getATCommandTimeout(command);
-    sp<RfxAtResponse> outResponse = atSendCommandFullNolockAck(command, type, responsePrefix,
-            timeoutMsec, ackToken);
+    sp<RfxAtResponse> outResponse =
+            atSendCommandFullNolockAck(command, type, responsePrefix, timeoutMsec, ackToken);
 
     if ((isInternalLoad() == 1) || (isUserLoad() != 1)) {
-        char modemException[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char modemException[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get(PROPERTY_MODEM_EE, modemException, "0");
         if (outResponse->getError() == AT_ERROR_TIMEOUT) {
-            char *pErrMsg = (char *) calloc(1, 201);
+            char* pErrMsg = (char*)calloc(1, 201);
             if (pErrMsg != NULL) {
                 // parse the AT CMD
                 int index = needToHidenLog(command);
                 char key[20] = {0};
-                const char *pHiddenPrefix = NULL;
-                const char *pPrintCmd = NULL;
-                if(index >= 0) {
+                const char* pHiddenPrefix = NULL;
+                const char* pPrintCmd = NULL;
+                if (index >= 0) {
                     pHiddenPrefix = getHidenLogPreFix(index);
                     pPrintCmd = pHiddenPrefix;
-                    strncpy(key, pHiddenPrefix,
-                            MIN(19, strlen(pHiddenPrefix)));
+                    strncpy(key, pHiddenPrefix, MIN(19, strlen(pHiddenPrefix)));
                 } else {
                     pPrintCmd = command;
                     int cmdLen = strlen(command);
@@ -301,29 +290,37 @@ sp<RfxAtResponse> RfxSender::atSendCommandFullAck(const char *command, AtCommand
                     strncpy(key, (command + start), MIN(19, (end - start + 1)));
                 }
                 // check EE again to prevent false alarm
-                /*unsigned*/ int  status = 0;
+                /*unsigned*/ int status = 0;
                 RfxRilUtils::triggerCCCIIoctlEx(CCCI_IOC_GET_MD_STATE, &status);
                 if (atoi(modemException) != 1 && status != 3) {
-                    snprintf(pErrMsg, 200, "AT command pending too long, assert!!! AT cmd: %s,\
-timer: %lldms\nCRDISPATCH_KEY:ATTO=%s", key, timeoutMsec, key);
-                    printLog(ERROR, String8::format("AT command pending too long, assert!!!\
-on channel %d, tid:%lu, AT cmd: %s, AT command timeout: %lldms", m_channel_id, m_threadId,
-pPrintCmd, timeoutMsec));
+                    snprintf(pErrMsg, 200,
+                             "AT command pending too long, assert!!! AT cmd: %s,\
+timer: %lldms\nCRDISPATCH_KEY:ATTO=%s",
+                             key, timeoutMsec, key);
+                    printLog(ERROR,
+                             String8::format("AT command pending too long, assert!!!\
+on channel %d, tid:%lu, AT cmd: %s, AT command timeout: %lldms",
+                                             m_channel_id, m_threadId, pPrintCmd, timeoutMsec));
                     mtkAssert(pErrMsg);
                 } else {
-                    snprintf(pErrMsg, 200, "Modem already exception, assert!!!  AT cmd: %s, timer:\
-%lldms\nCRDISPATCH_KEY:ATTO=%s", key, timeoutMsec, key);
-                    printLog(ERROR, String8::format("Modem already exception, assert!!! on channel %d, tid:%lu,\
-last AT cmd: %s, AT command timeout: %lldms", m_channel_id, m_threadId, pPrintCmd, timeoutMsec));
+                    snprintf(pErrMsg, 200,
+                             "Modem already exception, assert!!!  AT cmd: %s, timer:\
+%lldms\nCRDISPATCH_KEY:ATTO=%s",
+                             key, timeoutMsec, key);
+                    printLog(ERROR,
+                             String8::format(
+                                     "Modem already exception, assert!!! on channel %d, tid:%lu,\
+last AT cmd: %s, AT command timeout: %lldms",
+                                     m_channel_id, m_threadId, pPrintCmd, timeoutMsec));
                     // kill the current thread itself
                     pthread_exit(0);
                 }
                 free(pErrMsg);
             } else {
                 if (atoi(modemException) != 1) {
-                    mtkAssert((char *)"AT command pending too long, assert!!!");
+                    mtkAssert((char*)"AT command pending too long, assert!!!");
                 } else {
-                    mtkAssert((char *)"Modem already exception, assert!!!");
+                    mtkAssert((char*)"Modem already exception, assert!!!");
                 }
             }
         }
@@ -336,8 +333,8 @@ last AT cmd: %s, AT command timeout: %lldms", m_channel_id, m_threadId, pPrintCm
     }
 
     /// for low power
-    if ((strstr(command, "EFUN") != NULL) && (mode == 0)
-            && (outResponse->getError() == 0) && (outResponse->getSuccess() > 0)) {
+    if ((strstr(command, "EFUN") != NULL) && (mode == 0) && (outResponse->getError() == 0) &&
+        (outResponse->getSuccess() > 0)) {
         RfxRilUtils::triggerCCCIIoctlEx(CCCI_IOC_SET_EFUN, &mode);
         printLog(DEBUG, String8::format("Low Power, mode = %d", mode));
     }
@@ -348,26 +345,24 @@ last AT cmd: %s, AT command timeout: %lldms", m_channel_id, m_threadId, pPrintCm
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandFull(const char *command, AtCommandType type,
-        const char *responsePrefix, long long timeoutMsec) {
+sp<RfxAtResponse> RfxSender::atSendCommandFull(const char* command, AtCommandType type,
+                                               const char* responsePrefix, long long timeoutMsec) {
     return atSendCommandFullAck(command, type, responsePrefix, timeoutMsec, NULL);
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandFullNolockAck(const char *command,
-        AtCommandType type, const char *responsePrefix, long long timeoutMsec,
-        RIL_Token ackToken) {
-
+sp<RfxAtResponse> RfxSender::atSendCommandFullNolockAck(const char* command, AtCommandType type,
+                                                        const char* responsePrefix,
+                                                        long long timeoutMsec, RIL_Token ackToken) {
     int err = 0;
-    nsecs_t ts = timeoutMsec * 1000000; // msec->nsec
+    nsecs_t ts = timeoutMsec * 1000000;  // msec->nsec
 
     sp<RfxAtResponse> outResponse = new RfxAtResponse(type, responsePrefix);
     err = writeline(command);
-    if (err < 0)
-        goto error;
+    if (err < 0) goto error;
 
     // assign by constructor
-    //outResponse->setCommandType(type);
-    //outResponse->setResponsePrefix(responsePrefix);
+    // outResponse->setCommandType(type);
+    // outResponse->setResponsePrefix(responsePrefix);
     m_context->setType(REQUEST);
     m_context->setResponse(outResponse);
 
@@ -384,8 +379,7 @@ sp<RfxAtResponse> RfxSender::atSendCommandFullNolockAck(const char *command,
             goto error;
         }
 
-        if ((outResponse->getFinalResponse() == NULL)
-                && (outResponse->getIsAck() == 1)) {
+        if ((outResponse->getFinalResponse() == NULL) && (outResponse->getIsAck() == 1)) {
             if (ackToken != NULL) {
                 RFX_onRequestAck(ackToken);
             }
@@ -410,15 +404,16 @@ error:
     return outResponse;
 }
 
-sp<RfxAtResponse> RfxSender::atSendCommandFullNolock(const char *command,
-        AtCommandType type, const char *responsePrefix, long long timeoutMsec) {
+sp<RfxAtResponse> RfxSender::atSendCommandFullNolock(const char* command, AtCommandType type,
+                                                     const char* responsePrefix,
+                                                     long long timeoutMsec) {
     return atSendCommandFullNolockAck(command, type, responsePrefix, timeoutMsec, NULL);
 }
 
 int RfxSender::sendUserData(int clientId, unsigned char* data, size_t length) {
     int ret;
     // config format : 00xx0000, xx : 00->slot1, 01->slot2, 10->slot3, 11->slot4
-    int config = (m_channel_id/RIL_CHANNEL_OFFSET) << 4;
+    int config = (m_channel_id / RIL_CHANNEL_OFFSET) << 4;
     printLog(DEBUG, String8::format("sendUserData clientId:%d, len:%zu", clientId, length));
     unsigned char* header = RfxFragmentEncoder::encodeHeader(
             RfxFragmentData(RfxFragmentEncoder::VERSION, clientId, config, length));
@@ -437,7 +432,7 @@ int RfxSender::sendUserData(int clientId, unsigned char* data, size_t length) {
 int RfxSender::sendUserData(int clientId, int config, unsigned char* data, size_t length) {
     int ret;
     // config format : 00xx0000, xx : 00->slot1, 01->slot2, 10->slot3, 11->slot4
-    int newConfig = (config & 0xCF) | ((m_channel_id/RIL_CHANNEL_OFFSET) << 4);
+    int newConfig = (config & 0xCF) | ((m_channel_id / RIL_CHANNEL_OFFSET) << 4);
     printLog(DEBUG, String8::format("sendUserData clientId:%d, len:%zu", clientId, length));
     unsigned char* header = RfxFragmentEncoder::encodeHeader(
             RfxFragmentData(RfxFragmentEncoder::VERSION, clientId, newConfig, length));
@@ -453,9 +448,9 @@ int RfxSender::sendUserData(int clientId, int config, unsigned char* data, size_
     return ret;
 }
 
-int RfxSender::getATCommandTimeout(const char *command) {
+int RfxSender::getATCommandTimeout(const char* command) {
     RFX_UNUSED(command);
-    for (size_t i=0; i<NUM_ELEMS(sAtTimeout); i++) {
+    for (size_t i = 0; i < NUM_ELEMS(sAtTimeout); i++) {
         if (strstr(command, sAtTimeout[i].command) != NULL) {
             return (sAtTimeout[i].timeout * 60 * 1000);
         }
@@ -464,20 +459,19 @@ int RfxSender::getATCommandTimeout(const char *command) {
     return m_atTimeoutMsec;
 }
 
-int RfxSender::writeline(const char *s) {
+int RfxSender::writeline(const char* s) {
     size_t cur = 0;
     size_t postfixLength = 1;
     size_t len = strlen(s) + postfixLength;
     ssize_t written;
     unsigned int i;
 
-    if (m_fd < 0 /*|| p_channel->readerClosed > 0*/)
-        return AT_ERROR_CHANNEL_CLOSED;
+    if (m_fd < 0 /*|| p_channel->readerClosed > 0*/) return AT_ERROR_CHANNEL_CLOSED;
 
     int index = 0;
     if ((index = needToHidenLog(s)) >= 0) {
         printLog(INFO, String8::format("AT> %s=*** (%s, tid:%lu)\n", getHidenLogPreFix(index),
-                mName, m_threadId));
+                                       mName, m_threadId));
     } else {
         if (isLogReductionCmd(s)) {
             printLog(DEBUG, String8::format("AT> %s (%s tid:%lu)\n", s, mName, m_threadId));
@@ -490,7 +484,7 @@ int RfxSender::writeline(const char *s) {
     // send s + \r in a time
     char* wholeLine = NULL;
     // +1 for \0
-    wholeLine = (char *) calloc(len + 1, sizeof(char));
+    wholeLine = (char*)calloc(len + 1, sizeof(char));
     if (wholeLine == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return AT_ERROR_GENERIC;
@@ -526,7 +520,7 @@ int RfxSender::writelineUserData(unsigned char* frame, size_t length) {
     ssize_t written;
     size_t cur = 0;
     int writeErrno = 0;
-    int writeTimes = length/RfxFragmentEncoder::MAX_FRAME_SIZE;
+    int writeTimes = length / RfxFragmentEncoder::MAX_FRAME_SIZE;
     int remain = length % RfxFragmentEncoder::MAX_FRAME_SIZE;
     int writeP = 0;
     int count = 0;
@@ -537,40 +531,40 @@ int RfxSender::writelineUserData(unsigned char* frame, size_t length) {
     }
     while (writeTimes) {
         printLog(DEBUG, String8::format("writelineUserData, writeTimes = %d, remain = %d, length:\
-%zu", writeTimes, remain, length));
-        count = write(m_fd, frame+writeP, RfxFragmentEncoder::MAX_FRAME_SIZE);
+%zu",
+                                        writeTimes, remain, length));
+        count = write(m_fd, frame + writeP, RfxFragmentEncoder::MAX_FRAME_SIZE);
         writeP += RfxFragmentEncoder::MAX_FRAME_SIZE;
         if (count < 0 && errno == EINTR) {
-            printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count,
-                    errno, strerror(errno)));
+            printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count, errno,
+                                            strerror(errno)));
             continue;
         } else if (count < 0) {
-            printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count,
-                    errno, strerror(errno)));
+            printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count, errno,
+                                            strerror(errno)));
             return RAW_DATA_ERROR_GENERIC;
         }
         writeTimes--;
     }
 
-    count = write(m_fd, frame+writeP, remain);
+    count = write(m_fd, frame + writeP, remain);
     if (count < 0 && errno == EINTR) {
-        printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count,
-                errno, strerror(errno)));
+        printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count, errno,
+                                        strerror(errno)));
     } else if (count < 0) {
-        printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count,
-                errno, strerror(errno)));
+        printLog(ERROR, String8::format("ViLTE write end: %d (err: %d - %s)\n", count, errno,
+                                        strerror(errno)));
         return RAW_DATA_ERROR_GENERIC;
     }
 
     if (RfxRilUtils::isUserLoad() != 1) {
-        printLog(DEBUG, String8::format("User data write end, errno = %d, length = %zu", errno,
-                length));
+        printLog(DEBUG,
+                 String8::format("User data write end, errno = %d, length = %zu", errno, length));
     }
     return 0;
 }
 
-
 void RfxSender::printLog(int level, String8 log) {
     RfxRilUtils::printLog(level, String8::format("%s", RFX_LOG_TAG), log,
-            m_channel_id/RIL_CHANNEL_OFFSET);
+                          m_channel_id / RIL_CHANNEL_OFFSET);
 }

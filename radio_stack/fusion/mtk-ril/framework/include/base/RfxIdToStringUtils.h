@@ -21,69 +21,51 @@
 #include "utils/SortedVector.h"
 #include "utils/Mutex.h"
 
-using ::android::Vector;
+using ::android::Mutex;
 using ::android::SortedVector;
 using ::android::String8;
-using ::android::Mutex;
+using ::android::Vector;
 
 #define RFX_ID_TO_STR(id) RfxIdToStringUtils::idToString(id)
 
 class RfxIdMappingEntry {
-    public:
-        RfxIdMappingEntry():
-                mId(-1),
-                mStr(String8()){
-        }
+  public:
+    RfxIdMappingEntry() : mId(-1), mStr(String8()) {}
 
-        RfxIdMappingEntry(int id, const char* str):
-                mId(id),
-                mStr(str) {
-        }
+    RfxIdMappingEntry(int id, const char* str) : mId(id), mStr(str) {}
 
-        RfxIdMappingEntry(const RfxIdMappingEntry &other):
-                mId(other.mId),
-                mStr(other.mStr){
-        }
+    RfxIdMappingEntry(const RfxIdMappingEntry& other) : mId(other.mId), mStr(other.mStr) {}
 
-        bool operator< (const RfxIdMappingEntry &other) const {
-            return (mId < other.mId);
-        }
+    bool operator<(const RfxIdMappingEntry& other) const { return (mId < other.mId); }
 
-        bool operator> (const RfxIdMappingEntry &other) const {
-            return (mId > other.mId);
-        }
+    bool operator>(const RfxIdMappingEntry& other) const { return (mId > other.mId); }
 
-        bool operator== (const RfxIdMappingEntry &other) const {
-            return (mId == other.mId);
-        }
+    bool operator==(const RfxIdMappingEntry& other) const { return (mId == other.mId); }
 
-        bool operator!= (const RfxIdMappingEntry &other) const {
-            return (mId != other.mId);
-        }
+    bool operator!=(const RfxIdMappingEntry& other) const { return (mId != other.mId); }
 
-    public:
-        int mId;
-        String8 mStr;
+  public:
+    int mId;
+    String8 mStr;
 };
 
 class RfxIdToStringUtils {
+  public:
+    RfxIdToStringUtils() {}
+    virtual ~RfxIdToStringUtils() {}
 
-    public:
-        RfxIdToStringUtils() {}
-        virtual ~RfxIdToStringUtils(){}
+    static void init();
+    static void registerId(int id, char* str);
+    static const char* idToString(int id);
 
-        static void init();
-        static void registerId(int id, char* str);
-        static const char* idToString(int id);
+  private:
+    void registerInternal(SortedVector<RfxIdMappingEntry>& list, int id, char* str);
+    const RfxIdMappingEntry& findIdEntry(SortedVector<RfxIdMappingEntry>& list, int id);
 
-    private:
-        void registerInternal(SortedVector<RfxIdMappingEntry> &list, int id, char* str);
-        const RfxIdMappingEntry& findIdEntry(SortedVector<RfxIdMappingEntry> &list, int id);
-
-    private:
-        static RfxIdToStringUtils* sSelf;
-        SortedVector<RfxIdMappingEntry> mIdList;
-        Mutex mMutex;
+  private:
+    static RfxIdToStringUtils* sSelf;
+    SortedVector<RfxIdMappingEntry> mIdList;
+    Mutex mMutex;
 };
 
 #endif

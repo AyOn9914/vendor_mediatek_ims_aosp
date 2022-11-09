@@ -34,31 +34,31 @@ struct buffer_header {
 typedef int (*ccci_shm_srv_read_callback)(void);
 
 struct ccb_ctrl_info {
-    unsigned int  user_id;      /*user id from ccb start*/
+    unsigned int user_id; /*user id from ccb start*/
     unsigned int ctrl_offset;
-    unsigned int ctrl_addr;     /*phy addr*/
+    unsigned int ctrl_addr; /*phy addr*/
     unsigned int ctrl_length;
 };
 
 struct ccci_ccb_control_user {
     CCCI_USER user_id;
     struct ccb_ctrl_info ctrl_info;
-    unsigned char *ctrl_base_address; /*virtual addr*/
+    unsigned char* ctrl_base_address; /*virtual addr*/
     unsigned int buffer_num;
-    unsigned char *base_address;
+    unsigned char* base_address;
     unsigned int total_length;
     int fd;
     int ctrl_fd;
-    struct ccci_ccb_control_buff *buffers;
+    struct ccci_ccb_control_buff* buffers;
 };
 
 struct ccci_ccb_control_buff {
     unsigned int dl_page_num;
     unsigned int ul_page_num;
-    struct buffer_header *dl_header;
-    struct buffer_header *ul_header;
-    struct page_header *dl_pages;
-    struct page_header *ul_pages;
+    struct buffer_header* dl_header;
+    struct buffer_header* ul_header;
+    struct page_header* dl_pages;
+    struct page_header* ul_pages;
 };
 
 enum {

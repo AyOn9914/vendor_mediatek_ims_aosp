@@ -21,8 +21,8 @@
 extern "C" {
 #endif
 
-int zygote_run_oneshot(int sendStdio, int argc, const char **argv);
-int zygote_run(int argc, const char **argv);
+int zygote_run_oneshot(int sendStdio, int argc, const char** argv);
+int zygote_run(int argc, const char** argv);
 
 #ifdef __cplusplus
 }

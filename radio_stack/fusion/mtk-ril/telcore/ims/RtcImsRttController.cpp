@@ -28,11 +28,9 @@
 
 RFX_IMPLEMENT_CLASS("RtcImsRttController", RtcImsRttController, RfxController);
 
-RtcImsRttController::RtcImsRttController() {
-}
+RtcImsRttController::RtcImsRttController() {}
 
-RtcImsRttController::~RtcImsRttController() {
-}
+RtcImsRttController::~RtcImsRttController() {}
 
 void RtcImsRttController::onInit() {
     // Required: invoke super class implementation
@@ -40,24 +38,22 @@ void RtcImsRttController::onInit() {
     logD(RFX_LOG_TAG, "onInit()");
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST,
-        RFX_MSG_REQUEST_SEND_RTT_TEXT,
-        RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE,
-        RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION,
+            RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST,
+            RFX_MSG_REQUEST_SEND_RTT_TEXT,
+            RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE,
+            RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION,
     };
 
     const int urc_id_list[] = {
-        RFX_MSG_UNSOL_RTT_CAPABILITY_INDICATION,
-        RFX_MSG_UNSOL_RTT_MODIFY_RESPONSE,
-        RFX_MSG_UNSOL_RTT_TEXT_RECEIVE,
-        RFX_MSG_UNSOL_RTT_MODIFY_REQUEST_RECEIVE,
-        RFX_MSG_UNSOL_AUDIO_INDICATION,
+            RFX_MSG_UNSOL_RTT_CAPABILITY_INDICATION, RFX_MSG_UNSOL_RTT_MODIFY_RESPONSE,
+            RFX_MSG_UNSOL_RTT_TEXT_RECEIVE,          RFX_MSG_UNSOL_RTT_MODIFY_REQUEST_RECEIVE,
+            RFX_MSG_UNSOL_AUDIO_INDICATION,
     };
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 }
 
 void RtcImsRttController::onDeinit() {
@@ -85,8 +81,7 @@ bool RtcImsRttController::responseToRilj(const sp<RfxMessage>& msg) {
 }
 
 bool RtcImsRttController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState) {
-
+                                                 bool isModemPowerOff, int radioState) {
     if (isModemPowerOff == false) {
         return false;
     }

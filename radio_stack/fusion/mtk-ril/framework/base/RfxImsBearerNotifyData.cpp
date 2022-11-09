@@ -18,12 +18,10 @@
 #include "telephony/mtk_ril.h"
 RFX_IMPLEMENT_DATA_CLASS(RfxImsBearerNotifyData);
 
-RfxImsBearerNotifyData::RfxImsBearerNotifyData(void *data, int length)
-    : RfxBaseData(data, length) {
+RfxImsBearerNotifyData::RfxImsBearerNotifyData(void* data, int length) : RfxBaseData(data, length) {
     if (NULL != data) {
-        RIL_IMS_BearerNotification *pIn =
-                (RIL_IMS_BearerNotification*)data;
-        RIL_IMS_BearerNotification *pOut =
+        RIL_IMS_BearerNotification* pIn = (RIL_IMS_BearerNotification*)data;
+        RIL_IMS_BearerNotification* pOut =
                 (RIL_IMS_BearerNotification*)calloc(1, sizeof(RIL_IMS_BearerNotification));
         RFX_ASSERT(pOut != NULL);
 
@@ -38,7 +36,7 @@ RfxImsBearerNotifyData::RfxImsBearerNotifyData(void *data, int length)
 
 RfxImsBearerNotifyData::~RfxImsBearerNotifyData() {
     if (m_data) {
-        RIL_IMS_BearerNotification *p = (RIL_IMS_BearerNotification*)m_data;
+        RIL_IMS_BearerNotification* p = (RIL_IMS_BearerNotification*)m_data;
         free(p->type);
         free(m_data);
         m_data = NULL;

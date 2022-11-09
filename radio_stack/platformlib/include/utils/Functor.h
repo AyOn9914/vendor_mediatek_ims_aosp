@@ -19,15 +19,15 @@
 
 #include <Errors.h>
 
-namespace  android {
+namespace android {
 
 class Functor {
-public:
+  public:
     Functor() {}
     virtual ~Functor() {}
-    virtual status_t operator ()(int /*what*/, void* /*data*/) { return NO_ERROR; }
+    virtual status_t operator()(int /*what*/, void* /*data*/) { return NO_ERROR; }
 };
 
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_FUNCTOR_H
+#endif  // ANDROID_FUNCTOR_H

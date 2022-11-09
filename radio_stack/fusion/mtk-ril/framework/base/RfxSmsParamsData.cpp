@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSmsParamsData);
 
-RfxSmsParamsData::RfxSmsParamsData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSmsParamsData::RfxSmsParamsData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SmsParams *pSmsParams = (RIL_SmsParams*)_data;
-        RIL_SmsParams *pData = (RIL_SmsParams *)calloc(1, sizeof(RIL_SmsParams));
+        RIL_SmsParams* pSmsParams = (RIL_SmsParams*)_data;
+        RIL_SmsParams* pData = (RIL_SmsParams*)calloc(1, sizeof(RIL_SmsParams));
 
         if (pData != NULL) {
             pData->format = pSmsParams->format;

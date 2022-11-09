@@ -23,8 +23,7 @@
 #include "RfxAtLine.h"
 
 class RilOemClient : public RilClient {
-
-protected:
+  protected:
     typedef enum {
         FAILURE = -1,
         SUCCESS = 0,
@@ -48,21 +47,20 @@ protected:
         STATE_NUM = 5,
     } AppStatus;
 
-public:
+  public:
     RilOemClient(int identity, char* socketName);
     virtual ~RilOemClient();
 
     // Override, if you have other imprementation
     /* oem socket would not handle any urc */
-    virtual void handleUnsolicited(int slotId, int unsolResponse, void *data,
-            size_t datalen, UrcDispatchRule rule);
+    virtual void handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                   UrcDispatchRule rule);
     virtual void handleStateActive();
-    virtual void requestComplete(RIL_Token token, RIL_Errno e, void *response,
-            size_t responselen);
+    virtual void requestComplete(RIL_Token token, RIL_Errno e, void* response, size_t responselen);
 
     virtual int handleSpecialRequestWithArgs(int argCount, char** args);
 
-private:
+  private:
     void freeArgs(char** args, int number);
     void executeThermal(char* arg);
     void executeHangupAll();
@@ -72,7 +70,7 @@ private:
     void executeLowLatencyMode(char* arg);
     void executeWeakSignalOpt(char* arg);
     void executeAppStatus(char* arg);
-    void executeQueryCapability(char *arg);
+    void executeQueryCapability(char* arg);
     int mThermalFd = -1;
     int mQueryCapFd = -1;
     int mLowLatencyMode = 0;

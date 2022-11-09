@@ -32,9 +32,9 @@
 extern "C" {
 #endif
 
-extern int rfx_property_get(const char *key, char *value, const char *default_value);
+extern int rfx_property_get(const char* key, char* value, const char* default_value);
 
-extern int rfx_property_set(const char *key, const char *value);
+extern int rfx_property_set(const char* key, const char* value);
 
 extern void rfx_property_release_info();
 

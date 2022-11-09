@@ -26,49 +26,37 @@
 #include "RfxSender.h"
 #include "RfxReader.h"
 
-using ::android::String8;
 using ::android::RefBase;
 using ::android::sp;
+using ::android::String8;
 
 class RfxChannel {
+  public:
+    RfxChannel(int _channel_id, char* _mux_path);
 
-    public:
-        RfxChannel(int _channel_id, char *_mux_path);
+  public:
+    void enqueueMessage(const sp<RfxMclMessage>& msg);
 
-    public:
+    void enqueueMessageFront(const sp<RfxMclMessage>& msg);
 
-        void enqueueMessage(const sp<RfxMclMessage>& msg);
+    int getChannelId() const { return mChannelId; }
+    RfxSender* getSender() const { return mSender; }
 
-        void enqueueMessageFront(const sp<RfxMclMessage>& msg);
+    RfxChannelContext* getContext() const { return mContext; }
 
-        int getChannelId() const {
-            return mChannelId;
-        }
-        RfxSender* getSender() const {
-            return mSender;
-        }
+    RfxReader* getReader() const { return mReader; }
 
-        RfxChannelContext* getContext() const {
-            return mContext;
-        }
+    void setReader(RfxReader* reader) { mReader = reader; }
 
-        RfxReader* getReader() const {
-            return mReader;
-        }
+    void run();
 
-        void setReader(RfxReader* reader) {
-            mReader = reader;
-        }
-
-        void run();
-
-    private:
-        int mChannelId;
-        int mFd;
-        char *mMuxPath;
-        RfxSender *mSender;
-        RfxReader *mReader;
-        RfxChannelContext *mContext;
+  private:
+    int mChannelId;
+    int mFd;
+    char* mMuxPath;
+    RfxSender* mSender;
+    RfxReader* mReader;
+    RfxChannelContext* mContext;
 };
 
 #endif

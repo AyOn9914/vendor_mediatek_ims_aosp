@@ -18,6 +18,6 @@
 #define MAIN_VTSERVICE_H
 
 namespace VTService {
-    void VTService_instantiate();
+void VTService_instantiate();
 }
 #endif

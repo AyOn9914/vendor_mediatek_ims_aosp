@@ -27,47 +27,44 @@
 #define RFX_LOG_TAG "RmcImsCtlReqHdl"
 
 #define MAX_MD_CFGTYPE_NUM 3
-typedef enum {
-    ECFGSET = 0,
-    EWOCFGSET = 1,
-    EIWLCFGSET = 2
-} MD_CFGTYPE;
+typedef enum { ECFGSET = 0, EWOCFGSET = 1, EIWLCFGSET = 2 } MD_CFGTYPE;
 static const char* cfgAtCmd[] = {"AT+ECFGSET", "AT+EWOCFGSET", "AT+EIWLCFGSET"};
 
 class RmcImsControlRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsControlRequestHandler);
-    private:
-        String8 userAgentformat;
 
-    public:
-        RmcImsControlRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcImsControlRequestHandler();
+  private:
+    String8 userAgentformat;
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  public:
+    RmcImsControlRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcImsControlRequestHandler();
 
-    private:
-        void requestSetVolteEnabled(const sp<RfxMclMessage>& msg);
-        void requestSetWfcEnabled(const sp<RfxMclMessage>& msg);
-        void requestSetVilteEnabled(const sp<RfxMclMessage>& msg);
-        void requestSetViwifiEnabled(const sp<RfxMclMessage>& msg);
-        void requestSetImsCfg(const sp<RfxMclMessage>& msg);
-        void requestSetModemImsCfg(const sp<RfxMclMessage>& msg);
-        void requestSendWfcProfile(const sp<RfxMclMessage>& msg);
-        void enableImsRegistrationReport(const sp<RfxMclMessage>& msg);
-        void requestImsRegistrationState(const sp<RfxMclMessage>& msg);
-        void requestSetImsEnabled(const sp<RfxMclMessage>& msg);
-        void requestImsDereg(const sp<RfxMclMessage>& msg);
-        void enableImsEccSupportReport();
-        void requestSetImsRtpReport(const sp<RfxMclMessage>& msg);
-        void requestMultiImsSupportCount();
-        void enableImsRcsStateFeature();
-        void enableVoPSUrc();
-        void enableSipRegInfoInd();
-        void requestSetSipUserAgent();
-        bool isCurrentSlotSupportIms();
-        void queryVopsStatus(const sp<RfxMclMessage>& msg);
-        void enableVopsStatusReport();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+
+  private:
+    void requestSetVolteEnabled(const sp<RfxMclMessage>& msg);
+    void requestSetWfcEnabled(const sp<RfxMclMessage>& msg);
+    void requestSetVilteEnabled(const sp<RfxMclMessage>& msg);
+    void requestSetViwifiEnabled(const sp<RfxMclMessage>& msg);
+    void requestSetImsCfg(const sp<RfxMclMessage>& msg);
+    void requestSetModemImsCfg(const sp<RfxMclMessage>& msg);
+    void requestSendWfcProfile(const sp<RfxMclMessage>& msg);
+    void enableImsRegistrationReport(const sp<RfxMclMessage>& msg);
+    void requestImsRegistrationState(const sp<RfxMclMessage>& msg);
+    void requestSetImsEnabled(const sp<RfxMclMessage>& msg);
+    void requestImsDereg(const sp<RfxMclMessage>& msg);
+    void enableImsEccSupportReport();
+    void requestSetImsRtpReport(const sp<RfxMclMessage>& msg);
+    void requestMultiImsSupportCount();
+    void enableImsRcsStateFeature();
+    void enableVoPSUrc();
+    void enableSipRegInfoInd();
+    void requestSetSipUserAgent();
+    bool isCurrentSlotSupportIms();
+    void queryVopsStatus(const sp<RfxMclMessage>& msg);
+    void enableVopsStatusReport();
 };
 
 #endif

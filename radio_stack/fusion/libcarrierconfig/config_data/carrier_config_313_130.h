@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-{ RFX_STATUS_KEY_CONFIG_DEVICE_WFC_AVAILABLE, "1"},
+{RFX_STATUS_KEY_CONFIG_DEVICE_WFC_AVAILABLE, "1"},

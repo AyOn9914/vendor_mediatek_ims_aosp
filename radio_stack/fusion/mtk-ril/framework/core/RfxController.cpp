@@ -43,11 +43,11 @@ void RfxWaitReponseTimerHelper::onTimer() {
     int token = m_reponse_msg->getToken();
     RFX_LOG_D(RFX_LOG_TAG, "RfxWaitReponseTimerHelper::onTimer. msg token: %d", token);
     RfxController* controller = m_controller.promote().get();
-    if(controller != NULL) {
+    if (controller != NULL) {
         controller->removeCachedResponse(token);
         controller->setProcessedMsg(m_reponse_msg->getPId(), m_reponse_msg->getPTimeStamp());
     }
-    RfxWaitReponseTimerHelper *_this = this;
+    RfxWaitReponseTimerHelper* _this = this;
     RFX_OBJ_CLOSE(_this);
 }
 
@@ -57,33 +57,27 @@ void RfxWaitReponseTimerHelper::onTimer() {
 
 RFX_IMPLEMENT_CLASS("RfxController", RfxController, RfxObject);
 
-RfxController::RfxController() :
-    m_slot_id(RFX_SLOT_ID_UNKNOWN),
-    m_last_token(-1) {
-}
+RfxController::RfxController() : m_slot_id(RFX_SLOT_ID_UNKNOWN), m_last_token(-1) {}
 
-RfxController::~RfxController() {
-}
+RfxController::~RfxController() {}
 
-
-RfxController *RfxController::findController(int slot_id, const RfxClassInfo *class_info) {
-
-    RfxController *ret = NULL;
+RfxController* RfxController::findController(int slot_id, const RfxClassInfo* class_info) {
+    RfxController* ret = NULL;
 
     if (!class_info->isKindOf(RFX_OBJ_CLASS_INFO(RfxController))) {
         return ret;
     }
 
-    RfxController *root = getSlotRoot(slot_id);
-    RfxObject *parent;
+    RfxController* root = getSlotRoot(slot_id);
+    RfxObject* parent;
 
     if (root == NULL) {
         parent = RFX_OBJ_GET_INSTANCE(RfxRootController);
     } else {
-        parent = static_cast<RfxObject *>(root);
+        parent = static_cast<RfxObject*>(root);
     }
 
-    RfxObject *obj = findObject(parent, class_info);
+    RfxObject* obj = findObject(parent, class_info);
 
     ret = RFX_OBJ_DYNAMIC_CAST(obj, RfxController);
 
@@ -92,66 +86,64 @@ RfxController *RfxController::findController(int slot_id, const RfxClassInfo *cl
     if (ret == NULL && slot_id >= 0 && slot_id < RFX_SLOT_COUNT) {
         root = getSlotRoot(RFX_SLOT_ID_UNKNOWN);
         RFX_ASSERT(root != NULL);
-        parent = static_cast<RfxObject *>(root);
-        RfxObject *obj = findObject(parent, class_info);
+        parent = static_cast<RfxObject*>(root);
+        RfxObject* obj = findObject(parent, class_info);
         ret = RFX_OBJ_DYNAMIC_CAST(obj, RfxController);
     }
 
     return ret;
 }
 
-RfxController *RfxController::getSlotRoot(int slot_id) const {
-
+RfxController* RfxController::getSlotRoot(int slot_id) const {
     return RFX_OBJ_GET_INSTANCE(RfxRootController)->getSlotRootController(slot_id);
 }
 
-void RfxController::registerToHandleRequest(int slot_id, const int *request_id_list,
-                        size_t length, HANDLER_PRIORITY priority) {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+void RfxController::registerToHandleRequest(int slot_id, const int* request_id_list, size_t length,
+                                            HANDLER_PRIORITY priority) {
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     root->registerToHandleRequest(this, slot_id, request_id_list, length, priority);
 }
 
-void RfxController::registerToHandleUrc(int slot_id, const int *urc_id_list, size_t length) {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+void RfxController::registerToHandleUrc(int slot_id, const int* urc_id_list, size_t length) {
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     root->registerToHandleUrc(this, slot_id, urc_id_list, length);
 }
 
-void RfxController::unregisterToHandleRequest(int slot_id, const int *request_id_list,
-            size_t length, HANDLER_PRIORITY priority) {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+void RfxController::unregisterToHandleRequest(int slot_id, const int* request_id_list,
+                                              size_t length, HANDLER_PRIORITY priority) {
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     root->unregisterToHandleRequest(slot_id, request_id_list, length, priority);
 }
 
-void RfxController::unregisterToHandleUrc(int slot_id,
-                                     const int *urc_id_list, size_t length) {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+void RfxController::unregisterToHandleUrc(int slot_id, const int* urc_id_list, size_t length) {
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     root->unregisterToHandleUrc(slot_id, urc_id_list, length);
 }
 
-void RfxController::registerRequestToCsRild(int slot_id,
-                                     const int *request_id_list, size_t length) {
-    RfxSlotRootController *slot_root = (RfxSlotRootController *)getSlotRoot(slot_id);
+void RfxController::registerRequestToCsRild(int slot_id, const int* request_id_list,
+                                            size_t length) {
+    RfxSlotRootController* slot_root = (RfxSlotRootController*)getSlotRoot(slot_id);
     RFX_ASSERT(slot_root);
     slot_root->regReqToCsRild(request_id_list, length);
 }
 
-void RfxController::registerRequestToPsRild(int slot_id,
-                                     const int *request_id_list, size_t length) {
-    RfxSlotRootController *slot_root = (RfxSlotRootController *)getSlotRoot(slot_id);
+void RfxController::registerRequestToPsRild(int slot_id, const int* request_id_list,
+                                            size_t length) {
+    RfxSlotRootController* slot_root = (RfxSlotRootController*)getSlotRoot(slot_id);
     RFX_ASSERT(slot_root);
     slot_root->regReqToPsRild(request_id_list, length);
 }
 
-void RfxController::unregisterRequestToCsRild(int slot_id,
-                                     const int *request_id_list, size_t length) {
-    RfxSlotRootController *slot_root = (RfxSlotRootController *)getSlotRoot(slot_id);
+void RfxController::unregisterRequestToCsRild(int slot_id, const int* request_id_list,
+                                              size_t length) {
+    RfxSlotRootController* slot_root = (RfxSlotRootController*)getSlotRoot(slot_id);
     RFX_ASSERT(slot_root);
     slot_root->unregReqToCsRild(request_id_list, length);
 }
 
-void RfxController::unregisterRequestToPsRild(int slot_id,
-                                     const int *request_id_list, size_t length) {
-    RfxSlotRootController *slot_root = (RfxSlotRootController *)getSlotRoot(slot_id);
+void RfxController::unregisterRequestToPsRild(int slot_id, const int* request_id_list,
+                                              size_t length) {
+    RfxSlotRootController* slot_root = (RfxSlotRootController*)getSlotRoot(slot_id);
     RFX_ASSERT(slot_root);
     slot_root->unregReqToPsRild(request_id_list, length);
 }
@@ -159,33 +151,33 @@ void RfxController::unregisterRequestToPsRild(int slot_id,
 void RfxController::requestToMcl(const sp<RfxMessage>& message, bool sendToMainProtocol) {
     int id = message->getId();
     if (id == RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL) {
-        RFX_LOG_D(RFX_LOG_TAG, "Register ATCI response, %s, msg = %s",
-                               toString().string(), message->toString().string());
-        RFX_OBJ_GET_INSTANCE(RfxRootController)->registerToHandleResponse(this,
-            message->getSlotId(), &id, 1, message->getToken());
+        RFX_LOG_D(RFX_LOG_TAG, "Register ATCI response, %s, msg = %s", toString().string(),
+                  message->toString().string());
+        RFX_OBJ_GET_INSTANCE(RfxRootController)
+                ->registerToHandleResponse(this, message->getSlotId(), &id, 1, message->getToken());
     }
     if (sendToMainProtocol) {
         message->setSendToMainProtocol(true);
     }
-    message->setMainProtocolSlotId(getNonSlotScopeStatusManager()->getIntValue(
-                    RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
+    message->setMainProtocolSlotId(
+            getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
     return RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->requestToMcl(message);
 }
 
 void RfxController::requestToMcl(const sp<RfxMessage>& message, bool sendToMainProtocol,
-        nsecs_t nsec) {
+                                 nsecs_t nsec) {
     int id = message->getId();
     if (id == RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL) {
-        RFX_LOG_D(RFX_LOG_TAG, "Register ATCI response, %s, msg = %s",
-                               toString().string(), message->toString().string());
-        RFX_OBJ_GET_INSTANCE(RfxRootController)->registerToHandleResponse(this,
-            message->getSlotId(), &id, 1, message->getToken());
+        RFX_LOG_D(RFX_LOG_TAG, "Register ATCI response, %s, msg = %s", toString().string(),
+                  message->toString().string());
+        RFX_OBJ_GET_INSTANCE(RfxRootController)
+                ->registerToHandleResponse(this, message->getSlotId(), &id, 1, message->getToken());
     }
     if (sendToMainProtocol) {
         message->setSendToMainProtocol(true);
     }
-    message->setMainProtocolSlotId(getNonSlotScopeStatusManager()->getIntValue(
-                    RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
+    message->setMainProtocolSlotId(
+            getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
     return RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->requestToMclWithDelay(message, nsec);
 }
 
@@ -201,20 +193,17 @@ bool RfxController::responseToBT(const sp<RfxMessage>& message) {
     return RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->responseToBT(message);
 }
 
-int RfxController::getSlotId() const {
-    return m_slot_id;
-}
+int RfxController::getSlotId() const { return m_slot_id; }
 
-RfxStatusManager *RfxController::getStatusManager(int slot_id) const {
+RfxStatusManager* RfxController::getStatusManager(int slot_id) const {
     return RFX_OBJ_GET_INSTANCE(RfxRootController)->getStatusManager(slot_id);
 }
-
 
 void RfxController::onInit() {
     RfxObject::onInit();
     if (m_slot_id == RFX_SLOT_ID_UNKNOWN) {
-        RfxObject *parent = getParent();
-        RfxController *controller = RFX_OBJ_DYNAMIC_CAST(parent, RfxController);
+        RfxObject* parent = getParent();
+        RfxController* controller = RFX_OBJ_DYNAMIC_CAST(parent, RfxController);
         if (controller != NULL) {
             m_slot_id = controller->getSlotId();
         }
@@ -226,7 +215,6 @@ void RfxController::onDeinit() {
     RFX_OBJ_GET_INSTANCE(RfxRootController)->clearRegistry(this);
     RfxObject::onDeinit();
 }
-
 
 bool RfxController::processMessage(const sp<RfxMessage>& message) {
     if (!onPreviewMessage(message)) {
@@ -253,9 +241,8 @@ bool RfxController::processAtciMessage(const sp<RfxMessage>& message) {
     return false;
 }
 
-void RfxController::addToBlackListForSwitchCDMASlot(const int *request_id_list,
-        size_t length) {
-     for (size_t i = 0; i < length; i++) {
+void RfxController::addToBlackListForSwitchCDMASlot(const int* request_id_list, size_t length) {
+    for (size_t i = 0; i < length; i++) {
         mBlackListForSwitchCdmaSlot.add(request_id_list[i]);
     }
 }
@@ -288,8 +275,8 @@ bool RfxController::checkIfRemoveSuspendedMessage(const sp<RfxMessage>& message)
     return onCheckIfRemoveSuspendedMessage(message);
 }
 
-bool RfxController::checkIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+bool RfxController::checkIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                         int radioState) {
     return onCheckIfRejectMessage(message, isModemPowerOff, radioState);
 }
 
@@ -303,10 +290,7 @@ bool RfxController::onHandleRequest(const sp<RfxMessage>& message) {
     return true;
 }
 
-bool RfxController::onHandleUrc(const sp<RfxMessage>& message) {
-    return responseToRilj(message);
-
-}
+bool RfxController::onHandleUrc(const sp<RfxMessage>& message) { return responseToRilj(message); }
 bool RfxController::onHandleResponse(const sp<RfxMessage>& message) {
     return responseToRilj(message);
 }
@@ -321,17 +305,16 @@ bool RfxController::onCheckIfRemoveSuspendedMessage(const sp<RfxMessage>& messag
     return false;
 }
 
-bool RfxController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+bool RfxController::onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                           int radioState) {
     RFX_UNUSED(message);
     bool ret = false;
-    if (radioState == (int)RADIO_STATE_UNAVAILABLE ||
-            radioState == (int)RADIO_STATE_OFF ||
-            isModemPowerOff == true) {
+    if (radioState == (int)RADIO_STATE_UNAVAILABLE || radioState == (int)RADIO_STATE_OFF ||
+        isModemPowerOff == true) {
         ret = true;
     }
     RFX_LOG_D(RFX_LOG_TAG, "onCheckIfRejectMessage isModemPowerOff %d, radioState: %d",
-            (isModemPowerOff == false) ? 0 : 1, radioState);
+              (isModemPowerOff == false) ? 0 : 1, radioState);
     return ret;
 }
 
@@ -356,22 +339,22 @@ void RfxController::removeCachedResponse(int token) {
             break;
         }
     }
-    RFX_LOG_D(RFX_LOG_TAG, "remove cached reponse %s, token: %d, result: %d",
-        toString().string(), token, deleteTokenSuccess);
+    RFX_LOG_D(RFX_LOG_TAG, "remove cached reponse %s, token: %d, result: %d", toString().string(),
+              token, deleteTokenSuccess);
 }
 
 void RfxController::setProcessedMsg(int id, nsecs_t timeStamp) {
     RfxController::ProcessedMsgInfo info(id, timeStamp);
-    RFX_LOG_D(RFX_LOG_TAG, "setProcessedMsg %s, id: %d, pTimeStamp:%" PRId64,
-            toString().string(), id, timeStamp);
+    RFX_LOG_D(RFX_LOG_TAG, "setProcessedMsg %s, id: %d, pTimeStamp:%" PRId64, toString().string(),
+              id, timeStamp);
     m_processed_msg_list.add(info);
 }
 
 int RfxController::getProceesedMsgIndex(int id, nsecs_t timeStamp) {
     size_t count = m_processed_msg_list.size();
     for (size_t i = 0; i < count; i++) {
-        const ProcessedMsgInfo &info = m_processed_msg_list.itemAt(i);
-        if (info.id == id && info.pTimeStamp== timeStamp) {
+        const ProcessedMsgInfo& info = m_processed_msg_list.itemAt(i);
+        if (info.id == id && info.pTimeStamp == timeStamp) {
             return (int)i;
         }
     }
@@ -382,8 +365,10 @@ String8 RfxController::toString() {
     return String8::format("%p, %s", this, getClassInfo()->getClassName());
 }
 
-ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, sp<RfxMessage>& outResponse,
-    const RfxWaitResponseTimedOutCallback &callback, const nsecs_t time) {
+ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message,
+                                                 sp<RfxMessage>& outResponse,
+                                                 const RfxWaitResponseTimedOutCallback& callback,
+                                                 const nsecs_t time) {
     if (message->getType() != RESPONSE) {
         outResponse = NULL;
         return RESPONSE_STATUS_INVALID;
@@ -391,9 +376,9 @@ ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, 
     size_t count = m_wait_reponse_msg_list.size();
     for (size_t i = 0; i < count; i++) {
         RfxWaitReponseEntry messageTmp = m_wait_reponse_msg_list.itemAt(i);
-        if (messageTmp.m_reponse_msg->getType() == message->getType()
-            && messageTmp.m_reponse_msg->getPTimeStamp() == message->getPTimeStamp()
-            && messageTmp.m_reponse_msg->getPId() == message->getPId()) {
+        if (messageTmp.m_reponse_msg->getType() == message->getType() &&
+            messageTmp.m_reponse_msg->getPTimeStamp() == message->getPTimeStamp() &&
+            messageTmp.m_reponse_msg->getPId() == message->getPId()) {
             if (messageTmp.m_reponse_msg->getToken() == message->getToken()) {
                 outResponse = NULL;
                 return RESPONSE_STATUS_ALREADY_SAVED;
@@ -404,8 +389,8 @@ ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, 
                 messageTmp.deleteEntryHelper();
             }
             RFX_LOG_D(RFX_LOG_TAG, "%s, Have fond reponse: pToken=%d, pID=%d, token=%d",
-                    toString().string(), messageTmp.m_reponse_msg->getPToken(),
-                    messageTmp.m_reponse_msg->getPId(), messageTmp.m_reponse_msg->getToken());
+                      toString().string(), messageTmp.m_reponse_msg->getPToken(),
+                      messageTmp.m_reponse_msg->getPId(), messageTmp.m_reponse_msg->getToken());
             outResponse = messageTmp.m_reponse_msg;
             setProcessedMsg(outResponse->getPId(), outResponse->getPTimeStamp());
             return RESPONSE_STATUS_HAVE_MATCHED;
@@ -413,19 +398,21 @@ ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, 
     }
     int index = getProceesedMsgIndex(message->getPId(), message->getPTimeStamp());
     if (index != -1) {
-        RFX_LOG_D(RFX_LOG_TAG, "%s, The response (%s) has been delete",
-                toString().string(), message->toString().string());
+        RFX_LOG_D(RFX_LOG_TAG, "%s, The response (%s) has been delete", toString().string(),
+                  message->toString().string());
         m_processed_msg_list.removeAt((size_t)index);
         outResponse = NULL;
         return RESPONSE_STATUS_HAVE_BEEN_DELETED;
     }
-    RFX_LOG_D(RFX_LOG_TAG, "%s, store the response (token:%d)", toString().string(), message->getToken());
+    RFX_LOG_D(RFX_LOG_TAG, "%s, store the response (token:%d)", toString().string(),
+              message->getToken());
     if (!callback.isValid()) {
-         m_wait_reponse_msg_list.add(RfxWaitReponseEntry(message));
+        m_wait_reponse_msg_list.add(RfxWaitReponseEntry(message));
     } else {
         RfxWaitReponseTimerHelper* helper;
         RFX_OBJ_CREATE_EX(helper, RfxWaitReponseTimerHelper, this, (message, callback, this));
-        TimerHandle timeHanlder = RfxTimer::start(RfxCallback0(helper, &RfxWaitReponseTimerHelper::onTimer), time);
+        TimerHandle timeHanlder =
+                RfxTimer::start(RfxCallback0(helper, &RfxWaitReponseTimerHelper::onTimer), time);
         wp<RfxWaitReponseTimerHelper> weakHelper = helper;
         RfxWaitReponseEntry entry(message, timeHanlder, weakHelper);
         m_wait_reponse_msg_list.add(entry);
@@ -434,14 +421,15 @@ ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, 
     return RESPONSE_STATUS_NO_MATCH_AND_SAVE;
 }
 
-ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message, sp<RfxMessage>& outResponse) {
+ResponseStatus RfxController::preprocessResponse(const sp<RfxMessage>& message,
+                                                 sp<RfxMessage>& outResponse) {
     return preprocessResponse(message, outResponse, RfxWaitResponseTimedOutCallback());
 }
 
 void RfxController::clearMessages() {
     clearWaitResponseList();
-    for (RfxObject *i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
-        RfxController *controller = RFX_OBJ_DYNAMIC_CAST(i, RfxController);
+    for (RfxObject* i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
+        RfxController* controller = RFX_OBJ_DYNAMIC_CAST(i, RfxController);
         if (controller != NULL) {
             controller->clearMessages();
         }
@@ -460,19 +448,15 @@ void RfxController::clearWaitResponseList() {
     m_wait_reponse_msg_list.clear();
 }
 
-const char* RfxController::idToString(int id) {
-    return RFX_ID_TO_STR(id);
-}
+const char* RfxController::idToString(int id) { return RFX_ID_TO_STR(id); }
 
-int RfxController::getFeatureVersion(char *feature, int defaultVaule) {
+int RfxController::getFeatureVersion(char* feature, int defaultVaule) {
     return RfxVersionManager::getInstance()->getFeatureVersion(feature, defaultVaule);
 }
 
-int RfxController::getFeatureVersion(char *feature) {
-    return getFeatureVersion(feature, 0);
-}
+int RfxController::getFeatureVersion(char* feature) { return getFeatureVersion(feature, 0); }
 
-void RfxController::logD(const char *tag, const char *fmt, ...) const {
+void RfxController::logD(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -486,11 +470,10 @@ void RfxController::logD(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(DEBUG, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(DEBUG, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxController::logI(const char *tag, const char *fmt, ...) const {
+void RfxController::logI(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -504,11 +487,10 @@ void RfxController::logI(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(INFO, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(INFO, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxController::logV(const char *tag, const char *fmt, ...) const {
+void RfxController::logV(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -522,11 +504,10 @@ void RfxController::logV(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(VERBOSE, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(VERBOSE, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxController::logE(const char *tag, const char *fmt, ...) const {
+void RfxController::logE(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -540,11 +521,10 @@ void RfxController::logE(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(ERROR, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(ERROR, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxController::logW(const char *tag, const char *fmt, ...) const {
+void RfxController::logW(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -558,6 +538,5 @@ void RfxController::logW(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(WARN, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(WARN, tagString, String8::format("%s", buf), m_slot_id);
 }

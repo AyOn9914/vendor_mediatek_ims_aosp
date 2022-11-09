@@ -27,42 +27,38 @@
  *****************************************************************************/
 class RmcCdmaMtSmsMessage : public RmcVoidUrsp {
     RFX_DECLARE_DATA_CLASS(RmcCdmaMtSmsMessage);
-public:
-    int getReplySeqNo() const {
-        return m_replySeqNo;
-    }
 
-    const RIL_CDMA_SMS_Address *getAddress() const {
-        return &m_msg.sAddress;
-    }
+  public:
+    int getReplySeqNo() const { return m_replySeqNo; }
 
-public:
-    RmcCdmaMtSmsMessage(int urcId, int slotId, String8 &hexPdu);
+    const RIL_CDMA_SMS_Address* getAddress() const { return &m_msg.sAddress; }
 
-private:
+  public:
+    RmcCdmaMtSmsMessage(int urcId, int slotId, String8& hexPdu);
+
+  private:
     RIL_CDMA_SMS_Message m_msg;
     int m_replySeqNo;
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaMtSmsHdlr
  *****************************************************************************/
 class RmcCdmaMtSmsHdlr : public RmcBaseUrcHandler {
-// Constructor / Destructor
-public:
-    RmcCdmaMtSmsHdlr(RfxBaseHandler *h, int type):RmcBaseUrcHandler(h), m_type(type), m_data(-1) {}
+    // Constructor / Destructor
+  public:
+    RmcCdmaMtSmsHdlr(RfxBaseHandler* h, int type)
+        : RmcBaseUrcHandler(h), m_type(type), m_data(-1) {}
     virtual ~RmcCdmaMtSmsHdlr() {}
 
-public:
-    virtual bool onHandleRawUrc(RfxAtLine * line);
-    virtual RmcBaseUrspData *onGetUrcData(int slotId);
+  public:
+    virtual bool onHandleRawUrc(RfxAtLine* line);
+    virtual RmcBaseUrspData* onGetUrcData(int slotId);
 
-private:
+  private:
     int m_type;
     int m_data;
     String8 m_hexPdu;
 };
-
 
 #endif /* __RMC_CDMA_MT_SMS_H__ */

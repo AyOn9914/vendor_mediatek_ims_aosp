@@ -37,28 +37,28 @@
 #endif
 
 // compile with refcounting debugging enabled
-#define DEBUG_REFS                      0
+#define DEBUG_REFS 0
 
 #ifdef MTK_AOSP_ENHANCEMENT
 #ifdef BUILD_SHARED
 #undef DEBUG_REFS
-#define DEBUG_REFS                      1
+#define DEBUG_REFS 1
 #endif
 #endif
 
 // whether ref-tracking is enabled by default, if not, trackMe(true, false)
 // needs to be called explicitly
-#define DEBUG_REFS_ENABLED_BY_DEFAULT   0
+#define DEBUG_REFS_ENABLED_BY_DEFAULT 0
 
 // whether callstack are collected (significantly slows things down)
-#define DEBUG_REFS_CALLSTACK_ENABLED    1
+#define DEBUG_REFS_CALLSTACK_ENABLED 1
 
 // folder where stack traces are saved when DEBUG_REFS is enabled
 // this folder needs to exist and be writable
-#define DEBUG_REFS_CALLSTACK_PATH       "/data/debug"
+#define DEBUG_REFS_CALLSTACK_PATH "/data/debug"
 
 // log all reference counting operations
-#define PRINT_REFS                      0
+#define PRINT_REFS 0
 
 // ---------------------------------------------------------------------------
 
@@ -125,54 +125,43 @@ namespace android {
 // one, we are guaranteed that all other object accesses happen before the
 // object is destroyed.
 
-
-#define INITIAL_STRONG_VALUE (1<<28)
+#define INITIAL_STRONG_VALUE (1 << 28)
 
 // ---------------------------------------------------------------------------
 
-class RefBase::weakref_impl : public RefBase::weakref_type
-{
-public:
-    std::atomic<int32_t>    mStrong;
-    std::atomic<int32_t>    mWeak;
-    RefBase* const          mBase;
-    std::atomic<int32_t>    mFlags;
+class RefBase::weakref_impl : public RefBase::weakref_type {
+  public:
+    std::atomic<int32_t> mStrong;
+    std::atomic<int32_t> mWeak;
+    RefBase* const mBase;
+    std::atomic<int32_t> mFlags;
 
 #if !DEBUG_REFS
 
-    weakref_impl(RefBase* base)
-        : mStrong(INITIAL_STRONG_VALUE)
-        , mWeak(0)
-        , mBase(base)
-        , mFlags(0)
-    {
-    }
+    weakref_impl(RefBase* base) : mStrong(INITIAL_STRONG_VALUE), mWeak(0), mBase(base), mFlags(0) {}
 
-    void addStrongRef(const void* /*id*/) { }
-    void removeStrongRef(const void* /*id*/) { }
-    void renameStrongRefId(const void* /*old_id*/, const void* /*new_id*/) { }
-    void addWeakRef(const void* /*id*/) { }
-    void removeWeakRef(const void* /*id*/) { }
-    void renameWeakRefId(const void* /*old_id*/, const void* /*new_id*/) { }
-    void printRefs() const { }
-    void trackMe(bool, bool) { }
+    void addStrongRef(const void* /*id*/) {}
+    void removeStrongRef(const void* /*id*/) {}
+    void renameStrongRefId(const void* /*old_id*/, const void* /*new_id*/) {}
+    void addWeakRef(const void* /*id*/) {}
+    void removeWeakRef(const void* /*id*/) {}
+    void renameWeakRefId(const void* /*old_id*/, const void* /*new_id*/) {}
+    void printRefs() const {}
+    void trackMe(bool, bool) {}
 
 #else
 
     weakref_impl(RefBase* base)
-        : mStrong(INITIAL_STRONG_VALUE)
-        , mWeak(0)
-        , mBase(base)
-        , mFlags(0)
-        , mStrongRefs(NULL)
-        , mWeakRefs(NULL)
-        , mTrackEnabled(!!DEBUG_REFS_ENABLED_BY_DEFAULT)
-        , mRetain(false)
-    {
-    }
+        : mStrong(INITIAL_STRONG_VALUE),
+          mWeak(0),
+          mBase(base),
+          mFlags(0),
+          mStrongRefs(NULL),
+          mWeakRefs(NULL),
+          mTrackEnabled(!!DEBUG_REFS_ENABLED_BY_DEFAULT),
+          mRetain(false) {}
 
-    ~weakref_impl()
-    {
+    ~weakref_impl() {
         bool dumpStack = false;
         if (!mRetain && mStrongRefs != NULL) {
             dumpStack = true;
@@ -214,14 +203,14 @@ public:
     }
 
     void addStrongRef(const void* id) {
-        //ALOGD_IF(mTrackEnabled,
-        //        "addStrongRef: RefBase=%p, id=%p", mBase, id);
+        // ALOGD_IF(mTrackEnabled,
+        //         "addStrongRef: RefBase=%p, id=%p", mBase, id);
         addRef(&mStrongRefs, id, mStrong.load(std::memory_order_relaxed));
     }
 
     void removeStrongRef(const void* id) {
-        //ALOGD_IF(mTrackEnabled,
-        //        "removeStrongRef: RefBase=%p, id=%p", mBase, id);
+        // ALOGD_IF(mTrackEnabled,
+        //         "removeStrongRef: RefBase=%p, id=%p", mBase, id);
         if (!mRetain) {
             removeRef(&mStrongRefs, id);
         } else {
@@ -230,15 +219,15 @@ public:
     }
 
     void renameStrongRefId(const void* old_id, const void* new_id) {
-        //ALOGD_IF(mTrackEnabled,
-        //        "renameStrongRefId: RefBase=%p, oid=%p, nid=%p",
-        //        mBase, old_id, new_id);
+        // ALOGD_IF(mTrackEnabled,
+        //         "renameStrongRefId: RefBase=%p, oid=%p, nid=%p",
+        //         mBase, old_id, new_id);
         renameRefsId(mStrongRefs, old_id, new_id);
     }
 
 #ifdef MTK_AOSP_ENHANCEMENT
-    void addWeakRef(const void* /*id*/) { }
-    void removeWeakRef(const void* /*id*/) { }
+    void addWeakRef(const void* /*id*/) {}
+    void removeWeakRef(const void* /*id*/) {}
 #else
     void addWeakRef(const void* id) {
         addRef(&mWeakRefs, id, mWeak.load(std::memory_order_relaxed));
@@ -257,14 +246,12 @@ public:
         renameRefsId(mWeakRefs, old_id, new_id);
     }
 
-    void trackMe(bool track, bool retain)
-    {
+    void trackMe(bool track, bool retain) {
         mTrackEnabled = track;
         mRetain = retain;
     }
 
-    void printRefs() const
-    {
+    void printRefs() const {
         String8 text;
 
         {
@@ -286,15 +273,13 @@ public:
                 write(rc, text.string(), text.length());
                 close(rc);
                 ALOGD("STACK TRACE for %p saved in %s", this, name);
-            }
-            else ALOGE("FAILED TO PRINT STACK TRACE for %p in %s: %s", this,
-                      name, strerror(errno));
+            } else
+                ALOGE("FAILED TO PRINT STACK TRACE for %p in %s: %s", this, name, strerror(errno));
         }
     }
 
-private:
-    struct ref_entry
-    {
+  private:
+    struct ref_entry {
         ref_entry* next;
         const void* id;
 #if DEBUG_REFS_CALLSTACK_ENABLED
@@ -303,8 +288,7 @@ private:
         int32_t ref;
     };
 
-    void addRef(ref_entry** refs, const void* id, int32_t mRef)
-    {
+    void addRef(ref_entry** refs, const void* id, int32_t mRef) {
         if (mTrackEnabled) {
             AutoMutex _l(mMutex);
 
@@ -322,8 +306,7 @@ private:
         }
     }
 
-    void removeRef(ref_entry** refs, const void* id)
-    {
+    void removeRef(ref_entry** refs, const void* id) {
         if (mTrackEnabled) {
             AutoMutex _l(mMutex);
 
@@ -340,8 +323,8 @@ private:
             }
 
             ALOGE("RefBase: removing id %p on RefBase %p"
-                    "(weakref_type %p) that doesn't exist!",
-                    id, mBase, this);
+                  "(weakref_type %p) that doesn't exist!",
+                  id, mBase, this);
 
             ref = head;
             while (ref) {
@@ -354,8 +337,7 @@ private:
         }
     }
 
-    void renameRefsId(ref_entry* r, const void* old_id, const void* new_id)
-    {
+    void renameRefsId(ref_entry* r, const void* old_id, const void* new_id) {
         if (mTrackEnabled) {
             AutoMutex _l(mMutex);
             ref_entry* ref = r;
@@ -368,13 +350,11 @@ private:
         }
     }
 
-    void printRefsLocked(String8* out, const ref_entry* refs) const
-    {
+    void printRefsLocked(String8* out, const ref_entry* refs) const {
         char buf[128];
         while (refs) {
             char inc = refs->ref >= 0 ? '+' : '-';
-            sprintf(buf, "\t%c ID %p (ref %d):\n",
-                    inc, refs->id, refs->ref);
+            sprintf(buf, "\t%c ID %p (ref %d):\n", inc, refs->id, refs->ref);
             out->append(buf);
 #if DEBUG_REFS_CALLSTACK_ENABLED
             out->append(refs->stack.toString("\t\t"));
@@ -399,42 +379,39 @@ private:
 
 // ---------------------------------------------------------------------------
 
-void RefBase::incStrong(const void* id) const
-{
+void RefBase::incStrong(const void* id) const {
     weakref_impl* const refs = mRefs;
     refs->incWeak(id);
 
     refs->addStrongRef(id);
     const int32_t c = refs->mStrong.fetch_add(1, std::memory_order_relaxed);
-    //ALOG_ASSERT(c > 0, "incStrong() called on %p after last strong ref", refs);
+    // ALOG_ASSERT(c > 0, "incStrong() called on %p after last strong ref", refs);
 #if PRINT_REFS
     ALOGD("incStrong of %p from %p: cnt=%d\n", this, id, c);
 #endif
-    if (c != INITIAL_STRONG_VALUE)  {
+    if (c != INITIAL_STRONG_VALUE) {
         return;
     }
 
-    int32_t old = refs->mStrong.fetch_sub(INITIAL_STRONG_VALUE,
-            std::memory_order_relaxed);
+    int32_t old = refs->mStrong.fetch_sub(INITIAL_STRONG_VALUE, std::memory_order_relaxed);
     // A decStrong() must still happen after us.
-    //ALOG_ASSERT(old > INITIAL_STRONG_VALUE, "0x%x too small", old);
+    // ALOG_ASSERT(old > INITIAL_STRONG_VALUE, "0x%x too small", old);
     refs->mBase->onFirstRef();
 }
 
-void RefBase::decStrong(const void* id) const
-{
+void RefBase::decStrong(const void* id) const {
     weakref_impl* const refs = mRefs;
     refs->removeStrongRef(id);
     const int32_t c = refs->mStrong.fetch_sub(1, std::memory_order_release);
 #if PRINT_REFS
     ALOGD("decStrong of %p from %p: cnt=%d\n", this, id, c);
 #endif
-    //ALOG_ASSERT(c >= 1, "decStrong() called on %p too many times", refs);
+    // ALOG_ASSERT(c >= 1, "decStrong() called on %p too many times", refs);
     if (c == 1) {
         std::atomic_thread_fence(std::memory_order_acquire);
         refs->mBase->onLastStrongRef(id);
         int32_t flags = refs->mFlags.load(std::memory_order_relaxed);
-        if ((flags&OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
+        if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
             delete this;
             // Since mStrong had been incremented, the destructor did not
             // delete refs.
@@ -449,8 +426,7 @@ void RefBase::decStrong(const void* id) const
     refs->decWeak(id);
 }
 
-void RefBase::forceIncStrong(const void* id) const
-{
+void RefBase::forceIncStrong(const void* id) const {
     // Allows initial mStrong of 0 in addition to INITIAL_STRONG_VALUE.
     // TODO: Better document assumptions.
     weakref_impl* const refs = mRefs;
@@ -458,61 +434,53 @@ void RefBase::forceIncStrong(const void* id) const
 
     refs->addStrongRef(id);
     const int32_t c = refs->mStrong.fetch_add(1, std::memory_order_relaxed);
-    //ALOG_ASSERT(c >= 0, "forceIncStrong called on %p after ref count underflow",
-    //           refs);
+    // ALOG_ASSERT(c >= 0, "forceIncStrong called on %p after ref count underflow",
+    //            refs);
 #if PRINT_REFS
     ALOGD("forceIncStrong of %p from %p: cnt=%d\n", this, id, c);
 #endif
 
     switch (c) {
-    case INITIAL_STRONG_VALUE:
-        refs->mStrong.fetch_sub(INITIAL_STRONG_VALUE,
-                std::memory_order_relaxed);
-        // fall through...
-        TELEPHONYWARE_FALLTHROUGH;
-    case 0:
-        refs->mBase->onFirstRef();
+        case INITIAL_STRONG_VALUE:
+            refs->mStrong.fetch_sub(INITIAL_STRONG_VALUE, std::memory_order_relaxed);
+            // fall through...
+            TELEPHONYWARE_FALLTHROUGH;
+        case 0:
+            refs->mBase->onFirstRef();
     }
 }
 
-int32_t RefBase::getStrongCount() const
-{
+int32_t RefBase::getStrongCount() const {
     // Debugging only; No memory ordering guarantees.
     return mRefs->mStrong.load(std::memory_order_relaxed);
 }
 
-RefBase* RefBase::weakref_type::refBase() const
-{
+RefBase* RefBase::weakref_type::refBase() const {
     return static_cast<const weakref_impl*>(this)->mBase;
 }
 
-void RefBase::weakref_type::incWeak(const void* id)
-{
+void RefBase::weakref_type::incWeak(const void* id) {
     weakref_impl* const impl = static_cast<weakref_impl*>(this);
     impl->addWeakRef(id);
-    const int32_t c __unused = impl->mWeak.fetch_add(1,
-            std::memory_order_relaxed);
-    //ALOG_ASSERT(c >= 0, "incWeak called on %p after last weak ref", this);
+    const int32_t c __unused = impl->mWeak.fetch_add(1, std::memory_order_relaxed);
+    // ALOG_ASSERT(c >= 0, "incWeak called on %p after last weak ref", this);
 }
 
-
-void RefBase::weakref_type::decWeak(const void* id)
-{
+void RefBase::weakref_type::decWeak(const void* id) {
     weakref_impl* const impl = static_cast<weakref_impl*>(this);
     impl->removeWeakRef(id);
     const int32_t c = impl->mWeak.fetch_sub(1, std::memory_order_release);
-    //ALOG_ASSERT(c >= 1, "decWeak called on %p too many times", this);
+    // ALOG_ASSERT(c >= 1, "decWeak called on %p too many times", this);
     if (c != 1) return;
     atomic_thread_fence(std::memory_order_acquire);
 
     int32_t flags = impl->mFlags.load(std::memory_order_relaxed);
-    if ((flags&OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
+    if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
         // This is the regular lifetime case. The object is destroyed
         // when the last strong reference goes away. Since weakref_impl
         // outlive the object, it is not destroyed in the dtor, and
         // we'll have to do it here.
-        if (impl->mStrong.load(std::memory_order_relaxed)
-                == INITIAL_STRONG_VALUE) {
+        if (impl->mStrong.load(std::memory_order_relaxed) == INITIAL_STRONG_VALUE) {
             // Special case: we never had a strong reference, so we need to
             // destroy the object now.
             delete impl->mBase;
@@ -528,21 +496,20 @@ void RefBase::weakref_type::decWeak(const void* id)
     }
 }
 
-bool RefBase::weakref_type::attemptIncStrong(const void* id)
-{
+bool RefBase::weakref_type::attemptIncStrong(const void* id) {
     incWeak(id);
 
     weakref_impl* const impl = static_cast<weakref_impl*>(this);
     int32_t curCount = impl->mStrong.load(std::memory_order_relaxed);
 
-    //ALOG_ASSERT(curCount >= 0,
-    //        "attemptIncStrong called on %p after underflow", this);
+    // ALOG_ASSERT(curCount >= 0,
+    //         "attemptIncStrong called on %p after underflow", this);
 
     while (curCount > 0 && curCount != INITIAL_STRONG_VALUE) {
         // we're in the easy/common case of promoting a weak-reference
         // from an existing strong reference.
-        if (impl->mStrong.compare_exchange_weak(curCount, curCount+1,
-                std::memory_order_relaxed)) {
+        if (impl->mStrong.compare_exchange_weak(curCount, curCount + 1,
+                                                std::memory_order_relaxed)) {
             break;
         }
         // the strong count has changed on us, we need to re-assert our
@@ -554,7 +521,7 @@ bool RefBase::weakref_type::attemptIncStrong(const void* id)
         // - there never was a strong reference on us
         // - or, all strong references have been released
         int32_t flags = impl->mFlags.load(std::memory_order_relaxed);
-        if ((flags&OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
+        if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG) {
             // this object has a "normal" life-time, i.e.: it gets destroyed
             // when the last strong reference goes away
             if (curCount <= 0) {
@@ -568,8 +535,8 @@ bool RefBase::weakref_type::attemptIncStrong(const void* id)
             // there never was a strong-reference, so we can try to
             // promote this object; we need to do that atomically.
             while (curCount > 0) {
-                if (impl->mStrong.compare_exchange_weak(curCount, curCount+1,
-                        std::memory_order_relaxed)) {
+                if (impl->mStrong.compare_exchange_weak(curCount, curCount + 1,
+                                                        std::memory_order_relaxed)) {
                     break;
                 }
                 // the strong count has changed on us, we need to re-assert our
@@ -620,23 +587,20 @@ bool RefBase::weakref_type::attemptIncStrong(const void* id)
     // this in the middle of another incStrong.  The subtraction is handled
     // by the thread that started with INITIAL_STRONG_VALUE.
     if (curCount == INITIAL_STRONG_VALUE) {
-        impl->mStrong.fetch_sub(INITIAL_STRONG_VALUE,
-                std::memory_order_relaxed);
+        impl->mStrong.fetch_sub(INITIAL_STRONG_VALUE, std::memory_order_relaxed);
     }
 
     return true;
 }
 
-bool RefBase::weakref_type::attemptIncWeak(const void* id)
-{
+bool RefBase::weakref_type::attemptIncWeak(const void* id) {
     weakref_impl* const impl = static_cast<weakref_impl*>(this);
 
     int32_t curCount = impl->mWeak.load(std::memory_order_relaxed);
-    //ALOG_ASSERT(curCount >= 0, "attemptIncWeak called on %p after underflow",
-    //           this);
+    // ALOG_ASSERT(curCount >= 0, "attemptIncWeak called on %p after underflow",
+    //            this);
     while (curCount > 0) {
-        if (impl->mWeak.compare_exchange_weak(curCount, curCount+1,
-                std::memory_order_relaxed)) {
+        if (impl->mWeak.compare_exchange_weak(curCount, curCount + 1, std::memory_order_relaxed)) {
             break;
         }
         // curCount has been updated.
@@ -649,43 +613,30 @@ bool RefBase::weakref_type::attemptIncWeak(const void* id)
     return curCount > 0;
 }
 
-int32_t RefBase::weakref_type::getWeakCount() const
-{
+int32_t RefBase::weakref_type::getWeakCount() const {
     // Debug only!
-    return static_cast<const weakref_impl*>(this)->mWeak
-            .load(std::memory_order_relaxed);
+    return static_cast<const weakref_impl*>(this)->mWeak.load(std::memory_order_relaxed);
 }
 
-void RefBase::weakref_type::printRefs() const
-{
+void RefBase::weakref_type::printRefs() const {
     static_cast<const weakref_impl*>(this)->printRefs();
 }
 
-void RefBase::weakref_type::trackMe(bool enable, bool retain)
-{
+void RefBase::weakref_type::trackMe(bool enable, bool retain) {
     static_cast<weakref_impl*>(this)->trackMe(enable, retain);
 }
 
-RefBase::weakref_type* RefBase::createWeak(const void* id) const
-{
+RefBase::weakref_type* RefBase::createWeak(const void* id) const {
     mRefs->incWeak(id);
     return mRefs;
 }
 
-RefBase::weakref_type* RefBase::getWeakRefs() const
-{
-    return mRefs;
-}
+RefBase::weakref_type* RefBase::getWeakRefs() const { return mRefs; }
 
-RefBase::RefBase()
-    : mRefs(new weakref_impl(this))
-{
-}
+RefBase::RefBase() : mRefs(new weakref_impl(this)) {}
 
-RefBase::~RefBase()
-{
-    if (mRefs->mStrong.load(std::memory_order_relaxed)
-            == INITIAL_STRONG_VALUE) {
+RefBase::~RefBase() {
+    if (mRefs->mStrong.load(std::memory_order_relaxed) == INITIAL_STRONG_VALUE) {
         // we never acquired a strong (and/or weak) reference on this object.
         delete mRefs;
     } else {
@@ -705,53 +656,43 @@ RefBase::~RefBase()
     const_cast<weakref_impl*&>(mRefs) = NULL;
 }
 
-void RefBase::extendObjectLifetime(int32_t mode)
-{
+void RefBase::extendObjectLifetime(int32_t mode) {
     // Must be happens-before ordered with respect to construction or any
     // operation that could destroy the object.
     mRefs->mFlags.fetch_or(mode, std::memory_order_relaxed);
 }
 
-void RefBase::onFirstRef()
-{
+void RefBase::onFirstRef() {}
+
+void RefBase::onLastStrongRef(const void* /*id*/) {}
+
+bool RefBase::onIncStrongAttempted(uint32_t flags, const void* /*id*/) {
+    return (flags & FIRST_INC_STRONG) ? true : false;
 }
 
-void RefBase::onLastStrongRef(const void* /*id*/)
-{
-}
-
-bool RefBase::onIncStrongAttempted(uint32_t flags, const void* /*id*/)
-{
-    return (flags&FIRST_INC_STRONG) ? true : false;
-}
-
-void RefBase::onLastWeakRef(const void* /*id*/)
-{
-}
+void RefBase::onLastWeakRef(const void* /*id*/) {}
 
 // ---------------------------------------------------------------------------
 
 #if DEBUG_REFS
 void RefBase::renameRefs(size_t n, const ReferenceRenamer& renamer) {
-    for (size_t i=0 ; i<n ; i++) {
+    for (size_t i = 0; i < n; i++) {
         renamer(i);
     }
 }
 #else
-void RefBase::renameRefs(size_t /*n*/, const ReferenceRenamer& /*renamer*/) { }
+void RefBase::renameRefs(size_t /*n*/, const ReferenceRenamer& /*renamer*/) {}
 #endif
 
-void RefBase::renameRefId(weakref_type* ref,
-        const void* old_id, const void* new_id) {
+void RefBase::renameRefId(weakref_type* ref, const void* old_id, const void* new_id) {
     weakref_impl* const impl = static_cast<weakref_impl*>(ref);
     impl->renameStrongRefId(old_id, new_id);
     impl->renameWeakRefId(old_id, new_id);
 }
 
-void RefBase::renameRefId(RefBase* ref,
-        const void* old_id, const void* new_id) {
+void RefBase::renameRefId(RefBase* ref, const void* old_id, const void* new_id) {
     ref->mRefs->renameStrongRefId(old_id, new_id);
     ref->mRefs->renameWeakRefId(old_id, new_id);
 }
 
-}; // namespace android
+};  // namespace android

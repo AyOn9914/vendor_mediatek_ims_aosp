@@ -32,14 +32,14 @@
 class RmcSuppServRequestNRTHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcSuppServRequestNRTHandler);
 
-    public:
-        RmcSuppServRequestNRTHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServRequestNRTHandler();
+  public:
+    RmcSuppServRequestNRTHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServRequestNRTHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
+  private:
     void requestGetXcapStatus(const sp<RfxMclMessage>& msg);
 };
 

@@ -28,26 +28,25 @@
 class RmcPhbURCHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcPhbURCHandler);
 
-    public:
-        RmcPhbURCHandler(int slot_id, int channel_id);
-        virtual ~RmcPhbURCHandler();
+  public:
+    RmcPhbURCHandler(int slot_id, int channel_id);
+    virtual ~RmcPhbURCHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg) {RFX_UNUSED(msg);}
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg) {RFX_UNUSED(msg);}
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-        virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-                RIL_RadioState radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState);
 
-    private:
-        void onPhbStateChanged(int isPhbReady);
+  private:
+    void onPhbStateChanged(int isPhbReady);
 
-    private:
-        pthread_mutex_t mLock;
-        pthread_mutex_t *mPLock;
+  private:
+    pthread_mutex_t mLock;
+    pthread_mutex_t* mPLock;
 };
 
 #endif

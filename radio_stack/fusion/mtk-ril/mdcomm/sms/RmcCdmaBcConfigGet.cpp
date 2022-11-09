@@ -22,30 +22,26 @@
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaGetBcConfigReq, RmcCdmaGetBcConfigRsp,
-        RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaGetBcConfigReq, RmcCdmaGetBcConfigRsp,
+                                RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG);
 
 /*****************************************************************************
  * Class RmcCdmaGetBcConfigReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaGetBcConfigReq);
-RmcCdmaGetBcConfigReq::RmcCdmaGetBcConfigReq(void *data, int length)
-        :RmcMultiAtReq(data, length), m_mode(-1) {
-}
+RmcCdmaGetBcConfigReq::RmcCdmaGetBcConfigReq(void* data, int length)
+    : RmcMultiAtReq(data, length), m_mode(-1) {}
 
-RmcCdmaGetBcConfigReq::~RmcCdmaGetBcConfigReq() {
-}
+RmcCdmaGetBcConfigReq::~RmcCdmaGetBcConfigReq() {}
 
-RmcAtSendInfo* RmcCdmaGetBcConfigReq::onGetFirstAtInfo(RfxBaseHandler *h) {
+RmcAtSendInfo* RmcCdmaGetBcConfigReq::onGetFirstAtInfo(RfxBaseHandler* h) {
     RFX_UNUSED(h);
     String8 cmd("AT+ECSCB?");
     String8 responsePrefix("+ECSCB:");
     return new RmcSingleLineAtSendInfo(cmd, responsePrefix);
 }
 
-RmcAtSendInfo* RmcCdmaGetBcConfigReq::onGetNextAtInfo(
-        const String8 & cmd, RfxBaseHandler * h) {
+RmcAtSendInfo* RmcCdmaGetBcConfigReq::onGetNextAtInfo(const String8& cmd, RfxBaseHandler* h) {
     RFX_UNUSED(h);
     if (cmd == String8("AT+ECSCB?")) {
         String8 cmd("AT+ECSCBCHA?");
@@ -59,8 +55,8 @@ RmcAtSendInfo* RmcCdmaGetBcConfigReq::onGetNextAtInfo(
     return NULL;
 }
 
-bool RmcCdmaGetBcConfigReq::onHandleIntermediates(
-        const String8 & cmd,RfxAtLine * line,RfxBaseHandler * h) {
+bool RmcCdmaGetBcConfigReq::onHandleIntermediates(const String8& cmd, RfxAtLine* line,
+                                                  RfxBaseHandler* h) {
     RFX_UNUSED(h);
     int err;
     int mode = line->atTokNextint(&err);
@@ -74,19 +70,18 @@ bool RmcCdmaGetBcConfigReq::onHandleIntermediates(
         if (mode == 0) {
             return false;
         }
-    } else if (cmd == String8("AT+ECSCBCHA?") ||
-        cmd == String8("AT+ECSCBLAN?")) {
+    } else if (cmd == String8("AT+ECSCBCHA?") || cmd == String8("AT+ECSCBLAN?")) {
         String8 rangeStr;
         Range ranges[MAX_RANGE];
         int num = 0;
         if (mode == 1) {
-            char *str = line->atTokNextstr(&err);
+            char* str = line->atTokNextstr(&err);
             if (err < 0) {
                 setError(RIL_E_SYSTEM_ERR);
                 return false;
             }
             rangeStr.setTo(str);
-            num = RmcCdmaBcRangeParser::getRangeFromModem((char *)rangeStr.string(), ranges);
+            num = RmcCdmaBcRangeParser::getRangeFromModem((char*)rangeStr.string(), ranges);
         }
         if (cmd == String8("AT+ECSCBCHA?")) {
             for (int i = 0; i < num; i++) {
@@ -101,18 +96,15 @@ bool RmcCdmaGetBcConfigReq::onHandleIntermediates(
     return true;
 }
 
-
 /*****************************************************************************
  * Class RmcCdmaGetBcConfigRsp
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaGetBcConfigRsp);
-RmcCdmaGetBcConfigRsp::RmcCdmaGetBcConfigRsp(void *data, int length)
-        : RmcVoidRsp(data, length) {
+RmcCdmaGetBcConfigRsp::RmcCdmaGetBcConfigRsp(void* data, int length) : RmcVoidRsp(data, length) {
     if (data != NULL) {
-        RIL_CDMA_BroadcastSmsConfigInfo **p_cur =
-                   (RIL_CDMA_BroadcastSmsConfigInfo **) data;
+        RIL_CDMA_BroadcastSmsConfigInfo** p_cur = (RIL_CDMA_BroadcastSmsConfigInfo**)data;
 
-        int num = length / sizeof (RIL_CDMA_BroadcastSmsConfigInfo *);
+        int num = length / sizeof(RIL_CDMA_BroadcastSmsConfigInfo*);
         for (int i = 0; i < num; i++) {
             m_infos.push(*(p_cur[i]));
         }
@@ -121,38 +113,37 @@ RmcCdmaGetBcConfigRsp::RmcCdmaGetBcConfigRsp(void *data, int length)
         for (it = m_infos.begin(); it != m_infos.end(); it++, i++) {
             m_pInfos.push(it);
         }
-        m_data = (void *)m_pInfos.array();
+        m_data = (void*)m_pInfos.array();
         m_length = sizeof(RIL_CDMA_BroadcastSmsConfigInfo*) * m_pInfos.size();
     }
 }
 
-RmcCdmaGetBcConfigRsp::RmcCdmaGetBcConfigRsp(
-        Vector<RIL_CDMA_BroadcastSmsConfigInfo> infos, RIL_Errno e)
-        : RmcVoidRsp(e), m_infos(infos) {
+RmcCdmaGetBcConfigRsp::RmcCdmaGetBcConfigRsp(Vector<RIL_CDMA_BroadcastSmsConfigInfo> infos,
+                                             RIL_Errno e)
+    : RmcVoidRsp(e), m_infos(infos) {
     if (e == RIL_E_SUCCESS) {
         Vector<RIL_CDMA_BroadcastSmsConfigInfo>::iterator it;
         int i = 0;
         for (it = m_infos.begin(); it != m_infos.end(); it++, i++) {
             m_pInfos.push(it);
         }
-        m_data = (void *)m_pInfos.array();
+        m_data = (void*)m_pInfos.array();
         m_length = sizeof(RIL_CDMA_BroadcastSmsConfigInfo*) * m_pInfos.size();
     }
 }
 
-RmcCdmaGetBcConfigRsp::~RmcCdmaGetBcConfigRsp() {
-}
+RmcCdmaGetBcConfigRsp::~RmcCdmaGetBcConfigRsp() {}
 
 /*****************************************************************************
  * Class RmcCdmaBcGetConfigHdlr
  *****************************************************************************/
-RmcBaseRspData *RmcCdmaBcGetConfigHdlr::onGetRspData(RmcBaseReqData *req) {
-    RmcCdmaGetBcConfigReq *bcConfigReq = (RmcCdmaGetBcConfigReq *)((void* )req);
+RmcBaseRspData* RmcCdmaBcGetConfigHdlr::onGetRspData(RmcBaseReqData* req) {
+    RmcCdmaGetBcConfigReq* bcConfigReq = (RmcCdmaGetBcConfigReq*)((void*)req);
     RIL_Errno e = RIL_E_SUCCESS;
     Vector<RIL_CDMA_BroadcastSmsConfigInfo> infos;
     if (bcConfigReq->isBcActivate()) {
-        const Vector<Range> & channels = bcConfigReq->getChannels();
-        const Vector<Range> & languages = bcConfigReq->getLanguages();
+        const Vector<Range>& channels = bcConfigReq->getChannels();
+        const Vector<Range>& languages = bcConfigReq->getLanguages();
         if ((channels.size() + languages.size()) == 0) {
             RIL_CDMA_BroadcastSmsConfigInfo info;
             memset(&info, 0, sizeof(info));

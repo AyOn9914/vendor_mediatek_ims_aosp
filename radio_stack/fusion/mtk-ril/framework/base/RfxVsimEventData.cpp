@@ -21,16 +21,13 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVsimEventData);
 
-RfxVsimEventData::RfxVsimEventData(void *data, int length) : RfxBaseData(data, length) {
+RfxVsimEventData::RfxVsimEventData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
         RIL_VsimEvent* pVsim = (RIL_VsimEvent*)data;
         RIL_VsimEvent* pData = (RIL_VsimEvent*)calloc(1, sizeof(RIL_VsimEvent));
         if (pData == NULL) {
-            RfxRilUtils::printLog(
-                    ERROR,
-                    String8::format("[RfxVsimEventData]"),
-                    String8::format("fail to allocate pData!"),
-                    0);
+            RfxRilUtils::printLog(ERROR, String8::format("[RfxVsimEventData]"),
+                                  String8::format("fail to allocate pData!"), 0);
             return;
         }
         pData->eventId = pVsim->eventId;

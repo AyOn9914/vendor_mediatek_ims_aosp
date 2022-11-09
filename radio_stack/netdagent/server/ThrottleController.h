@@ -21,19 +21,19 @@ namespace android {
 namespace netdagent {
 
 class ThrottleController {
-public:
+  public:
     ThrottleController();
     virtual ~ThrottleController();
-    int setInterfaceThrottle(const char *iface, int rxKbps, int txKbps);
-    int getInterfaceRxThrottle(const char *iface, int *rx);
-    int getInterfaceTxThrottle(const char *iface, int *tx);
+    int setInterfaceThrottle(const char* iface, int rxKbps, int txKbps);
+    int getInterfaceRxThrottle(const char* iface, int* rx);
+    int getInterfaceTxThrottle(const char* iface, int* tx);
     int setModemThrottle(int rxKbps, int txKbps);
     int updateModemThrottle();
-    int getModemRxThrottle(int *rx);
-    int getModemTxThrottle(int *tx);
+    int getModemRxThrottle(int* rx);
+    int getModemTxThrottle(int* tx);
 
-private:
-    static void reset(const char *iface);
+  private:
+    static void reset(const char* iface);
     int mModemRx;
     int mModemTx;
 };

@@ -19,8 +19,8 @@
 #include <unistd.h>
 #include <cutils/sockets.h>
 
-#define SOCKET_NAME_RIL_DEBUG   "rild-debug"    /* from ril.cpp */
-#define SOCKET_NAME_RIL2_DEBUG  "rild2-debug"
+#define SOCKET_NAME_RIL_DEBUG "rild-debug" /* from ril.cpp */
+#define SOCKET_NAME_RIL2_DEBUG "rild2-debug"
 
 enum options {
     RADIO_RESET,
@@ -35,7 +35,6 @@ enum options {
     ANSWER_CALL,
     END_CALL,
 };
-
 
 static void print_usage() {
     perror("Usage: radiooptions [option] [extra_socket_args]\n\
@@ -60,7 +59,7 @@ static void print_usage() {
            1 - one modem for multiple debug socket \n");
 }
 
-static int error_check(int argc, char * argv[]) {
+static int error_check(int argc, char* argv[]) {
     if (argc < 2) {
         return -1;
     }
@@ -75,7 +74,7 @@ static int error_check(int argc, char * argv[]) {
     return -1;
 }
 
-static int get_number_args(char *argv[]) {
+static int get_number_args(char* argv[]) {
     const int option = atoi(argv[1]);
     if (option != DIAL_CALL && option != SETUP_PDP) {
         return 3;
@@ -84,44 +83,40 @@ static int get_number_args(char *argv[]) {
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     int fd;
     int num_socket_args = 0;
-    int i  = 0;
+    int i = 0;
     int modem_socket_type = 0;
     int sim_id = 0;
     char socket_name[20];
 
-    if(error_check(argc, argv)) {
+    if (error_check(argc, argv)) {
         print_usage();
         exit(-1);
     }
 
     num_socket_args = get_number_args(argv);
-    modem_socket_type = atoi(argv[(num_socket_args-1)]);
-    sim_id = atoi(argv[(num_socket_args-2)]);
-    memset(socket_name, 0, sizeof(char)*20);
+    modem_socket_type = atoi(argv[(num_socket_args - 1)]);
+    sim_id = atoi(argv[(num_socket_args - 2)]);
+    memset(socket_name, 0, sizeof(char) * 20);
     if (sim_id == 0 || modem_socket_type == 1) {
         strncpy(socket_name, SOCKET_NAME_RIL_DEBUG, 19);
     } else if (sim_id == 1) {
         strncpy(socket_name, SOCKET_NAME_RIL2_DEBUG, 19);
     }
 
-    fd = socket_local_client(socket_name,
-                                 ANDROID_SOCKET_NAMESPACE_RESERVED,
-                                 SOCK_STREAM);
+    fd = socket_local_client(socket_name, ANDROID_SOCKET_NAMESPACE_RESERVED, SOCK_STREAM);
     if (fd < 0) {
-        perror ("opening radio debug socket");
+        perror("opening radio debug socket");
         exit(-1);
     }
 
-
     /* It is not necessacry to pass the argument "modem-socket style" to rild */
     num_socket_args--;
-    int ret = send(fd, (const void *)&num_socket_args, sizeof(int), 0);
-    if(ret != sizeof(int)) {
-        perror ("Socket write error when sending num args");
+    int ret = send(fd, (const void*)&num_socket_args, sizeof(int), 0);
+    if (ret != sizeof(int)) {
+        perror("Socket write error when sending num args");
         close(fd);
         exit(-1);
     }
@@ -137,7 +132,7 @@ int main(int argc, char *argv[])
         }
         ret = send(fd, argv[1 + i], sizeof(char) * len, 0);
         if (ret != len * sizeof(char)) {
-            perror ("Socket write Error: When sending arg");
+            perror("Socket write Error: When sending arg");
             close(fd);
             exit(-1);
         }

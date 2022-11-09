@@ -31,8 +31,8 @@
 #include <string.h>
 #include <unistd.h>
 
-RmcSuppServUssdHandler::RmcSuppServUssdHandler(int slot_id, int channel_id) :
-    RmcSuppServUssdBaseHandler(slot_id, channel_id) {
+RmcSuppServUssdHandler::RmcSuppServUssdHandler(int slot_id, int channel_id)
+    : RmcSuppServUssdBaseHandler(slot_id, channel_id) {
     // do nothing
 }
 
@@ -57,10 +57,10 @@ void RmcSuppServUssdHandler::requestSendUSSD(const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
     char* p_tmpStr = NULL;
     char* p_ussdRequest = NULL;
-    char* p_input_ussdRequest = (char*) msg->getData()->getData();
+    char* p_input_ussdRequest = (char*)msg->getData()->getData();
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     // Check input USSD string first
     if (p_input_ussdRequest == NULL || strlen(p_input_ussdRequest) == 0) {
@@ -86,10 +86,10 @@ void RmcSuppServUssdHandler::requestSendUSSD(const sp<RfxMclMessage>& msg) {
         length = MAX_RIL_USSD_NUMBER_LENGTH;
     }
 
-    p_tmpStr = (char*) calloc(1, (4 * length + 1));
-    if(p_tmpStr == NULL) {
+    p_tmpStr = (char*)calloc(1, (4 * length + 1));
+    if (p_tmpStr == NULL) {
         logE(TAG, "Malloc fail");
-        free((char *)p_ussdRequest);
+        free((char*)p_ussdRequest);
         goto error;
     }
     memcpy(p_tmpStr, p_ussdRequest, 4 * length);
@@ -147,7 +147,7 @@ void RmcSuppServUssdHandler::requestSendUSSD(const sp<RfxMclMessage>& msg) {
 error:
     if (ret == RIL_E_SUCCESS) {
         sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+                                                                   RfxVoidData(), msg, false);
         responseToTelCore(response);
     } else {
         sendFailureReport(msg, ret);
@@ -174,8 +174,8 @@ void RmcSuppServUssdHandler::requestCancelUssd(const sp<RfxMclMessage>& msg) {
         ret = RIL_E_SUCCESS;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -185,7 +185,8 @@ void RmcSuppServUssdHandler::handleOnUssd(const sp<RfxMclMessage>& msg) {
     logD(TAG, "handleOnUssd, from UrcHandler");
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD, m_slot_id,
+    urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_ON_USSD, m_slot_id,
             RfxStringsData(msg->getData()->getData(), msg->getData()->getDataLength()));
     responseToTelCore(urc);
 }

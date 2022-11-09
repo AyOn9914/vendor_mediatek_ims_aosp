@@ -22,12 +22,13 @@
 #include <stdlib.h>
 
 class RfxMisc {
-    private:
-        RfxMisc() {}
-        ~RfxMisc() {}
-    public:
-        /** returns 1 if line starts with prefix, 0 if it does not */
-        static int strStartsWith(const char *line, const char *prefix);
+  private:
+    RfxMisc() {}
+    ~RfxMisc() {}
+
+  public:
+    /** returns 1 if line starts with prefix, 0 if it does not */
+    static int strStartsWith(const char* line, const char* prefix);
 };
 
 #endif

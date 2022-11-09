@@ -34,13 +34,12 @@
 #include "utils/Looper.h"
 //#include "utils/Vector.h"
 
-
-using ::android::RefBase;
-using ::android::sp;
 using ::android::Looper;
 using ::android::MessageHandler;
-//using ::android::string;
-//using ::android::Vector;
+using ::android::RefBase;
+using ::android::sp;
+// using ::android::string;
+// using ::android::Vector;
 
 using namespace std;
 /*****************************************************************************
@@ -49,13 +48,12 @@ using namespace std;
 class ConferenceCallUser;
 
 class RtcImsConferenceCallMessageHandler : public DefaultHandler {
-
-public:
+  public:
     // user (string) :Tel or SIP URI
     static const string USER;
-    //user > display text (string)
+    // user > display text (string)
     static const string DISPLAY_TEXT;
-    //user > endpoint (string) : URI or GRUU or Phone number
+    // user > endpoint (string) : URI or GRUU or Phone number
     static const string ENDPOINT;
     // user > endpoint >status
     static const string STATUS;
@@ -106,35 +104,32 @@ public:
     static const string STATUS_DISCONNECTED;
     static const string STATUS_MUTED_VIA_FOCUS;
     static const string STATUS_CONNECT_FAIL;
-    //conference -info : SIP status code (integer)
+    // conference -info : SIP status code (integer)
     static const string SIP_STATUS_CODE;
-public:
+
+  public:
     RtcImsConferenceCallMessageHandler();
     virtual ~RtcImsConferenceCallMessageHandler();
     vector<sp<ConferenceCallUser>> getUsers() const;
     void setMaxUserCount(string maxUserCount);
     int getMaxUserCount() const;
-    void setCallId(const int &callId);
+    void setCallId(const int& callId);
     int getCallId() const;
     int getUserCount() const;
     string getHostInfo() const;
     int getVersion() const;
     int getCEPState() const;
     int updateCEPState(string val);
-//    void startDocument();
-//    void characters(string ch, int start, int length);
-    void startElement(string nodeName,
-            string nodeValue, string attributeName, string attributeValue);
+    //    void startDocument();
+    //    void characters(string ch, int start, int length);
+    void startElement(string nodeName, string nodeValue, string attributeName,
+                      string attributeValue);
     void endElement(string nodeName);
-public:
 
-    enum {
-        CEP_STATE_UNKNOWN,
-        CEP_STATE_FULL,
-        CEP_STATE_PARTIAL
-    };
+  public:
+    enum { CEP_STATE_UNKNOWN, CEP_STATE_FULL, CEP_STATE_PARTIAL };
 
-private:
+  private:
     int mCallId;
     int mIndex;
     int mUserCount;
@@ -149,17 +144,16 @@ private:
 };
 
 class ConferenceCallUser : public virtual RefBase {
-
-public:
+  public:
     ConferenceCallUser();
     virtual ~ConferenceCallUser();
 
-public:
-    string mEndPoint;      // Get from <endpoint entity="xxx">
-    string mEntity;        // Get from <user entity="xxx">
-    string mDisplayText;   // Get from <display-text>xxx</display-text>
-    string mStatus;        // Get from <status>xxx</status>
-    string mUserAddr;      // Parse from user entity, may be retored to local number
-    int mIndex;            // Index in the xml full report
+  public:
+    string mEndPoint;     // Get from <endpoint entity="xxx">
+    string mEntity;       // Get from <user entity="xxx">
+    string mDisplayText;  // Get from <display-text>xxx</display-text>
+    string mStatus;       // Get from <status>xxx</status>
+    string mUserAddr;     // Parse from user entity, may be retored to local number
+    int mIndex;           // Index in the xml full report
 };
 #endif /* __RFX_IMS_CONFERENCE_CALL_MESSAGE_HANDLER_H__ */

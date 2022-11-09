@@ -36,18 +36,18 @@
  *****************************************************************************/
 RFX_IMPLEMENT_HANDLER_CLASS(RmcDcReqHandler, RIL_CMD_PROXY_5);
 
-RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id) :
-    RfxBaseHandler(slot_id, channel_id),
-    m_pRmcDcDefaultReqHdlr(NULL),
-    m_pRmcDcImsReqHdlr(NULL),
-    m_pRmcDcOnDemandReqHdlr(NULL),
-    m_pPdnManager(NULL),
-    iaMode(-1) {
+RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id),
+      m_pRmcDcDefaultReqHdlr(NULL),
+      m_pRmcDcImsReqHdlr(NULL),
+      m_pRmcDcOnDemandReqHdlr(NULL),
+      m_pPdnManager(NULL),
+      iaMode(-1) {
     // Init NetAgent service.
     bool bSuccess = false;
     do {
         bSuccess = NetAgentService::createNetAgentService();
-        if(!bSuccess) {
+        if (!bSuccess) {
             RFX_LOG_E(RFX_LOG_TAG, "Fail to create NetAgent service!");
             sleep(10);
             /* never returns */
@@ -56,13 +56,17 @@ RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id) :
 
     // Create Pdn manager first and pass to request handler as parameter.
     RFX_HANDLER_CREATE(m_pPdnManager, RmcDcPdnManager, (m_slot_id, m_channel_id));
-    RFX_HANDLER_CREATE(m_pRmcDcDefaultReqHdlr, RmcDcDefaultReqHandler, (m_slot_id, m_channel_id, m_pPdnManager));
-    RFX_HANDLER_CREATE(m_pRmcDcOnDemandReqHdlr, RmcDcOnDemandReqHandler, (m_slot_id, m_channel_id, m_pPdnManager));
+    RFX_HANDLER_CREATE(m_pRmcDcDefaultReqHdlr, RmcDcDefaultReqHandler,
+                       (m_slot_id, m_channel_id, m_pPdnManager));
+    RFX_HANDLER_CREATE(m_pRmcDcOnDemandReqHdlr, RmcDcOnDemandReqHandler,
+                       (m_slot_id, m_channel_id, m_pPdnManager));
 
     if (RfxOpUtils::getOpHandler() != NULL) {
-        m_pRmcDcImsReqHdlr = (RmcDcImsReqHandler *)RfxOpUtils::getDcImsOpHandler(slot_id, channel_id, m_pPdnManager);
+        m_pRmcDcImsReqHdlr = (RmcDcImsReqHandler*)RfxOpUtils::getDcImsOpHandler(slot_id, channel_id,
+                                                                                m_pPdnManager);
     } else {
-        RFX_HANDLER_CREATE(m_pRmcDcImsReqHdlr, RmcDcImsReqHandler, (m_slot_id, m_channel_id, m_pPdnManager));
+        RFX_HANDLER_CREATE(m_pRmcDcImsReqHdlr, RmcDcImsReqHandler,
+                           (m_slot_id, m_channel_id, m_pPdnManager));
     }
 
     /**
@@ -75,8 +79,8 @@ RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id) :
     char imsTestModefeature[] = "IMS_TEST_MODE";
     int imsTestModesupport = getFeatureVersion(imsTestModefeature);
     rfx_property_get("persist.vendor.radio.imstestmode", imsTestMode, "0");
-    RFX_LOG_D(RFX_LOG_TAG,
-            "Property: imsTestMode=%s, MD Feature: IMS_TEST_MODE=%d", imsTestMode, imsTestModesupport);
+    RFX_LOG_D(RFX_LOG_TAG, "Property: imsTestMode=%s, MD Feature: IMS_TEST_MODE=%d", imsTestMode,
+              imsTestModesupport);
     if (atoi(imsTestMode) == 1 && imsTestModesupport == 1) {
         RFX_LOG_D(RFX_LOG_TAG, "Set imstestmode");
         atSendCommand(String8::format("AT+ECNCFG=,,,%s", imsTestMode));
@@ -91,12 +95,12 @@ RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id) :
      */
     char multiHomingFeature[] = "MD_MultiHoming";
     int multiHomingSupportVersion = getFeatureVersion(multiHomingFeature);
-    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] Property: MD Feature: MD_MultiHoming=%d",
-            m_slot_id, __FUNCTION__, multiHomingSupportVersion);
-    NetAgentService *pNetAgentService = NetAgentService::getInstance();
+    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] Property: MD Feature: MD_MultiHoming=%d", m_slot_id,
+              __FUNCTION__, multiHomingSupportVersion);
+    NetAgentService* pNetAgentService = NetAgentService::getInstance();
     if (NULL == pNetAgentService) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error",
-                m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error", m_slot_id,
+                  __FUNCTION__);
     } else {
         pNetAgentService->setMultiHomingFeatureSupport(multiHomingSupportVersion);
     }
@@ -129,53 +133,52 @@ RmcDcReqHandler::RmcDcReqHandler(int slot_id, int channel_id) :
         iaMode = 3;
     }
     RFX_LOG_D(RFX_LOG_TAG, "iaFullParameterSupport = %d, iaMdPreferredApnSupport = %d, iaMode = %d",
-            iaFullParameterSupport, iaMdPreferredApnSupport, iaMode);
+              iaFullParameterSupport, iaMdPreferredApnSupport, iaMode);
     /// @}
 
     const int requestList[] = {
-        RFX_MSG_REQUEST_SETUP_DATA_CALL,
-        RFX_MSG_REQUEST_DEACTIVATE_DATA_CALL,
-        RFX_MSG_REQUEST_DATA_CALL_LIST,
-        RFX_MSG_REQUEST_LAST_DATA_CALL_FAIL_CAUSE,
-        RFX_MSG_REQUEST_SET_DATA_PROFILE,
-        RFX_MSG_REQUEST_SET_INITIAL_ATTACH_APN,
-        RFX_MSG_REQUEST_SYNC_DATA_SETTINGS_TO_MD,
-        RFX_MSG_REQUEST_RESET_MD_DATA_RETRY_COUNT,
-        RFX_MSG_REQUEST_SET_LTE_ACCESS_STRATUM_REPORT,
-        RFX_MSG_REQUEST_SET_LTE_UPLINK_DATA_TRANSFER,
-        RFX_MSG_REQUEST_CLEAR_ALL_PDN_INFO,
-        RFX_MSG_REQUEST_RESEND_SYNC_DATA_SETTINGS_TO_MD,
-        RFX_MSG_REQUEST_RESET_ALL_CONNECTIONS,
-        RFX_MSG_REQUEST_SET_PREFERRED_DATA_MODEM,
-        RFX_MSG_REQUEST_START_KEEPALIVE,
-        RFX_MSG_REQUEST_STOP_KEEPALIVE,
+            RFX_MSG_REQUEST_SETUP_DATA_CALL,
+            RFX_MSG_REQUEST_DEACTIVATE_DATA_CALL,
+            RFX_MSG_REQUEST_DATA_CALL_LIST,
+            RFX_MSG_REQUEST_LAST_DATA_CALL_FAIL_CAUSE,
+            RFX_MSG_REQUEST_SET_DATA_PROFILE,
+            RFX_MSG_REQUEST_SET_INITIAL_ATTACH_APN,
+            RFX_MSG_REQUEST_SYNC_DATA_SETTINGS_TO_MD,
+            RFX_MSG_REQUEST_RESET_MD_DATA_RETRY_COUNT,
+            RFX_MSG_REQUEST_SET_LTE_ACCESS_STRATUM_REPORT,
+            RFX_MSG_REQUEST_SET_LTE_UPLINK_DATA_TRANSFER,
+            RFX_MSG_REQUEST_CLEAR_ALL_PDN_INFO,
+            RFX_MSG_REQUEST_RESEND_SYNC_DATA_SETTINGS_TO_MD,
+            RFX_MSG_REQUEST_RESET_ALL_CONNECTIONS,
+            RFX_MSG_REQUEST_SET_PREFERRED_DATA_MODEM,
+            RFX_MSG_REQUEST_START_KEEPALIVE,
+            RFX_MSG_REQUEST_STOP_KEEPALIVE,
     };
     const int eventList[] = {
-        RFX_MSG_EVENT_DATA_NW_PDN_ACT,
-        RFX_MSG_EVENT_DATA_NW_PDN_DEACT,
-        RFX_MSG_EVENT_DATA_NW_MODIFY,
-        RFX_MSG_EVENT_DATA_NW_REACT,
-        RFX_MSG_EVENT_DATA_ME_PDN_ACT,
-        RFX_MSG_EVENT_DATA_ME_PDN_DEACT,
-        RFX_MSG_EVENT_DATA_PDN_CHANGE,
-        RFX_MSG_EVENT_DATA_UT_TEST,
-        RFX_MSG_EVENT_LTE_ACCESS_STRATUM_STATE_CHANGE,
-        RFX_MSG_EVENT_QUALIFIED_NETWORK_TYPES_CHANGED,
-        RFX_MSG_EVENT_QUERY_PCO_WITH_URC,
-        RFX_MSG_EVENT_QUERY_PCO_WITH_AID,
-        RFX_MSG_EVENT_REQ_DATA_CONTEXT_IDS,
-        RFX_MSG_EVENT_SEND_QUALIFIED_NETWORK_TYPES_CHANGED,
-        RFX_MSG_EVENT_QUERY_SELF_IA,
-        RFX_MSG_EVENT_MOBILE_DATA_USAGE_NOTIFY,
-        RFX_MSG_EVENT_KEEPALIVE_STATUS,
-        RFX_MSG_EVENT_DATA_NW_LIMIT_NOTIFY,
+            RFX_MSG_EVENT_DATA_NW_PDN_ACT,
+            RFX_MSG_EVENT_DATA_NW_PDN_DEACT,
+            RFX_MSG_EVENT_DATA_NW_MODIFY,
+            RFX_MSG_EVENT_DATA_NW_REACT,
+            RFX_MSG_EVENT_DATA_ME_PDN_ACT,
+            RFX_MSG_EVENT_DATA_ME_PDN_DEACT,
+            RFX_MSG_EVENT_DATA_PDN_CHANGE,
+            RFX_MSG_EVENT_DATA_UT_TEST,
+            RFX_MSG_EVENT_LTE_ACCESS_STRATUM_STATE_CHANGE,
+            RFX_MSG_EVENT_QUALIFIED_NETWORK_TYPES_CHANGED,
+            RFX_MSG_EVENT_QUERY_PCO_WITH_URC,
+            RFX_MSG_EVENT_QUERY_PCO_WITH_AID,
+            RFX_MSG_EVENT_REQ_DATA_CONTEXT_IDS,
+            RFX_MSG_EVENT_SEND_QUALIFIED_NETWORK_TYPES_CHANGED,
+            RFX_MSG_EVENT_QUERY_SELF_IA,
+            RFX_MSG_EVENT_MOBILE_DATA_USAGE_NOTIFY,
+            RFX_MSG_EVENT_KEEPALIVE_STATUS,
+            RFX_MSG_EVENT_DATA_NW_LIMIT_NOTIFY,
     };
     registerToHandleRequest(requestList, sizeof(requestList) / sizeof(int));
     registerToHandleEvent(eventList, sizeof(eventList) / sizeof(int));
 }
 
-RmcDcReqHandler::~RmcDcReqHandler() {
-}
+RmcDcReqHandler::~RmcDcReqHandler() {}
 
 void RmcDcReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     switch (msg->getId()) {
@@ -302,11 +305,10 @@ void RmcDcReqHandler::handleDataCallListRequest(const sp<RfxMclMessage>& msg) {
 void RmcDcReqHandler::handleLastFailCauseRequest(const sp<RfxMclMessage>& msg) {
     RFX_ASSERT(m_pRmcDcDefaultReqHdlr != NULL);
     m_pRmcDcDefaultReqHdlr->requestLastFailCause(msg);
-
 }
 
 void RmcDcReqHandler::handleSetupDataCallRequest(const sp<RfxMclMessage>& msg) {
-    const char **pReqData = (const char **)msg->getData()->getData();
+    const char** pReqData = (const char**)msg->getData()->getData();
     int nProfileId = atoi(pReqData[1]);
     if (RIL_DATA_PROFILE_DEFAULT == nProfileId) {
         RFX_ASSERT(m_pRmcDcDefaultReqHdlr != NULL);
@@ -365,7 +367,7 @@ void RmcDcReqHandler::handleSyncApnTableRequest(const sp<RfxMclMessage>& msg) {
 // Check whether the initial attach apn is in the apn list.
 bool RmcDcReqHandler::isValidInitialAttachApn(const char* apn) {
     for (int i = 0; i < RmcDcCommonReqHandler::s_nLastReqNum[m_slot_id]; i++) {
-        RIL_MtkDataProfileInfo *profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][i];
+        RIL_MtkDataProfileInfo* profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][i];
         if (strcmp(apn, profile->apn) == 0) {
             return true;
         }
@@ -379,49 +381,47 @@ bool RmcDcReqHandler::isValidInitialAttachApn(const char* apn) {
 void RmcDcReqHandler::handleIfVendorSelfIaNeeded(const sp<RfxMclMessage>& msg) {
     RFX_UNUSED(msg);
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE);
-    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : cardType = %d",
-            m_slot_id, __FUNCTION__, cardType);
+    RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : cardType = %d", m_slot_id, __FUNCTION__, cardType);
     // M: RFX_STATUS_KEY_CARD_TYPE: if 0, no SIM inserted. If -1, SIM not ready.
     if (cardType == 0) {
-        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : cardType = %d, SIM not inserted, return",
-                m_slot_id, __FUNCTION__, cardType);
+        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : cardType = %d, SIM not inserted, return", m_slot_id,
+                  __FUNCTION__, cardType);
         return;
     }
 
     bool isOnlyEccApn = true;
     sp<RfxAtResponse> pAtResponse;
     for (int i = 0; i < RmcDcCommonReqHandler::s_nLastReqNum[m_slot_id]; i++) {
-        RIL_MtkDataProfileInfo *profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][i];
-        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : [%d] of apn, supportedTypesBitmask = %d",
-                m_slot_id, __FUNCTION__, i, profile->supportedTypesBitmask);
+        RIL_MtkDataProfileInfo* profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][i];
+        RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : [%d] of apn, supportedTypesBitmask = %d", m_slot_id,
+                  __FUNCTION__, i, profile->supportedTypesBitmask);
         // check if has firstNonEmergencyApnSetting
-        if (!((profile->supportedTypesBitmask & RIL_APN_TYPE_EMERGENCY)
-                    == RIL_APN_TYPE_EMERGENCY)) {
-            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] has non-ECC apn, do nothing",
-                    m_slot_id, __FUNCTION__);
+        if (!((profile->supportedTypesBitmask & RIL_APN_TYPE_EMERGENCY) ==
+              RIL_APN_TYPE_EMERGENCY)) {
+            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] has non-ECC apn, do nothing", m_slot_id, __FUNCTION__);
             isOnlyEccApn = false;
             break;
         }
         // check if has Default or IA setting
-        if (((profile->supportedTypesBitmask & RIL_APN_TYPE_DEFAULT ) == RIL_APN_TYPE_DEFAULT)
-                || ((profile->supportedTypesBitmask & RIL_APN_TYPE_IA ) == RIL_APN_TYPE_IA)) {
-            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] has default or ia type, do nothing",
-                    m_slot_id, __FUNCTION__);
+        if (((profile->supportedTypesBitmask & RIL_APN_TYPE_DEFAULT) == RIL_APN_TYPE_DEFAULT) ||
+            ((profile->supportedTypesBitmask & RIL_APN_TYPE_IA) == RIL_APN_TYPE_IA)) {
+            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] has default or ia type, do nothing", m_slot_id,
+                      __FUNCTION__);
             isOnlyEccApn = false;
             break;
         }
     }
     if (isOnlyEccApn == true && RmcDcCommonReqHandler::s_nLastReqNum[m_slot_id] > 0) {
-        RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : OnlyEccApn, send EIAAPN, iaMode = %d",
-                    m_slot_id, __FUNCTION__, iaMode);
-        RIL_MtkDataProfileInfo *profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][0];
+        RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : OnlyEccApn, send EIAAPN, iaMode = %d", m_slot_id,
+                  __FUNCTION__, iaMode);
+        RIL_MtkDataProfileInfo* profile = &RmcDcCommonReqHandler::s_LastApnTable[m_slot_id][0];
         switch (iaMode) {
             case 0:
                 // Gen93/95 mode
-                RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s",
-                        m_slot_id, __FUNCTION__, profile->apn);
-                pAtResponse = atSendCommand(
-                        String8::format("AT+EIAAPN=\"%s\",%d", profile->apn, 0));
+                RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s", m_slot_id, __FUNCTION__,
+                          profile->apn);
+                pAtResponse =
+                        atSendCommand(String8::format("AT+EIAAPN=\"%s\",%d", profile->apn, 0));
                 break;
             case 1:
                 // Gen97 mode: full parameter support and MD preferred apn support
@@ -430,12 +430,11 @@ void RmcDcReqHandler::handleIfVendorSelfIaNeeded(const sp<RfxMclMessage>& msg) {
             case 2:
                 // Only support full parameter.
                 RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d",
-                        m_slot_id, __FUNCTION__,
-                        profile->apn, 0, profile->protocol, profile->roamingProtocol,
-                        RmcDcUtility::getAuthType(profile->authType));
-                pAtResponse = atSendCommand(
-                        String8::format("AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"",
-                        profile->apn, 0, profile->protocol, profile->roamingProtocol,
+                          m_slot_id, __FUNCTION__, profile->apn, 0, profile->protocol,
+                          profile->roamingProtocol, RmcDcUtility::getAuthType(profile->authType));
+                pAtResponse = atSendCommand(String8::format(
+                        "AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"", profile->apn, 0,
+                        profile->protocol, profile->roamingProtocol,
                         RmcDcUtility::getAuthType(profile->authType), profile->user,
                         profile->password));
                 break;
@@ -448,22 +447,19 @@ void RmcDcReqHandler::handleIfVendorSelfIaNeeded(const sp<RfxMclMessage>& msg) {
                 break;
         }
         if (pAtResponse == NULL) {
-            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] : iaMode = %d, pAtResponse = null",
-                    m_slot_id, __FUNCTION__, iaMode);
-        }
-        else if (pAtResponse->isAtResponseFail()) {
-            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : send IA MD return failed",
-                    m_slot_id, __FUNCTION__);
+            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] : iaMode = %d, pAtResponse = null", m_slot_id,
+                      __FUNCTION__, iaMode);
+        } else if (pAtResponse->isAtResponseFail()) {
+            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : send IA MD return failed", m_slot_id, __FUNCTION__);
         } else {
-            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : send IA ok",
-                    m_slot_id, __FUNCTION__);
+            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] : send IA ok", m_slot_id, __FUNCTION__);
         }
     }
 }
 
 void RmcDcReqHandler::handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& msg) {
     int requestId = msg->getId();
-    RIL_InitialAttachApn_v15 *iaData = (RIL_InitialAttachApn_v15 *)msg->getData()->getData();
+    RIL_InitialAttachApn_v15* iaData = (RIL_InitialAttachApn_v15*)msg->getData()->getData();
     int err;
     sp<RfxAtResponse> pAtResponse;
     sp<RfxMclMessage> pMclResponse;
@@ -472,10 +468,10 @@ void RmcDcReqHandler::handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& 
     char apn[MAX_APN_NAME_LENGTH] = {0};
 
     if (!isValidInitialAttachApn(iaData->apn)) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] Ignore invalid apn %s",
-                m_slot_id, __FUNCTION__, iaData->apn);
-        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_SUCCESS, RfxVoidData(), msg, false);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] Ignore invalid apn %s", m_slot_id, __FUNCTION__,
+                  iaData->apn);
+        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(),
+                                                     msg, false);
         responseToTelCore(pMclResponse);
         return;
     }
@@ -483,51 +479,48 @@ void RmcDcReqHandler::handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& 
     asprintf(&apnTableReq.apn, "%s", iaData->apn);
     asprintf(&apnTableReq.username, "%s", iaData->username);
     asprintf(&apnTableReq.password, "%s", iaData->password);
-    apnTableReq.apnTypeId = APN_TYPE_INVALID; //for skip check apnType in getCmdIndexFromApnTable API
+    apnTableReq.apnTypeId =
+            APN_TYPE_INVALID;  // for skip check apnType in getCmdIndexFromApnTable API
     asprintf(&apnTableReq.protocol, "%s", iaData->protocol);
     apnTableReq.authtype = iaData->authtype;
     cmdIndex = RmcDcCommonReqHandler::getCmdIndexFromApnTable(m_slot_id, &apnTableReq);
 
     RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] cmdIndex = %d", m_slot_id, __FUNCTION__, cmdIndex);
 
-    strncpy(apn, iaData->apn, MAX_APN_NAME_LENGTH-1);
+    strncpy(apn, iaData->apn, MAX_APN_NAME_LENGTH - 1);
     RmcDcCommonReqHandler::addEscapeSequence(apn);
     // Gen97 FULL IA Parameter to MD
     switch (iaMode) {
         case 0:
             // Gen93/95 mode
-            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s, id = %d",
-                    m_slot_id, __FUNCTION__, apn, cmdIndex);
+            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s, id = %d", m_slot_id,
+                      __FUNCTION__, apn, cmdIndex);
             pAtResponse = atSendCommand(String8::format("AT+EIAAPN=\"%s\",%d", apn, cmdIndex));
             break;
         case 1:
             // Gen97 mode: full parameter support and MD preferred apn support
-            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d",
-                    m_slot_id, __FUNCTION__,
-                    apn, 0, iaData->protocol, iaData->roamingProtocol,
-                    RmcDcUtility::getAuthType(iaData->authtype));
-            pAtResponse = atSendCommand(
-                    String8::format("AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"",
-                    apn, 0, iaData->protocol, iaData->roamingProtocol,
-                    RmcDcUtility::getAuthType(iaData->authtype), iaData->username,
-                    iaData->password));
+            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d", m_slot_id,
+                      __FUNCTION__, apn, 0, iaData->protocol, iaData->roamingProtocol,
+                      RmcDcUtility::getAuthType(iaData->authtype));
+            pAtResponse = atSendCommand(String8::format(
+                    "AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"", apn, 0, iaData->protocol,
+                    iaData->roamingProtocol, RmcDcUtility::getAuthType(iaData->authtype),
+                    iaData->username, iaData->password));
             break;
         case 2:
             // Only support full parameter.
-            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d",
-                    m_slot_id, __FUNCTION__,
-                    apn, 0, iaData->protocol, iaData->roamingProtocol,
-                    RmcDcUtility::getAuthType(iaData->authtype));
-            pAtResponse = atSendCommand(
-                    String8::format("AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"",
-                    apn, 0, iaData->protocol, iaData->roamingProtocol,
-                    RmcDcUtility::getAuthType(iaData->authtype), iaData->username,
-                    iaData->password));
+            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d", m_slot_id,
+                      __FUNCTION__, apn, 0, iaData->protocol, iaData->roamingProtocol,
+                      RmcDcUtility::getAuthType(iaData->authtype));
+            pAtResponse = atSendCommand(String8::format(
+                    "AT+EIAAPN=\"%s\",%d,\"%s\",\"%s\",%d,\"%s\",\"%s\"", apn, 0, iaData->protocol,
+                    iaData->roamingProtocol, RmcDcUtility::getAuthType(iaData->authtype),
+                    iaData->username, iaData->password));
             break;
         case 3:
             // Only support MD preferred apn.
-            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s, id = %d",
-                    m_slot_id, __FUNCTION__, apn, cmdIndex);
+            RFX_LOG_I(RFX_LOG_TAG, "[%d][%s] : send EIAAPN, apn = %s, id = %d", m_slot_id,
+                      __FUNCTION__, apn, cmdIndex);
             pAtResponse = atSendCommand(String8::format("AT+EIAAPN=\"%s\",%d", apn, cmdIndex));
             break;
         default:
@@ -537,15 +530,14 @@ void RmcDcReqHandler::handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& 
 
     if (pAtResponse == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "iaMode = %d, pAtResponse = null", iaMode);
-        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE, RfxVoidData(), msg, false);
-    }
-    else if (pAtResponse->isAtResponseFail()) {
-        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_GENERIC_FAILURE, RfxVoidData(), msg, false);
+        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
+                                                     RfxVoidData(), msg, false);
+    } else if (pAtResponse->isAtResponseFail()) {
+        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
+                                                     RfxVoidData(), msg, false);
     } else {
-        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_SUCCESS, RfxVoidData(), msg, false);
+        pMclResponse = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(),
+                                                     msg, false);
     }
 
     FREEIF(apnTableReq.apn);
@@ -568,36 +560,34 @@ void RmcDcReqHandler::handleResetMdDataRetryCount(const sp<RfxMclMessage>& msg) 
 }
 
 void RmcDcReqHandler::handleUtTest(const sp<RfxMclMessage>& msg) {
-    RfxAtLine *pLine = NULL;
-    char *strParam = NULL;
-    char *urc = (char*)msg->getData()->getData();
+    RfxAtLine* pLine = NULL;
+    char* strParam = NULL;
+    char* urc = (char*)msg->getData()->getData();
     int rid = m_slot_id;
     int aid = INVALID_AID;
     int err = 0;
-    NetAgentService *pNetAgentService = NetAgentService::getInstance();
+    NetAgentService* pNetAgentService = NetAgentService::getInstance();
     int transIntfId = INVALID_TRANS_INTF_ID;
 
     RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] receive %s", rid, __FUNCTION__, urc);
 
     if (m_pPdnManager == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR due to PdnManager is NULL",
-                rid, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR due to PdnManager is NULL", rid, __FUNCTION__);
         return;
     }
 
     pLine = new RfxAtLine(urc, NULL);
     pLine->atTokStart(&err);
     if (err < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start",
-                rid, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when token start", rid, __FUNCTION__);
         AT_LINE_FREE(pLine);
         return;
     }
 
     strParam = pLine->atTokNextstr(&err);
-    if (err < 0){
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing string param.",
-                rid, __FUNCTION__);
+    if (err < 0) {
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when parsing string param.", rid,
+                  __FUNCTION__);
         AT_LINE_FREE(pLine);
         return;
     }
@@ -609,49 +599,55 @@ void RmcDcReqHandler::handleUtTest(const sp<RfxMclMessage>& msg) {
             strParam += strlen(CLEAR_PDN_TABLE);
             aid = RmcDcUtility::stringToBinaryBase(strParam, 10, &err);
             if (err < 0) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when converting string aid"
-                        " to binary, err = %d", rid, __FUNCTION__, err);
+                RFX_LOG_E(RFX_LOG_TAG,
+                          "[%d][%s] ERROR occurs when converting string aid"
+                          " to binary, err = %d",
+                          rid, __FUNCTION__, err);
                 AT_LINE_FREE(pLine);
                 return;
             }
             m_pPdnManager->clearPdnInfo(aid);
         } else if (strncmp(SET_TRANSACTION_INTERFACE_ID, strParam,
-                strlen(SET_TRANSACTION_INTERFACE_ID)) == 0) {
+                           strlen(SET_TRANSACTION_INTERFACE_ID)) == 0) {
             if (NULL == pNetAgentService) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error",
-                        rid, __FUNCTION__);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error", rid,
+                          __FUNCTION__);
             } else {
                 strParam += strlen(SET_TRANSACTION_INTERFACE_ID);
                 transIntfId = RmcDcUtility::stringToBinaryBase(strParam, 10, &err);
                 if (err < 0) {
-                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when converting string transIntfId"
-                            " to binary, err = %d", rid, __FUNCTION__, err);
+                    RFX_LOG_E(RFX_LOG_TAG,
+                              "[%d][%s] ERROR occurs when converting string transIntfId"
+                              " to binary, err = %d",
+                              rid, __FUNCTION__, err);
                     AT_LINE_FREE(pLine);
                     return;
                 }
                 pNetAgentService->setTransactionInterfaceId(transIntfId);
             }
         } else if (strncmp(REMOVE_TRANSACTION_INTERFACE_ID, strParam,
-                strlen(REMOVE_TRANSACTION_INTERFACE_ID)) == 0) {
+                           strlen(REMOVE_TRANSACTION_INTERFACE_ID)) == 0) {
             if (NULL == pNetAgentService) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error",
-                        rid, __FUNCTION__);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error", rid,
+                          __FUNCTION__);
             } else {
                 strParam += strlen(REMOVE_TRANSACTION_INTERFACE_ID);
                 transIntfId = RmcDcUtility::stringToBinaryBase(strParam, 10, &err);
                 if (err < 0) {
-                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ERROR occurs when converting string transIntfId"
-                            " to binary, err = %d", rid, __FUNCTION__, err);
+                    RFX_LOG_E(RFX_LOG_TAG,
+                              "[%d][%s] ERROR occurs when converting string transIntfId"
+                              " to binary, err = %d",
+                              rid, __FUNCTION__, err);
                     AT_LINE_FREE(pLine);
                     return;
                 }
                 pNetAgentService->removeTransactionInterfaceId(transIntfId);
             }
         } else if (strncmp(REMOVE_ALL_TRANSACTION_INTERFACE_ID, strParam,
-                strlen(REMOVE_ALL_TRANSACTION_INTERFACE_ID)) == 0) {
+                           strlen(REMOVE_ALL_TRANSACTION_INTERFACE_ID)) == 0) {
             if (NULL == pNetAgentService) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error",
-                        rid, __FUNCTION__);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] NetAgentService is NULL, return error", rid,
+                          __FUNCTION__);
             } else {
                 pNetAgentService->removeAllTransactionInterfaceId();
             }
@@ -710,7 +706,7 @@ void RmcDcReqHandler::handleQueryPco(const sp<RfxMclMessage>& msg) {
     static std::regex r2a(prefixR2 + " *\"([^\"]+)\\.mnc\\d+\\.mcc\\d+[^\"]+\", *(\\w+), *(\\d+)");
 
     if (msgId == RFX_MSG_EVENT_QUERY_PCO_WITH_AID) {
-        idx = *((int*) msg->getData()->getData());
+        idx = *((int*)msg->getData()->getData());
     } else if (msgId == RFX_MSG_EVENT_QUERY_PCO_WITH_URC) {
         urc = std::string((char*)msg->getData()->getData());
 
@@ -721,11 +717,11 @@ void RmcDcReqHandler::handleQueryPco(const sp<RfxMclMessage>& msg) {
 
             if (m.empty() || m.size() != 2) {
                 for (std::size_t n = 0; n < m.size(); ++n) {
-                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]",
-                        m_slot_id, __FUNCTION__, m.str(n).c_str());
+                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]", m_slot_id, __FUNCTION__,
+                              m.str(n).c_str());
                 }
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ME MODIFY content error, return",
-                    m_slot_id, __FUNCTION__);
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ME MODIFY content error, return", m_slot_id,
+                          __FUNCTION__);
                 return;
             } else {
                 idx = std::stoi(m.str(1), NULL, 10);
@@ -739,28 +735,26 @@ void RmcDcReqHandler::handleQueryPco(const sp<RfxMclMessage>& msg) {
 
             if (m.empty() || m.size() != 4) {
                 for (std::size_t n = 0; n < m.size(); ++n) {
-                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]",
-                        m_slot_id, __FUNCTION__, m.str(n).c_str());
+                    RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]", m_slot_id, __FUNCTION__,
+                              m.str(n).c_str());
                 }
                 RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ME ATTACH content error, #matched %d, return",
-                    m_slot_id, __FUNCTION__, (int) m.size());
+                          m_slot_id, __FUNCTION__, (int)m.size());
                 return;
             } else {
                 apn = std::string(m.str(1));
                 iptype = std::string(m.str(2));
                 idx = std::stoi(m.str(3), NULL, 10);
 
-                RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] apn %s, iptype %s, apn index %d",
-                    m_slot_id, __FUNCTION__, apn.c_str(), iptype.c_str(), idx);
+                RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] apn %s, iptype %s, apn index %d", m_slot_id,
+                          __FUNCTION__, apn.c_str(), iptype.c_str(), idx);
             }
         } else {
-            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] urc format error, return",
-                m_slot_id, __FUNCTION__);
+            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] urc format error, return", m_slot_id, __FUNCTION__);
             return;
         }
     } else {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] msgid error, return",
-            m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] msgid error, return", m_slot_id, __FUNCTION__);
         return;
     }
 

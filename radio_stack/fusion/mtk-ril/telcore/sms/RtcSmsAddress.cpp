@@ -25,9 +25,7 @@
 /*****************************************************************************
  * RtcSmsAddress
  *****************************************************************************/
-RtcSmsAddress::RtcSmsAddress()
-        :mTon(TON_UNKNOWN), mError(false) {
-}
+RtcSmsAddress::RtcSmsAddress() : mTon(TON_UNKNOWN), mError(false) {}
 
 /*****************************************************************************
  * RtcGsmSmsAddress
@@ -53,23 +51,20 @@ RtcGsmSmsAddress::RtcGsmSmsAddress(unsigned char* data, int offset, int length) 
                 // Make sure the final unused BCD digit is 0xf
                 mOrigBytes[length - 1] |= 0xf0;
             }
-            bool ret = calledPartyBCDFragmentToString(
-                    mOrigBytes,
-                    OFFSET_ADDRESS_VALUE,
-                    length - OFFSET_ADDRESS_VALUE,
-                    getAddr());
+            bool ret = calledPartyBCDFragmentToString(mOrigBytes, OFFSET_ADDRESS_VALUE,
+                                                      length - OFFSET_ADDRESS_VALUE, getAddr());
             if (!ret) {
                 setError();
             }
             // And restore origBytes
             mOrigBytes[length - 1] = lastByte;
         }
-    }else {
-       setError();
+    } else {
+        setError();
     }
 }
 
-bool RtcGsmSmsAddress::bcd2Char(unsigned char bcd, String8 &addr) {
+bool RtcGsmSmsAddress::bcd2Char(unsigned char bcd, String8& addr) {
     if (bcd < 0xa) {
         addr.appendFormat("%d", bcd);
         return true;
@@ -78,15 +73,15 @@ bool RtcGsmSmsAddress::bcd2Char(unsigned char bcd, String8 &addr) {
     }
 }
 
-bool RtcGsmSmsAddress::calledPartyBCDFragmentToString(
-        unsigned char *bcd, int offset, int length, String8 &addr) {
-    for (int i = offset ; i < length + offset ; i++) {
+bool RtcGsmSmsAddress::calledPartyBCDFragmentToString(unsigned char* bcd, int offset, int length,
+                                                      String8& addr) {
+    for (int i = offset; i < length + offset; i++) {
         if (!bcd2Char((bcd[i] & 0xf), addr)) {
             return false;
         }
         unsigned char b = (bcd[i] >> 4) & 0xf;
         if (b == 0xf && i + 1 == length + offset) {
-            //ignore final 0xf
+            // ignore final 0xf
             break;
         }
         if (!bcd2Char(b, addr)) {
@@ -99,9 +94,9 @@ bool RtcGsmSmsAddress::calledPartyBCDFragmentToString(
 /*****************************************************************************
  * RtcCdmaSmsAddress
  *****************************************************************************/
-RtcCdmaSmsAddress::RtcCdmaSmsAddress(RIL_CDMA_SMS_Address &address) {
+RtcCdmaSmsAddress::RtcCdmaSmsAddress(RIL_CDMA_SMS_Address& address) {
     if (address.digit_mode == RIL_CDMA_SMS_DIGIT_MODE_4_BIT) {
-        CdmaSmsAddress *pAddr;
+        CdmaSmsAddress* pAddr;
         RFX_OBJ_CREATE_EX(pAddr, CdmaSmsAddress, NULL, (address, true));
         RFX_ASSERT(pAddr != NULL);
         pAddr->getAddress(getAddr());

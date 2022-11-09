@@ -26,7 +26,6 @@
 #include "WpfaCcciReader.h"
 #include "WpfaCcciSender.h"
 
-
 using ::android::Mutex;
 
 /*
@@ -39,40 +38,30 @@ using ::android::Mutex;
 #define TEST_EVENT_NONE (0)
 #define TEST_EVENT_PKT_SEND_TO_KERNEL_SUCCESS (1)
 
-
 #define FAKE_MD_TID_START (100)
-#define FAKE_MD_TID_END   (500)
-
+#define FAKE_MD_TID_END (500)
 
 class WpfaDriverUtilis {
-public:
+  public:
     WpfaDriverUtilis();
     virtual ~WpfaDriverUtilis();
-    static WpfaDriverUtilis *getInstance();
+    static WpfaDriverUtilis* getInstance();
     void init();
 
-    void setCcciReader(WpfaCcciReader *reader) {
-        mReader = reader;
-    }
+    void setCcciReader(WpfaCcciReader* reader) { mReader = reader; }
 
-    void setCcciSender(WpfaCcciSender *sender){
-        mSender = sender;
-    }
+    void setCcciSender(WpfaCcciSender* sender) { mSender = sender; }
 
-    void notifyEvent(int eventId){
-        mEventId = eventId;
-    }
+    void notifyEvent(int eventId) { mEventId = eventId; }
 
     void testStartNormal(const sp<WpfaDriverMessage>& msg);
 
-    //int sendMsgToControlMsgDispatcher(const sp<WpfaDriverMessage>& message);
-    //int sendMsgToFilterRuleReqHandler(const sp<WpfaDriverMessage>& message);
-    //int sendMsgToShmReadMsgHandler(const sp<WpfaDriverMessage>& message);
-    //int sendMsgToShmWriteMsgHandler(const sp<WpfaDriverMessage>& message);
+    // int sendMsgToControlMsgDispatcher(const sp<WpfaDriverMessage>& message);
+    // int sendMsgToFilterRuleReqHandler(const sp<WpfaDriverMessage>& message);
+    // int sendMsgToShmReadMsgHandler(const sp<WpfaDriverMessage>& message);
+    // int sendMsgToShmWriteMsgHandler(const sp<WpfaDriverMessage>& message);
 
-
-private:
-
+  private:
     void fake_M2A_WPFA_VERSION(const sp<WpfaDriverMessage>& msg);
     void fake_M2A_REG_DL_FILTER(int testingFilterStrId);
     void fake_M2A_DEREG_DL_FILTER(uint32_t filterId);
@@ -83,11 +72,11 @@ private:
     /**
      * singleton pattern
      */
-    static WpfaDriverUtilis *sInstance;
+    static WpfaDriverUtilis* sInstance;
     static Mutex sWpfaDriverUtilisInitMutex;
 
-    WpfaCcciReader *mReader;
-    WpfaCcciSender *mSender;
+    WpfaCcciReader* mReader;
+    WpfaCcciSender* mSender;
 
     uint16_t mFakeMdTid;
     int mEventId;

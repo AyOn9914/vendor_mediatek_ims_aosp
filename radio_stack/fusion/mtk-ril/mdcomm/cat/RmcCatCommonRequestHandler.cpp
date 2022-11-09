@@ -17,15 +17,12 @@
 #include "RmcCatCommonRequestHandler.h"
 
 static const int request_id_list[] = {
-        RFX_MSG_REQUEST_STK_SEND_ENVELOPE_COMMAND,
-        RFX_MSG_REQUEST_STK_SEND_TERMINAL_RESPONSE,
+        RFX_MSG_REQUEST_STK_SEND_ENVELOPE_COMMAND, RFX_MSG_REQUEST_STK_SEND_TERMINAL_RESPONSE,
         RFX_MSG_REQUEST_STK_HANDLE_CALL_SETUP_REQUESTED_FROM_SIM,
         RFX_MSG_REQUEST_STK_HANDLE_CALL_SETUP_REQUESTED_FROM_SIM_WITH_RESULT_CODE,
         RFX_MSG_REQUEST_REPORT_STK_SERVICE_IS_RUNNING,
-        RFX_MSG_REQUEST_STK_SEND_ENVELOPE_WITH_STATUS,
-        RFX_MSG_REQUEST_STK_SEND_RESPONSE_BY_CMDTYPE,
-        RFX_MSG_REQUEST_STK_EVENT_NOTIFY,
-        RFX_MSG_REQUEST_STK_QUERY_CPIN_STATE,
+        RFX_MSG_REQUEST_STK_SEND_ENVELOPE_WITH_STATUS, RFX_MSG_REQUEST_STK_SEND_RESPONSE_BY_CMDTYPE,
+        RFX_MSG_REQUEST_STK_EVENT_NOTIFY, RFX_MSG_REQUEST_STK_QUERY_CPIN_STATE,
         // BIP @{
         RFX_MSG_REQUEST_BIP_SEND_CONFIRM_INFO,
         // BIP @}
@@ -34,37 +31,31 @@ static const int request_id_list[] = {
         // BTSAP @}
 };
 
-static const int event_list[] = {
-        RFX_MSG_EVENT_STK_NOTIFY,
-        RFX_MSG_EVENT_STK_QUERY_CPIN_STATE
-};
-
+static const int event_list[] = {RFX_MSG_EVENT_STK_NOTIFY, RFX_MSG_EVENT_STK_QUERY_CPIN_STATE};
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCatCommonRequestHandler, RIL_CMD_PROXY_1);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringData, RFX_MSG_EVENT_STK_IS_RUNNING);
 
+RmcCatCommonRequestHandler::RmcCatCommonRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(int));
+    registerToHandleEvent(event_list, sizeof(event_list) / sizeof(int));
 
-RmcCatCommonRequestHandler::RmcCatCommonRequestHandler(int slot_id,
-        int channel_id): RfxBaseHandler(slot_id, channel_id) {
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(int));
-    registerToHandleEvent(event_list, sizeof(event_list)/sizeof(int));
-
-    //init member variables
+    // init member variables
     isEventNotifyQueued = false;
     isProaCmdQueued = false;
     pEventNotifyCmd = NULL;
     pProactiveCmd = NULL;
 }
 
-RmcCatCommonRequestHandler::~RmcCatCommonRequestHandler() {
-}
+RmcCatCommonRequestHandler::~RmcCatCommonRequestHandler() {}
 
 void RmcCatCommonRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
     logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(request));
 
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_REPORT_STK_SERVICE_IS_RUNNING:
             requestReportStkServiceIsRunning(msg);
             break;
@@ -116,22 +107,20 @@ void RmcCatCommonRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     }
 }
 
-
-void RmcCatCommonRequestHandler::setStkFlag(bool* source, bool flag)
-{
+void RmcCatCommonRequestHandler::setStkFlag(bool* source, bool flag) {
     if (NULL == source) {
-        logE(RFX_LOG_TAG,  "setStkFlag source is null.");
+        logE(RFX_LOG_TAG, "setStkFlag source is null.");
         return;
     }
 
     *(source) = flag;
-    logD(RFX_LOG_TAG,  "setStkFlag isStkServiceRunning to %d.", *(source));
+    logD(RFX_LOG_TAG, "setStkFlag isStkServiceRunning to %d.", *(source));
 }
 
 void RmcCatCommonRequestHandler::requestReportStkServiceIsRunning(const sp<RfxMclMessage>& msg) {
-    logD(RFX_LOG_TAG,  "requestReportStkServiceIsRunning");
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    logD(RFX_LOG_TAG, "requestReportStkServiceIsRunning");
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -139,9 +128,9 @@ void RmcCatCommonRequestHandler::requestReportStkServiceIsRunning(const sp<RfxMc
 void RmcCatCommonRequestHandler::requestStkEventNotify(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
-    int *value = (int *) msg->getData()->getData();
+    int* value = (int*)msg->getData()->getData();
     if (value == NULL) {
-        logE(RFX_LOG_TAG,  "requestStkEventNotify value is NULL!!!!");
+        logE(RFX_LOG_TAG, "requestStkEventNotify value is NULL!!!!");
         return;
     }
     int cmdType = value[0];
@@ -149,7 +138,7 @@ void RmcCatCommonRequestHandler::requestStkEventNotify(const sp<RfxMclMessage>& 
 
     logD(RFX_LOG_TAG, "requestStkEventNotify: cmdType is %d, cmdData is %d", cmdType, cmdData);
 
-    switch(cmdType) {
+    switch (cmdType) {
         case CMD_SEND_SS:
             if (50 == cmdData) {
                 p_response = atSendCommand("AT+STKSS=50");
@@ -169,7 +158,7 @@ void RmcCatCommonRequestHandler::requestStkEventNotify(const sp<RfxMclMessage>& 
             if (50 == cmdData) {
                 p_response = atSendCommand("AT+STKUSSD=50");
             } else if (0 == cmdData) {
-                int domainInfo = ((int *) msg->getData()->getData())[2];
+                int domainInfo = ((int*)msg->getData()->getData())[2];
                 if (1 == domainInfo) {
                     p_response = atSendCommand("AT+STKUSSI=0");
                     if (p_response->getSuccess() != 1) {
@@ -188,15 +177,15 @@ void RmcCatCommonRequestHandler::requestStkEventNotify(const sp<RfxMclMessage>& 
             break;
         case CMD_DTMF: {
             int inCallNumber = getInCallNumber();
-            if(inCallNumber != 0) {
+            if (inCallNumber != 0) {
                 p_response = atSendCommand("AT+STKDTMF=0");
                 if (p_response->getSuccess() != 1) {
                     p_response = atSendCommand("AT+STKDTMF=32,9");
                 }
             } else {
                 p_response = atSendCommand("AT+STKDTMF=32,7");
-            } }
-            break;
+            }
+        } break;
         default:
             RFX_LOG_E(RFX_LOG_TAG, "Should not be here");
             break;
@@ -207,49 +196,48 @@ void RmcCatCommonRequestHandler::requestStkEventNotify(const sp<RfxMclMessage>& 
         }
         p_response = NULL;
     }
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcCatCommonRequestHandler::requestStkQeryCpinState(const sp<RfxMclMessage>& msg) {
     bool isReady = false;
-    int *data = NULL;
+    int* data = NULL;
     int retryNum = 0;
     int result_Data[1];
 
-    logD(RFX_LOG_TAG,  "requestStkQeryCpinState");
+    logD(RFX_LOG_TAG, "requestStkQeryCpinState");
 
     isReady = isCpinReady();
-    logD(RFX_LOG_TAG,  "requestStkQeryCpinState: isCpinReady: %d", isReady);
+    logD(RFX_LOG_TAG, "requestStkQeryCpinState: isCpinReady: %d", isReady);
 
     result_Data[0] = (isReady == true) ? 1 : 0;
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(result_Data, 1), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS, RfxIntsData(result_Data, 1), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommand (const sp<RfxMclMessage>& msg)
-{
+void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommand(const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
-    char* data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
-     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) <=  0) {
-         rilErrNo = RIL_E_SIM_ABSENT;
-         sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-                 RfxStringData(), msg, false);
-          // response to TeleCore
-         responseToTelCore(response);
-         return;
+    if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) <= 0) {
+        rilErrNo = RIL_E_SIM_ABSENT;
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxStringData(), msg, false);
+        // response to TeleCore
+        responseToTelCore(response);
+        return;
     }
 
     // From this version, use AT+CUSATE instead of AT+STKENV
-    data = (data == NULL) ? ((char *)("")) : data;
+    data = (data == NULL) ? ((char*)("")) : data;
     asprintf(&cmd, "AT+CUSATE=\"%s\"", data);
 
     // send AT command
@@ -263,21 +251,21 @@ void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommand (const sp<RfxMclM
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxStringData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxStringData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcCatCommonRequestHandler::requestStkSendTerminalResponse (const sp<RfxMclMessage>& msg) {
+void RmcCatCommonRequestHandler::requestStkSendTerminalResponse(const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
-    char* data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
     int cmdId = -1;
 
-    data = (data == NULL) ? ((char *)("")) : data;
+    data = (data == NULL) ? ((char*)("")) : data;
     cmdId = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_STK_CMD_ID);
     if (cmdId < 0) {
         asprintf(&cmd, "AT+STKTR=\"%s\"", data);
@@ -296,24 +284,25 @@ void RmcCatCommonRequestHandler::requestStkSendTerminalResponse (const sp<RfxMcl
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcCatCommonRequestHandler::requestStkHandleCallSetupRequestedFromSim (const sp<RfxMclMessage>& msg) {
+void RmcCatCommonRequestHandler::requestStkHandleCallSetupRequestedFromSim(
+        const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
     int user_confirm = 0;
     int addtional_info = 0;
-    RfxIntsData *intsData = (RfxIntsData*)msg->getData();
-    int *data = (int*)intsData->getData();
+    RfxIntsData* intsData = (RfxIntsData*)msg->getData();
+    int* data = (int*)intsData->getData();
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
     int radio_state = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
 
-    logD(RFX_LOG_TAG,  "requestStkHandleCallSetupRequestedFromSim");
+    logD(RFX_LOG_TAG, "requestStkHandleCallSetupRequestedFromSim");
 
     if (data[0] == 1) {
         if (RADIO_STATE_UNAVAILABLE == radio_state || RADIO_STATE_OFF == radio_state) {
@@ -335,7 +324,7 @@ void RmcCatCommonRequestHandler::requestStkHandleCallSetupRequestedFromSim (cons
         assert(0);
     }
 
-    if( addtional_info == 0) {
+    if (addtional_info == 0) {
         asprintf(&cmd, "AT+STKCALL=%d", user_confirm);
     } else {
         asprintf(&cmd, "AT+STKCALL=%d, %d", user_confirm, addtional_info);
@@ -352,8 +341,8 @@ void RmcCatCommonRequestHandler::requestStkHandleCallSetupRequestedFromSim (cons
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -363,28 +352,28 @@ void RmcCatCommonRequestHandler::onHandleTimer() {
     // do something
 }
 
-
-void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommandWithStatus (const sp<RfxMclMessage>& msg) {
+void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommandWithStatus(
+        const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
     char* line = NULL;
-    char* data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     bool headIntermediate = true;
     int err = -1;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
     RIL_SIM_IO_Response sr;
-    RfxAtLine *atLine = NULL;
+    RfxAtLine* atLine = NULL;
 
     sp<RfxMclMessage> response_ok;
     sp<RfxMclMessage> response_error;
     memset(&sr, 0, sizeof(sr));
 
-     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) <=  0) {
-         rilErrNo = RIL_E_SIM_ABSENT;
+    if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) <= 0) {
+        rilErrNo = RIL_E_SIM_ABSENT;
         goto error;
     }
 
-    data = (data == NULL) ? ((char *)("")) : data;
+    data = (data == NULL) ? ((char*)("")) : data;
     asprintf(&cmd, "AT+CUSATE=\"%s\"", data);
 
     // send AT command
@@ -403,71 +392,71 @@ void RmcCatCommonRequestHandler::requestStkSendEnvelopeCommandWithStatus (const 
     for (atLine; atLine != NULL; atLine = atLine->getNext()) {
         line = atLine->getLine();
         if (NULL == line) {
-            logE(RFX_LOG_TAG,  "requestStkSendEnvelopeCommand ok but no intermediates.");
+            logE(RFX_LOG_TAG, "requestStkSendEnvelopeCommand ok but no intermediates.");
             goto done;
-        /*
-            sp<RfxMclMessage> response_ok = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, true);
+            /*
+                sp<RfxMclMessage> response_ok = RfxMclMessage::obtainResponse(msg->getId(),
+               rilErrNo, RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, true);
 
-            // response to TeleCore
-            responseToTelCore(response_ok);
-            p_response = NULL;
-            if (sr.simResponse != NULL) {
-                free(sr.simResponse);
-            }
-            //To do: goto error fix
-            return;*/
+                // response to TeleCore
+                responseToTelCore(response_ok);
+                p_response = NULL;
+                if (sr.simResponse != NULL) {
+                    free(sr.simResponse);
+                }
+                //To do: goto error fix
+                return;*/
         }
 
         if (headIntermediate) {
             headIntermediate = false;
-            logD(RFX_LOG_TAG,  "requestStkSendEnvelopeCommand CUSATE [%s].", line);
+            logD(RFX_LOG_TAG, "requestStkSendEnvelopeCommand CUSATE [%s].", line);
 
             atLine->atTokStart(&err);
             if (err < 0) {
-                logE(RFX_LOG_TAG,  "get +CUSATE: error.");
+                logE(RFX_LOG_TAG, "get +CUSATE: error.");
                 goto error;
             }
             sr.simResponse = atLine->atTokNextstr(&err);
             if (err < 0) {
-                logE(RFX_LOG_TAG,  "response data is null.");
+                logE(RFX_LOG_TAG, "response data is null.");
                 goto error;
             }
         } else {
-            logD(RFX_LOG_TAG,  "CUSATE2,[%s]", line);
+            logD(RFX_LOG_TAG, "CUSATE2,[%s]", line);
 
             atLine->atTokStart(&err);
             if (err < 0) {
-                logE(RFX_LOG_TAG,  "get +CUSATE2: error.");
+                logE(RFX_LOG_TAG, "get +CUSATE2: error.");
                 goto error;
             }
             sr.sw1 = atLine->atTokNextint(&err);
             if (err < 0) {
-                logE(RFX_LOG_TAG,  "get +CUSATE2: sr.sw1 error.");
+                logE(RFX_LOG_TAG, "get +CUSATE2: sr.sw1 error.");
                 goto error;
             }
             sr.sw2 = atLine->atTokNextint(&err);
             if (err < 0) {
-                logE(RFX_LOG_TAG,  "get +CUSATE2: sr.sw2 error.");
+                logE(RFX_LOG_TAG, "get +CUSATE2: sr.sw2 error.");
                 goto error;
             }
-            logD(RFX_LOG_TAG,  "requestStkSendEnvelopeCommand sw: %02x, %02x", sr.sw1, sr.sw2);
+            logD(RFX_LOG_TAG, "requestStkSendEnvelopeCommand sw: %02x, %02x", sr.sw1, sr.sw2);
         }
     }
 
 done:
-    response_ok = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
+    response_ok = RfxMclMessage::obtainResponse(
+            msg->getId(), rilErrNo, RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response_ok);
     p_response = NULL;
-    //To do: goto error fix
+    // To do: goto error fix
     return;
 
 error:
-    response_error = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxSimIoRspData(NULL, 0), msg, false);
+    response_error = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxSimIoRspData(NULL, 0),
+                                                   msg, false);
 
     // response to TeleCore
     responseToTelCore(response_error);
@@ -486,8 +475,8 @@ bool RmcCatCommonRequestHandler::isCpinReady() {
     int err;
     int query_result[1];
     query_result[0] = 0;
-    RfxAtLine *line;
-    char *cpinResult = NULL;
+    RfxAtLine* line;
+    char* cpinResult = NULL;
     sp<RfxAtResponse> p_response = NULL;
 
     logD(RFX_LOG_TAG, "isCpinReady: stk detect cpin state at slot %d", m_slot_id);
@@ -495,7 +484,8 @@ bool RmcCatCommonRequestHandler::isCpinReady() {
     p_response = atSendCommandSingleline("AT+CPIN?", "+CPIN:");
     err = p_response->getError();
     if ((err != 0) || (p_response->getSuccess() == 0)) {
-        logE(RFX_LOG_TAG, "isCpinReady: stk detectSim fail at slot %d and need retry later", m_slot_id);
+        logE(RFX_LOG_TAG, "isCpinReady: stk detectSim fail at slot %d and need retry later",
+             m_slot_id);
         return false;
     }
     line = p_response->getIntermediates();
@@ -506,30 +496,30 @@ bool RmcCatCommonRequestHandler::isCpinReady() {
     }
     cpinResult = line->atTokNextstr(&err);
     if (err < 0) {
-        logE(RFX_LOG_TAG,  "isCpinReady: atTokNextstr: err: %d and need retry later", err);
+        logE(RFX_LOG_TAG, "isCpinReady: atTokNextstr: err: %d and need retry later", err);
         return false;
     }
     String8 cpinStr(cpinResult);
-    if (cpinStr != String8::format("READY"))  {
-        logE(RFX_LOG_TAG,  "stk query cpin state at slot %d: fail and need retry later", m_slot_id);
+    if (cpinStr != String8::format("READY")) {
+        logE(RFX_LOG_TAG, "stk query cpin state at slot %d: fail and need retry later", m_slot_id);
         return false;
     } else {
-        logD(RFX_LOG_TAG,  "stk query cpin state at slot %d: success", m_slot_id);
+        logD(RFX_LOG_TAG, "stk query cpin state at slot %d: success", m_slot_id);
         return true;
     }
 }
 
-void RmcCatCommonRequestHandler::requestStkSendResponseByCmdType (const sp<RfxMclMessage>& msg) {
+void RmcCatCommonRequestHandler::requestStkSendResponseByCmdType(const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
     int cmd_type = 0;
     int cmd_qualifier = 0;
     bool err_flag = true;
-    RfxIntsData *intsData = NULL;
-    int *data = NULL;
+    RfxIntsData* intsData = NULL;
+    int* data = NULL;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
-    logD(RFX_LOG_TAG,  "requestStkSendResponseByCmdType");
+    logD(RFX_LOG_TAG, "requestStkSendResponseByCmdType");
 
     intsData = (RfxIntsData*)msg->getData();
     if (intsData != NULL) {
@@ -542,16 +532,16 @@ void RmcCatCommonRequestHandler::requestStkSendResponseByCmdType (const sp<RfxMc
     }
 
     if (err_flag) {
-        //For parsing error, we just send response to telcore
+        // For parsing error, we just send response to telcore
         rilErrNo = RIL_E_GENERIC_FAILURE;
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
         responseToTelCore(response);
         return;
     }
 
-    logD(RFX_LOG_TAG,  "requestStkSendResponseByCmdType: cmd_type = %d, cmd_qual = %d .",
-        cmd_type, cmd_qualifier);
+    logD(RFX_LOG_TAG, "requestStkSendResponseByCmdType: cmd_type = %d, cmd_qual = %d .", cmd_type,
+         cmd_qualifier);
 
     if (CMD_SETUP_CALL == cmd_type) {
         asprintf(&cmd, "AT+STKCALL=%d", 34);
@@ -571,44 +561,45 @@ void RmcCatCommonRequestHandler::requestStkSendResponseByCmdType (const sp<RfxMc
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
 // BIP @{
-void RmcCatCommonRequestHandler::requestBipSendConfirmInfo (const sp<RfxMclMessage>& msg) {
+void RmcCatCommonRequestHandler::requestBipSendConfirmInfo(const sp<RfxMclMessage>& msg) {
     char* cmd = NULL;
     int cmd_num = 0;
     int result_code = 0;
     bool err_flag = true;
-    RfxIntsData *intsData = NULL;
-    int *data = NULL;
+    RfxIntsData* intsData = NULL;
+    int* data = NULL;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
-    logD(RFX_LOG_TAG,  "requestBipSendConfirmInfo");
+    logD(RFX_LOG_TAG, "requestBipSendConfirmInfo");
 
     intsData = (RfxIntsData*)msg->getData();
     if (intsData != NULL) {
         data = (int*)intsData->getData();
         if (data != NULL) {
             cmd_num = data[0];
-            //Mapping result code according to spec here
-            //Currently we can get 1 or 0 from framework
+            // Mapping result code according to spec here
+            // Currently we can get 1 or 0 from framework
             result_code = (data[1] == 1) ? RESULT_OK : RESULT_USER_NOT_ACCEPT;
             err_flag = false;
         }
     }
 
     if (err_flag) {
-        //For parsing error, we set cmd_num to default 1, and result_code to 0x3a
+        // For parsing error, we set cmd_num to default 1, and result_code to 0x3a
         cmd_num = 1;
         result_code = RESULT_BIP_ERROR;
     }
 
-    logD(RFX_LOG_TAG,  "requestBipSendConfirmInfo: cmd_num = %d, result_code = %d .", cmd_num, result_code);
+    logD(RFX_LOG_TAG, "requestBipSendConfirmInfo: cmd_num = %d, result_code = %d .", cmd_num,
+         result_code);
 
     asprintf(&cmd, "AT+BIPCONF=%d,%d", cmd_num, result_code);
 
@@ -622,28 +613,31 @@ void RmcCatCommonRequestHandler::requestBipSendConfirmInfo (const sp<RfxMclMessa
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 // BIP @}
 
-//BTSAP @{
-void RmcCatCommonRequestHandler::requestBtSapTransferCardReaderStatus(const sp<RfxMclMessage>& msg) {
-    RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ *req = NULL;
+// BTSAP @{
+void RmcCatCommonRequestHandler::requestBtSapTransferCardReaderStatus(
+        const sp<RfxMclMessage>& msg) {
+    RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ* req = NULL;
     RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_RSP rsp;
-    //sp<RfxAtResponse> p_response;
+    // sp<RfxAtResponse> p_response;
     int status = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_BTSAP_STATUS);
-    void *data = msg->getData()->getData();
+    void* data = msg->getData()->getData();
     int datalen = msg->getData()->getDataLength();
 
-    logD(RFX_LOG_TAG, "[BTSAP] requestBtSapTransferCardReaderStatus start, BTSAP status: %d .", status);
-    req = (RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ*)calloc(1, sizeof(RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ));
+    logD(RFX_LOG_TAG, "[BTSAP] requestBtSapTransferCardReaderStatus start, BTSAP status: %d .",
+         status);
+    req = (RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ*)calloc(
+            1, sizeof(RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_REQ));
 
     rsp.CardReaderStatus = BT_SAP_CARDREADER_RESPONSE_DEFAULT;
     rsp.response = RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_RSP_Response_RIL_E_SUCCESS;
-    rsp.has_CardReaderStatus = true;   //  always true
+    rsp.has_CardReaderStatus = true;  //  always true
 
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) > 0) {
         logD(RFX_LOG_TAG, "[BTSAP] requestBtSapGetCardStatus, Sim inserted .");
@@ -652,32 +646,35 @@ void RmcCatCommonRequestHandler::requestBtSapTransferCardReaderStatus(const sp<R
         logD(RFX_LOG_TAG, "[BTSAP] requestBtSapGetCardStatus, But sim not inserted");
         rsp.response = RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_RSP_Response_RIL_E_GENERIC_FAILURE;
         sendStkBtSapResponseComplete(msg, RIL_E_GENERIC_FAILURE,
-                RFX_MSG_REQUEST_SIM_SAP_TRANSFER_CARD_READER_STATUS, &rsp);
+                                     RFX_MSG_REQUEST_SIM_SAP_TRANSFER_CARD_READER_STATUS, &rsp);
         if (req != NULL) {
             free(req);
         }
         return;
     }
 
-    if (status == BT_SAP_CONNECTION_SETUP || status == BT_SAP_ONGOING_CONNECTION
-        || status == BT_SAP_POWER_ON) {
+    if (status == BT_SAP_CONNECTION_SETUP || status == BT_SAP_ONGOING_CONNECTION ||
+        status == BT_SAP_POWER_ON) {
         rsp.CardReaderStatus = rsp.CardReaderStatus | BT_SAP_CARDREADER_RESPONSE_READER_POWER;
     } else {
         // For BT_SAP_INIT, BT_SAP_DISCONNECT and BT_SAP_POWER_OFF, return generic fail
         rsp.response = RIL_SIM_SAP_TRANSFER_CARD_READER_STATUS_RSP_Response_RIL_E_GENERIC_FAILURE;
     }
 
-    logD(RFX_LOG_TAG, "[BTSAP] requestBtSapGetCardStatus, CardReaderStatus result : %x .", rsp.CardReaderStatus);
+    logD(RFX_LOG_TAG, "[BTSAP] requestBtSapGetCardStatus, CardReaderStatus result : %x .",
+         rsp.CardReaderStatus);
 
-    sendStkBtSapResponseComplete(msg, RIL_E_SUCCESS, RFX_MSG_REQUEST_SIM_SAP_TRANSFER_CARD_READER_STATUS, &rsp);
+    sendStkBtSapResponseComplete(msg, RIL_E_SUCCESS,
+                                 RFX_MSG_REQUEST_SIM_SAP_TRANSFER_CARD_READER_STATUS, &rsp);
 
     free(req);
     logD(RFX_LOG_TAG, "[BTSAP] requestBtSapGetCardStatus end .");
 }
 
 void RmcCatCommonRequestHandler::sendStkBtSapResponseComplete(const sp<RfxMclMessage>& msg,
-        RIL_Errno ret, int msgId, void *data) {
-    const pb_field_t *fields = NULL;
+                                                              RIL_Errno ret, int msgId,
+                                                              void* data) {
+    const pb_field_t* fields = NULL;
     size_t encoded_size = 0;
     uint32_t written_size = 0;
     size_t buffer_size = 0;
@@ -697,25 +694,26 @@ void RmcCatCommonRequestHandler::sendStkBtSapResponseComplete(const sp<RfxMclMes
             return;
     }
 
-    if ((success = pb_get_encoded_size(&encoded_size, fields, data)) &&
-            encoded_size <= INT32_MAX) {
+    if ((success = pb_get_encoded_size(&encoded_size, fields, data)) && encoded_size <= INT32_MAX) {
         buffer_size = encoded_size;
         uint8_t buffer[buffer_size];
         ostream = pb_ostream_from_buffer(buffer, buffer_size);
         success = pb_encode(&ostream, fields, data);
 
-        if(success) {
-            logD(RFX_LOG_TAG, "[BTSAP] sendStkBtSapResponseComplete, Size: %zu (0x%zx) Size as written: 0x%x",
-                encoded_size, encoded_size, written_size);
-            response = RfxMclMessage::obtainSapResponse(msgId, ret,
-                    RfxRawData((void*)buffer, buffer_size), msg, false);
+        if (success) {
+            logD(RFX_LOG_TAG,
+                 "[BTSAP] sendStkBtSapResponseComplete, Size: %zu (0x%zx) Size as written: 0x%x",
+                 encoded_size, encoded_size, written_size);
+            response = RfxMclMessage::obtainSapResponse(
+                    msgId, ret, RfxRawData((void*)buffer, buffer_size), msg, false);
             responseToTelCore(response);
         } else {
             logD(RFX_LOG_TAG, "[BTSAP] sendStkBtSapResponseComplete, Encode failed!");
         }
     } else {
-        logD(RFX_LOG_TAG, "Not sending response type %d: encoded_size: %zu. encoded size result: %d",
-            msgId, encoded_size, success);
+        logD(RFX_LOG_TAG,
+             "Not sending response type %d: encoded_size: %zu. encoded size result: %d", msgId,
+             encoded_size, success);
     }
 }
 // BTSAP @}

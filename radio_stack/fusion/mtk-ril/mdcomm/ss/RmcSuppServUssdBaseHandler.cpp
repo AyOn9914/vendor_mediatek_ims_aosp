@@ -20,25 +20,19 @@
 #include "RfxVoidData.h"
 #include "RfxStringsData.h"
 
-
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_USSD_DOMAIN_INFO_REQ);
 
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringsData, RFX_MSG_EVENT_UNSOL_ON_USSD);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringsData, RFX_MSG_EVENT_UNSOL_ON_USSI);
 
-static const int requests[] = {
-    RFX_MSG_REQUEST_USSD_DOMAIN_INFO_REQ
-};
+static const int requests[] = {RFX_MSG_REQUEST_USSD_DOMAIN_INFO_REQ};
 
-static const int event[] = {
-    RFX_MSG_EVENT_UNSOL_ON_USSD,
-    RFX_MSG_EVENT_UNSOL_ON_USSI
-};
+static const int event[] = {RFX_MSG_EVENT_UNSOL_ON_USSD, RFX_MSG_EVENT_UNSOL_ON_USSI};
 
-RmcSuppServUssdBaseHandler::RmcSuppServUssdBaseHandler(int slot_id,
-        int channel_id):RfxBaseHandler(slot_id, channel_id){
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
-    registerToHandleEvent(event, sizeof(event)/sizeof(int));
+RmcSuppServUssdBaseHandler::RmcSuppServUssdBaseHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
+    registerToHandleEvent(event, sizeof(event) / sizeof(int));
 }
 
 RmcSuppServUssdBaseHandler::~RmcSuppServUssdBaseHandler() {
@@ -47,7 +41,7 @@ RmcSuppServUssdBaseHandler::~RmcSuppServUssdBaseHandler() {
 
 void RmcSuppServUssdBaseHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_REQUEST_USSD_DOMAIN_INFO_REQ:
             handleUssdDomainInfoReq(msg);
             break;
@@ -59,7 +53,7 @@ void RmcSuppServUssdBaseHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcSuppServUssdBaseHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_EVENT_UNSOL_ON_USSD:
             handleOnUssd(msg);
             break;
@@ -95,8 +89,8 @@ void RmcSuppServUssdBaseHandler::handleUssdDomainInfoReq(const sp<RfxMclMessage>
 
     logD(TAG, "handleUssdDomainInfoReq, domain = %s", (domain == 0) ? "CS" : "IMS");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&domain, 1), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(&domain, 1),
+                                             msg, false);
     responseToTelCore(response);
 }
 
@@ -108,7 +102,7 @@ void RmcSuppServUssdBaseHandler::handleUssdDomainInfoReq(const sp<RfxMclMessage>
 void RmcSuppServUssdBaseHandler::sendFailureReport(const sp<RfxMclMessage>& msg, RIL_Errno ret) {
     sp<RfxMclMessage> response;
     sp<RfxMclMessage> urc;
-    char *genericUssdFail[2] = {(char *) "4", (char *) ""};  // Generate a generic failure USSD URC
+    char* genericUssdFail[2] = {(char*)"4", (char*)""};  // Generate a generic failure USSD URC
 
     logD(TAG, "sendFailureReport, ret = %d", ret);
 
@@ -127,8 +121,8 @@ void RmcSuppServUssdBaseHandler::sendFailureReport(const sp<RfxMclMessage>& msg,
 
     // Return SUCCESS first
     logD(TAG, "sendFailureReport, Return SUCCESS first by response");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(),
-            msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(response);
 
     // Let the UI have time to show up the "USSD code running" dialog
@@ -137,7 +131,7 @@ void RmcSuppServUssdBaseHandler::sendFailureReport(const sp<RfxMclMessage>& msg,
     // And then report the FAILIRUE by URC
     logD(TAG, "sendFailureReport, Report the FAILIRUE by URC");
     urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD, m_slot_id,
-            RfxStringsData(genericUssdFail, 2));
+                                   RfxStringsData(genericUssdFail, 2));
     responseToTelCore(urc);
 }
 
@@ -148,7 +142,7 @@ bool RmcSuppServUssdBaseHandler::isFdnAllowed(const char* ussi) {
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
     int responses[2] = {0};
 
@@ -174,7 +168,7 @@ bool RmcSuppServUssdBaseHandler::isFdnAllowed(const char* ussi) {
     switch (p_response->atGetCmeError()) {
         case CME_SUCCESS:
             break;
-        default:     // AT CMD format error, should not be here
+        default:  // AT CMD format error, should not be here
             goto error;
     }
 
@@ -210,13 +204,13 @@ bool RmcSuppServUssdBaseHandler::isFdnAllowed(const char* ussi) {
 
 error:
     if (ret == RIL_E_SUCCESS) {
-        if (responses[1] == 0) {       // not an ECC number, determined by MD PHB
+        if (responses[1] == 0) {  // not an ECC number, determined by MD PHB
             return (responses[0] == 1);
-        } else if (responses[1] == 1){ // Approve if it is an ECC number
+        } else if (responses[1] == 1) {  // Approve if it is an ECC number
             return true;
         }
     }
-    return true;                       // Approve if we get any kind of CME error
+    return true;  // Approve if we get any kind of CME error
 }
 
 /**
@@ -225,7 +219,7 @@ error:
 bool RmcSuppServUssdBaseHandler::isVopsOn() {
     sp<RfxAtResponse> p_response;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
     int responses[2] = {0};
 
@@ -245,7 +239,7 @@ bool RmcSuppServUssdBaseHandler::isVopsOn() {
     switch (p_response->atGetCmeError()) {
         case CME_SUCCESS:
             break;
-        default:     // AT CMD format error, should not be here
+        default:  // AT CMD format error, should not be here
             goto error;
     }
 
@@ -290,7 +284,7 @@ error:
     if (ret == RIL_E_SUCCESS) {
         return (responses[1] == 1);
     }
-    return true;    // Assume VoPS is on by default
+    return true;  // Assume VoPS is on by default
 }
 
 /**
@@ -298,12 +292,11 @@ error:
  */
 bool RmcSuppServUssdBaseHandler::isImsRegOn() {
     sp<RfxAtResponse> p_response;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
     int err;
     int skip;
     int response[2] = {0};
-
 
     /**
      * Query IMS registration information
@@ -313,10 +306,8 @@ bool RmcSuppServUssdBaseHandler::isImsRegOn() {
     p_response = atSendCommandSingleline("AT+CIREG?", "+CIREG:");
 
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         logE(TAG, "isImsRegOn reg_info Fail");
         goto error;
     }
@@ -336,7 +327,7 @@ bool RmcSuppServUssdBaseHandler::isImsRegOn() {
 
     // <mode>
     skip = line->atTokNextint(&err);
-    if (err < 0 || skip < 0 ) {
+    if (err < 0 || skip < 0) {
         logE(TAG, "The <mode> is an invalid value!!!");
         goto error;
     } else {
@@ -350,16 +341,16 @@ bool RmcSuppServUssdBaseHandler::isImsRegOn() {
          * 1   registered
          */
         response[0] = line->atTokNextint(&err);
-        if (err < 0 ) goto error;
+        if (err < 0) goto error;
 
-        response[1] = 1; // RADIO_TECH_3GPP
+        response[1] = 1;  // RADIO_TECH_3GPP
     }
 
     return (response[0] == 1);
 
 error:
     logE(TAG, "There is something wrong with the AT+CIREG?, return false for isImsRegOn()");
-    return false;   // Assume no IMS registration by default
+    return false;  // Assume no IMS registration by default
 }
 
 bool RmcSuppServUssdBaseHandler::isInImsCall() {

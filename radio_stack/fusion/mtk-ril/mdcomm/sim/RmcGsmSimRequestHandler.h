@@ -28,25 +28,22 @@
  *****************************************************************************/
 
 class RmcGsmSimRequestHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcGsmSimRequestHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcGsmSimRequestHandler);
 
-public:
+  public:
     RmcGsmSimRequestHandler(int slot_id, int channel_id);
     virtual ~RmcGsmSimRequestHandler();
 
-
-
     // Check if the handler have to process the Request or not
-    virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(
-            const sp<RfxMclMessage>& msg);
+    virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
     // Process Request here
     virtual void handleRequest(const sp<RfxMclMessage>& msg);
 
     // Return the list which you want to reqister
-    virtual const int* queryTable(int channel_id, int *record_num);
+    virtual const int* queryTable(int channel_id, int* record_num);
 
-private:
+  private:
     // Utility functions
     void sleepMsec(long long msec);
 

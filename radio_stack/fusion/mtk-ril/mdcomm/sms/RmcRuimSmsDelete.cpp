@@ -22,33 +22,30 @@
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaDeleteRuimSmsReq, RmcVoidRsp, RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM);
-
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaDeleteRuimSmsReq, RmcVoidRsp,
+                                RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM);
 
 /*****************************************************************************
  * Class RmcCdmaDeleteRuimSmsReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaDeleteRuimSmsReq);
-RmcCdmaDeleteRuimSmsReq::RmcCdmaDeleteRuimSmsReq(void *data, int length) :
-        RmcSingleAtReq(data, length){
+RmcCdmaDeleteRuimSmsReq::RmcCdmaDeleteRuimSmsReq(void* data, int length)
+    : RmcSingleAtReq(data, length) {
     RFX_ASSERT(length == sizeof(int));
-    m_index = *((int *)data);
+    m_index = *((int*)data);
     m_data = &m_index;
     m_length = length;
 }
 
-RmcCdmaDeleteRuimSmsReq::~RmcCdmaDeleteRuimSmsReq() {
-}
+RmcCdmaDeleteRuimSmsReq::~RmcCdmaDeleteRuimSmsReq() {}
 
-
-RmcAtSendInfo* RmcCdmaDeleteRuimSmsReq::onGetAtInfo(RfxBaseHandler *h) {
+RmcAtSendInfo* RmcCdmaDeleteRuimSmsReq::onGetAtInfo(RfxBaseHandler* h) {
     RFX_UNUSED(h);
     String8 cmd;
     if (m_index == -1) {
         cmd.setTo("AT+EC2KCMGD=,4");
     } else {
-        cmd = String8::format("AT+EC2KCMGD=%d", m_index -1);
+        cmd = String8::format("AT+EC2KCMGD=%d", m_index - 1);
     }
     return new RmcNoLineAtSendInfo(cmd);
 }

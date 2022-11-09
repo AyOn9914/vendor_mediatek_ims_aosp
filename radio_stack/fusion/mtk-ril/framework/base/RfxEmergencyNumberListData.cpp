@@ -20,26 +20,26 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxEmergencyNumberListData);
 
-RfxEmergencyNumberListData::RfxEmergencyNumberListData(void *data, int length) :
-        RfxBaseData(data, length) {
+RfxEmergencyNumberListData::RfxEmergencyNumberListData(void* data, int length)
+    : RfxBaseData(data, length) {
     m_length = length;
     copyEmergencyNumberListData((RIL_EmergencyNumber*)data);
 }
 
-void RfxEmergencyNumberListData::copyEmergencyNumberListData(RIL_EmergencyNumber *data) {
+void RfxEmergencyNumberListData::copyEmergencyNumberListData(RIL_EmergencyNumber* data) {
     int num = m_length / sizeof(RIL_EmergencyNumber);
     if (num == 0 || data == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "[%s] The number of responses is %d", __FUNCTION__, num);
         return;
     }
-    RIL_EmergencyNumber *pData = (RIL_EmergencyNumber *)calloc(1, m_length);
+    RIL_EmergencyNumber* pData = (RIL_EmergencyNumber*)calloc(1, m_length);
     RFX_ASSERT(pData != NULL);
     for (int i = 0; i < num; i++) {
         asprintf(&(pData[i].number), "%s", data[i].number);
         asprintf(&(pData[i].mcc), "%s", data[i].mcc);
         asprintf(&(pData[i].mnc), "%s", data[i].mnc);
         pData[i].categories = data[i].categories;
-        pData[i].urns = NULL; // not used yet
+        pData[i].urns = NULL;  // not used yet
         pData[i].sources = data[i].sources;
     }
     m_data = pData;
@@ -48,7 +48,7 @@ void RfxEmergencyNumberListData::copyEmergencyNumberListData(RIL_EmergencyNumber
 RfxEmergencyNumberListData::~RfxEmergencyNumberListData() {
     // free memory
     if (m_data != NULL) {
-        RIL_EmergencyNumber *pData = (RIL_EmergencyNumber *)m_data;
+        RIL_EmergencyNumber* pData = (RIL_EmergencyNumber*)m_data;
         int num = m_length / sizeof(RIL_EmergencyNumber);
         for (int i = 0; i < num; i++) {
             FREEIF(pData[i].number);

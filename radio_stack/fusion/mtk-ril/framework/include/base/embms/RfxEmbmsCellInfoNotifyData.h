@@ -23,9 +23,10 @@
 class RfxEmbmsCellInfoNotifyData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsCellInfoNotifyData);
 
-    public:
-        RfxEmbmsCellInfoNotifyData(RIL_EMBMS_CellInfoNotify* data, int length);
-    private:
-        void copyData(RIL_EMBMS_CellInfoNotify *data, int length);
+  public:
+    RfxEmbmsCellInfoNotifyData(RIL_EMBMS_CellInfoNotify* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_CellInfoNotify* data, int length);
 };
 #endif /*RFX_EMBMS_CELLINFO_NOTIFY_DATA__H*/

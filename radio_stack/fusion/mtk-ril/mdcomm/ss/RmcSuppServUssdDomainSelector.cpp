@@ -34,9 +34,8 @@
 #include <string.h>
 #include <unistd.h>
 
-
-RmcSuppServUssdDomainSelector::RmcSuppServUssdDomainSelector(int slot_id, int channel_id) :
-    RmcSuppServUssdBaseHandler(slot_id, channel_id) {
+RmcSuppServUssdDomainSelector::RmcSuppServUssdDomainSelector(int slot_id, int channel_id)
+    : RmcSuppServUssdBaseHandler(slot_id, channel_id) {
     setUssiAction(USSI_REQUEST);
     mOngoingSessionDomain = 0;
     mUssiSnapshot = NULL;
@@ -52,14 +51,15 @@ RmcSuppServUssdDomainSelector::~RmcSuppServUssdDomainSelector() {
 void RmcSuppServUssdDomainSelector::handleOnUssd(const sp<RfxMclMessage>& msg) {
     logD(TAG, "handleOnUssd, from UrcHandler");
     sp<RfxMclMessage> urc;
-    const char **ussdUrcStrings = (const char**) (msg->getData()->getData());
+    const char** ussdUrcStrings = (const char**)(msg->getData()->getData());
 
     if (atoi(ussdUrcStrings[0]) == 1) {
         logD(TAG, "handleOnUssd, further user action required, mOngoingSessionDomain: CS");
         mOngoingSessionDomain = 0;
     }
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD, m_slot_id,
+    urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_ON_USSD, m_slot_id,
             RfxStringsData(msg->getData()->getData(), msg->getData()->getDataLength()));
     responseToTelCore(urc);
 }
@@ -68,7 +68,7 @@ void RmcSuppServUssdDomainSelector::handleOnUssi(const sp<RfxMclMessage>& msg) {
     logD(TAG, "handleOnUssi, from UrcHandler");
 
     sp<RfxMclMessage> newUssdUrc = convertUssiToUssdUrc(msg);
-    int ussdMode = atoi(((char **) newUssdUrc->getData()->getData())[0]);
+    int ussdMode = atoi(((char**)newUssdUrc->getData()->getData())[0]);
 
     /**
      * USSD mode meanings
@@ -110,15 +110,10 @@ void RmcSuppServUssdDomainSelector::handleUssiCSFB(const sp<RfxMclMessage>& msg)
     if (mUssiSnapshot != NULL) {
         logD(TAG, "handleUssiCSFB, mUssiSnapshot = %s", mUssiSnapshot);
 
-        RfxStringData strData((void *) mUssiSnapshot, strlen(mUssiSnapshot));
+        RfxStringData strData((void*)mUssiSnapshot, strlen(mUssiSnapshot));
         sp<RfxMclMessage> tmpMsg = RfxMclMessage::obtainRequest(
-                RFX_MSG_REQUEST_SEND_USSD,
-                &strData,
-                msg->getSlotId(),
-                msg->getToken(),
-                msg->getSendToMainProtocol(),
-                msg->getRilToken(),
-                msg->getTimeStamp(),
+                RFX_MSG_REQUEST_SEND_USSD, &strData, msg->getSlotId(), msg->getToken(),
+                msg->getSendToMainProtocol(), msg->getRilToken(), msg->getTimeStamp(),
                 msg->getAddAtFront());
         requestSendUSSD(tmpMsg, SEND_URC_BACK);
 
@@ -130,7 +125,7 @@ void RmcSuppServUssdDomainSelector::handleUssiCSFB(const sp<RfxMclMessage>& msg)
 }
 
 void RmcSuppServUssdDomainSelector::requestSendUSSD(const sp<RfxMclMessage>& msg,
-        UssdReportCase reportCase) {
+                                                    UssdReportCase reportCase) {
     logD(TAG, "requestSendUSSD, reportCase = %d", reportCase);
 
     sp<RfxAtResponse> p_response;
@@ -140,7 +135,7 @@ void RmcSuppServUssdDomainSelector::requestSendUSSD(const sp<RfxMclMessage>& msg
     int strLen = 0;
     char* pTmpStr = NULL;
     char* p_ussdRequest = NULL;
-    char* p_input_ussdRequest = (char*) msg->getData()->getData();
+    char* p_input_ussdRequest = (char*)msg->getData()->getData();
 
     if (p_input_ussdRequest == NULL || strlen(p_input_ussdRequest) == 0) {
         logE(TAG, "requestSendUSSD:p_ussdRequest null or empty.");
@@ -165,10 +160,11 @@ void RmcSuppServUssdDomainSelector::requestSendUSSD(const sp<RfxMclMessage>& msg
      *
      * Bits 5..0 indicate the following:
      *   Bit 5, if set to 0, indicates the text is uncompressed
-     *   Bit 5, if set to 1, indicates the text is compressed using the compression algorithm defined in 3GPP TS 23.042 [13]
+     *   Bit 5, if set to 1, indicates the text is compressed using the compression algorithm
+     * defined in 3GPP TS 23.042 [13]
      *
-     *   Bit 4, if set to 0, indicates that bits 1 to 0 are reserved and have no message class meaning
-     *   Bit 4, if set to 1, indicates that bits 1 to 0 have a message class meaning:
+     *   Bit 4, if set to 0, indicates that bits 1 to 0 are reserved and have no message class
+     * meaning Bit 4, if set to 1, indicates that bits 1 to 0 have a message class meaning:
      *
      *     Bit 1   Bit 0       Message Class:
      *       0       0           Class 0
@@ -184,30 +180,30 @@ void RmcSuppServUssdDomainSelector::requestSendUSSD(const sp<RfxMclMessage>& msg
      *       1       0           UCS2 (16 bit) [10]
      *       1       1           Reserved
      */
-    //BEGIN mtk08470 [20130109][ALPS00436983]
-    // USSD string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
-    // We convert input char to unicode hex string and store it to p_ussdRequest.
-    // For example, convert input "1" to "3100"; So len of p_ussdRequest is 4 times of input
-    strLen = strlen(p_ussdRequest)/4;
+    // BEGIN mtk08470 [20130109][ALPS00436983]
+    //  USSD string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
+    //  We convert input char to unicode hex string and store it to p_ussdRequest.
+    //  For example, convert input "1" to "3100"; So len of p_ussdRequest is 4 times of input
+    strLen = strlen(p_ussdRequest) / 4;
     if (strLen > MAX_RIL_USSD_NUMBER_LENGTH) {
         logW(TAG, "USSD stringlen = %d, max = %d", strLen, MAX_RIL_USSD_NUMBER_LENGTH);
         strLen = MAX_RIL_USSD_NUMBER_LENGTH;
     }
-    pTmpStr = (char*) calloc(1, (4*strLen+1));
-    if(pTmpStr == NULL) {
+    pTmpStr = (char*)calloc(1, (4 * strLen + 1));
+    if (pTmpStr == NULL) {
         logE(TAG, "Malloc fail");
-        free((char *)p_ussdRequest);
+        free((char*)p_ussdRequest);
         goto error;
     }
-    memcpy(pTmpStr, p_ussdRequest, 4*strLen);
-    //END mtk08470 [20130109][ALPS00436983]
+    memcpy(pTmpStr, p_ussdRequest, 4 * strLen);
+    // END mtk08470 [20130109][ALPS00436983]
     asprintf(&cmd, "AT+ECUSD=2,1,\"%s\",72", pTmpStr); /* <dcs> = 0x48 */
 
     p_response = atSendCommand(cmd);
 
     free(cmd);
     free(pTmpStr);
-    free((char *)p_ussdRequest);
+    free((char*)p_ussdRequest);
 
     err = p_response->getError();
     if (err < 0 || p_response == NULL) {
@@ -237,7 +233,7 @@ error:
 
         if (ret == RIL_E_SUCCESS) {
             sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+                                                                       RfxVoidData(), msg, false);
             responseToTelCore(response);
         } else {
             sendFailureReport(msg, ret);
@@ -246,10 +242,10 @@ error:
         if (ret != RIL_E_SUCCESS) {
             logD(TAG, "requestSendUSSD: send urc back to framework");
             sp<RfxMclMessage> ussdUrcMsg;
-            char *genericUssdFail[2] = {(char *) "4", (char *) ""};
+            char* genericUssdFail[2] = {(char*)"4", (char*)""};
 
-            ussdUrcMsg = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD,
-                    m_slot_id, RfxStringsData(genericUssdFail, 2));
+            ussdUrcMsg = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD, m_slot_id,
+                                                  RfxStringsData(genericUssdFail, 2));
             responseToTelCore(ussdUrcMsg);
         } else {
             logD(TAG, "requestSendUSSD: no need to send anything to framework");
@@ -257,7 +253,6 @@ error:
     } else {
         logD(TAG, "requestSendUSSD: no need to send anything to framework");
     }
-
 }
 
 void RmcSuppServUssdDomainSelector::requestCancelUssd(const sp<RfxMclMessage>& msg) {
@@ -281,19 +276,19 @@ void RmcSuppServUssdDomainSelector::requestCancelUssd(const sp<RfxMclMessage>& m
         ret = RIL_E_SUCCESS;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcSuppServUssdDomainSelector::requestSendUSSI(const sp<RfxMclMessage>& msg) {
-    const char* ussi = (const char*) (msg->getData()->getData());
+    const char* ussi = (const char*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int action = (getUssiAction() == USSI_REQUEST) ? 1 : 2;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
     logD(TAG, "requestSendUSSI: action = %d, ussi = %s", action, ussi);
 
     // Snapshot the USSI string in USSD domain selector
@@ -311,11 +306,10 @@ void RmcSuppServUssdDomainSelector::requestSendUSSI(const sp<RfxMclMessage>& msg
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
 
     if (SSConfig::ussiWithNoLang(currentMccmnc.string())) {
-        p_response = atSendCommand(String8::format("AT+EIUSD=2,1,%d,\"%s\",\"\",0",
-                action, ussi));
+        p_response = atSendCommand(String8::format("AT+EIUSD=2,1,%d,\"%s\",\"\",0", action, ussi));
     } else {
-        p_response = atSendCommand(String8::format("AT+EIUSD=2,1,%d,\"%s\",\"en\",0",
-                action, ussi));
+        p_response =
+                atSendCommand(String8::format("AT+EIUSD=2,1,%d,\"%s\",\"en\",0", action, ussi));
     }
 
     err = p_response->getError();
@@ -351,7 +345,7 @@ void RmcSuppServUssdDomainSelector::requestSendUSSI(const sp<RfxMclMessage>& msg
 error:
     if (ret == RIL_E_SUCCESS) {
         sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg, false);
+                                                                   RfxVoidData(), msg, false);
         responseToTelCore(response);
     } else {
         // CSFB if INTERNAL_ERR occurs and no "VoLTE call" ongoing. (WFC Call is allowed)
@@ -388,8 +382,8 @@ void RmcSuppServUssdDomainSelector::requestCancelUssi(const sp<RfxMclMessage>& m
         ret = RIL_E_SUCCESS;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -402,11 +396,10 @@ void RmcSuppServUssdDomainSelector::requestCancelUssi(const sp<RfxMclMessage>& m
  * Do USSD domain selection
  */
 void RmcSuppServUssdDomainSelector::requestSendUssdDomainSelect(const sp<RfxMclMessage>& msg) {
-    const char* ussd = (const char*) (msg->getData()->getData());
+    const char* ussd = (const char*)(msg->getData()->getData());
     int wfcState = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_WFC_STATE, -1);
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
-
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     // Check input USSD string first
     if (ussd == NULL || strlen(ussd) == 0) {
@@ -462,7 +455,7 @@ void RmcSuppServUssdDomainSelector::requestSendUssdDomainSelect(const sp<RfxMclM
  */
 void RmcSuppServUssdDomainSelector::requestCancelUssdDomainSelect(const sp<RfxMclMessage>& msg) {
     logD(TAG, "requestCancelUssdDomainSelect: mOngoingSessionDomain: %s",
-            (mOngoingSessionDomain == 0) ? "CS" : "IMS");
+         (mOngoingSessionDomain == 0) ? "CS" : "IMS");
     if (mOngoingSessionDomain == 1) {
         requestCancelUssi(msg);
     } else {
@@ -479,8 +472,8 @@ void RmcSuppServUssdDomainSelector::requestCancelUssdDomainSelect(const sp<RfxMc
 sp<RfxMclMessage> RmcSuppServUssdDomainSelector::convertUssiToUssdUrc(
         const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> newUssdUrcMsg;
-    char *newUssdUrcStrings[2] = {0};
-    const char **ussiUrcStrings = (const char**) (msg->getData()->getData());
+    char* newUssdUrcStrings[2] = {0};
+    const char** ussiUrcStrings = (const char**)(msg->getData()->getData());
 
     /**
      * USSI response from the network, or network initiated operation
@@ -510,9 +503,9 @@ sp<RfxMclMessage> RmcSuppServUssdDomainSelector::convertUssiToUssdUrc(
      * <alertingpattern> alerting pattern of NW initiated INVITE
      * <sip_cause> sip error code
      */
-    const char *m = ussiUrcStrings[0];
-    const char *n = ussiUrcStrings[1];
-    const char *error_code = ussiUrcStrings[4];
+    const char* m = ussiUrcStrings[0];
+    const char* n = ussiUrcStrings[1];
+    const char* error_code = ussiUrcStrings[4];
 
     if (DBG) {
         logD(TAG, "convertUssiToUssdUrc: m = %s, n = %s", m, n);
@@ -540,17 +533,17 @@ sp<RfxMclMessage> RmcSuppServUssdDomainSelector::convertUssiToUssdUrc(
                                            // is a response, not a request
         } else if (strcmp(n, "4") == 0) {
             /**
-            * If AP receives <error_code> != 0 from modem when <m> = 1 & <n> = 4,
-            * no need to CSFB
-            *
-            * From TS 24.390:
-            * <error-code> is an integer. The following values are defined.
-            * If the received value is not listed below, it must be treated as 1.
-            * 1    error - unspecified
-            * 2    language/alphabet not supported
-            * 3    unexpected data value
-            * 4    USSD-busy
-            */
+             * If AP receives <error_code> != 0 from modem when <m> = 1 & <n> = 4,
+             * no need to CSFB
+             *
+             * From TS 24.390:
+             * <error-code> is an integer. The following values are defined.
+             * If the received value is not listed below, it must be treated as 1.
+             * 1    error - unspecified
+             * 2    language/alphabet not supported
+             * 3    unexpected data value
+             * 4    USSD-busy
+             */
             if (strcmp(error_code, "0") != 0) {
                 asprintf(&newUssdUrcStrings[0], "%d", 6);  // USSD_MODE_NOT_SUPPORTED_NO_CSFB (6)
                                                            // <m> = 1, <n> = 4, <error-code> != 0
@@ -573,10 +566,10 @@ sp<RfxMclMessage> RmcSuppServUssdDomainSelector::convertUssiToUssdUrc(
                                                            // and this is the first response from
                                                            // the modem UA.
             }
-            setUssiAction(USSI_REQUEST);   // Reset the flag to let USSD domain selector
-                                           // know the action of "next" received USSD
-                                           // is a request, not a response. Because the current
-                                           // USSI session is over
+            setUssiAction(USSI_REQUEST);  // Reset the flag to let USSD domain selector
+                                          // know the action of "next" received USSD
+                                          // is a request, not a response. Because the current
+                                          // USSI session is over
         }
     } else if (strcmp(m, "3") == 0) {
         if (strcmp(n, "0") == 0) {
@@ -594,7 +587,7 @@ sp<RfxMclMessage> RmcSuppServUssdDomainSelector::convertUssiToUssdUrc(
 
     // Change the message id from USSI URC to USSD URC
     newUssdUrcMsg = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ON_USSD, m_slot_id,
-            RfxStringsData(newUssdUrcStrings, 2));
+                                             RfxStringsData(newUssdUrcStrings, 2));
 
     free(newUssdUrcStrings[0]);
     free(newUssdUrcStrings[1]);
@@ -609,14 +602,14 @@ UssiAction RmcSuppServUssdDomainSelector::getUssiAction() {
 
 void RmcSuppServUssdDomainSelector::setUssiAction(UssiAction action) {
     logD(TAG, "setUssiAction(): %s -> %s", ussiActionToString(mUssiAction),
-            ussiActionToString(action));
+         ussiActionToString(action));
     if (mUssiAction == action) {
         return;
     }
     mUssiAction = action;
 }
 
-const char *RmcSuppServUssdDomainSelector::ussiActionToString(UssiAction action) {
+const char* RmcSuppServUssdDomainSelector::ussiActionToString(UssiAction action) {
     switch (action) {
         case USSI_REQUEST:
             return "USSI_REQUEST";

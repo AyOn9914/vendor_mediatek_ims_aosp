@@ -19,18 +19,17 @@
 
 #define RFX_LOG_TAG "RfxXmlParser"
 
-RfxXmlParser::~RfxXmlParser() {
-}
+RfxXmlParser::~RfxXmlParser() {}
 
 void RfxXmlParser::parse(DefaultHandler* parsedData, string xmlData) {
-    TiXmlDocument *myDoc = new TiXmlDocument();
+    TiXmlDocument* myDoc = new TiXmlDocument();
     myDoc->Parse(xmlData.c_str());
-    TiXmlElement *rootElement = myDoc->RootElement();
+    TiXmlElement* rootElement = myDoc->RootElement();
     parseSubElement(rootElement, parsedData);
     delete myDoc;
 }
 
-void RfxXmlParser::parseSubElement(TiXmlElement *subElement, DefaultHandler* parsedData) {
+void RfxXmlParser::parseSubElement(TiXmlElement* subElement, DefaultHandler* parsedData) {
     if (NULL == subElement) {
         return;
     }
@@ -39,8 +38,8 @@ void RfxXmlParser::parseSubElement(TiXmlElement *subElement, DefaultHandler* par
     string attributeValue = "";
     string nodeValue = "";
 
-    TiXmlAttribute *subAttribute = subElement->FirstAttribute();
-    //handle node without attribute.
+    TiXmlAttribute* subAttribute = subElement->FirstAttribute();
+    // handle node without attribute.
     if (subAttribute == 0) {
         nodeName = subElement->Value();
         nodeValue = "";
@@ -57,7 +56,7 @@ void RfxXmlParser::parseSubElement(TiXmlElement *subElement, DefaultHandler* par
     }
 
     if (NULL != subElement->FirstChildElement()) {
-        parseSubElement((TiXmlElement *)subElement->FirstChild(), parsedData);
+        parseSubElement((TiXmlElement*)subElement->FirstChild(), parsedData);
     } else {
         if (0 != subElement->GetText()) {
             nodeValue = subElement->GetText();

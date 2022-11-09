@@ -29,12 +29,12 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxLinkCapacityReportingCriteriaData);
 
-RfxLinkCapacityReportingCriteriaData::RfxLinkCapacityReportingCriteriaData(void *data, int length)
-        : RfxBaseData(data, length) {
+RfxLinkCapacityReportingCriteriaData::RfxLinkCapacityReportingCriteriaData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_LinkCapacityReportingCriteria *tmpPtr = (RIL_LinkCapacityReportingCriteria *)data;
-        RIL_LinkCapacityReportingCriteria *request =
-                (RIL_LinkCapacityReportingCriteria *)calloc(1, sizeof(RIL_LinkCapacityReportingCriteria));
+        RIL_LinkCapacityReportingCriteria* tmpPtr = (RIL_LinkCapacityReportingCriteria*)data;
+        RIL_LinkCapacityReportingCriteria* request = (RIL_LinkCapacityReportingCriteria*)calloc(
+                1, sizeof(RIL_LinkCapacityReportingCriteria));
         if (request == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "Memory allocation failed for request");
             return;
@@ -43,13 +43,15 @@ RfxLinkCapacityReportingCriteriaData::RfxLinkCapacityReportingCriteriaData(void 
         request->hysteresisMs = tmpPtr->hysteresisMs;
         request->hysteresisDlKbps = tmpPtr->hysteresisDlKbps;
         request->hysteresisUlKbps = tmpPtr->hysteresisUlKbps;
-        request->thresholdDlKbpsNumber = tmpPtr->thresholdDlKbpsNumber > MAX_LCE_THRESHOLD_NUMBER ?
-                MAX_LCE_THRESHOLD_NUMBER : tmpPtr->thresholdDlKbpsNumber;
+        request->thresholdDlKbpsNumber = tmpPtr->thresholdDlKbpsNumber > MAX_LCE_THRESHOLD_NUMBER
+                                                 ? MAX_LCE_THRESHOLD_NUMBER
+                                                 : tmpPtr->thresholdDlKbpsNumber;
         for (int i = 0; i < request->thresholdDlKbpsNumber; i++) {
             request->thresholdDlKbpsList[i] = tmpPtr->thresholdDlKbpsList[i];
         }
-        request->thresholdUlKbpsNumber = tmpPtr->thresholdUlKbpsNumber > MAX_LCE_THRESHOLD_NUMBER ?
-                MAX_LCE_THRESHOLD_NUMBER : tmpPtr->thresholdUlKbpsNumber;
+        request->thresholdUlKbpsNumber = tmpPtr->thresholdUlKbpsNumber > MAX_LCE_THRESHOLD_NUMBER
+                                                 ? MAX_LCE_THRESHOLD_NUMBER
+                                                 : tmpPtr->thresholdUlKbpsNumber;
         for (int i = 0; i < request->thresholdUlKbpsNumber; i++) {
             request->thresholdUlKbpsList[i] = tmpPtr->thresholdUlKbpsList[i];
         }

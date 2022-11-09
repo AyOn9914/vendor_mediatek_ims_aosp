@@ -19,10 +19,9 @@
 
 #define WPFA_D_LOG_TAG "WpfaCcciReader"
 
-
 WpfaCcciReader::WpfaCcciReader(int fd) : mFd(fd) {
-        mtkLogD(WPFA_D_LOG_TAG, "init");
-        memset(&m_threadId, 0, sizeof(pthread_t));
+    mtkLogD(WPFA_D_LOG_TAG, "init");
+    memset(&m_threadId, 0, sizeof(pthread_t));
 }
 
 bool WpfaCcciReader::threadLoop() {
@@ -37,10 +36,10 @@ void WpfaCcciReader::readerLoopForCcciData() {
     uint16_t msgId = 0;
     uint16_t msgParam = 0;
     WpfaCcciDataHeader ccciDataHeader;
-    ccci_msg_body_t *body = NULL;
-    ccci_msg_ul_ip_pkt_body_t *IpPktbody = NULL;
+    ccci_msg_body_t* body = NULL;
+    ccci_msg_ul_ip_pkt_body_t* IpPktbody = NULL;
 
-    ccci_msg_hdr_t *header = (ccci_msg_hdr_t *) calloc(1, CCCI_HEADER_SIZE);
+    ccci_msg_hdr_t* header = (ccci_msg_hdr_t*)calloc(1, CCCI_HEADER_SIZE);
     if (header == NULL) {
         mtkLogE(WPFA_D_LOG_TAG, "OOM");
         return;
@@ -53,8 +52,8 @@ void WpfaCcciReader::readerLoopForCcciData() {
         do {
             count = read(mFd, header, sizeof(ccci_msg_hdr_t));
             if (count < 0 && errno != EINTR) {
-                mtkLogE(WPFA_D_LOG_TAG, "header read end: %d (err: %d - %s)\n", count,
-                        errno, strerror(errno));
+                mtkLogE(WPFA_D_LOG_TAG, "header read end: %d (err: %d - %s)\n", count, errno,
+                        strerror(errno));
                 free(header);
                 return;
             } else {
@@ -69,11 +68,10 @@ void WpfaCcciReader::readerLoopForCcciData() {
         }
 
         ccciDataHeader = WpfaCcciDataHeaderEncoder::decodeHeader(header);
-        mtkLogD(WPFA_D_LOG_TAG, "ccciDataHeader msgId: %d",
-                ccciDataHeader.getMsgId());
+        mtkLogD(WPFA_D_LOG_TAG, "ccciDataHeader msgId: %d", ccciDataHeader.getMsgId());
 
         // for all read indication, receive the msg size data is size of ccci_msg_body_t
-        body = (ccci_msg_body_t *) calloc(1, sizeof(ccci_msg_body_t));
+        body = (ccci_msg_body_t*)calloc(1, sizeof(ccci_msg_body_t));
         if (body == NULL) {
             mtkLogE(WPFA_D_LOG_TAG, "OOM");
             free(header);
@@ -81,7 +79,7 @@ void WpfaCcciReader::readerLoopForCcciData() {
         }
 
         // get size by mseeage Id
-        //bodySize = WpfaDriverMessage::getCcciMsgBodySize(msgId);
+        // bodySize = WpfaDriverMessage::getCcciMsgBodySize(msgId);
         bodySize = sizeof(ccci_msg_body_t);
 
         // get message body if the message is not UL IP PKT
@@ -89,8 +87,8 @@ void WpfaCcciReader::readerLoopForCcciData() {
             do {
                 count = read(mFd, body, bodySize);
                 if (count < 0 && errno != EINTR) {
-                    mtkLogE(WPFA_D_LOG_TAG, "body read end: %d (err: %d - %s)\n", count,
-                            errno, strerror(errno));
+                    mtkLogE(WPFA_D_LOG_TAG, "body read end: %d (err: %d - %s)\n", count, errno,
+                            strerror(errno));
                     free(body);
                     free(header);
                     return;
@@ -127,7 +125,7 @@ void WpfaCcciReader::readerLoopForCcciData() {
             }
 
             // send message to dispatcher
-            //handleFilterRuleCtrlEvent(ccciDataHeader, body);
+            // handleFilterRuleCtrlEvent(ccciDataHeader, body);
             free(body);
         } else if (ccciDataHeader.getMsgType() == CCCI_UL_IP_PKT_MSG) {
             // MD UL AP Path Via TTY instead of SHM (For M2 RD IT purpose)
@@ -137,7 +135,7 @@ void WpfaCcciReader::readerLoopForCcciData() {
 
             mtkLogD(WPFA_D_LOG_TAG, "UP_IP_PKT size=%d", msgParam);
 
-            IpPktbody = (ccci_msg_ul_ip_pkt_body_t *) calloc(1, sizeof(ccci_msg_ul_ip_pkt_body_t));
+            IpPktbody = (ccci_msg_ul_ip_pkt_body_t*)calloc(1, sizeof(ccci_msg_ul_ip_pkt_body_t));
             if (IpPktbody == NULL) {
                 mtkLogE(WPFA_D_LOG_TAG, "OOM");
                 free(header);
@@ -148,8 +146,8 @@ void WpfaCcciReader::readerLoopForCcciData() {
             do {
                 count = read(mFd, IpPktbody, msgParam);
                 if (count < 0 && errno != EINTR) {
-                    mtkLogE(WPFA_D_LOG_TAG, "body read end: %d (err: %d - %s)\n", count,
-                            errno, strerror(errno));
+                    mtkLogE(WPFA_D_LOG_TAG, "body read end: %d (err: %d - %s)\n", count, errno,
+                            strerror(errno));
                     free(IpPktbody);
                     free(header);
                     return;
@@ -182,11 +180,7 @@ void WpfaCcciReader::handleFilterRuleCtrlEvent(WpfaCcciDataHeader header, WpfaDr
     mtkLogD(WPFA_D_LOG_TAG, "handleFilterRuleCtrlEvent, msgId:%d", msgId);
 
     sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-            header.getMsgId(),
-            header.getTid(),
-            header.getMsgType(),
-            header.getParams(),
-            data);
+            header.getMsgId(), header.getTid(), header.getMsgType(), header.getParams(), data);
     WpfaControlMsgHandler::enqueueDriverMessage(msg);
 }
 
@@ -194,9 +188,6 @@ void WpfaCcciReader::handleShmCtrlEvent(WpfaCcciDataHeader header) {
     // create Message(only header) and sent to WpfaControlMsgHandler
     mtkLogD(WPFA_D_LOG_TAG, "handleShmCtrlEvent, msgId:%d", header.getMsgId());
     sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-            header.getMsgId(),
-            header.getTid(),
-            header.getMsgType(),
-            header.getParams());
+            header.getMsgId(), header.getTid(), header.getMsgType(), header.getParams());
     WpfaControlMsgHandler::enqueueDriverMessage(msg);
 }

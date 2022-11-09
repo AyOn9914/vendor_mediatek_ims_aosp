@@ -32,7 +32,6 @@ extern "C" {
  */
 #include <OMX_Index.h>
 
-
 /** Khronos standard extension indices.
 
 This enum lists the current Khronos extension indices to OpenMAX IL.
@@ -41,24 +40,27 @@ typedef enum OMX_INDEXEXTTYPE {
 
     /* Component parameters and configurations */
     OMX_IndexExtComponentStartUnused = OMX_IndexKhronosExtensions + 0x00100000,
-    OMX_IndexConfigCallbackRequest,                 /**< reference: OMX_CONFIG_CALLBACKREQUESTTYPE */
-    OMX_IndexConfigCommitMode,                      /**< reference: OMX_CONFIG_COMMITMODETYPE */
-    OMX_IndexConfigCommit,                          /**< reference: OMX_CONFIG_COMMITTYPE */
-    OMX_IndexConfigAndroidVendorExtension,          /**< reference: OMX_CONFIG_VENDOR_EXTENSIONTYPE */
+    OMX_IndexConfigCallbackRequest,        /**< reference: OMX_CONFIG_CALLBACKREQUESTTYPE */
+    OMX_IndexConfigCommitMode,             /**< reference: OMX_CONFIG_COMMITMODETYPE */
+    OMX_IndexConfigCommit,                 /**< reference: OMX_CONFIG_COMMITTYPE */
+    OMX_IndexConfigAndroidVendorExtension, /**< reference: OMX_CONFIG_VENDOR_EXTENSIONTYPE */
 
     /* Port parameters and configurations */
     OMX_IndexExtPortStartUnused = OMX_IndexKhronosExtensions + 0x00200000,
 
     /* Audio parameters and configurations */
     OMX_IndexExtAudioStartUnused = OMX_IndexKhronosExtensions + 0x00400000,
-    OMX_IndexParamAudioAndroidAc3,                  /**< reference: OMX_AUDIO_PARAM_ANDROID_AC3TYPE */
-    OMX_IndexParamAudioAndroidOpus,                 /**< reference: OMX_AUDIO_PARAM_ANDROID_OPUSTYPE */
-    OMX_IndexParamAudioAndroidAacPresentation,      /**< reference: OMX_AUDIO_PARAM_ANDROID_AACPRESENTATIONTYPE */
-    OMX_IndexParamAudioAndroidEac3,                 /**< reference: OMX_AUDIO_PARAM_ANDROID_EAC3TYPE */
-    OMX_IndexParamAudioProfileQuerySupported,       /**< reference: OMX_AUDIO_PARAM_ANDROID_PROFILETYPE */
-    OMX_IndexParamAudioAndroidAacDrcPresentation,   /**< reference: OMX_AUDIO_PARAM_ANDROID_AACDRCPRESENTATIONTYPE */
-    OMX_IndexParamAudioAndroidAc4,                  /**< reference: OMX_AUDIO_PARAM_ANDROID_AC4TYPE */
-    OMX_IndexConfigAudioPresentation,               /**< reference: OMX_AUDIO_CONFIG_ANDROID_AUDIOPRESENTATION */
+    OMX_IndexParamAudioAndroidAc3,             /**< reference: OMX_AUDIO_PARAM_ANDROID_AC3TYPE */
+    OMX_IndexParamAudioAndroidOpus,            /**< reference: OMX_AUDIO_PARAM_ANDROID_OPUSTYPE */
+    OMX_IndexParamAudioAndroidAacPresentation, /**< reference:
+                                                  OMX_AUDIO_PARAM_ANDROID_AACPRESENTATIONTYPE */
+    OMX_IndexParamAudioAndroidEac3,            /**< reference: OMX_AUDIO_PARAM_ANDROID_EAC3TYPE */
+    OMX_IndexParamAudioProfileQuerySupported, /**< reference: OMX_AUDIO_PARAM_ANDROID_PROFILETYPE */
+    OMX_IndexParamAudioAndroidAacDrcPresentation, /**< reference:
+                                                     OMX_AUDIO_PARAM_ANDROID_AACDRCPRESENTATIONTYPE
+                                                   */
+    OMX_IndexParamAudioAndroidAc4,                /**< reference: OMX_AUDIO_PARAM_ANDROID_AC4TYPE */
+    OMX_IndexConfigAudioPresentation, /**< reference: OMX_AUDIO_CONFIG_ANDROID_AUDIOPRESENTATION */
 
     OMX_IndexExtAudioEndUnused,
 
@@ -67,22 +69,25 @@ typedef enum OMX_INDEXEXTTYPE {
 
     /* Video parameters and configurations */
     OMX_IndexExtVideoStartUnused = OMX_IndexKhronosExtensions + 0x00600000,
-    OMX_IndexParamNalStreamFormatSupported,         /**< reference: OMX_NALSTREAMFORMATTYPE */
-    OMX_IndexParamNalStreamFormat,                  /**< reference: OMX_NALSTREAMFORMATTYPE */
-    OMX_IndexParamNalStreamFormatSelect,            /**< reference: OMX_NALSTREAMFORMATTYPE */
-    OMX_IndexParamVideoVp8,                         /**< reference: OMX_VIDEO_PARAM_VP8TYPE */
-    OMX_IndexConfigVideoVp8ReferenceFrame,          /**< reference: OMX_VIDEO_VP8REFERENCEFRAMETYPE */
-    OMX_IndexConfigVideoVp8ReferenceFrameType,      /**< reference: OMX_VIDEO_VP8REFERENCEFRAMEINFOTYPE */
-    OMX_IndexParamVideoAndroidVp8Encoder,           /**< reference: OMX_VIDEO_PARAM_ANDROID_VP8ENCODERTYPE */
-    OMX_IndexParamVideoHevc,                        /**< reference: OMX_VIDEO_PARAM_HEVCTYPE */
-    OMX_IndexParamSliceSegments,                    /**< reference: OMX_VIDEO_SLICESEGMENTSTYPE */
-    OMX_IndexConfigAndroidIntraRefresh,             /**< reference: OMX_VIDEO_CONFIG_ANDROID_INTRAREFRESHTYPE */
-    OMX_IndexParamAndroidVideoTemporalLayering,     /**< reference: OMX_VIDEO_PARAM_ANDROID_TEMPORALLAYERINGTYPE */
-    OMX_IndexConfigAndroidVideoTemporalLayering,    /**< reference: OMX_VIDEO_CONFIG_ANDROID_TEMPORALLAYERINGTYPE */
-    OMX_IndexParamMaxFrameDurationForBitrateControl,/**< reference: OMX_PARAM_U32TYPE */
-    OMX_IndexParamVideoVp9,                         /**< reference: OMX_VIDEO_PARAM_VP9TYPE */
-    OMX_IndexParamVideoAndroidVp9Encoder,           /**< reference: OMX_VIDEO_PARAM_ANDROID_VP9ENCODERTYPE */
-    OMX_IndexParamVideoAndroidImageGrid,            /**< reference: OMX_VIDEO_PARAM_ANDROID_IMAGEGRIDTYPE */
+    OMX_IndexParamNalStreamFormatSupported,    /**< reference: OMX_NALSTREAMFORMATTYPE */
+    OMX_IndexParamNalStreamFormat,             /**< reference: OMX_NALSTREAMFORMATTYPE */
+    OMX_IndexParamNalStreamFormatSelect,       /**< reference: OMX_NALSTREAMFORMATTYPE */
+    OMX_IndexParamVideoVp8,                    /**< reference: OMX_VIDEO_PARAM_VP8TYPE */
+    OMX_IndexConfigVideoVp8ReferenceFrame,     /**< reference: OMX_VIDEO_VP8REFERENCEFRAMETYPE */
+    OMX_IndexConfigVideoVp8ReferenceFrameType, /**< reference: OMX_VIDEO_VP8REFERENCEFRAMEINFOTYPE
+                                                */
+    OMX_IndexParamVideoAndroidVp8Encoder, /**< reference: OMX_VIDEO_PARAM_ANDROID_VP8ENCODERTYPE */
+    OMX_IndexParamVideoHevc,              /**< reference: OMX_VIDEO_PARAM_HEVCTYPE */
+    OMX_IndexParamSliceSegments,          /**< reference: OMX_VIDEO_SLICESEGMENTSTYPE */
+    OMX_IndexConfigAndroidIntraRefresh, /**< reference: OMX_VIDEO_CONFIG_ANDROID_INTRAREFRESHTYPE */
+    OMX_IndexParamAndroidVideoTemporalLayering,      /**< reference:
+                                                        OMX_VIDEO_PARAM_ANDROID_TEMPORALLAYERINGTYPE */
+    OMX_IndexConfigAndroidVideoTemporalLayering,     /**< reference:
+                                                        OMX_VIDEO_CONFIG_ANDROID_TEMPORALLAYERINGTYPE */
+    OMX_IndexParamMaxFrameDurationForBitrateControl, /**< reference: OMX_PARAM_U32TYPE */
+    OMX_IndexParamVideoVp9,                          /**< reference: OMX_VIDEO_PARAM_VP9TYPE */
+    OMX_IndexParamVideoAndroidVp9Encoder, /**< reference: OMX_VIDEO_PARAM_ANDROID_VP9ENCODERTYPE */
+    OMX_IndexParamVideoAndroidImageGrid,  /**< reference: OMX_VIDEO_PARAM_ANDROID_IMAGEGRIDTYPE */
     OMX_IndexExtVideoEndUnused,
 
     /* Image & Video common configurations */
@@ -90,11 +95,12 @@ typedef enum OMX_INDEXEXTTYPE {
 
     /* Other configurations */
     OMX_IndexExtOtherStartUnused = OMX_IndexKhronosExtensions + 0x00800000,
-    OMX_IndexConfigAutoFramerateConversion,         /**< reference: OMX_CONFIG_BOOLEANTYPE */
-    OMX_IndexConfigPriority,                        /**< reference: OMX_PARAM_U32TYPE */
-    OMX_IndexConfigOperatingRate,                   /**< reference: OMX_PARAM_U32TYPE in Q16 format for video and in Hz for audio */
-    OMX_IndexParamConsumerUsageBits,                /**< reference: OMX_PARAM_U32TYPE */
-    OMX_IndexConfigLatency,                         /**< reference: OMX_PARAM_U32TYPE */
+    OMX_IndexConfigAutoFramerateConversion, /**< reference: OMX_CONFIG_BOOLEANTYPE */
+    OMX_IndexConfigPriority,                /**< reference: OMX_PARAM_U32TYPE */
+    OMX_IndexConfigOperatingRate, /**< reference: OMX_PARAM_U32TYPE in Q16 format for video and in
+                                     Hz for audio */
+    OMX_IndexParamConsumerUsageBits, /**< reference: OMX_PARAM_U32TYPE */
+    OMX_IndexConfigLatency,          /**< reference: OMX_PARAM_U32TYPE */
     OMX_IndexExtOtherEndUnused,
 
     /* Time configurations */
@@ -107,9 +113,9 @@ typedef enum OMX_INDEXEXTTYPE {
 #define OMX_MAX_ANDROID_VENDOR_PARAMCOUNT 32
 
 typedef enum OMX_ANDROID_VENDOR_VALUETYPE {
-    OMX_AndroidVendorValueInt32 = 0,   /*<< int32_t value */
-    OMX_AndroidVendorValueInt64,       /*<< int64_t value */
-    OMX_AndroidVendorValueString,      /*<< string value */
+    OMX_AndroidVendorValueInt32 = 0, /*<< int32_t value */
+    OMX_AndroidVendorValueInt64,     /*<< int64_t value */
+    OMX_AndroidVendorValueString,    /*<< string value */
     OMX_AndroidVendorValueEndUnused,
 } OMX_ANDROID_VENDOR_VALUETYPE;
 
@@ -207,7 +213,7 @@ typedef struct OMX_CONFIG_ANDROID_VENDOR_EXTENSIONTYPE {
     OMX_U32 nSize;
     OMX_VERSIONTYPE nVersion;
     OMX_U32 nIndex;
-    OMX_U8  cName[OMX_MAX_STRINGNAME_SIZE];
+    OMX_U8 cName[OMX_MAX_STRINGNAME_SIZE];
     OMX_DIRTYPE eDir;
     OMX_U32 nParamCount;
     OMX_U32 nParamSizeUsed;

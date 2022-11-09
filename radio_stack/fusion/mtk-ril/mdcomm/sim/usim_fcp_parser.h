@@ -17,7 +17,7 @@
 #ifndef USIM_FCP_PARSER_H
 #define USIM_FCP_PARSER_H
 
-#define TRUE  1
+#define TRUE 1
 #define FALSE 0
 
 #define USIM_MAX_RSP_FCP_LEN 128
@@ -29,15 +29,10 @@
 #define USIM_APP_LABEL_TAG 0x50
 
 /* USIM AUTHENTICATE TAG */
-typedef enum
-{
-    AUTH_3G_SUCCESS_T = 0xDB,
-    AUTH_3G_SYNC_FAILURE_T = 0xDC
-} usim_auth_tag_enum;
+typedef enum { AUTH_3G_SUCCESS_T = 0xDB, AUTH_3G_SYNC_FAILURE_T = 0xDC } usim_auth_tag_enum;
 
 /* FCP template tag */
-typedef enum
-{
+typedef enum {
     FCP_FILE_DES_T = 0x82,
     FCP_FILE_ID_T = 0x83,
     FCP_DF_NAME_T = 0x84,
@@ -56,8 +51,7 @@ typedef enum
 } usim_fcp_tag_enum;
 
 /* FCP proprietary information tag */
-typedef enum
-{
+typedef enum {
     PROP_UICC_CHAR_T = 0x80,
     PROP_APP_PWR_T = 0x81,
     PROP_MIN_APP_CLK_T = 0x82,
@@ -65,76 +59,67 @@ typedef enum
 } usim_fcp_proprietary_info_tag_enum;
 
 /* FCP security attributes tag */
-typedef enum
-{
+typedef enum {
     SECURITY_COMPACT_T = 0x8C,
     SECURITY_EXPANDED_T = 0xAB,
     SECURITY_REF_T = 0x8B
 } usim_fcp_security_attributes_tag_enum;
 
 /* FCP PIN status template DO tag */
-typedef enum
-{
+typedef enum {
     PIN_PS_DO_T = 0x90,
     PIN_USAGE_QUALIFIER_T = 0x95,
     PIN_KEY_REF_T = 0x83
 } usim_fcp_pin_status_tag_enum;
 
-typedef struct
-{
+typedef struct {
     unsigned char fd;
     unsigned char data_coding;
     unsigned short rec_len;
     unsigned char num_rec;
 } usim_file_descriptor_struct;
 
-typedef struct
-{
+typedef struct {
     unsigned short file_id;
 } usim_file_identifier_struct;
 
-typedef struct
-{
+typedef struct {
     unsigned char length;
     unsigned char df_name[16];
 } usim_df_name_struct;
 
 /* USIM proprietary information */
-#define SET_PROP_UICC_CHAR_EXIST(X)        ((X) |= 0x01)
-#define SET_PROP_APP_PWR_EXIST(X)           ((X) |= 0x02)
-#define SET_PROP_MIN_APP_CLK_EXIST(X)    ((X) |= 0x04)
-#define SET_PROP_AVAIL_MEM_EXIST(X)       ((X) |= 0x08)
+#define SET_PROP_UICC_CHAR_EXIST(X) ((X) |= 0x01)
+#define SET_PROP_APP_PWR_EXIST(X) ((X) |= 0x02)
+#define SET_PROP_MIN_APP_CLK_EXIST(X) ((X) |= 0x04)
+#define SET_PROP_AVAIL_MEM_EXIST(X) ((X) |= 0x08)
 
-#define IF_PROP_UICC_CHAR_EXIST(X)      ((X)&0x01)
-#define IF_PROP_APP_PWR_EXIST(X)         ((X)&0x02)
-#define IF_PROP_MIN_APP_CLK_EXIST(X)  ((X)&0x04)
-#define IF_PROP_AVAIL_MEM_EXIST(X)      ((X)&0x08)
+#define IF_PROP_UICC_CHAR_EXIST(X) ((X)&0x01)
+#define IF_PROP_APP_PWR_EXIST(X) ((X)&0x02)
+#define IF_PROP_MIN_APP_CLK_EXIST(X) ((X)&0x04)
+#define IF_PROP_AVAIL_MEM_EXIST(X) ((X)&0x08)
 
-typedef struct
-{
-    unsigned char do_flag;              /* data object exist flags */
-    unsigned char char_byte;            /* usim uicc characteristics */
-    unsigned char supp_volt_class;      /* application power consumption */
-    unsigned char app_pwr_consump;      /* application power consumption */
-    unsigned char pwr_ref_freq;         /* application power consumption */
-    unsigned char app_min_freq;         /* minimum application clock frequency */
+typedef struct {
+    unsigned char do_flag;            /* data object exist flags */
+    unsigned char char_byte;          /* usim uicc characteristics */
+    unsigned char supp_volt_class;    /* application power consumption */
+    unsigned char app_pwr_consump;    /* application power consumption */
+    unsigned char pwr_ref_freq;       /* application power consumption */
+    unsigned char app_min_freq;       /* minimum application clock frequency */
     unsigned int available_mem_bytes; /* limit to 4 bytes */
 } usim_proprietary_information_struct;
 
 /* ---------End of USIM proprietary nformation--------- */
 
-typedef struct
-{
+typedef struct {
     unsigned char life_cycle_status;
 } usim_life_cycle_status_integer_struct;
 
-typedef struct
-{
+typedef struct {
     unsigned char do_flag;
 } usim_security_attributes_struct;
 
-typedef enum
-{
+typedef enum {
     USIM_PIN1_APP1 = 0x01,
     USIM_PIN1_APP2 = 0x02,
     USIM_PIN1_APP3 = 0x03,
@@ -162,7 +147,7 @@ typedef enum
     USIM_PIN_ADM8 = 0x8C,
     USIM_PIN_ADM9 = 0x8D,
     USIM_PIN_ADM10 = 0x8E
-}usim_pin_type_enum;
+} usim_pin_type_enum;
 
 #define APP1_PIN1_M 0x00000001
 #define APP1_PIN2_M 0x00000002
@@ -180,71 +165,62 @@ typedef enum
 #define APP7_PIN2_M 0x00002000
 #define APP8_PIN1_M 0x00004000
 #define APP8_PIN2_M 0x00008000
-#define ADM01_M        0x00010000
-#define ADM02_M        0x00020000
-#define ADM03_M        0x00040000
-#define ADM04_M        0x00080000
-#define ADM05_M        0x00100000
-#define ADM06_M        0x00200000
-#define ADM07_M        0x00400000
-#define ADM08_M        0x00800000
-#define ADM09_M        0x01000000
-#define ADM10_M        0x02000000
-#define UNIV_PIN_M        0x80000000
+#define ADM01_M 0x00010000
+#define ADM02_M 0x00020000
+#define ADM03_M 0x00040000
+#define ADM04_M 0x00080000
+#define ADM05_M 0x00100000
+#define ADM06_M 0x00200000
+#define ADM07_M 0x00400000
+#define ADM08_M 0x00800000
+#define ADM09_M 0x01000000
+#define ADM10_M 0x02000000
+#define UNIV_PIN_M 0x80000000
 
-typedef struct
-{
+typedef struct {
     unsigned int pin_flag;
     unsigned int enabled_pin_flag;
 } usim_pin_status_temp_do_struct;
 
-typedef struct
-{
+typedef struct {
     unsigned int tot_file_size;
 } usim_total_file_size_struct;
 
-typedef struct
-{
+typedef struct {
     unsigned short file_size;
 } usim_file_size_struct;
 
-typedef enum
-{
-    SFI_NOT_SUPPORT,
-    SFI_FILE_ID,
-    SFI_PROP_ID
-} sfi_usage_enum;
+typedef enum { SFI_NOT_SUPPORT, SFI_FILE_ID, SFI_PROP_ID } sfi_usage_enum;
 
-typedef struct
-{
+typedef struct {
     sfi_usage_enum sfi_usage;
     unsigned char sfi_prop;
 } usim_short_file_identifier_struct;
 
 /* File descriptor byte */
 #define IS_SHAREABLE_FILE(X) (0x40 & (X))
-#define IS_DF_ADF(X)    (((0x38 & (X)) == 0x38) ? TRUE : FALSE)
+#define IS_DF_ADF(X) (((0x38 & (X)) == 0x38) ? TRUE : FALSE)
 #define IS_TRANSPARENT_EF(X) (((0x07 & (X)) == 0x01) ? TRUE : FALSE)
 #define IS_LINEAR_FIXED_EF(X) (((0x07 & (X)) == 0x02) ? TRUE : FALSE)
 #define IS_CYCLIC_EF(X) (((0x07 & (X)) == 0x06) ? TRUE : FALSE)
 
-#define COMMAND_READ_BINARY     0xb0
-#define COMMAND_UPDATE_BINARY   0xd6
-#define COMMAND_READ_RECORD     0xb2
-#define COMMAND_UPDATE_RECORD   0xdc
-#define COMMAND_SEEK            0xa2
-#define COMMAND_GET_RESPONSE    0xc0
+#define COMMAND_READ_BINARY 0xb0
+#define COMMAND_UPDATE_BINARY 0xd6
+#define COMMAND_READ_RECORD 0xb2
+#define COMMAND_UPDATE_RECORD 0xdc
+#define COMMAND_SEEK 0xa2
+#define COMMAND_GET_RESPONSE 0xc0
 
 //***** types of files  TS 11.11 9.3
-#define EF_TYPE_TRANSPARENT  0
-#define EF_TYPE_LINEAR_FIXED  1
-#define EF_TYPE_CYCLIC  3
+#define EF_TYPE_TRANSPARENT 0
+#define EF_TYPE_LINEAR_FIXED 1
+#define EF_TYPE_CYCLIC 3
 
 //***** types of files  TS 11.11 9.3
 #define TYPE_RFU 0
-#define TYPE_MF  1
-#define TYPE_DF  2
-#define TYPE_EF  4
+#define TYPE_MF 1
+#define TYPE_DF 2
+#define TYPE_EF 4
 
 // size of GET_RESPONSE for EF's
 #define GET_RESPONSE_EF_SIZE_BYTES 15
@@ -270,10 +246,11 @@ typedef struct
 #define RESPONSE_DATA_STRUCTURE 13
 #define RESPONSE_DATA_RECORD_LENGTH 14
 
-extern unsigned char usim_fcp_query_tag(unsigned char *, unsigned short, usim_fcp_tag_enum, void *);
-extern unsigned char fcp_tlv_search_tag(unsigned char *in_ptr, unsigned short len, usim_fcp_tag_enum tag, unsigned char **out_ptr);
-extern int hexStringToByteArray(unsigned char * hexString, unsigned char ** byte);
-extern unsigned char *byteArrayToHexString(unsigned char* array,int length);
+extern unsigned char usim_fcp_query_tag(unsigned char*, unsigned short, usim_fcp_tag_enum, void*);
+extern unsigned char fcp_tlv_search_tag(unsigned char* in_ptr, unsigned short len,
+                                        usim_fcp_tag_enum tag, unsigned char** out_ptr);
+extern int hexStringToByteArray(unsigned char* hexString, unsigned char** byte);
+extern unsigned char* byteArrayToHexString(unsigned char* array, int length);
 
 #define FCP_PARSER_UNUSED(x) (x)
 

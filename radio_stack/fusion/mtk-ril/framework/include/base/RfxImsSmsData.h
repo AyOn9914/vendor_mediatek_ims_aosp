@@ -22,12 +22,12 @@
 class RfxImsSmsData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxImsSmsData);
 
-#define GSM_SMS_MESSAGE_STRS_COUNT 2 // 0: smsc, 1: pdu
+#define GSM_SMS_MESSAGE_STRS_COUNT 2  // 0: smsc, 1: pdu
 
-private:
-    void copyImsGsmSmsData(void *data, int length);
+  private:
+    void copyImsGsmSmsData(void* data, int length);
     void releaseImsGsmSmsData();
-    void copyImsCdmaSmsData(void *data, int length);
+    void copyImsCdmaSmsData(void* data, int length);
     void releaseImsCdmaSmsData();
 };
 #endif

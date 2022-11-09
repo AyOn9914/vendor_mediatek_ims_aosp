@@ -27,7 +27,6 @@ extern "C" {
 
 extern bool __rfx_is_gt_mode();
 
-
 #ifdef __cplusplus
 }  // extern "C"
 #endif

@@ -30,18 +30,17 @@
 #include <cutils/android_get_control_env.h>
 
 #ifndef TEMP_FAILURE_RETRY
-#define TEMP_FAILURE_RETRY(exp) (exp) // KISS implementation
+#define TEMP_FAILURE_RETRY(exp) (exp)  // KISS implementation
 #endif
 
-LIBCUTILS_HIDDEN int __android_get_control_from_env(const char* prefix,
-                                                    const char* name) {
+LIBCUTILS_HIDDEN int __android_get_control_from_env(const char* prefix, const char* name) {
     if (!prefix || !name) return -1;
 
-    char *key = NULL;
+    char* key = NULL;
     if (asprintf(&key, "%s%s", prefix, name) < 0) return -1;
     if (!key) return -1;
 
-    char *cp = key;
+    char* cp = key;
     while (*cp) {
         if (!isalnum(*cp)) *cp = '_';
         ++cp;
@@ -58,14 +57,14 @@ LIBCUTILS_HIDDEN int __android_get_control_from_env(const char* prefix,
     // validity checking
     if ((fd < 0) || (fd > INT_MAX)) return -1;
 
-    // Since we are inheriting an fd, it could legitimately exceed _SC_OPEN_MAX
+        // Since we are inheriting an fd, it could legitimately exceed _SC_OPEN_MAX
 
-    // Still open?
-#if defined(F_GETFD) // Lowest overhead
+        // Still open?
+#if defined(F_GETFD)  // Lowest overhead
     if (TEMP_FAILURE_RETRY(fcntl(fd, F_GETFD)) < 0) return -1;
-#elif defined(F_GETFL) // Alternate lowest overhead
+#elif defined(F_GETFL)  // Alternate lowest overhead
     if (TEMP_FAILURE_RETRY(fcntl(fd, F_GETFL)) < 0) return -1;
-#else // Hail Mary pass
+#else                   // Hail Mary pass
     struct stat s;
     if (TEMP_FAILURE_RETRY(fstat(fd, &s)) < 0) return -1;
 #endif
@@ -78,13 +77,13 @@ int android_get_control_file(const char* path) {
 
 #if defined(__linux__)
     // Find file path from /proc and make sure it is correct
-    char *proc = NULL;
+    char* proc = NULL;
     if (asprintf(&proc, "/proc/self/fd/%d", fd) < 0) return -1;
     if (!proc) return -1;
 
     size_t len = strlen(path);
     // readlink() does not guarantee a nul byte, len+2 so we catch truncation.
-    char *buf = static_cast<char *>(calloc(1, len + 2));
+    char* buf = static_cast<char*>(calloc(1, len + 2));
     if (!buf) {
         free(proc);
         return -1;
@@ -95,7 +94,7 @@ int android_get_control_file(const char* path) {
     free(buf);
     if (ret < 0) return -1;
     if (cmp != 0) return -1;
-    // It is what we think it is
+        // It is what we think it is
 #endif
 
     return fd;

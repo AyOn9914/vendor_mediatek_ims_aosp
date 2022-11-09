@@ -33,30 +33,24 @@ typedef enum {
     ENCODING_KSC5601
 } SmsDataCodingScheme;
 
-typedef enum {
-    CLASS_UNKNOWN = 0,
-    CLASS_0,
-    CLASS_1,
-    CLASS_2,
-    CLASS_3
-} MessageClass;
+typedef enum { CLASS_UNKNOWN = 0, CLASS_0, CLASS_1, CLASS_2, CLASS_3 } MessageClass;
 
 /*****************************************************************************
  * Class SmsMessage
  *****************************************************************************/
 class PhoneNumberUtils {
-public:
+  public:
     static string prependPlusToNumber(string number);
     static string numToString(int number);
     static BYTE* hexStringToBytes(string s);
     static string stringFromBytes(BYTE* data, int offset, int byteCount);
 
-private:
-    static string internalCalledPartyBCDFragmentToString(BYTE *bytes, int offset, int length);
+  private:
+    static string internalCalledPartyBCDFragmentToString(BYTE* bytes, int offset, int length);
     static char bcdToChar(BYTE b);
     static int hexCharToInt(char c);
 
-private:
+  private:
     static const int TOA_INTERNATIONAL;
     static const char REPLACEMENT_CHAR;
     static const char PAUSE;
@@ -64,17 +58,18 @@ private:
     static const char WILD;
 };
 
-class GsmAlphabet  {
-public:
+class GsmAlphabet {
+  public:
     static string gsm7BitPackedToString(BYTE* pdu, int offset, int lengthSeptets);
     static string gsm7BitPackedToString(BYTE* pdu, int offset, int lengthSeptets,
-            int numPaddingBits, int languageTable, int shiftTable);
+                                        int numPaddingBits, int languageTable, int shiftTable);
     static string gsm8BitUnpackedToString(BYTE* data, int offset, int length);
-public:
+
+  public:
     static const BYTE GSM_EXTENDED_ESCAPE;
 
-private:
-    static const string *sLanguageTables;
-    static const string *sLanguageShiftTables;
+  private:
+    static const string* sLanguageTables;
+    static const string* sLanguageShiftTables;
 };
 #endif /* __SMS_PARSER_UTILS_H__ */

@@ -24,6 +24,6 @@
 class RfxEmergencyDialData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmergencyDialData);
 
-    public:
+  public:
 };
 #endif

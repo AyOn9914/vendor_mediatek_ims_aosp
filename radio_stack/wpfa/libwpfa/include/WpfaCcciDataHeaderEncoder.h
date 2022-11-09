@@ -27,64 +27,42 @@
 using ::android::String8;
 
 class WpfaCcciDataHeader {
-    public:
-        WpfaCcciDataHeader() :
-                mMsgId(0),
-                mTid(0),
-                mMsgType(0),
-                mParam16bit(0){
-        }
+  public:
+    WpfaCcciDataHeader() : mMsgId(0), mTid(0), mMsgType(0), mParam16bit(0) {}
 
-        WpfaCcciDataHeader(uint16_t msgId, uint16_t tId,
-                uint16_t msgType, uint16_t para) :
-                mMsgId(msgId),
-                mTid(tId),
-                mMsgType(msgType),
-                mParam16bit(para){
-        }
+    WpfaCcciDataHeader(uint16_t msgId, uint16_t tId, uint16_t msgType, uint16_t para)
+        : mMsgId(msgId), mTid(tId), mMsgType(msgType), mParam16bit(para) {}
 
-        uint16_t getMsgId() const {
-            return mMsgId;
-        }
+    uint16_t getMsgId() const { return mMsgId; }
 
-        uint16_t getTid() const {
-            return mTid;
-        }
+    uint16_t getTid() const { return mTid; }
 
-        uint16_t getMsgType() const {
-            return mMsgType;
-        }
+    uint16_t getMsgType() const { return mMsgType; }
 
-        uint16_t getParams() const {
-            return mParam16bit;
-        }
+    uint16_t getParams() const { return mParam16bit; }
 
-        String8 toString() const;
+    String8 toString() const;
 
-    private:
-        uint16_t mMsgId;
-        uint16_t mTid;
-        uint16_t mMsgType;
-        uint16_t mParam16bit;
+  private:
+    uint16_t mMsgId;
+    uint16_t mTid;
+    uint16_t mMsgType;
+    uint16_t mParam16bit;
 };
 
 class WpfaCcciDataHeaderEncoder {
+  public:
+    static const size_t HEADER_SIZE = 8;
 
-    public:
-        static const size_t HEADER_SIZE = 8;
+  private:
+    WpfaCcciDataHeaderEncoder();
 
-    private:
+  public:
+    static void init();
+    static WpfaCcciDataHeader decodeHeader(ccci_msg_hdr_t* header);
+    static void encodeHeader(WpfaCcciDataHeader data, ccci_msg_hdr_t* header);
 
-        WpfaCcciDataHeaderEncoder();
-
-    public:
-
-        static void init();
-        static WpfaCcciDataHeader decodeHeader(ccci_msg_hdr_t *header);
-        static void encodeHeader(WpfaCcciDataHeader data, ccci_msg_hdr_t *header);
-
-
-    private:
-        static WpfaCcciDataHeaderEncoder *sSelf;
+  private:
+    static WpfaCcciDataHeaderEncoder* sSelf;
 };
 #endif

@@ -25,44 +25,39 @@
  * RtcSmsAddress
  *****************************************************************************/
 class RtcSmsAddress {
-// Constructor / Destrutor
-public:
+    // Constructor / Destrutor
+  public:
     // Constructor
     RtcSmsAddress();
 
-// External Method
-public:
+    // External Method
+  public:
     // Get the address of the SMS.
     //
     // RETURNS: the SMS address
-    const String8 & getAddressString() const {
-        return mAddress;
-    }
+    const String8& getAddressString() const { return mAddress; }
 
     // Check if error happens when parsing SMS address
     //
     // RETURNS: true if error happens
-    bool isError() {
-        return mError;
-    }
+    bool isError() { return mError; }
 
-// Constants
-public:
-    static const int TON_UNKNOWN        = 0;
-    static const int TON_INTERNATIONAL  = 1;
-    static const int TON_NATIONAL       = 2;
-    static const int TON_NETWORK        = 3;
-    static const int TON_SUBSCRIBER     = 4;
-    static const int TON_ALPHANUMERIC   = 5;
-    static const int TON_ABBREVIATED    = 6;
+    // Constants
+  public:
+    static const int TON_UNKNOWN = 0;
+    static const int TON_INTERNATIONAL = 1;
+    static const int TON_NATIONAL = 2;
+    static const int TON_NETWORK = 3;
+    static const int TON_SUBSCRIBER = 4;
+    static const int TON_ALPHANUMERIC = 5;
+    static const int TON_ABBREVIATED = 6;
 
-// Method for sub class
-protected:
+    // Method for sub class
+  protected:
     // Set parsing error.
     //
     // RETURNS: None
-    void setError(
-        bool error = true  // [IN] true for error, false for no error
+    void setError(bool error = true  // [IN] true for error, false for no error
     ) {
         mError = error;
     }
@@ -70,33 +65,25 @@ protected:
     // Set the type of number(TON).
     //
     // RETRURNS: None
-    void setTon(int ton) {
-        mTon = ton;
-    }
+    void setTon(int ton) { mTon = ton; }
 
     // Get the type of number(TON).
     //
     // RETURNS: the type of number
-    const int & getTon() const {
-        return mTon;
-    }
+    const int& getTon() const { return mTon; }
 
     // Get the address for address modification.
     //
     // RETURNS: the reference of the address
-    String8 & getAddr() {
-        return mAddress;
-    }
+    String8& getAddr() { return mAddress; }
 
     // Check the number type if alphanumeric.
     //
     // RETURNS: true if alphanumeric number
-    bool isAlphanumeric() {
-        return mTon == TON_ALPHANUMERIC;
-    }
+    bool isAlphanumeric() { return mTon == TON_ALPHANUMERIC; }
 
-// Implement
-private:
+    // Implement
+  private:
     int mTon;
     String8 mAddress;
     bool mError;
@@ -105,30 +92,30 @@ private:
 /*****************************************************************************
  * RtcGsmSmsAddress
  *****************************************************************************/
-class RtcGsmSmsAddress: public RtcSmsAddress {
-// Constructor / Destructor
-public:
+class RtcGsmSmsAddress : public RtcSmsAddress {
+    // Constructor / Destructor
+  public:
     // Constructor
     RtcGsmSmsAddress(unsigned char* data, int offset, int length);
 
-// Implement
-private:
-    bool bcd2Char(unsigned char bcd, String8 &addr);
-    bool calledPartyBCDFragmentToString(unsigned char *bcd, int offset, int length, String8 &addr);
+    // Implement
+  private:
+    bool bcd2Char(unsigned char bcd, String8& addr);
+    bool calledPartyBCDFragmentToString(unsigned char* bcd, int offset, int length, String8& addr);
 
-    static const int MAX_BUFFER_SIZE       = 40;
-    static const int OFFSET_ADDRESS_LENGTH  = 0;
-    static const int OFFSET_TOA             = 1;
-    static const int OFFSET_ADDRESS_VALUE   = 2;
+    static const int MAX_BUFFER_SIZE = 40;
+    static const int OFFSET_ADDRESS_LENGTH = 0;
+    static const int OFFSET_TOA = 1;
+    static const int OFFSET_ADDRESS_VALUE = 2;
     unsigned char mOrigBytes[MAX_BUFFER_SIZE];
 };
 
 /*****************************************************************************
  * RtcCdmaSmsAddress
  *****************************************************************************/
-class RtcCdmaSmsAddress: public RtcSmsAddress {
-// Constructor / Destructor
-public:
-    RtcCdmaSmsAddress(RIL_CDMA_SMS_Address &addr);
+class RtcCdmaSmsAddress : public RtcSmsAddress {
+    // Constructor / Destructor
+  public:
+    RtcCdmaSmsAddress(RIL_CDMA_SMS_Address& addr);
 };
 #endif /* __RTC_SMS_ADDRESS_H__ */

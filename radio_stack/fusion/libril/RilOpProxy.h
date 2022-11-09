@@ -29,17 +29,14 @@
  *****************************************************************************/
 
 class RilOpProxy {
-
-public:
+  public:
     static void initOpLibrary();
     static void* getOpHandler();
-    static void registerOpService(
-            RIL_RadioFunctions *callbacks, android::CommandInfo *commands);
-    static android::CommandInfo *getOpCommandInfo(int request);
-    static android::UnsolResponseInfo *getOpUnsolResponseInfo(
-            int unsolResponse);
+    static void registerOpService(RIL_RadioFunctions* callbacks, android::CommandInfo* commands);
+    static android::CommandInfo* getOpCommandInfo(int request);
+    static android::UnsolResponseInfo* getOpUnsolResponseInfo(int unsolResponse);
 
-private:
+  private:
     static void* sDlOpHandler;
 };
 

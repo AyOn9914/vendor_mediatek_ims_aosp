@@ -24,20 +24,20 @@
 class RmcOpCallControlImsRequestHandler : public RmcCallControlBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpCallControlCommonRequestHandler);
 
-    public:
-        RmcOpCallControlImsRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcOpCallControlImsRequestHandler();
+  public:
+    RmcOpCallControlImsRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcOpCallControlImsRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-    private:
-        void requestDialFrom(const sp<RfxMclMessage>& msg);
-        void setEmergencyCallConfig(const sp<RfxMclMessage>& msg);
-        void deviceSwitch(const sp<RfxMclMessage>& msg);
-        void cancelDeviceSwitch(const sp<RfxMclMessage>& msg);
+  private:
+    void requestDialFrom(const sp<RfxMclMessage>& msg);
+    void setEmergencyCallConfig(const sp<RfxMclMessage>& msg);
+    void deviceSwitch(const sp<RfxMclMessage>& msg);
+    void cancelDeviceSwitch(const sp<RfxMclMessage>& msg);
 };
 
 #endif

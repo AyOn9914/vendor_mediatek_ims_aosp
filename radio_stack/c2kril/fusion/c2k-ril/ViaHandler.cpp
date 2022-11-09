@@ -29,11 +29,9 @@
 #undef LOG_TAG
 #define LOG_TAG "ViaHandler"
 
-ViaHandler::ViaHandler() : mSystemId(-1) {
-}
+ViaHandler::ViaHandler() : mSystemId(-1) {}
 
-ViaHandler::~ViaHandler() {
-}
+ViaHandler::~ViaHandler() {}
 
 void ViaHandler::sendCommandDemo(RfxBaseHandler* handler, char* str) {
     RFX_UNUSED(str);
@@ -44,10 +42,8 @@ void ViaHandler::sendCommandDemo(RfxBaseHandler* handler, char* str) {
 
     p_response = handler->atSendCommandSingleline("AT+CCID?", "+CCID:");
 
-    if (p_response == NULL
-            || p_response->getError() != 0
-            || p_response->getSuccess() == 0
-            || p_response->getIntermediates() == NULL) {
+    if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -68,16 +64,17 @@ error:
     RFX_LOG_E(LOG_TAG, "[%s] error", __FUNCTION__);
 }
 
-void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_response, RIL_Errno *result) {
-    const char *mTag = "RmcCdmaSimRequest";
+void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char** p_response,
+                                        RIL_Errno* result) {
+    const char* mTag = "RmcCdmaSimRequest";
     int err;
     int skip = 0;
     int sidnidCount = 0;
-    RfxAtLine *p_cur = NULL;
-    RfxAtLine *line_mdn = NULL;
-    RfxAtLine *line_sidnid = NULL;
-    RfxAtLine *line_min = NULL;
-    RfxAtLine *line_prl = NULL;
+    RfxAtLine* p_cur = NULL;
+    RfxAtLine* line_mdn = NULL;
+    RfxAtLine* line_sidnid = NULL;
+    RfxAtLine* line_min = NULL;
+    RfxAtLine* line_prl = NULL;
     sp<RfxAtResponse> p_response_mdn = NULL;
     sp<RfxAtResponse> p_response_sidnid = NULL;
     sp<RfxAtResponse> p_response_min = NULL;
@@ -119,18 +116,18 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
             break;
         }
 
-        char *cnum = line_mdn->atTokNextstr(&err);
+        char* cnum = line_mdn->atTokNextstr(&err);
         if (err < 0) {
             break;
         }
 
-        p_response[0] = (char *)calloc(maxsize, sizeof(char));
+        p_response[0] = (char*)calloc(maxsize, sizeof(char));
         if (strlen(cnum) < maxsize) {
             strncat(p_response[0], cnum, strlen(cnum));
             p_response[0][strlen(cnum)] = '\0';
         } else {
-            strncat(p_response[0], cnum, maxsize-1);
-            p_response[0][maxsize-1] = '\0';
+            strncat(p_response[0], cnum, maxsize - 1);
+            p_response[0][maxsize - 1] = '\0';
         }
 
         // Get sid and nid.
@@ -150,18 +147,18 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
         }
 
         for (sidnidCount = 0, p_cur = p_response_sidnid->getIntermediates(); p_cur != NULL;
-                p_cur = p_cur->getNext()) {
+             p_cur = p_cur->getNext()) {
             sidnidCount++;
         }
         if (sidnidCount > 0) {
-            char **sid = (char **)alloca(sidnidCount * sizeof (char *));
-            memset(sid,0,sidnidCount * sizeof (char *));
+            char** sid = (char**)alloca(sidnidCount * sizeof(char*));
+            memset(sid, 0, sidnidCount * sizeof(char*));
             if (sid == NULL) {
                 break;
             }
 
-            char **nid = (char **)alloca(sidnidCount * sizeof (char *));
-            memset(nid,0,sidnidCount * sizeof (char *));
+            char** nid = (char**)alloca(sidnidCount * sizeof(char*));
+            memset(nid, 0, sidnidCount * sizeof(char*));
             if (nid == NULL) {
                 break;
             }
@@ -169,7 +166,7 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
             int i = 0;
             bool resultOk = true;
             for (p_cur = p_response_sidnid->getIntermediates(); p_cur != NULL;
-                    p_cur = p_cur->getNext(), i++) {
+                 p_cur = p_cur->getNext(), i++) {
                 line_sidnid = p_cur;
                 line_sidnid->atTokStart(&err);
                 if (err < 0) {
@@ -191,13 +188,13 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
                 break;
             }
 
-            char *finalSid = (char *)calloc((sidnidCount * 20 + sidnidCount), sizeof(char));
+            char* finalSid = (char*)calloc((sidnidCount * 20 + sidnidCount), sizeof(char));
             if (finalSid == NULL) {
                 break;
             }
             memset(finalSid, 0, (sidnidCount * 20 + sidnidCount) * sizeof(char));
 
-            char *finalNid = (char *)calloc((sidnidCount * 20 + sidnidCount), sizeof(char));
+            char* finalNid = (char*)calloc((sidnidCount * 20 + sidnidCount), sizeof(char));
             if (finalNid == NULL) {
                 if (finalSid != NULL) {
                     free(finalSid);
@@ -254,18 +251,18 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
             break;
         }
 
-        char *vmin = line_min->atTokNextstr(&err);
+        char* vmin = line_min->atTokNextstr(&err);
         if (err < 0) {
             break;
         }
 
-        p_response[3] = (char *)calloc(maxsize, sizeof(char));
+        p_response[3] = (char*)calloc(maxsize, sizeof(char));
         if (strlen(vmin) < maxsize) {
             strncat(p_response[3], vmin, strlen(vmin));
             p_response[3][strlen(vmin)] = '\0';
         } else {
-            strncat(p_response[3], vmin, maxsize-1);
-            p_response[3][maxsize-1] = '\0';
+            strncat(p_response[3], vmin, maxsize - 1);
+            p_response[3][maxsize - 1] = '\0';
         }
 
         // Get PRL id.
@@ -290,22 +287,23 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
             break;
         }
 
-        char *prl = line_prl->atTokNextstr(&err);
+        char* prl = line_prl->atTokNextstr(&err);
         if (err < 0) {
             break;
         }
 
-        p_response[4] = (char *)calloc(maxsize, sizeof(char));
+        p_response[4] = (char*)calloc(maxsize, sizeof(char));
         if (strlen(prl) < maxsize) {
             strncat(p_response[4], prl, strlen(prl));
             p_response[4][strlen(prl)] = '\0';
         } else {
-            strncat(p_response[4], prl, maxsize-1);
-            p_response[4][maxsize-1] = '\0';
+            strncat(p_response[4], prl, maxsize - 1);
+            p_response[4][maxsize - 1] = '\0';
         }
 
-        RFX_LOG_D(mTag, "handleCdmaSubscription CNUM: %.8s, Sid: %s, Nid: %s, VIMIN: %s, VPRLID: %s",
-                p_response[0], p_response[1], p_response[2], p_response[3], p_response[4]);
+        RFX_LOG_D(mTag,
+                  "handleCdmaSubscription CNUM: %.8s, Sid: %s, Nid: %s, VIMIN: %s, VPRLID: %s",
+                  p_response[0], p_response[1], p_response[2], p_response[3], p_response[4]);
 
         *result = RIL_E_SUCCESS;
     } while (0);
@@ -320,7 +318,8 @@ void ViaHandler::handleCdmaSubscription(RfxBaseHandler* handler, char **p_respon
     p_response_prl = NULL;
 }
 
-void ViaHandler::requestSetPreferredVoicePrivacyMode(RfxBaseHandler* handler, int value, RIL_Errno *result) {
+void ViaHandler::requestSetPreferredVoicePrivacyMode(RfxBaseHandler* handler, int value,
+                                                     RIL_Errno* result) {
     sp<RfxAtResponse> p_response = handler->atSendCommand(String8::format("AT+VP=%d", value));
     if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
         *result = RIL_E_INVALID_ARGUMENTS;
@@ -329,7 +328,8 @@ void ViaHandler::requestSetPreferredVoicePrivacyMode(RfxBaseHandler* handler, in
     }
 }
 
-void ViaHandler::requestQueryPreferredVoicePrivacyMode(RfxBaseHandler* handler, int *value, RIL_Errno *result) {
+void ViaHandler::requestQueryPreferredVoicePrivacyMode(RfxBaseHandler* handler, int* value,
+                                                       RIL_Errno* result) {
     int err;
     RfxAtLine* line = NULL;
     sp<RfxAtResponse> p_response;
@@ -360,13 +360,13 @@ int ViaHandler::convertCdmaEvdoSig(int sig, int tag) {
     switch (tag) {
         case SIGNAL_CDMA_DBM:
         case SIGNAL_EVDO_DBM:
-            calculatedSig = 113 - sig*2;
+            calculatedSig = 113 - sig * 2;
             if (calculatedSig == 113) {
-            calculatedSig = 120;
+                calculatedSig = 120;
             }
             break;
         case SIGNAL_CDMA_ECIO:
-            calculatedSig = sig* -5;
+            calculatedSig = sig * -5;
             break;
         case SIGNAL_EVDO_ECIO:
             calculatedSig = sig / 8;
@@ -377,11 +377,12 @@ int ViaHandler::convertCdmaEvdoSig(int sig, int tag) {
     return calculatedSig;
 }
 
-void ViaHandler::handleCdmaPrlChanged(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler, int slotId) {
+void ViaHandler::handleCdmaPrlChanged(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler,
+                                      int slotId) {
     int err;
     int type;
     int prl;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
     char slotIdStr[32];
     char prlKey[32] = "vendor.cdma.prl.version";
@@ -412,10 +413,8 @@ error:
 }
 
 void ViaHandler::registerForViaUrc(RfxBaseHandler* handler) {
-    const char* urc[] = {
-        "+CIEV: 131"
-        };
-    handler->registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    const char* urc[] = {"+CIEV: 131"};
+    handler->registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
     return;
 }
 
@@ -426,15 +425,13 @@ void ViaHandler::handleViaUrc(const sp<RfxMclMessage>& msg, RfxBaseHandler* hand
     return;
 }
 
-const char **ViaHandler::getViaAllowedUrcForNw() {
-    static const char* allowed_urc[] = {
-        (char *)"+CIEV: 131"
-    };
+const char** ViaHandler::getViaAllowedUrcForNw() {
+    static const char* allowed_urc[] = {(char*)"+CIEV: 131"};
     return allowed_urc;
 }
 
 int ViaHandler::getCdmaLocationInfo(RfxBaseHandler* handler,
-        RIL_VOICE_REG_STATE_CACHE *voice_reg_state_cache) {
+                                    RIL_VOICE_REG_STATE_CACHE* voice_reg_state_cache) {
     // +VLOCINFO:<rev>,<mcc>,<mnc>,<sid>,<nid>,<bs_id>,<bs_lat>,<bs_long>,<sector_id>,<subnet_mask>
     int err = 0;
     sp<RfxAtResponse> p_response;
@@ -446,10 +443,8 @@ int ViaHandler::getCdmaLocationInfo(RfxBaseHandler* handler,
 
     // check error
     err = p_response->getError();
-    if (err != 0
-            || p_response == NULL
-            || p_response->getSuccess() == 0
-            || p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -468,12 +463,12 @@ int ViaHandler::getCdmaLocationInfo(RfxBaseHandler* handler,
     if (err < 0) {
         goto error;
     } else {
-        char *system_id = NULL;
+        char* system_id = NULL;
         asprintf(&system_id, "%d", (*voice_reg_state_cache).system_id);
         if (system_id != NULL) {
             if ((*voice_reg_state_cache).system_id != mSystemId) {
-               mSystemId = (*voice_reg_state_cache).system_id;
-               rfx_property_set("vendor.cdma.operator.sid", system_id);
+                mSystemId = (*voice_reg_state_cache).system_id;
+                rfx_property_set("vendor.cdma.operator.sid", system_id);
             }
             free(system_id);
         }
@@ -500,7 +495,7 @@ error:
 }
 
 int ViaHandler::getCdmaLocationInfo(RfxBaseHandler* handler,
-        CDMA_CELL_LOCATION_INFO *cdma_cell_location) {
+                                    CDMA_CELL_LOCATION_INFO* cdma_cell_location) {
     // +VLOCINFO:<rev>,<mcc>,<mnc>,<sid>,<nid>,<bs_id>,<bs_lat>,<bs_long>,<sector_id>,<subnet_mask>
     int err = 0;
     sp<RfxAtResponse> p_response;
@@ -512,10 +507,8 @@ int ViaHandler::getCdmaLocationInfo(RfxBaseHandler* handler,
 
     // check error
     err = p_response->getError();
-    if (err != 0
-            || p_response == NULL
-            || p_response->getSuccess() == 0
-            || p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -554,20 +547,20 @@ error:
     return -1;
 }
 
-const char **ViaHandler::getAgpsUrc(){
+const char** ViaHandler::getAgpsUrc() {
     static const char* AGPS_URC[] = {
-        (char *)"^GPSTCPCONNREQ",
-        (char *)"^GPSTCPCLOSEREQ",
+            (char*)"^GPSTCPCONNREQ",
+            (char*)"^GPSTCPCLOSEREQ",
     };
     return AGPS_URC;
 }
 
-void ViaHandler::requestAgpsConnind(RfxBaseHandler* handler, int connected, RIL_Errno *result) {
-    const char *mTag = "agps-ril";
+void ViaHandler::requestAgpsConnind(RfxBaseHandler* handler, int connected, RIL_Errno* result) {
+    const char* mTag = "agps-ril";
     *result = RIL_E_SUCCESS;
 
     // send AT command
-    char * cmd = NULL;
+    char* cmd = NULL;
     asprintf(&cmd, "AT^GPSTCPCONNIND=%d", connected);
     sp<RfxAtResponse> p_response = handler->atSendCommand(cmd);
     free(cmd);

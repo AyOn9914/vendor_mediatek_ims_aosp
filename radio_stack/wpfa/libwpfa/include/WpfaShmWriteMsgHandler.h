@@ -31,43 +31,39 @@
 #include "WpfaDriverAdapter.h"
 #include "WpfaShmSynchronizer.h"
 
-
 #include <mtk_log.h>
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 #define MODEM_TID_INIT (-1)
 
 #define MAX_SIZE_RING_BURRER (512)
 
 class WpfaShmWriteMsgHandler : public Thread {
-
-private:
+  private:
     class ShmWriteMsgHandler : public MessageHandler {
-        public:
-            ShmWriteMsgHandler(WpfaShmWriteMsgHandler* _dispatcher,
-                    const sp<WpfaDriverMessage>& _msg) :
-                msg(_msg) , sender(_dispatcher){}
+      public:
+        ShmWriteMsgHandler(WpfaShmWriteMsgHandler* _dispatcher, const sp<WpfaDriverMessage>& _msg)
+            : msg(_msg), sender(_dispatcher) {}
 
-            virtual ~ShmWriteMsgHandler() {}
+        virtual ~ShmWriteMsgHandler() {}
 
-            virtual void handleMessage(const Message& message);
+        virtual void handleMessage(const Message& message);
 
-        private:
-            sp<WpfaDriverMessage> msg;
-            WpfaShmWriteMsgHandler* sender;
+      private:
+        sp<WpfaDriverMessage> msg;
+        WpfaShmWriteMsgHandler* sender;
     };
 
-
-private:
+  private:
     WpfaShmWriteMsgHandler();
     virtual ~WpfaShmWriteMsgHandler() {}
 
-public:
+  public:
     static void init();
     static void enqueueShmWriteMessage(const sp<WpfaDriverMessage>& message);
     static void enqueueShmWriteMessageFront(const sp<WpfaDriverMessage>& message);
@@ -75,20 +71,19 @@ public:
     static sp<Looper> waitLooper();
     virtual bool threadLoop();
 
-private:
+  private:
     void processMessage(const sp<WpfaDriverMessage>& msg);
-
 
     int checkDriverAdapterState();
     int checkShmControllerState();
     int sendMessageToModem(uint16_t msgId, uint16_t tId);
 
-    static WpfaShmWriteMsgHandler *s_self;
+    static WpfaShmWriteMsgHandler* s_self;
     sp<Looper> mLooper;
     Message mDummyMsg;
 
-    WpfaDriverAdapter *mDriverAdapter;
-    WpfaShmSynchronizer *mShmSynchronizer;
+    WpfaDriverAdapter* mDriverAdapter;
+    WpfaShmSynchronizer* mShmSynchronizer;
 };
 
 #endif

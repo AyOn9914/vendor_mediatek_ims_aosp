@@ -28,99 +28,74 @@
 using ::android::RefBase;
 
 class RfxAtResponse : public virtual RefBase {
-    public:
-        RfxAtResponse() :
-                m_type(INIT),
-                m_success(-1),
-                m_ack(0),
-                m_finalResponse(NULL),
-                m_pIntermediates(NULL),
-                m_err(0),
-                m_responsePrefix(NULL) {
+  public:
+    RfxAtResponse()
+        : m_type(INIT),
+          m_success(-1),
+          m_ack(0),
+          m_finalResponse(NULL),
+          m_pIntermediates(NULL),
+          m_err(0),
+          m_responsePrefix(NULL) {}
+    RfxAtResponse(AtCommandType type, int success, RfxAtLine* finalResponse, RfxAtLine* line,
+                  int err, const char* responsePrefix)
+        : m_type(type),
+          m_success(success),
+          m_ack(0),
+          m_finalResponse(finalResponse),
+          m_pIntermediates(line),
+          m_err(err),
+          m_responsePrefix(responsePrefix) {}
+    RfxAtResponse(AtCommandType type, const char* responsePrefix)
+        : m_type(type),
+          m_success(-1),
+          m_ack(0),
+          m_finalResponse(NULL),
+          m_pIntermediates(NULL),
+          m_err(0),
+          m_responsePrefix(responsePrefix) {}
+    ~RfxAtResponse() {
+        if (m_pIntermediates) {
+            delete (m_pIntermediates);
         }
-        RfxAtResponse(AtCommandType type, int success, RfxAtLine* finalResponse, RfxAtLine* line,
-                int err, const char *responsePrefix) :
-                m_type(type),
-                m_success(success),
-                m_ack(0),
-                m_finalResponse(finalResponse),
-                m_pIntermediates(line),
-                m_err(err),
-                m_responsePrefix(responsePrefix) {
+        if (m_finalResponse) {
+            delete (m_finalResponse);
         }
-        RfxAtResponse(AtCommandType type, const char *responsePrefix) :
-            m_type(type),
-            m_success(-1),
-            m_ack(0),
-            m_finalResponse(NULL),
-            m_pIntermediates(NULL),
-            m_err(0),
-            m_responsePrefix(responsePrefix) {
-        }
-        ~RfxAtResponse() {
-            if (m_pIntermediates) {
-                delete(m_pIntermediates);
-            }
-            if (m_finalResponse) {
-                delete(m_finalResponse);
-            }
-        };
+    };
 
-    public:
-        AtCommandType getCommandType() const {
-            return m_type;
-        }
-        void setCommandType(AtCommandType type) {
-            m_type = type;
-        }
-        int getSuccess() const {
-            return m_success;
-        }
-        void setSuccess(int success) {
-            m_success = success;
-        }
-        RfxAtLine* getFinalResponse() const {
-            return m_finalResponse;
-        }
-        // void setFinalResponse(char* finalResponse);
-        void setFinalResponse(RfxAtLine* finalResponse);
-        RfxAtLine* getIntermediates() const  {
-            return m_pIntermediates;
-        }
-        // void setIntermediates(char* line);
-        void setIntermediates(RfxAtLine *line);
-        int getError() const {
-            return m_err;
-        }
-        void setError(int err) {
-            m_err = err;
-        }
-        int getIsAck() const {
-            return m_ack;
-        }
-        void setAck(int ack) {
-            m_ack = ack;
-        }
+  public:
+    AtCommandType getCommandType() const { return m_type; }
+    void setCommandType(AtCommandType type) { m_type = type; }
+    int getSuccess() const { return m_success; }
+    void setSuccess(int success) { m_success = success; }
+    RfxAtLine* getFinalResponse() const { return m_finalResponse; }
+    // void setFinalResponse(char* finalResponse);
+    void setFinalResponse(RfxAtLine* finalResponse);
+    RfxAtLine* getIntermediates() const { return m_pIntermediates; }
+    // void setIntermediates(char* line);
+    void setIntermediates(RfxAtLine* line);
+    int getError() const { return m_err; }
+    void setError(int err) { m_err = err; }
+    int getIsAck() const { return m_ack; }
+    void setAck(int ack) { m_ack = ack; }
 
-        const char *getResponsePrefix() const {
-            return m_responsePrefix;
-        }
-        /*void setResponsePrefix(char *responsePrefix) {
-            m_responsePrefix = responsePrefix;
-        }*/
-        AT_CME_Error atGetCmeError();
-        int isATCmdRspErr();
-        void reverseIntermediates();
-        bool isAtSent();
-        bool isAtResponseFail();
+    const char* getResponsePrefix() const { return m_responsePrefix; }
+    /*void setResponsePrefix(char *responsePrefix) {
+        m_responsePrefix = responsePrefix;
+    }*/
+    AT_CME_Error atGetCmeError();
+    int isATCmdRspErr();
+    void reverseIntermediates();
+    bool isAtSent();
+    bool isAtResponseFail();
 
-    private:
-        AtCommandType m_type;
-        int m_success; /* true if final response indicates success (eg "OK") */
-        int m_ack; /* true if it is Ack response */
-        RfxAtLine *m_finalResponse; /* eg OK, ERROR */
-        RfxAtLine *m_pIntermediates; /* any intermediate responses */
-        int m_err;
-        const char *m_responsePrefix;
+  private:
+    AtCommandType m_type;
+    int m_success;               /* true if final response indicates success (eg "OK") */
+    int m_ack;                   /* true if it is Ack response */
+    RfxAtLine* m_finalResponse;  /* eg OK, ERROR */
+    RfxAtLine* m_pIntermediates; /* any intermediate responses */
+    int m_err;
+    const char* m_responsePrefix;
 };
 #endif

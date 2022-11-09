@@ -18,7 +18,7 @@
 
 #define WPFA_D_LOG_TAG "WpfaDriver"
 
-WpfaDriver *WpfaDriver::sInstance = NULL;
+WpfaDriver* WpfaDriver::sInstance = NULL;
 Mutex WpfaDriver::sWpfaDriverInitMutex;
 
 WpfaDriver::WpfaDriver() {
@@ -42,26 +42,23 @@ void WpfaDriver::init() {
     mtkLogD(WPFA_D_LOG_TAG, "-init() ret=%d", ret);
 }
 
-WpfaDriver::~WpfaDriver() {
-    mtkLogD(WPFA_D_LOG_TAG, "-del()");
-}
+WpfaDriver::~WpfaDriver() { mtkLogD(WPFA_D_LOG_TAG, "-del()"); }
 
 WpfaDriver* WpfaDriver::getInstance() {
     if (sInstance != NULL) {
-       return sInstance;
+        return sInstance;
     } else {
-       sWpfaDriverInitMutex.lock();
-       sInstance = new WpfaDriver();
-       if (sInstance == NULL) {
-          mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriver fail");
-       }
-       sWpfaDriverInitMutex.unlock();
-       return sInstance;
+        sWpfaDriverInitMutex.lock();
+        sInstance = new WpfaDriver();
+        if (sInstance == NULL) {
+            mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriver fail");
+        }
+        sWpfaDriverInitMutex.unlock();
+        return sInstance;
     }
 }
 
-int WpfaDriver::registerCallback(event_id_enum eventId,
-                                CallbackFunc callbackFunc) {
+int WpfaDriver::registerCallback(event_id_enum eventId, CallbackFunc callbackFunc) {
     std::map<int, CallbackStruc>::iterator iter;
 
     iter = mapCallbackFunc.find(eventId);
@@ -87,14 +84,14 @@ int WpfaDriver::unregisterCallback(event_id_enum eventId) {
     }
 }
 
-int WpfaDriver::notifyCallback(event_id_enum eventId, void *notifyArg) {
+int WpfaDriver::notifyCallback(event_id_enum eventId, void* notifyArg) {
     int ret = 0;
     std::map<int, CallbackStruc>::iterator iter;
 
     iter = mapCallbackFunc.find(eventId);
     if (iter != mapCallbackFunc.end()) {
-        //mtkLogD(WPFA_D_LOG_TAG, "[%s] invoke callback", __FUNCTION__);
-        ret = (mapCallbackFunc[eventId].cb)((void *)notifyArg);
+        // mtkLogD(WPFA_D_LOG_TAG, "[%s] invoke callback", __FUNCTION__);
+        ret = (mapCallbackFunc[eventId].cb)((void*)notifyArg);
         return ret;
     } else {
         mtkLogE(WPFA_D_LOG_TAG, "[%s] callback not found!", __FUNCTION__);
@@ -102,8 +99,7 @@ int WpfaDriver::notifyCallback(event_id_enum eventId, void *notifyArg) {
     return ret;
 }
 
-int WpfaDriver::addCallback(event_id_enum eventId,
-                                CallbackFunc callbackFunc) {
+int WpfaDriver::addCallback(event_id_enum eventId, CallbackFunc callbackFunc) {
     struct CallbackStruc callback;
     callback.cb = callbackFunc;
     mapCallbackFunc[eventId] = callback;
@@ -111,28 +107,25 @@ int WpfaDriver::addCallback(event_id_enum eventId,
     return 0;
 }
 
-int WpfaDriver::notifyWpfaInit(){
+int WpfaDriver::notifyWpfaInit() {
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
         sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-        MSG_A2M_WPFA_INIT,
-        generateDriverTid(),
-        CCCI_IP_TABLE_MSG,
-        0);
+                MSG_A2M_WPFA_INIT, generateDriverTid(), CCCI_IP_TABLE_MSG, 0);
         retValue = mWpfaDriverAdapter->sendMsgToControlMsgDispatcher(msg);
     }
     return retValue;
 }
 
-int WpfaDriver::notifyWpfaVersion(uint16_t apVer, uint16_t mdVer){
+int WpfaDriver::notifyWpfaVersion(uint16_t apVer, uint16_t mdVer) {
     uint32_t maxDataBufferSize = 0;
     uint32_t realDataBufferSize = 0;
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
         retValue = checkShmControllerState();
         if (retValue == 0) {
-            wifiproxy_ap_md_filter_ver_t *pVersionData = (wifiproxy_ap_md_filter_ver_t *)calloc(1,
-                        sizeof(wifiproxy_ap_md_filter_ver_t));
+            wifiproxy_ap_md_filter_ver_t* pVersionData =
+                    (wifiproxy_ap_md_filter_ver_t*)calloc(1, sizeof(wifiproxy_ap_md_filter_ver_t));
 
             if (pVersionData == NULL) {
                 mtkLogD(WPFA_D_LOG_TAG, "[%s] pVersionData is NULL, return failed.", __FUNCTION__);
@@ -172,10 +165,7 @@ int WpfaDriver::notifyWpfaVersion(uint16_t apVer, uint16_t mdVer){
                     pVersionData->dl_buffer_size, pVersionData->ul_buffer_size);
 
             sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-                    MSG_A2M_WPFA_VERSION,
-                    generateDriverTid(),
-                    CCCI_IP_TABLE_MSG,
-                    0,
+                    MSG_A2M_WPFA_VERSION, generateDriverTid(), CCCI_IP_TABLE_MSG, 0,
                     WpfaDriverVersionData(pVersionData, 1));
             retValue = mWpfaDriverAdapter->sendMsgToControlMsgDispatcher(msg);
             free(pVersionData);
@@ -184,7 +174,7 @@ int WpfaDriver::notifyWpfaVersion(uint16_t apVer, uint16_t mdVer){
     return retValue;
 }
 
-int WpfaDriver::sendDataPackageToModem(WpfaRingBuffer *ringBuffer) {
+int WpfaDriver::sendDataPackageToModem(WpfaRingBuffer* ringBuffer) {
     int retValue = checkShmControllerState();
     if (retValue == 0) {
         retValue = mWpfaShmSynchronizer->wirteDataToShm(ringBuffer);

@@ -22,18 +22,18 @@
 class RmcCallControlSpecialRequestHandler : public RmcCallControlBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCallControlSpecialRequestHandler);
 
-    public:
-        RmcCallControlSpecialRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcCallControlSpecialRequestHandler();
+  public:
+    RmcCallControlSpecialRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcCallControlSpecialRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void requestForceReleaseCall(const sp<RfxMclMessage>& msg);
-        void requestSetVoiceDomainPreference(const sp<RfxMclMessage>& msg);
-        void requestGetVoiceDomainPreference(const sp<RfxMclMessage>& msg);
+  private:
+    void requestForceReleaseCall(const sp<RfxMclMessage>& msg);
+    void requestSetVoiceDomainPreference(const sp<RfxMclMessage>& msg);
+    void requestGetVoiceDomainPreference(const sp<RfxMclMessage>& msg);
 };
 
 #endif

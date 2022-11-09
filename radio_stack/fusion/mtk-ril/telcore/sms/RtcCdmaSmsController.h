@@ -28,31 +28,31 @@
  *****************************************************************************/
 
 class RtcCdmaSmsController : public RfxController {
-RFX_DECLARE_CLASS(RtcCdmaSmsController);
+    RFX_DECLARE_CLASS(RtcCdmaSmsController);
 
-public:
+  public:
     RtcCdmaSmsController();
     virtual ~RtcCdmaSmsController();
 
-public:
+  public:
     void handleRequest(const sp<RfxMessage>& message);
     bool previewMessage(const sp<RfxMessage>& message);
     bool checkIfResumeMessage(const sp<RfxMessage>& message);
     void onTimer();
-    void sendCdmaSms(RtcCdmaSmsMessage *msg);
+    void sendCdmaSms(RtcCdmaSmsMessage* msg);
     void sendCdmaSmsAck(const sp<RfxMessage>& message);
 
-protected:
+  protected:
     virtual void onInit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& msg);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-            const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-private:
+  private:
     void handleMoSmsRequests(const sp<RfxMessage>& message);
     void handleSmscAdressResponses(const sp<RfxMessage>& message);
     void handleCdmaSmsAck(const sp<RfxMessage>& message);
@@ -62,10 +62,11 @@ private:
     bool onHandleNewSms(const sp<RfxMessage>& message);
     bool isSupportSmsFormatConvert();
     bool isCdmaPhoneMode();
-private:
+
+  private:
     TimerHandle m_timer;
     bool m_needStatusReport;
     const int MT_SMS_ACK_TIME = 2;
-    const char *TAG = "RtcCdmaSmsController";
+    const char* TAG = "RtcCdmaSmsController";
 };
 #endif /* __RTC_CDMA_SMS_CONTROLLER_H__ */

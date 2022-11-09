@@ -3,8 +3,7 @@
 
 #include "DpDataType.h"
 
-typedef enum DP_SCENARIO_ENUM
-{
+typedef enum DP_SCENARIO_ENUM {
     DP_SCENARIO_NONE,
     DP_SCENARIO_VIDEO_NORMAL,
     DP_SCENARIO_CAMERA_PREVIEW,

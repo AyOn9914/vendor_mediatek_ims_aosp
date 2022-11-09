@@ -34,7 +34,7 @@ using ::android::Mutex;
  * =============================================================================
  */
 #define SHM_WRITER_START_TID (10000)
-#define SHM_WRITER_END_TID   (50000)
+#define SHM_WRITER_END_TID (50000)
 
 /*
  * =============================================================================
@@ -43,11 +43,7 @@ using ::android::Mutex;
  */
 
 typedef int writer_state_enum;
-enum {
-    SHM_WRITER_STATE_IDLE    = 1,
-    SHM_WRITER_STATE_READY   = 2,
-    SHM_WRITER_STATE_MD_READING = 3
-};
+enum { SHM_WRITER_STATE_IDLE = 1, SHM_WRITER_STATE_READY = 2, SHM_WRITER_STATE_MD_READING = 3 };
 
 typedef struct ShmCtrlParam {
     writer_state_enum mState;
@@ -61,10 +57,9 @@ typedef struct ShmCtrlParam {
     uint32_t newWriteSize;
 
     pthread_mutex_t mutex;
-    pthread_cond_t cond_can_write;          // signaled when data packets writed to shm
-    pthread_cond_t cond_can_update_state;    // signaled when mState updated done
+    pthread_cond_t cond_can_write;         // signaled when data packets writed to shm
+    pthread_cond_t cond_can_update_state;  // signaled when mState updated done
 } ShmCtrlParam;
-
 
 /*
  * =============================================================================
@@ -72,10 +67,10 @@ typedef struct ShmCtrlParam {
  * =============================================================================
  */
 class WpfaShmSynchronizer {
-public:
+  public:
     WpfaShmSynchronizer();
     virtual ~WpfaShmSynchronizer();
-    static WpfaShmSynchronizer *getInstance();
+    static WpfaShmSynchronizer* getInstance();
     void init();
 
     // API of control param
@@ -94,13 +89,10 @@ public:
     int getCcciHandler();
 
     int processControlMessage(uint16_t tId, uint16_t msgId);
-    int wirteDataToShm(WpfaRingBuffer *ringBuffer);
+    int wirteDataToShm(WpfaRingBuffer* ringBuffer);
 
-protected:
-
-
-private:
-
+  protected:
+  private:
     void setWritingFlag(bool isWriting);
     bool isWriting();
     void setStateUpdatingFlag(bool isUpdating);
@@ -112,13 +104,11 @@ private:
     int onRequestDataDone(uint16_t tId);
 
     // write data pkts
-    int writeInIdleState(WpfaRingBuffer *ringBuffer);
-    int writeInReadyState(WpfaRingBuffer *ringBuffer);
-    int writeInMdReadingState(WpfaRingBuffer *ringBuffer);
+    int writeInIdleState(WpfaRingBuffer* ringBuffer);
+    int writeInReadyState(WpfaRingBuffer* ringBuffer);
+    int writeInMdReadingState(WpfaRingBuffer* ringBuffer);
 
     int sendMessageToModem(uint16_t tId, uint16_t msgId);
-
-
 
     // generate transaction id for SHM writer
     uint16_t generateShmTid();
@@ -127,13 +117,13 @@ private:
     /**
      * singleton pattern
      */
-    static WpfaShmSynchronizer *sInstance;
+    static WpfaShmSynchronizer* sInstance;
     static Mutex sWpfaShmSynchronizerInitMutex;
 
     static ShmCtrlParam mControlPara;
     uint16_t mTid;
 
-    WpfaShmAccessController *mShmAccessController;
+    WpfaShmAccessController* mShmAccessController;
 };
 
 #endif /* end of WPAF_SHM_SYNCHRONIZER_H */

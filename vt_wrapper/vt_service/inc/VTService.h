@@ -23,38 +23,32 @@
 
 namespace VTService {
 
-class VTService: public BnVTService, public IBinder::DeathRecipient, public IVTServiceCallBack {
- public:
-  VTService() :BnVTService() {}
-  virtual ~VTService() {}
+class VTService : public BnVTService, public IBinder::DeathRecipient, public IVTServiceCallBack {
+  public:
+    VTService() : BnVTService() {}
+    virtual ~VTService() {}
 
-  virtual status_t onTransact(uint32_t code, const Parcel& data, Parcel* reply, uint32_t flags);
+    virtual status_t onTransact(uint32_t code, const Parcel& data, Parcel* reply, uint32_t flags);
 
-  const sp<IVTClient>& getVTSClient() const;
-  status_t setupVTService(const sp<IVTClient> & VTClient);
-  void releaseVTService();
-  sp<IVTClient> getClient();
+    const sp<IVTClient>& getVTSClient() const;
+    status_t setupVTService(const sp<IVTClient>& VTClient);
+    void releaseVTService();
+    sp<IVTClient> getClient();
 
-  DECLARE_IVTINTERFACE
+    DECLARE_IVTINTERFACE
 
-  virtual void notifyCallback(
-          int32_t id,
-          int32_t msgType,
-          int32_t arg1,
-          int32_t arg2,
-          int32_t arg3,
-          const String8 & obj1,
-          const String8 & obj2,
-          const sp<IGraphicBufferProducer> & obj3);
+    virtual void notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
+                                int32_t arg3, const String8& obj1, const String8& obj2,
+                                const sp<IGraphicBufferProducer>& obj3);
 
-  static sp<VTCore>         mVTCore;
+    static sp<VTCore> mVTCore;
 
- private:
-  virtual void binderDied(const wp<IBinder>& who);
+  private:
+    virtual void binderDied(const wp<IBinder>& who);
 
-  sp<IBinder>               mPhoneBinder;
-  mutable Mutex             mLock;
-  wp<IVTClient>             mVTClient;
+    sp<IBinder> mPhoneBinder;
+    mutable Mutex mLock;
+    wp<IVTClient> mVTClient;
 };
 
 }  // namespace VTService

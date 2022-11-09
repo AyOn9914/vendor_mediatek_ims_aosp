@@ -23,16 +23,14 @@
 #include "RmcCdmaSimOpRequestHandler.h"
 #include "RmcCdmaSimRequestHandler.h"
 
-
 /*****************************************************************************
  * Class RmcCdmaSimOpRequestHandler
  *****************************************************************************/
 
 class RmcCdmaSimOpRequestHandler : public RmcCdmaSimRequestHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCdmaSimOpRequestHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCdmaSimOpRequestHandler);
 
-public:
+  public:
     RmcCdmaSimOpRequestHandler(int slot_id, int channel_id);
-
 };
 #endif /* __RMC_CDMA_SIM_OP_REQUEST_HANDLER_H__ */

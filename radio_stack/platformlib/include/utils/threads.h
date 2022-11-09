@@ -27,7 +27,6 @@
 
 #include <AndroidThreads.h>
 
-
 #ifdef __cplusplus
 
 #include <Condition.h>
@@ -37,4 +36,4 @@
 #include <Thread.h>
 #endif
 
-#endif // _LIBS_UTILS_THREADS_H
+#endif  // _LIBS_UTILS_THREADS_H

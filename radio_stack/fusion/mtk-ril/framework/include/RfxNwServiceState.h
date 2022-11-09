@@ -40,21 +40,18 @@ using ::android::String8;
  * Class RfxController
  *****************************************************************************/
 class RfxNwServiceState {
-public:
-
+  public:
     RfxNwServiceState();
 
-    RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
-        int rilVoiceRadioTech, int rilDataRadioTech);
+    RfxNwServiceState(int rilVoiceRegState, int rilDataRegState, int rilVoiceRadioTech,
+                      int rilDataRadioTech);
 
-    RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
-        int rilVoiceRadioTech, int rilDataRadioTech,
-        int rilIwlanRegState);
+    RfxNwServiceState(int rilVoiceRegState, int rilDataRegState, int rilVoiceRadioTech,
+                      int rilDataRadioTech, int rilIwlanRegState);
 
     ~RfxNwServiceState();
 
-public:
-
+  public:
     int getRilVoiceRegState();
     int getRilDataRegState();
     int getRilVoiceRadioTech();
@@ -67,8 +64,7 @@ public:
     int getIwlanRegState();
     String8 toString();
 
-private:
-
+  private:
     int mRilVoiceRegState;
     int mRilDataRegState;
     int mRilVoiceRadioTech;
@@ -76,8 +72,7 @@ private:
     // for iwlan, 0: disabled, 1: enabled.
     int mRilIwlanRegState;
 
-public:
-
+  public:
     static bool isInService(int regState) {
         if (regState == 1 || regState == 5) {
             return true;
@@ -86,45 +81,36 @@ public:
     }
 
     static bool isGsmGroup(int radioTech) {
-        if (radioTech == RADIO_TECH_GPRS
-                || radioTech == RADIO_TECH_EDGE
-                || radioTech == RADIO_TECH_UMTS
-                || radioTech == RADIO_TECH_HSDPA
-                || radioTech == RADIO_TECH_HSUPA
-                || radioTech == RADIO_TECH_HSPA
-                || radioTech == RADIO_TECH_LTE
-                || radioTech == RADIO_TECH_HSPAP
-                || radioTech == RADIO_TECH_GSM
-                || radioTech == RADIO_TECH_LTE_CA
-                || radioTech == RADIO_TECH_NR
-                || radioTech == RADIO_TECH_TD_SCDMA) {
+        if (radioTech == RADIO_TECH_GPRS || radioTech == RADIO_TECH_EDGE ||
+            radioTech == RADIO_TECH_UMTS || radioTech == RADIO_TECH_HSDPA ||
+            radioTech == RADIO_TECH_HSUPA || radioTech == RADIO_TECH_HSPA ||
+            radioTech == RADIO_TECH_LTE || radioTech == RADIO_TECH_HSPAP ||
+            radioTech == RADIO_TECH_GSM || radioTech == RADIO_TECH_LTE_CA ||
+            radioTech == RADIO_TECH_NR || radioTech == RADIO_TECH_TD_SCDMA) {
             return true;
         }
         return false;
     }
 
     static bool isCdmaGroup(int radioTech) {
-        if (radioTech == RADIO_TECH_IS95A
-                || radioTech == RADIO_TECH_IS95B
-                || radioTech == RADIO_TECH_1xRTT
-                || radioTech == RADIO_TECH_EVDO_0
-                || radioTech == RADIO_TECH_EVDO_A
-                || radioTech == RADIO_TECH_EVDO_B
-                || radioTech == RADIO_TECH_EHRPD) {
+        if (radioTech == RADIO_TECH_IS95A || radioTech == RADIO_TECH_IS95B ||
+            radioTech == RADIO_TECH_1xRTT || radioTech == RADIO_TECH_EVDO_0 ||
+            radioTech == RADIO_TECH_EVDO_A || radioTech == RADIO_TECH_EVDO_B ||
+            radioTech == RADIO_TECH_EHRPD) {
             return true;
         }
         return false;
     }
 
-    bool equalTo(const RfxNwServiceState &other) const {
-        return (mRilVoiceRegState == other.mRilVoiceRegState)
-                && (mRilDataRegState == other.mRilDataRegState)
-                && (mRilVoiceRadioTech == other.mRilVoiceRadioTech)
-                && (mRilDataRadioTech == other.mRilDataRadioTech)
-                && (mRilIwlanRegState == other.mRilIwlanRegState);
+    bool equalTo(const RfxNwServiceState& other) const {
+        return (mRilVoiceRegState == other.mRilVoiceRegState) &&
+               (mRilDataRegState == other.mRilDataRegState) &&
+               (mRilVoiceRadioTech == other.mRilVoiceRadioTech) &&
+               (mRilDataRadioTech == other.mRilDataRadioTech) &&
+               (mRilIwlanRegState == other.mRilIwlanRegState);
     }
 
-    RfxNwServiceState &operator = (const RfxNwServiceState &other) {
+    RfxNwServiceState& operator=(const RfxNwServiceState& other) {
         mRilVoiceRegState = other.mRilVoiceRegState;
         mRilDataRegState = other.mRilDataRegState;
         mRilVoiceRadioTech = other.mRilVoiceRadioTech;
@@ -133,13 +119,9 @@ public:
         return *this;
     }
 
-    bool operator == (const RfxNwServiceState &other) {
-        return equalTo(other);
-    }
+    bool operator==(const RfxNwServiceState& other) { return equalTo(other); }
 
-    bool operator != (const RfxNwServiceState &other) {
-        return !equalTo(other);
-    }
+    bool operator!=(const RfxNwServiceState& other) { return !equalTo(other); }
 };
 
 #endif /* __RFX_NW_SERVICE_STATE_H */

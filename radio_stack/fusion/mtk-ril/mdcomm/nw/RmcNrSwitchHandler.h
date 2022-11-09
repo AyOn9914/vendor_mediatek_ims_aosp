@@ -34,18 +34,18 @@
 class RmcNrSwitchHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcNrSwitchHandler);
 
-    public:
-        RmcNrSwitchHandler(int slot_id, int channel_id);
-        virtual ~RmcNrSwitchHandler();
+  public:
+    RmcNrSwitchHandler(int slot_id, int channel_id);
+    virtual ~RmcNrSwitchHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        void requestNrSwitch(const sp<RfxMclMessage>& msg);
+    void requestNrSwitch(const sp<RfxMclMessage>& msg);
 
-    protected:
-        int m_slot_id;
-        int m_channel_id;
-        int mRetryCount;
+  protected:
+    int m_slot_id;
+    int m_channel_id;
+    int mRetryCount;
 };
 #endif

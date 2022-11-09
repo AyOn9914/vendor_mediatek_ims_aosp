@@ -28,22 +28,22 @@
 class RmcHelloRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcHelloRequestHandler);
 
-    public:
-        RmcHelloRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcHelloRequestHandler();
+  public:
+    RmcHelloRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcHelloRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg) {}
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg) {}
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestRadioPower(const sp<RfxMclMessage>& msg);
-        void modemStateChange(const sp<RfxMclMessage>& msg);
+  private:
+    void requestRadioPower(const sp<RfxMclMessage>& msg);
+    void modemStateChange(const sp<RfxMclMessage>& msg);
 };
 
 #endif

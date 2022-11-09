@@ -27,7 +27,7 @@
 #include "sysenv_utils.h"
 #include <fstab.h>
 
-#define ENV_PARTITION_COUNT     (2)
+#define ENV_PARTITION_COUNT (2)
 
 using android::fs_mgr::Fstab;
 using android::fs_mgr::GetEntryForMountPoint;
@@ -35,14 +35,12 @@ using android::fs_mgr::ReadDefaultFstab;
 
 struct env_struct g_env[SYSENV_AREA_MAX];
 static int env_valid[SYSENV_AREA_MAX] = {0};
-static char *env_buffer[SYSENV_AREA_MAX];
+static char* env_buffer[SYSENV_AREA_MAX];
 static int env_init_done[SYSENV_AREA_MAX] = {0};
 static char env_path[64];
-static const char *env_partitions[ENV_PARTITION_COUNT] = {"/para", "/misc"};
+static const char* env_partitions[ENV_PARTITION_COUNT] = {"/para", "/misc"};
 
-
-static int get_partition_path(char* path, int size)
-{
+static int get_partition_path(char* path, int size) {
     Fstab fstab;
     int ret = 0, i;
 
@@ -66,8 +64,7 @@ static int get_partition_path(char* path, int size)
     return ret;
 }
 
-static int write_env_area(char *env_buf, int area)
-{
+static int write_env_area(char* env_buf, int area) {
     unsigned int i, checksum = 0;
     int result = 0;
     int ret = 0;
@@ -83,9 +80,8 @@ static int write_env_area(char *env_buf, int area)
     memcpy(env_buf, env_sig, sizeof(g_env[area].sig_head));
     memcpy(env_buf + CFG_ENV_SIG_1_OFFSET, env_sig, sizeof(g_env[area].sig_tail));
 
-    for (i = 0; i < CFG_ENV_DATA_SIZE; i++)
-        checksum += *(env_buf + CFG_ENV_DATA_OFFSET + i);
-    *((int *)env_buf + CFG_ENV_CHECKSUM_OFFSET / 4) = checksum;
+    for (i = 0; i < CFG_ENV_DATA_SIZE; i++) checksum += *(env_buf + CFG_ENV_DATA_OFFSET + i);
+    *((int*)env_buf + CFG_ENV_CHECKSUM_OFFSET / 4) = checksum;
     fd = open(env_path, O_RDWR);
     if (fd < 0) {
         ERR_LOG("open %s fail: %s\n", env_path, strerror(errno));
@@ -98,20 +94,18 @@ static int write_env_area(char *env_buf, int area)
     DEBUG_LOG("seek to %lx", offset);
     if (lseek(fd, offset, SEEK_SET) != offset)
         ERR_LOG("seek to %ld fail: %s\n", offset, strerror(errno));
-    ret = write(fd, (char *)env_buf, CFG_ENV_SIZE);
+    ret = write(fd, (char*)env_buf, CFG_ENV_SIZE);
     if (ret < 0) {
         ERR_LOG("write env fail: %s\n", strerror(errno));
         result = -1;
     }
-    DEBUG_LOG("write 0x%zx data size %d\n", (uintptr_t) env_buf, ret);
-    if (fsync(fd) < 0)
-        WARN_LOG("write env sync fail: %s\n", strerror(errno));
+    DEBUG_LOG("write 0x%zx data size %d\n", (uintptr_t)env_buf, ret);
+    if (fsync(fd) < 0) WARN_LOG("write env sync fail: %s\n", strerror(errno));
     close(fd);
     return result;
 }
 
-static int read_env_area(char *env_buf, int area)
-{
+static int read_env_area(char* env_buf, int area) {
     int result = 0;
     int ret = 0;
     int fd;
@@ -126,77 +120,60 @@ static int read_env_area(char *env_buf, int area)
         offset = CFG_ENV_RW_OFFSET;
     else
         offset = CFG_ENV_RO_OFFSET;
-    if (lseek(fd, offset, SEEK_SET) != offset)
-        ERR_LOG("seek to %d fail!\n", offset);
-    ret = read(fd, (char *)env_buf, CFG_ENV_SIZE);
+    if (lseek(fd, offset, SEEK_SET) != offset) ERR_LOG("seek to %d fail!\n", offset);
+    ret = read(fd, (char*)env_buf, CFG_ENV_SIZE);
     if (ret < 0) {
         ERR_LOG("read env fail: %s\n", strerror(errno));
         result = -1;
     }
-    DEBUG_LOG("read %d data from 0x%x to 0x%zx\n", ret, offset, (uintptr_t) env_buf);
+    DEBUG_LOG("read %d data from 0x%x to 0x%zx\n", ret, offset, (uintptr_t)env_buf);
     close(fd);
     return result;
 }
 
-static char env_get_char(int index, int area)
-{
-    if (area < 0 || area >= SYSENV_AREA_MAX)
-        area = 0;
+static char env_get_char(int index, int area) {
+    if (area < 0 || area >= SYSENV_AREA_MAX) area = 0;
     return *(g_env[area].env_data + index);
 }
 
-static char *env_get_addr(int index, int area)
-{
-    if (area < 0 || area >= SYSENV_AREA_MAX)
-        area = 0;
+static char* env_get_addr(int index, int area) {
+    if (area < 0 || area >= SYSENV_AREA_MAX) area = 0;
     return g_env[area].env_data + index;
-
 }
 
-static int envmatch(char *s1, int i2, int area)
-{
+static int envmatch(char* s1, int i2, int area) {
     while (*s1 == env_get_char(i2++, area)) {
-        if (*s1++ == '=')
-            return i2;
+        if (*s1++ == '=') return i2;
     }
-    if (*s1 == '\0' && env_get_char(i2 - 1, area) == '=')
-        return i2;
+    if (*s1 == '\0' && env_get_char(i2 - 1, area) == '=') return i2;
     return -1;
 }
 
-static char *findenv(const char *name, int area)
-{
+static char* findenv(const char* name, int area) {
     int i, nxt, val;
 
     for (i = 0; env_get_char(i, area) != '\0'; i = nxt + 1) {
         for (nxt = i; env_get_char(nxt, area) != '\0'; ++nxt) {
-            if (nxt >= CFG_ENV_SIZE)
-                return NULL;
+            if (nxt >= CFG_ENV_SIZE) return NULL;
         }
-        val = envmatch((char *)name, i, area);
-        if (val < 0)
-            continue;
-        return (char *)env_get_addr(val, area);
+        val = envmatch((char*)name, i, area);
+        if (val < 0) continue;
+        return (char*)env_get_addr(val, area);
     }
     return NULL;
 }
 
-static int get_env_valid_length(int area)
-{
+static int get_env_valid_length(int area) {
     unsigned int len = 0;
-    if (area < 0 || area >= SYSENV_AREA_MAX)
-        area = 0;
-    if (!env_valid[area])
-        return 0;
+    if (area < 0 || area >= SYSENV_AREA_MAX) area = 0;
+    if (!env_valid[area]) return 0;
     for (len = 0; len < CFG_ENV_DATA_SIZE; len++) {
-        if (g_env[area].env_data[len] == '\0' && g_env[area].env_data[len + 1] == '\0')
-            break;
+        if (g_env[area].env_data[len] == '\0' && g_env[area].env_data[len + 1] == '\0') break;
     }
     return len;
 }
 
-static void get_env_info(int area)
-{
+static void get_env_info(int area) {
     int ret, i;
     int checksum = 0;
 
@@ -209,8 +186,8 @@ static void get_env_info(int area)
             return;
         }
         if (env_buffer[area] == NULL) {
-            env_buffer[area] = (char *) malloc(CFG_ENV_SIZE);
-            ERR_LOG("env_buffer[%d] : 0x%zx\n", area, (uintptr_t) env_buffer[area]);
+            env_buffer[area] = (char*)malloc(CFG_ENV_SIZE);
+            ERR_LOG("env_buffer[%d] : 0x%zx\n", area, (uintptr_t)env_buffer[area]);
             if (!env_buffer[area]) {
                 ERR_LOG("allocate %d of env buffer fail!\n", CFG_ENV_SIZE);
                 return;
@@ -228,12 +205,12 @@ static void get_env_info(int area)
     }
 
     memcpy(g_env[area].sig_head, env_buffer[area], sizeof(g_env[area].sig_head));
-    memcpy(g_env[area].sig_tail, env_buffer[area] + CFG_ENV_SIG_1_OFFSET, sizeof(g_env[area].sig_tail));
+    memcpy(g_env[area].sig_tail, env_buffer[area] + CFG_ENV_SIG_1_OFFSET,
+           sizeof(g_env[area].sig_tail));
 
     if (!strcmp(g_env[area].sig_head, ENV_SIG) && !strcmp(g_env[area].sig_tail, ENV_SIG)) {
-        g_env[area].checksum = *((int *)env_buffer[area] + CFG_ENV_CHECKSUM_OFFSET / 4);
-        for (i = 0; i < (int) CFG_ENV_DATA_SIZE; i++)
-            checksum += g_env[area].env_data[i];
+        g_env[area].checksum = *((int*)env_buffer[area] + CFG_ENV_CHECKSUM_OFFSET / 4);
+        for (i = 0; i < (int)CFG_ENV_DATA_SIZE; i++) checksum += g_env[area].env_data[i];
         if (checksum != g_env[area].checksum) {
             ERR_LOG("checksum mismatch\n");
             env_valid[area] = 0;
@@ -245,15 +222,13 @@ static void get_env_info(int area)
         WARN_LOG("Incorrect sig, probably sysenv is still empty\n");
         env_valid[area] = 0;
     }
-    if (!env_valid[area])
-        memset(env_buffer[area], 0x00, CFG_ENV_SIZE);
+    if (!env_valid[area]) memset(env_buffer[area], 0x00, CFG_ENV_SIZE);
 
     env_init_done[area] = 1;
     return;
 }
 
-char* sysenv_get_all(int area)
-{
+char* sysenv_get_all(int area) {
     char *env_ret, *env_ptr;
     int env_valid_length = 0;
     char buf[128];
@@ -268,7 +243,7 @@ char* sysenv_get_all(int area)
     env_valid_length = get_env_valid_length(area);
     DEBUG_LOG("valid length of area %d is %d\n", area, env_valid_length);
 
-    env_ret = (char *) malloc(env_valid_length + 2); // last \n + \0
+    env_ret = (char*)malloc(env_valid_length + 2);  // last \n + \0
     if (env_ret == NULL) {
         ERR_LOG("allocate %d buffer fail!\n", env_valid_length + 2);
         return NULL;
@@ -284,13 +259,14 @@ char* sysenv_get_all(int area)
         }
         memset(buf, 0, sizeof(buf));
         if (nxt - i > (int)sizeof(buf) - 1) {
-            WARN_LOG("item larger than buffer (size: %d, buf: %d)\n", nxt-i, (int)sizeof(buf));
+            WARN_LOG("item larger than buffer (size: %d, buf: %d)\n", nxt - i, (int)sizeof(buf));
         } else {
             if (offset + nxt - i > env_valid_length) {
-                ERR_LOG("out of buffer, offset:%d, len:%d, buffer_len:%d\n", offset, nxt-i, env_valid_length);
+                ERR_LOG("out of buffer, offset:%d, len:%d, buffer_len:%d\n", offset, nxt - i,
+                        env_valid_length);
                 break;
             }
-            DEBUG_LOG("offset:%d, len:%d, buffer_len:%d\n", offset, nxt-i, env_valid_length);
+            DEBUG_LOG("offset:%d, len:%d, buffer_len:%d\n", offset, nxt - i, env_valid_length);
             memcpy(env_ret + offset, g_env[area].env_data + i, nxt - i);
             env_ret[offset + nxt - i] = '\n';
             offset = offset + nxt - i + 1;
@@ -299,34 +275,27 @@ char* sysenv_get_all(int area)
     return env_ret;
 }
 
-static const char *sysenv_get_with_area(const char *name, int area)
-{
+static const char* sysenv_get_with_area(const char* name, int area) {
     DEBUG_LOG("get env name=%s\n", name);
 
     get_env_info(area);
 
-    if (!env_valid[area])
-        return NULL;
+    if (!env_valid[area]) return NULL;
     return findenv(name, area);
 }
 
-const char *sysenv_get(const char *name)
-{
-    return sysenv_get_with_area(name, SYSENV_RW_AREA);
-}
+const char* sysenv_get(const char* name) { return sysenv_get_with_area(name, SYSENV_RW_AREA); }
 
-const char *sysenv_get_static(const char *name)
-{
+const char* sysenv_get_static(const char* name) {
     return sysenv_get_with_area(name, SYSENV_RO_AREA);
 }
 
-static int sysenv_set_internal(const char *name, const char *value, int area)
-{
+static int sysenv_set_internal(const char* name, const char* value, int area) {
     int len;
     int oldval = -1;
     char *env, *nxt = NULL;
     int ret = 0;
-    char *env_data = NULL;
+    char* env_data = NULL;
 
     DEBUG_LOG("area: %d, name: %s, value: %s\n", area, name, value);
 
@@ -338,30 +307,29 @@ static int sysenv_set_internal(const char *name, const char *value, int area)
     get_env_info(area);
 
     env_data = g_env[area].env_data;
-    if (!env_buffer[area])
-        return -1;
+    if (!env_buffer[area]) return -1;
     if (!env_valid[area]) {
         env = env_data;
         goto add;
     }
-/* find match name and return the val header pointer*/
+    /* find match name and return the val header pointer*/
     for (env = env_data; *env; env = nxt + 1) {
         for (nxt = env; *nxt; ++nxt)
             ;
-        oldval = envmatch((char *)name, env - env_data, area);
-        if (oldval >= 0)
-            break;
-    }           /* end find */
+        oldval = envmatch((char*)name, env - env_data, area);
+        if (oldval >= 0) break;
+    } /* end find */
     if (oldval > 0) {
         if (*++nxt == '\0') {
             if (env > env_data)
                 env--;
-             else
+            else
                 *env = '\0';
         } else {
             for (;;) {
                 *env = *nxt++;
-                if (((*env == '\0') && (*nxt == '\0')) || (nxt - env_data >= (int)CFG_ENV_DATA_SIZE))
+                if (((*env == '\0') && (*nxt == '\0')) ||
+                    (nxt - env_data >= (int)CFG_ENV_DATA_SIZE))
                     break;
                 ++env;
             }
@@ -371,27 +339,25 @@ static int sysenv_set_internal(const char *name, const char *value, int area)
 
     for (env = env_data; *env || *(env + 1); ++env)
         ;
-    if (env > env_data)
-        ++env;
+    if (env > env_data) ++env;
 add:
     if (*value == '\0') {
         DEBUG_LOG("clear env name=%s\n", name);
         goto write_env;
     }
 
-    len = strlen(name) + 1; // =
-    len += strlen(value) + 1; // \0
+    len = strlen(name) + 1;    // =
+    len += strlen(value) + 1;  // \0
     if (len > (&env_data[CFG_ENV_DATA_SIZE] - env)) {
         ERR_LOG("env data overflow, %s deleted\n", name);
         return -1;
     }
-    while ((*env = *name++) != '\0')
-        env++;
+    while ((*env = *name++) != '\0') env++;
     *env = '=';
     while ((*++env = *value++) != '\0')
         ;
 write_env:
-/* end is marked with double '\0' */
+    /* end is marked with double '\0' */
     *++env = '\0';
     memset(env, 0x00, CFG_ENV_DATA_SIZE - (env - env_data));
 
@@ -405,15 +371,13 @@ write_env:
     return 0;
 }
 
-int sysenv_set(const char *name, const char *value)
-{
+int sysenv_set(const char* name, const char* value) {
     return sysenv_set_internal(name, value, SYSENV_RW_AREA);
 }
 
-/* This API is "only" used for meta tool now to write static data which will not change during runtime.
- * The real "read-only" might be taken by power on write protect in the future.
+/* This API is "only" used for meta tool now to write static data which will not change during
+ * runtime. The real "read-only" might be taken by power on write protect in the future.
  */
-int sysenv_set_static(const char *name, const char *value)
-{
+int sysenv_set_static(const char* name, const char* value) {
     return sysenv_set_internal(name, value, SYSENV_RO_AREA);
 }

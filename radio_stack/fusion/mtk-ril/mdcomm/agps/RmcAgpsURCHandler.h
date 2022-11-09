@@ -10,17 +10,17 @@
 class RmcAgpsURCHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcAgpsURCHandler);
 
-    public:
-        RmcAgpsURCHandler(int slot_id, int channel_id);
-        virtual ~RmcAgpsURCHandler();
+  public:
+    RmcAgpsURCHandler(int slot_id, int channel_id);
+    virtual ~RmcAgpsURCHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        static const char *agps_urc[];
+  private:
+    static const char* agps_urc[];
 
-        void handleAgpsUrc(int isConnect);
+    void handleAgpsUrc(int isConnect);
 };
 
 #endif /* __RMC_AGPS_URC_HANDLER_H__ */

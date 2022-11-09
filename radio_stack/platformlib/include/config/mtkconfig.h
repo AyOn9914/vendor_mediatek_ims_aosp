@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#define NUM_OF_ELEMS(a)     (sizeof (a) / sizeof (a)[0])
+#define NUM_OF_ELEMS(a) (sizeof(a) / sizeof(a)[0])
 
 /**
  * FeatureConfigInfo: carry the value from featrueconfig.h.
@@ -46,8 +46,8 @@ typedef struct FeatureValue {
     char value[MTK_PROPERTY_VALUE_MAX];
 } FeatureValue;
 
-int mtkGetFeaturePorting(ConfigDef msg, FeatureValue *fv);
-int mtkSetFeaturePorting(ConfigDef msg, FeatureValue *fv);
+int mtkGetFeaturePorting(ConfigDef msg, FeatureValue* fv);
+int mtkSetFeaturePorting(ConfigDef msg, FeatureValue* fv);
 
 #ifdef __cplusplus
 }

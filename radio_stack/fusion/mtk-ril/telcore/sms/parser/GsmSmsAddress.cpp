@@ -22,7 +22,7 @@
 #include "SmsAddress.h"
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "GsmSmsAddress"
+#define RFX_LOG_TAG "GsmSmsAddress"
 /*****************************************************************************
  * Class GsmSmsAddress
  *****************************************************************************/
@@ -30,7 +30,7 @@ const int GsmSmsAddress::OFFSET_ADDRESS_LENGTH = 0;
 const int GsmSmsAddress::OFFSET_TOA = 1;
 const int GsmSmsAddress::OFFSET_ADDRESS_VALUE = 2;
 
-GsmSmsAddress::GsmSmsAddress(BYTE *data, int length) {
+GsmSmsAddress::GsmSmsAddress(BYTE* data, int length) {
     mOrigBytes = new BYTE[length];
     memcpy(mOrigBytes, data, length);
 
@@ -60,7 +60,6 @@ GsmSmsAddress::GsmSmsAddress(BYTE *data, int length) {
         mOrigBytes[length - 1] = lastByte;
     }
 }
-
 
 GsmSmsAddress::~GsmSmsAddress() {
     if (mOrigBytes != NULL) {

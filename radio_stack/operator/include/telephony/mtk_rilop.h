@@ -29,14 +29,14 @@ extern "C" {
 
 /** Used by RIL_REQUEST_DIAL_FROM */
 typedef struct {
-    char * address;
-    char * fromAddress;
+    char* address;
+    char* fromAddress;
     int clir;
-            /* (same as 'n' paremeter in TS 27.007 7.7 "+CLIR"
-             * clir == 0 on "use subscription default value"
-             * clir == 1 on "CLIR invocation" (restrict CLI presentation)
-             * clir == 2 on "CLIR suppression" (allow CLI presentation)
-             */
+    /* (same as 'n' paremeter in TS 27.007 7.7 "+CLIR"
+     * clir == 0 on "use subscription default value"
+     * clir == 1 on "CLIR invocation" (restrict CLI presentation)
+     * clir == 2 on "CLIR suppression" (allow CLI presentation)
+     */
     bool isVideoCall;
 } RIL_DialFrom;
 
@@ -67,8 +67,7 @@ typedef struct {           // Default -1 for int and null for char*
 #define GET_TRN_TIMEOUT 30000  // Set timeout as 30s temporarily
 
 #define MAX_INCOMING_LINE_LENGTH 40
-#define INCOMING_LINE_TIMEOUT 30000   // Set timeout as 30s temporarily
-
+#define INCOMING_LINE_TIMEOUT 30000  // Set timeout as 30s temporarily
 
 /*********************************************************************************/
 /*  Vendor request                                                               */

@@ -31,13 +31,11 @@
 
 #include <ifcutils/ifc.h>
 
+#define SIOCSTXQSTATE (SIOCDEVPRIVATE + 0)  // start/stop ccmni tx queue
+#define SIOCSCCMNICFG (SIOCDEVPRIVATE + 1)  // configure ccmni/md remapping
+#define SIOCACKPRIO (SIOCDEVPRIVATE + 3)    // disable ack first mechanism
 
-#define SIOCSTXQSTATE (SIOCDEVPRIVATE + 0)  //start/stop ccmni tx queue
-#define SIOCSCCMNICFG (SIOCDEVPRIVATE + 1)  //configure ccmni/md remapping
-#define SIOCACKPRIO  (SIOCDEVPRIVATE + 3)  //disable ack first mechanism
-
-int ifc_set_txq_state(const char *ifname, int state)
-{
+int ifc_set_txq_state(const char* ifname, int state) {
     struct ifreq ifr;
     int ret, ctl_sock;
 
@@ -47,23 +45,22 @@ int ifc_set_txq_state(const char *ifname, int state)
     ifr.ifr_ifru.ifru_ivalue = state;
 
     ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ctl_sock < 0){
-	   ALOGE("create ctl socket failed\n");
-       return -1;
+    if (ctl_sock < 0) {
+        ALOGE("create ctl socket failed\n");
+        return -1;
     }
     ret = ioctl(ctl_sock, SIOCSTXQSTATE, &ifr);
-    if(ret < 0)
-       ALOGE("ifc_set_txq_state failed, err:%d(%s)\n", errno, strerror(errno));
+    if (ret < 0)
+        ALOGE("ifc_set_txq_state failed, err:%d(%s)\n", errno, strerror(errno));
     else
-       ALOGI("ifc_set_txq_state as %d, ret: %d\n", state, ret);
+        ALOGI("ifc_set_txq_state as %d, ret: %d\n", state, ret);
 
     close(ctl_sock);
 
     return ret;
 }
 
-int ifc_ccmni_md_cfg(const char *ifname, int md_id)
-{
+int ifc_ccmni_md_cfg(const char* ifname, int md_id) {
     struct ifreq ifr;
     int ret = 0;
     int ctl_sock = 0;
@@ -74,15 +71,15 @@ int ifc_ccmni_md_cfg(const char *ifname, int md_id)
     ifr.ifr_ifru.ifru_ivalue = md_id;
 
     ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ctl_sock < 0){
+    if (ctl_sock < 0) {
         ALOGE("ifc_ccmni_md_cfg: create ctl socket failed\n");
         return -1;
     }
 
-    if(ioctl(ctl_sock, SIOCSCCMNICFG, &ifr) < 0) {
-        ALOGE("ifc_ccmni_md_configure(ifname=%s, md_id=%d) error:%d(%s)", \
-             ifname, md_id, errno, strerror(errno));
-       ret = -1;
+    if (ioctl(ctl_sock, SIOCSCCMNICFG, &ifr) < 0) {
+        ALOGE("ifc_ccmni_md_configure(ifname=%s, md_id=%d) error:%d(%s)", ifname, md_id, errno,
+              strerror(errno));
+        ret = -1;
     } else {
         ALOGI("ifc_ccmni_md_configure(ifname=%s, md_id=%d) OK", ifname, md_id);
     }
@@ -91,9 +88,7 @@ int ifc_ccmni_md_cfg(const char *ifname, int md_id)
     return ret;
 }
 
-
-int ifc_enable_ack_prio(int enable)
-{
+int ifc_enable_ack_prio(int enable) {
     struct ifreq ifr;
     int ret, ctl_sock;
 
@@ -103,15 +98,15 @@ int ifc_enable_ack_prio(int enable)
     ifr.ifr_ifru.ifru_ivalue = enable;
 
     ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ctl_sock < 0){
+    if (ctl_sock < 0) {
         ALOGE("create ctl socket failed\n");
-       return -1;
+        return -1;
     }
     ret = ioctl(ctl_sock, SIOCACKPRIO, &ifr);
-    if(ret < 0)
-       ALOGE("ifc_set_ack_prio failed, err:%d(%s)\n", errno, strerror(errno));
+    if (ret < 0)
+        ALOGE("ifc_set_ack_prio failed, err:%d(%s)\n", errno, strerror(errno));
     else
-       ALOGI("ifc_set_ack_prio as %d, ret: %d\n", enable, ret);
+        ALOGI("ifc_set_ack_prio as %d, ret: %d\n", enable, ret);
 
     close(ctl_sock);
 

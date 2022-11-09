@@ -31,18 +31,18 @@
 class RmcImsRttControlRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsRttControlRequestHandler);
 
-    public:
-        RmcImsRttControlRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcImsRttControlRequestHandler();
+  public:
+    RmcImsRttControlRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcImsRttControlRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void sendRttModifyRequest(const sp<RfxMclMessage>& msg);
-        void sendRttText(const sp<RfxMclMessage>& msg);
-        void rttModifyRequestResponse(const sp<RfxMclMessage>& msg);
-        void toggleRttAudioIndication(const sp<RfxMclMessage>& msg);
+  private:
+    void sendRttModifyRequest(const sp<RfxMclMessage>& msg);
+    void sendRttText(const sp<RfxMclMessage>& msg);
+    void rttModifyRequestResponse(const sp<RfxMclMessage>& msg);
+    void toggleRttAudioIndication(const sp<RfxMclMessage>& msg);
 };
 
 #endif

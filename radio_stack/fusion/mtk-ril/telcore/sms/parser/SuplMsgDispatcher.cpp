@@ -28,7 +28,7 @@
 #include <cutils/jstring.h>
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "SuplMsgDispatcher"
+#define RFX_LOG_TAG "SuplMsgDispatcher"
 
 RFX_IMPLEMENT_CLASS("SuplMsgDispatcher", SuplMsgDispatcher, RfxObject);
 
@@ -40,7 +40,7 @@ int SuplMsgDispatcher::sSuplExistenceDetectionCount = 0;
 void SuplMsgDispatcher::onDeinit() {
     list<ConcentratedSms*>::iterator iter;
     for (iter = mConcSmsList.begin(); iter != mConcSmsList.end(); iter++) {
-        ConcentratedSms *concSms = *iter;
+        ConcentratedSms* concSms = *iter;
         RFX_OBJ_CLOSE(concSms);
     }
     mConcSmsList.clear();
@@ -49,18 +49,18 @@ void SuplMsgDispatcher::onDeinit() {
 void SuplMsgDispatcher::dispatchSuplMsg(string content) {
     int length = content.length();
     RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg is content length: %d", length);
-    BYTE *pdu = PhoneNumberUtils::hexStringToBytes(content);
+    BYTE* pdu = PhoneNumberUtils::hexStringToBytes(content);
     if (pdu == NULL) {
         return;
     }
-    SmsMessage *msg = SmsMessage::createFromPdu(pdu, length/2);
+    SmsMessage* msg = SmsMessage::createFromPdu(pdu, length / 2);
     RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg begin!");
     if (msg->isConcentratedSms()) {
         RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg is concentrated message!");
         if (msg->isWapush()) {
             // save
             RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg is wap push message!");
-            ConcentratedSms *concSms = NULL;
+            ConcentratedSms* concSms = NULL;
             concSms = findConcSms(msg->getRefNumber());
             if (concSms != NULL) {
                 RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg find existing wap push message!");
@@ -86,7 +86,7 @@ void SuplMsgDispatcher::dispatchSuplMsg(string content) {
             RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg not sms, check wap push!");
             if (msg->isWapush()) {
                 RFX_LOG_D(RFX_LOG_TAG, "dispatchSuplMsg is wap push message!");
-                WappushMessage *wapMsg =
+                WappushMessage* wapMsg =
                         new WappushMessage(msg->getUserData(), msg->getUserDataLength());
                 wapMsg->parsePdu();
                 notifyWappush2Mnl(wapMsg);
@@ -102,7 +102,7 @@ void SuplMsgDispatcher::dispatchSuplMsg(string content) {
 
 void SuplMsgDispatcher::onConcSmsTimeout(int ref) {
     RFX_LOG_D(RFX_LOG_TAG, "onConcSmsTimeout ref: %d", ref);
-    ConcentratedSms *concSms = findConcSms(ref);
+    ConcentratedSms* concSms = findConcSms(ref);
     if (concSms != NULL) {
         notifyConcMsg2Mnl(concSms);
         mConcSmsList.remove(concSms);
@@ -114,7 +114,7 @@ ConcentratedSms* SuplMsgDispatcher::findConcSms(int ref) {
     RFX_LOG_D(RFX_LOG_TAG, "findConcSms ref: %d", ref);
     list<ConcentratedSms*>::iterator iter;
     for (iter = mConcSmsList.begin(); iter != mConcSmsList.end(); iter++) {
-        ConcentratedSms *concSms = *iter;
+        ConcentratedSms* concSms = *iter;
         RFX_LOG_D(RFX_LOG_TAG, "findConcSms getRefNumber: %d", concSms->getRefNumber());
         if (concSms->getRefNumber() == ref) {
             return concSms;
@@ -123,23 +123,23 @@ ConcentratedSms* SuplMsgDispatcher::findConcSms(int ref) {
     return NULL;
 }
 
-bool SuplMsgDispatcher::notifySms2Mnl(SmsMessage *msg) {
+bool SuplMsgDispatcher::notifySms2Mnl(SmsMessage* msg) {
     RFX_LOG_D(RFX_LOG_TAG, "notifySms2Mnl is sms for supl: %d", msg->isSmsForSUPL());
     if (msg->isSmsForSUPL()) {
-        BYTE *data = msg->getUserData();
+        BYTE* data = msg->getUserData();
         int length = msg->getUserDataLength();
-        hal2mnl_ni_message((char *)data, length);
+        hal2mnl_ni_message((char*)data, length);
         return true;
     }
     return false;
 }
 
-bool SuplMsgDispatcher::notifyWappush2Mnl(WappushMessage *wapMsg) {
+bool SuplMsgDispatcher::notifyWappush2Mnl(WappushMessage* wapMsg) {
     RFX_LOG_D(RFX_LOG_TAG, "notifyWappush2Mnl is wap push for supl: %d", wapMsg->isWapushForSUPL());
     if (wapMsg->isWapushForSUPL()) {
-        BYTE *data = wapMsg->getUserData();
+        BYTE* data = wapMsg->getUserData();
         int length = wapMsg->getUserDataLength();
-        hal2mnl_ni_message((char *)data, length);
+        hal2mnl_ni_message((char*)data, length);
         return true;
     }
     return false;
@@ -147,17 +147,18 @@ bool SuplMsgDispatcher::notifyWappush2Mnl(WappushMessage *wapMsg) {
 
 bool SuplMsgDispatcher::notifyConcMsg2Mnl(ConcentratedSms* msg) {
     RFX_LOG_D(RFX_LOG_TAG, "notifyConcMsg2Mnl isAllSegmentsReceived: %d",
-            msg->isAllSegmentsReceived());
+              msg->isAllSegmentsReceived());
     if (msg->isAllSegmentsReceived()) {
         if (msg->isWappush()) {
             RFX_LOG_D(RFX_LOG_TAG, "notifyConcMsg2Mnl isWappush: %d", msg->isWappush());
             msg->parseWappushPdu();
             if (msg->isWapushForSUPL()) {
-                RFX_LOG_D(RFX_LOG_TAG, "notifyConcMsg2Mnl isWapushForSUPL: %d", msg->isWapushForSUPL());
+                RFX_LOG_D(RFX_LOG_TAG, "notifyConcMsg2Mnl isWapushForSUPL: %d",
+                          msg->isWapushForSUPL());
                 // notify AGPS
                 BYTE* userData = msg->getWappushMsgUserData();
                 int length = msg->getWappushMsgUserDataLength();
-                hal2mnl_ni_message((char *)userData, length);
+                hal2mnl_ni_message((char*)userData, length);
                 return true;
             }
         } else {
@@ -227,8 +228,7 @@ int SuplMsgDispatcher::safe_sendto(const char* path, const char* buff, int len) 
     memcpy(addr.sun_path + 1, path, strlen(path));
     addr.sun_family = AF_UNIX;
 
-    while ((ret = sendto(fd, buff, len, 0,
-        (const struct sockaddr *)&addr, sizeof(addr))) == -1) {
+    while ((ret = sendto(fd, buff, len, 0, (const struct sockaddr*)&addr, sizeof(addr))) == -1) {
         RFX_LOG_E(RFX_LOG_TAG, "safe_sendto faled reason[%s]:%d", strerror(errno), errno);
         if (errno == EINTR) continue;
         if (errno == EAGAIN) {
@@ -244,6 +244,4 @@ int SuplMsgDispatcher::safe_sendto(const char* path, const char* buff, int len) 
     return ret;
 }
 
-bool SuplMsgDispatcher::doesSuplExist(void) {
-    return (SUPL_EXISTENCE_NO != sSuplExistenceState);
-}
+bool SuplMsgDispatcher::doesSuplExist(void) { return (SUPL_EXISTENCE_NO != sSuplExistenceState); }

@@ -35,8 +35,7 @@
 using namespace android;
 using android::status_t;
 
-namespace imsma
-{
+namespace imsma {
 
 struct RTPAssembler : public RefBase {
     enum AssemblyStatus {
@@ -54,15 +53,15 @@ struct RTPAssembler : public RefBase {
 
     RTPAssembler();
 
-    void onPacketReceived(const sp<RTPSource> &source);
+    void onPacketReceived(const sp<RTPSource>& source);
     virtual void flushQueue() = 0;
     virtual void reset() = 0;
     virtual uint32_t getLostCount() = 0;
     virtual uint32_t getIDamageCount() = 0;
     virtual bool isCSD(const sp<ABuffer>& accessUnit) = 0;
 
-    //virtual void onByeReceived() = 0;
-protected:
+    // virtual void onByeReceived() = 0;
+  protected:
     virtual AssemblyStatus assembleMore(const sp<RTPSource> source) = 0;
     virtual void packetLost() = 0;
     virtual void packetLostRegister() = 0;
@@ -79,12 +78,11 @@ protected:
     static sp<ABuffer> MakeCompoundFromPackets(
             const List<sp<ABuffer> > &frames);
     */
-private:
+  private:
     int64_t mFirstFailureTimeUs;
     static const uint32_t kLargeSequenceGap = 20;
 
     DISALLOW_EVIL_CONSTRUCTORS(RTPAssembler);
-
 
     // do something before time established
     /*
@@ -93,8 +91,8 @@ private:
     virtual void setNextExpectedSeqNo(uint32_t rtpSeq) {rtpSeq++ ;return; };
     */
 
-protected:
-    static void CopyMetas(const sp<ABuffer> &to, const sp<ABuffer> &from);
+  protected:
+    static void CopyMetas(const sp<ABuffer>& to, const sp<ABuffer>& from);
     // notify ARTPSource to updateExpectedTimeoutUs, mainly for audio
     /*
     virtual void evaluateDuration(const sp<RTPSource> &source,
@@ -103,16 +101,14 @@ protected:
                         return;
 
         }*/
-    AssemblyStatus getAssembleStatus(List<sp<ABuffer> > *queue,
-                                     uint32_t nextExpectedSeq) {
+    AssemblyStatus getAssembleStatus(List<sp<ABuffer> >* queue, uint32_t nextExpectedSeq) {
         sp<ABuffer> buffer = *--queue->end();
         uint32_t seq = buffer->int32Data();
-        return seq - nextExpectedSeq > kLargeSequenceGap ?
-               LARGE_SEQUENCE_GAP : WRONG_SEQUENCE_NUMBER;
+        return seq - nextExpectedSeq > kLargeSequenceGap ? LARGE_SEQUENCE_GAP
+                                                         : WRONG_SEQUENCE_NUMBER;
     }
-
 };
 
-}  // namespace android
+}  // namespace imsma
 
 #endif  // _IMS_RTP_ASSEMBLER_H_

@@ -19,7 +19,6 @@
 
 #include <unistd.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,7 +27,7 @@ extern "C" {
 
 #define MNL_SOCKET_AUTOPID 0
 #define MNL_SOCKET_BUFFER_SIZE (sysconf(_SC_PAGESIZE) < 8192L ? sysconf(_SC_PAGESIZE) : 8192L)
-#define MNL_TOTAL_BUFFER_SIZE (0xffff + (MNL_SOCKET_BUFFER_SIZE/2))
+#define MNL_TOTAL_BUFFER_SIZE (0xffff + (MNL_SOCKET_BUFFER_SIZE / 2))
 
 int wpfaInit();
 

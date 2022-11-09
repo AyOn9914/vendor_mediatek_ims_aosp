@@ -29,16 +29,15 @@
  * Class Declaraion
  *****************************************************************************/
 
-
 /*****************************************************************************
  * Namespace Declaration
  *****************************************************************************/
-using ::android::MessageHandler;
-using ::android::Message;
-using ::android::sp;
 using ::android::Looper;
-using ::android::RefBase;
+using ::android::Message;
+using ::android::MessageHandler;
 using ::android::Parcel;
+using ::android::RefBase;
+using ::android::sp;
 
 /*****************************************************************************
  * Defines
@@ -49,30 +48,23 @@ using ::android::Parcel;
  * Class RtcSmsParsingMessage
  *****************************************************************************/
 class RtcSmsParsingMessage : public virtual RefBase {
-private:
+  private:
     RtcSmsParsingMessage() : m_id(-1), m_parcel(NULL) {}
     RtcSmsParsingMessage(const RtcSmsParsingMessage& o);
     RtcSmsParsingMessage& operator=(const RtcSmsParsingMessage& o);
     virtual ~RtcSmsParsingMessage();
 
-public:
-    int32_t getId() const {
-        return m_id;
-    }
+  public:
+    int32_t getId() const { return m_id; }
 
-    Parcel* getParcel() const {
-        return m_parcel;
-    }
+    Parcel* getParcel() const { return m_parcel; }
 
-    static sp<RtcSmsParsingMessage> obtainMessage(
-        int32_t id,
-        Parcel* parcel);
+    static sp<RtcSmsParsingMessage> obtainMessage(int32_t id, Parcel* parcel);
 
-private:
+  private:
     int32_t m_id;
-    Parcel *m_parcel;
+    Parcel* m_parcel;
 };
-
 
 /*****************************************************************************
  * Class RtcSmsHandler
@@ -81,14 +73,14 @@ private:
  * Base handler to handle SMS message
  */
 class RtcSmsHandler : public RfxMainHandler {
-public:
+  public:
     explicit RtcSmsHandler(const sp<RtcSmsParsingMessage>& msg) : m_msg(msg) {}
     // Destructor
     virtual ~RtcSmsHandler() {}
     // Send SMS message
     void sendMessage(sp<Looper> looper);
 
-protected:
+  protected:
     // SMS message referance
     sp<RtcSmsParsingMessage> m_msg;
 
@@ -102,21 +94,21 @@ protected:
 /*
  * Handler that is used to send message to SMS parsing thread
  */
-class RtcSmsParsingThreadHandler: public RtcSmsHandler {
-public:
+class RtcSmsParsingThreadHandler : public RtcSmsHandler {
+  public:
     // Constructor
     explicit RtcSmsParsingThreadHandler(
-        const sp<RtcSmsParsingMessage>& msg)  // [IN] the SMS message
+            const sp<RtcSmsParsingMessage>& msg)  // [IN] the SMS message
         : RtcSmsHandler(msg) {}
 
     // Destructor
     virtual ~RtcSmsParsingThreadHandler() {}
 
-// Override
-public:
+    // Override
+  public:
     // Override handleMessage, don't the watch dog in RfxMainHandler
     virtual void handleMessage(const Message& message);
-    virtual void onHandleMessage(const Message& message) { RFX_UNUSED(message);}
+    virtual void onHandleMessage(const Message& message) { RFX_UNUSED(message); }
 };
 
 #endif /* __RTC_SMS_UTIL_H__ */

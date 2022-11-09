@@ -22,20 +22,20 @@
 class RmcOpImsControlRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpImsControlRequestHandler);
 
-    public:
-        RmcOpImsControlRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcOpImsControlRequestHandler();
+  public:
+    RmcOpImsControlRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcOpImsControlRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void setDigitsLine(const sp<RfxMclMessage>& msg);
-        void setDigitsRegStatus(const sp<RfxMclMessage>& msg);
-        void switchRcsRoiStatus(const sp<RfxMclMessage>& msg);
-        void updateRcsCapabilities(const sp<RfxMclMessage>& msg);
-        void updateRcsSessionInfo(const sp<RfxMclMessage>& msg);
+  private:
+    void setDigitsLine(const sp<RfxMclMessage>& msg);
+    void setDigitsRegStatus(const sp<RfxMclMessage>& msg);
+    void switchRcsRoiStatus(const sp<RfxMclMessage>& msg);
+    void updateRcsCapabilities(const sp<RfxMclMessage>& msg);
+    void updateRcsSessionInfo(const sp<RfxMclMessage>& msg);
 };
 
 #endif

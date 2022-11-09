@@ -31,15 +31,13 @@ RtcSmsThread::RtcSmsThread() : m_looper(NULL) {
     RFX_LOG_V(SMS_TAG, "[RtcSmsThread]Construct 0x%zu", (size_t)this);
 }
 
-
 RtcSmsThread::~RtcSmsThread() {
     RFX_LOG_V(SMS_TAG, "[RtcSmsThread]Destructor 0x%zu", (size_t)this);
 }
 
-
 sp<RtcSmsThread> RtcSmsThread::create() {
     RFX_LOG_W(SMS_TAG, "[RtcSmsThread]create");
-    RtcSmsThread *t = new RtcSmsThread();
+    RtcSmsThread* t = new RtcSmsThread();
     return t;
 }
 
@@ -54,6 +52,4 @@ bool RtcSmsThread::threadLoop() {
     return true;
 }
 
-sp<Looper> RtcSmsThread::getLooper() {
-    return m_looper;
-}
+sp<Looper> RtcSmsThread::getLooper() { return m_looper; }

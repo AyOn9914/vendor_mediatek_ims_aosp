@@ -33,33 +33,33 @@
  * Class RmcDcUtility
  *****************************************************************************/
 class RmcDcUtility {
-    public:
-        static int isOp07Support();
-        static int isOp12Support();
-        static int isOp16Support();
-        static int isOp20Support();
-        static int getAddressType(char* addr);
-        static const char* getProfileType(const int profileType);
-        static const char* getMtkProfileType(const int profileType);
-        static int getApnTypeId(const int profileType);
-        static int getMtkApnTypeId(const int profileType);
-        static const char* getApnType(int apnTypeId);
-        static int getProfileID(int apnTypeId);
-        static int getProtocolType(const char* protocol);
-        static const char* getProtocolName(int protocol);
-        static int getProtocolClassBitmap(int protocol);
-        static int getAuthType(int authType);
-        static int stringToBinaryBase(char *str, int base, int *err);
-        static int isImsSupport();
-        static const char* addrTypeToString(ADDRESS_TYPE addrType);
-        static const char* pdnTypeToString(int pdnType);
-        static void getPropertyBySlot(int slotId, const char *pPropertyName, char *pPropertyValue);
-        static const char* checkRcsSupportPcscf();
-        static int isOp12MccMnc(const char *mccmnc);
-        static bool isUserBuild();
-        static bool isSupportOverrideModemDefaultApn();
-        static bool isSupportDefaultImsApnSettings();
-        static bool isWifiApnExplicitlyConfigured();
-        static bool isSupportSscMode(int desireMode);
+  public:
+    static int isOp07Support();
+    static int isOp12Support();
+    static int isOp16Support();
+    static int isOp20Support();
+    static int getAddressType(char* addr);
+    static const char* getProfileType(const int profileType);
+    static const char* getMtkProfileType(const int profileType);
+    static int getApnTypeId(const int profileType);
+    static int getMtkApnTypeId(const int profileType);
+    static const char* getApnType(int apnTypeId);
+    static int getProfileID(int apnTypeId);
+    static int getProtocolType(const char* protocol);
+    static const char* getProtocolName(int protocol);
+    static int getProtocolClassBitmap(int protocol);
+    static int getAuthType(int authType);
+    static int stringToBinaryBase(char* str, int base, int* err);
+    static int isImsSupport();
+    static const char* addrTypeToString(ADDRESS_TYPE addrType);
+    static const char* pdnTypeToString(int pdnType);
+    static void getPropertyBySlot(int slotId, const char* pPropertyName, char* pPropertyValue);
+    static const char* checkRcsSupportPcscf();
+    static int isOp12MccMnc(const char* mccmnc);
+    static bool isUserBuild();
+    static bool isSupportOverrideModemDefaultApn();
+    static bool isSupportDefaultImsApnSettings();
+    static bool isWifiApnExplicitlyConfigured();
+    static bool isSupportSscMode(int desireMode);
 };
 #endif /* __RMC_DC_UTILITY_H__ */

@@ -23,54 +23,37 @@
 #include "RfxLog.h"
 #include "RfxDefs.h"
 
-using ::android::sp;
-using ::android::wp;
 using ::android::SortedVector;
+using ::android::sp;
 using ::android::Vector;
+using ::android::wp;
 
 /*****************************************************************************
  * Class RfxDataCloneEntry
  *****************************************************************************/
 
 class RfxDataCloneEntry {
-    public:
-        RfxDataCloneEntry() :
-            m_copyByData(NULL),
-            m_copyByObj(NULL),
-            m_id(-1){
-        }
+  public:
+    RfxDataCloneEntry() : m_copyByData(NULL), m_copyByObj(NULL), m_id(-1) {}
 
-        RfxDataCloneEntry(RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj, int id) :
-            m_copyByData(copyByData),
-            m_copyByObj(copyByObj),
-            m_id(id){
-        }
+    RfxDataCloneEntry(RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj,
+                      int id)
+        : m_copyByData(copyByData), m_copyByObj(copyByObj), m_id(id) {}
 
-        RfxDataCloneEntry(const RfxDataCloneEntry &entry) :
-            m_copyByData(entry.m_copyByData),
-            m_copyByObj(entry.m_copyByObj),
-            m_id(entry.m_id) {
-        }
+    RfxDataCloneEntry(const RfxDataCloneEntry& entry)
+        : m_copyByData(entry.m_copyByData), m_copyByObj(entry.m_copyByObj), m_id(entry.m_id) {}
 
-        bool operator< (const RfxDataCloneEntry &entry) const {
-            return (m_id < entry.m_id);
-        }
+    bool operator<(const RfxDataCloneEntry& entry) const { return (m_id < entry.m_id); }
 
-        bool operator> (const RfxDataCloneEntry &entry) const {
-            return (m_id > entry.m_id);
-        }
+    bool operator>(const RfxDataCloneEntry& entry) const { return (m_id > entry.m_id); }
 
-        bool operator== (const RfxDataCloneEntry &entry) const {
-            return (m_id == entry.m_id);
-        }
-        bool operator!= (const RfxDataCloneEntry &entry) const {
-            return (m_id != entry.m_id);
-        }
+    bool operator==(const RfxDataCloneEntry& entry) const { return (m_id == entry.m_id); }
+    bool operator!=(const RfxDataCloneEntry& entry) const { return (m_id != entry.m_id); }
 
-    public:
-        RfxCopyDataByDataFuncptr m_copyByData;
-        RfxCopyDataByObjFuncptr m_copyByObj;
-        int m_id;
+  public:
+    RfxCopyDataByDataFuncptr m_copyByData;
+    RfxCopyDataByObjFuncptr m_copyByObj;
+    int m_id;
 };
 
 /*****************************************************************************
@@ -78,44 +61,44 @@ class RfxDataCloneEntry {
  *****************************************************************************/
 
 class RfxDataCloneManager {
-    public:
-        RfxDataCloneManager() {}
-        virtual ~RfxDataCloneManager(){}
+  public:
+    RfxDataCloneManager() {}
+    virtual ~RfxDataCloneManager() {}
 
-        static void init();
-        // register API
-        static void registerRequestId(RfxCopyDataByDataFuncptr copyByData,
-                RfxCopyDataByObjFuncptr copyByObj, int id);
-        static void registerResponseId(RfxCopyDataByDataFuncptr copyByData,
-                RfxCopyDataByObjFuncptr copyByObj, int id);
-        static void registerUrcId(RfxCopyDataByDataFuncptr copyByData,
-                RfxCopyDataByObjFuncptr copyByObj, int id);
-        static void registerEventId(RfxCopyDataByDataFuncptr copyByData,
-                RfxCopyDataByObjFuncptr copyByObj, int id);
+    static void init();
+    // register API
+    static void registerRequestId(RfxCopyDataByDataFuncptr copyByData,
+                                  RfxCopyDataByObjFuncptr copyByObj, int id);
+    static void registerResponseId(RfxCopyDataByDataFuncptr copyByData,
+                                   RfxCopyDataByObjFuncptr copyByObj, int id);
+    static void registerUrcId(RfxCopyDataByDataFuncptr copyByData,
+                              RfxCopyDataByObjFuncptr copyByObj, int id);
+    static void registerEventId(RfxCopyDataByDataFuncptr copyByData,
+                                RfxCopyDataByObjFuncptr copyByObj, int id);
 
-        // copy API
-        static RfxBaseData* copyData(int id, void *data, int length, int type);
-        static RfxBaseData* copyData(int id, const RfxBaseData *data, int type);
+    // copy API
+    static RfxBaseData* copyData(int id, void* data, int length, int type);
+    static RfxBaseData* copyData(int id, const RfxBaseData* data, int type);
 
-    private:
-        void registerInternal(SortedVector<RfxDataCloneEntry> &list,
-                RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj,
-                int id);
-        const RfxDataCloneEntry& findDataCloneEntry(SortedVector<RfxDataCloneEntry> &list,
-                RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj,
-                int id);
-        RfxCopyDataByDataFuncptr findCopyDataByDataFuncptr(
-                SortedVector<RfxDataCloneEntry> &entry, int id);
-        RfxCopyDataByObjFuncptr findCopyDataByObjFuncptr(
-                SortedVector<RfxDataCloneEntry> &entry, int id);
-        SortedVector<RfxDataCloneEntry> findDataCloneEntryList(int type);
+  private:
+    void registerInternal(SortedVector<RfxDataCloneEntry>& list,
+                          RfxCopyDataByDataFuncptr copyByData, RfxCopyDataByObjFuncptr copyByObj,
+                          int id);
+    const RfxDataCloneEntry& findDataCloneEntry(SortedVector<RfxDataCloneEntry>& list,
+                                                RfxCopyDataByDataFuncptr copyByData,
+                                                RfxCopyDataByObjFuncptr copyByObj, int id);
+    RfxCopyDataByDataFuncptr findCopyDataByDataFuncptr(SortedVector<RfxDataCloneEntry>& entry,
+                                                       int id);
+    RfxCopyDataByObjFuncptr findCopyDataByObjFuncptr(SortedVector<RfxDataCloneEntry>& entry,
+                                                     int id);
+    SortedVector<RfxDataCloneEntry> findDataCloneEntryList(int type);
 
-    private:
-        static RfxDataCloneManager* s_self;
-        SortedVector<RfxDataCloneEntry> m_request_list;
-        SortedVector<RfxDataCloneEntry> m_response_list;
-        SortedVector<RfxDataCloneEntry> m_urc_list;
-        SortedVector<RfxDataCloneEntry> m_event_list;
+  private:
+    static RfxDataCloneManager* s_self;
+    SortedVector<RfxDataCloneEntry> m_request_list;
+    SortedVector<RfxDataCloneEntry> m_response_list;
+    SortedVector<RfxDataCloneEntry> m_urc_list;
+    SortedVector<RfxDataCloneEntry> m_event_list;
 };
 
 #endif

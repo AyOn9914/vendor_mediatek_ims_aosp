@@ -34,31 +34,32 @@
 #define TAG "RmcSSBaseHandler"
 
 class RmcSuppServRequestBaseHandler : public RfxBaseHandler {
-    public:
-        RmcSuppServRequestBaseHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServRequestBaseHandler();
+  public:
+    RmcSuppServRequestBaseHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServRequestBaseHandler();
 
-    protected:
-        void requestClirOperation(const sp<RfxMclMessage>& msg);
-        void requestCallForwardOperation(const sp<RfxMclMessage>& msg, CallForwardOperationE op);
-        void requestCallForwardExOperation(const sp<RfxMclMessage>& msg, CallForwardOperationE op);
-        void requestCallWaitingOperation(const sp<RfxMclMessage>& msg, CallWaitingOperationE op);
-        bool checkTerminalBaseCallWaitingStatus(char* tbCWStatus,
-                        int* responses, const int* inputData, CallWaitingOperationE op);
-        int checkTerminalBaseCallWaitingType(sp<RfxAtResponse> p_response);
-        void handleTerminalBaseCallWaitingResponse(const char* tbCWStatus, int* responses,
-                int sendBsCode, const int* inputData, int &responseForAll,
-                sp<RfxAtResponse> p_response, CallWaitingOperationE op);
-        void requestColpOperation(const sp<RfxMclMessage>& msg);
-        void requestColrOperation(const sp<RfxMclMessage>& msg);
-        void requestCallBarring(const sp<RfxMclMessage>& msg, CallBarringOperationE op);
-        void sleepMsec(long long msec);
-        char* parseErrorMessageFromXCAP(sp<RfxAtResponse> p_response);
-        void handleSetClirResponse(int clir_n);
-        void handleGetClirResponse(int (&responses)[2], bool isTerminalBasedSolution);
-        void resetClirProperty();
-        void requestResetSuppServ(const sp<RfxMclMessage>& msg);
-        void handleErrorMessageFromXcap(sp<RfxAtResponse> p_response, AT_CME_Error errorCode);
+  protected:
+    void requestClirOperation(const sp<RfxMclMessage>& msg);
+    void requestCallForwardOperation(const sp<RfxMclMessage>& msg, CallForwardOperationE op);
+    void requestCallForwardExOperation(const sp<RfxMclMessage>& msg, CallForwardOperationE op);
+    void requestCallWaitingOperation(const sp<RfxMclMessage>& msg, CallWaitingOperationE op);
+    bool checkTerminalBaseCallWaitingStatus(char* tbCWStatus, int* responses, const int* inputData,
+                                            CallWaitingOperationE op);
+    int checkTerminalBaseCallWaitingType(sp<RfxAtResponse> p_response);
+    void handleTerminalBaseCallWaitingResponse(const char* tbCWStatus, int* responses,
+                                               int sendBsCode, const int* inputData,
+                                               int& responseForAll, sp<RfxAtResponse> p_response,
+                                               CallWaitingOperationE op);
+    void requestColpOperation(const sp<RfxMclMessage>& msg);
+    void requestColrOperation(const sp<RfxMclMessage>& msg);
+    void requestCallBarring(const sp<RfxMclMessage>& msg, CallBarringOperationE op);
+    void sleepMsec(long long msec);
+    char* parseErrorMessageFromXCAP(sp<RfxAtResponse> p_response);
+    void handleSetClirResponse(int clir_n);
+    void handleGetClirResponse(int (&responses)[2], bool isTerminalBasedSolution);
+    void resetClirProperty();
+    void requestResetSuppServ(const sp<RfxMclMessage>& msg);
+    void handleErrorMessageFromXcap(sp<RfxAtResponse> p_response, AT_CME_Error errorCode);
 };
 
 #endif

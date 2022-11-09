@@ -22,28 +22,27 @@
 #include <dlfcn.h>
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SEND_USSI_FROM);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData,  RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSI_FROM);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSI_FROM);
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_SEND_USSI_FROM,
-    RFX_MSG_REQUEST_CANCEL_USSI_FROM,
+        RFX_MSG_REQUEST_SEND_USSI_FROM,
+        RFX_MSG_REQUEST_CANCEL_USSI_FROM,
 };
 
 // register handler to channel
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpSuppServRequestHandler, RIL_CMD_PROXY_2);
 
-RmcOpSuppServRequestHandler::RmcOpSuppServRequestHandler(int slot_id,
-        int channel_id):RfxBaseHandler(slot_id, channel_id){
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+RmcOpSuppServRequestHandler::RmcOpSuppServRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcOpSuppServRequestHandler::~RmcOpSuppServRequestHandler() {
-}
+RmcOpSuppServRequestHandler::~RmcOpSuppServRequestHandler() {}
 
 void RmcOpSuppServRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SEND_USSI_FROM:
             requestSendUssiFrom(msg);
             break;
@@ -63,8 +62,7 @@ void RmcOpSuppServRequestHandler::onHandleTimer() {
 }
 
 void RmcOpSuppServRequestHandler::requestSendUssiFrom(const sp<RfxMclMessage>& msg) {
-
-    const char** strings = (const char**) (msg->getData()->getData());
+    const char** strings = (const char**)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     const char* from = strings[0];
     int action = atoi(strings[1]);
@@ -74,8 +72,8 @@ void RmcOpSuppServRequestHandler::requestSendUssiFrom(const sp<RfxMclMessage>& m
 
     logD(TAG, "requestSendUssiFrom: from=%s, action=%d, ussi=%s", from, action, ussi);
 
-    p_response = atSendCommand(String8::format("AT+EIUSD=2,1,%d,\"%s\",\"en\",0,\"%s\"",
-            action, ussi, from));
+    p_response = atSendCommand(
+            String8::format("AT+EIUSD=2,1,%d,\"%s\",\"en\",0,\"%s\"", action, ussi, from));
 
     err = p_response->getError();
     if (err < 0 || p_response->getSuccess() == 0) {
@@ -83,15 +81,14 @@ void RmcOpSuppServRequestHandler::requestSendUssiFrom(const sp<RfxMclMessage>& m
     } else {
         ret = RIL_E_SUCCESS;
     }
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcOpSuppServRequestHandler::requestCancelUssiFrom(const sp<RfxMclMessage>& msg) {
-
-    const char** strings = (const char**) (msg->getData()->getData());
+    const char** strings = (const char**)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     const char* from = strings[0];
     int err;
@@ -107,8 +104,8 @@ void RmcOpSuppServRequestHandler::requestCancelUssiFrom(const sp<RfxMclMessage>&
     } else {
         ret = RIL_E_SUCCESS;
     }
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }

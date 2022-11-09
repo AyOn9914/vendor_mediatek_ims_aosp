@@ -29,16 +29,14 @@
 
 namespace android {
 
-CallStack::CallStack() {
-}
+CallStack::CallStack() {}
 
 CallStack::CallStack(const char* logtag, int32_t ignoreDepth) {
-    this->update(ignoreDepth+1);
+    this->update(ignoreDepth + 1);
     this->log(logtag);
 }
 
-CallStack::~CallStack() {
-}
+CallStack::~CallStack() {}
 
 void CallStack::update(int32_t ignoreDepth __unused, pid_t tid __unused) {
     std::string strtest;
@@ -49,7 +47,7 @@ void CallStack::update(int32_t ignoreDepth __unused, pid_t tid __unused) {
 }
 
 void CallStack::log(const char* logtag, android_LogPriority priority, const char* prefix) const {
-    LogPrinter printer(logtag, priority, prefix, /*ignoreBlankLines*/false);
+    LogPrinter printer(logtag, priority, prefix, /*ignoreBlankLines*/ false);
     print(printer);
 }
 
@@ -73,4 +71,4 @@ void CallStack::print(Printer& printer) const {
     }
 }
 
-}; // namespace android
+};  // namespace android

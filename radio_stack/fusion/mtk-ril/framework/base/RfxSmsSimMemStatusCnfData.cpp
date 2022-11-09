@@ -19,12 +19,12 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSmsSimMemStatusCnfData);
 
-RfxSmsSimMemStatusCnfData::RfxSmsSimMemStatusCnfData(void *_data, int _length) :
-        RfxBaseData(_data, _length) {
+RfxSmsSimMemStatusCnfData::RfxSmsSimMemStatusCnfData(void* _data, int _length)
+    : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SMS_Memory_Status *pCnf = (RIL_SMS_Memory_Status*)_data;
-        RIL_SMS_Memory_Status *pData = (RIL_SMS_Memory_Status *)calloc(1,
-                sizeof(RIL_SMS_Memory_Status));
+        RIL_SMS_Memory_Status* pCnf = (RIL_SMS_Memory_Status*)_data;
+        RIL_SMS_Memory_Status* pData =
+                (RIL_SMS_Memory_Status*)calloc(1, sizeof(RIL_SMS_Memory_Status));
 
         if (pData != NULL) {
             pData->used = pCnf->used;

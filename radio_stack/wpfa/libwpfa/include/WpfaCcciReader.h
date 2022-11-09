@@ -30,28 +30,28 @@
 #include "WpfaDriverMessage.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::RefBase;
 using ::android::sp;
 using ::android::String8;
+using ::android::Thread;
 
-//class RfxChannelContext;
+// class RfxChannelContext;
 
 class WpfaCcciReader : public Thread {
-    public:
-        WpfaCcciReader(int fd);
-        void  handleFilterRuleCtrlEvent(WpfaCcciDataHeader header, WpfaDriverBaseData data);
-        void  handleShmCtrlEvent(WpfaCcciDataHeader header);
+  public:
+    WpfaCcciReader(int fd);
+    void handleFilterRuleCtrlEvent(WpfaCcciDataHeader header, WpfaDriverBaseData data);
+    void handleShmCtrlEvent(WpfaCcciDataHeader header);
 
-    private:
-        virtual bool threadLoop();
-        void readerLoopForCcciData();
+  private:
+    virtual bool threadLoop();
+    void readerLoopForCcciData();
 
-    private:
-        sp<Looper> m_looper;
-        int mFd;
-        pthread_t m_threadId;
+  private:
+    sp<Looper> m_looper;
+    int mFd;
+    pthread_t m_threadId;
 };
 #endif

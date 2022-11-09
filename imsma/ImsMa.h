@@ -34,13 +34,11 @@
 #include <gui/IGraphicBufferConsumer.h>
 #include <gui/IGraphicBufferProducer.h>
 
-#define PARAMETER_SIZE_MAX    256
-#define RTCP_PROFILE_PARAMETER_SIZE    32
-#define ERROR_BIND_PORT    (-1000)
+#define PARAMETER_SIZE_MAX 256
+#define RTCP_PROFILE_PARAMETER_SIZE 32
+#define ERROR_BIND_PORT (-1000)
 
-
-namespace android
-{
+namespace android {
 struct AMessage;
 /**
  *@ IMS Media Adaptor datapath: source, sink, they are independent path
@@ -48,36 +46,31 @@ struct AMessage;
  *@ MA_SINK: Media Adaptor get media data(video, audio) from upper layer
  *@ MA_SOURCE_SINK: Media Adaptor send/get media data to/from upper layer
  */
-enum ma_datapath_t {
-    MA_SOURCE      = 0x1,
-    MA_SINK        = 0x2,
-    MA_SOURCE_SINK = MA_SOURCE | MA_SINK
+enum ma_datapath_t { MA_SOURCE = 0x1, MA_SINK = 0x2, MA_SOURCE_SINK = MA_SOURCE | MA_SINK };
+
+enum imsma_extra_bitControl_t {
+    MA_EXT_BIT_CTRL_NONE = 0,
+    MA_STOP_RX_PUSH_BLANK = 0x01,  // will add by bit control
+    MA_EXT_BIT_CTRL_MAX = MA_STOP_RX_PUSH_BLANK,
 };
 
-enum imsma_extra_bitControl_t{
-        MA_EXT_BIT_CTRL_NONE = 0,
-        MA_STOP_RX_PUSH_BLANK = 0x01,//will add by bit control
-        MA_EXT_BIT_CTRL_MAX = MA_STOP_RX_PUSH_BLANK,
-};
-
-//for turn off video
+// for turn off video
 enum imsma_turn_off_video_mode_t {
     MA_TURN_OFF_VIDEO_DISABLE,
     MA_TURN_OFF_VIDEO_ENABLE,
 };
 
 enum imsma_turn_off_video_direction_t {
-    MA_TURN_OFF_VIDEO_BY_LOCAL,// local  turn off video
-    MA_TURN_OFF_VIDEO_BY_PEER,//turn off video  by peer
+    MA_TURN_OFF_VIDEO_BY_LOCAL,  // local  turn off video
+    MA_TURN_OFF_VIDEO_BY_PEER,   // turn off video  by peer
 };
 
 struct imsma_turn_off_video_params_t {
     imsma_turn_off_video_direction_t direction;
-    //maybe other params, not sure
+    // maybe other params, not sure
 };
 
-//hold
-
+// hold
 
 enum imsma_hold_mode_t {
     MA_HOLD_DISABLE,
@@ -85,27 +78,27 @@ enum imsma_hold_mode_t {
 };
 
 enum imsma_hold_direction_t {
-    MA_HOLD_BY_LOCAL,// local  hold call
-    MA_HOLD_BY_PEER,//hold call  by peer
+    MA_HOLD_BY_LOCAL,  // local  hold call
+    MA_HOLD_BY_PEER,   // hold call  by peer
 };
 
 struct imsma_hold_params_t {
     imsma_hold_direction_t direction;
-    //maybe other params, not sure
+    // maybe other params, not sure
 };
 
 enum imsma_pause_resume_mode_t {
-    MA_PAUSE_RESUME_NORMAL,//normal pause-resume
-    MA_PAUSE_RESUME_HOLD,//pause-resume for hold
-    MA_PAUSE_RESUME_TURN_OFF_VIDEO,//pause-resume for turn_off_video
+    MA_PAUSE_RESUME_NORMAL,          // normal pause-resume
+    MA_PAUSE_RESUME_HOLD,            // pause-resume for hold
+    MA_PAUSE_RESUME_TURN_OFF_VIDEO,  // pause-resume for turn_off_video
 };
 
 struct imsma_pause_resume_params_t {
     imsma_pause_resume_mode_t mode;
     union {
         imsma_turn_off_video_params_t turnOffVideo;
-        imsma_hold_params_t  hold;
-        //why use union :flexible to add new params
+        imsma_hold_params_t hold;
+        // why use union :flexible to add new params
     };
     // add for pause RX ,if bit&MA_STOP_RX_PUSH_BLANK = 0x01,pause RX then pushblank
     // bit for future expanding usage
@@ -113,7 +106,6 @@ struct imsma_pause_resume_params_t {
 
     int32_t normal_pause_resume_extra_bitControl;
 };
-
 
 /**
  *@ Record Mode
@@ -134,12 +126,10 @@ enum record_mode_t {
  *@ MA_SNAPSHOT_PEER_LOCAL: Snapshot for peer and local side video
  */
 enum snapshot_mode_t {
-    MA_SNAPSHOT_PEER       = 0x1,
-    MA_SNAPSHOT_LOCAL      = 0x2,
-    MA_SNAPSHOT_PEER_LOCAL = MA_SNAPSHOT_PEER|MA_SNAPSHOT_LOCAL,
+    MA_SNAPSHOT_PEER = 0x1,
+    MA_SNAPSHOT_LOCAL = 0x2,
+    MA_SNAPSHOT_PEER_LOCAL = MA_SNAPSHOT_PEER | MA_SNAPSHOT_LOCAL,
 };
-
-
 
 /**
  *@ Record Quality
@@ -152,7 +142,6 @@ enum record_quality_t {
     MA_RECQUALITY_MEDIUM,
     MA_RECQUALITY_HIGH,
 };
-
 
 /**
  *@ kWhatImsMANotify: Indicate message notification is from ImsMA
@@ -174,16 +163,16 @@ enum message_info {
     kWhatMARecordNotify,
     kWhatPeerResolutionDegree,
     kWhatLocalResolutionDegree,
-    kWhatLocalError_DropBitrate_Fail, //source bitrate can not drop down, should switch to volte
+    kWhatLocalError_DropBitrate_Fail,  // source bitrate can not drop down, should switch to volte
     kWhatPeerError,
     kWhatUpdateMbrDl,
     kWhatUpdateDebugInfo,
-    kWhatCoverPicture,  //for Vzw, when vedio can't be successfully sustained, we should cover contact picture on UI
+    kWhatCoverPicture,  // for Vzw, when vedio can't be successfully sustained, we should cover
+                        // contact picture on UI
     kWhatPeerDisplayStatus,
     kWhatLocalRestartCamera,
 
 };
-
 
 /**
  *@ Callback message of record details from MA to VT Service
@@ -201,7 +190,6 @@ enum ma_rec_info {
     MA_REC_INFO_COMPLETE,
 };
 
-
 enum VT_Quality {
     QUALITY_DEFAULT = 0,
     QUALITY_FINE = (1 << 0),
@@ -215,18 +203,18 @@ enum VT_Quality {
 enum ImsMa_Ratio {
     ImsMa_W_H_Ratio_NotSure = -1,
     ImsMa_W_H_Ratio_Horizontal = 0,
-    ImsMa_W_H_Ratio_Vertical =1,
+    ImsMa_W_H_Ratio_Vertical = 1,
 };
 
 /**
  *@ Media stream configuration
  */
 typedef struct media_config {
-    rtp_rtcp_config_t rtp_rtcp_cap; //rtp
-    video_codec_fmtp_t codec_param; //H264 format parameter information
+    rtp_rtcp_config_t rtp_rtcp_cap;  // rtp
+    video_codec_fmtp_t codec_param;  // H264 format parameter information
 } media_config_t;
 
-typedef struct  sensor_info_vilte {
+typedef struct sensor_info_vilte {
     uint32_t index;
     uint32_t max_width;
     uint32_t max_height;
@@ -235,14 +223,13 @@ typedef struct  sensor_info_vilte {
     uint32_t hal;
 } sensor_info_vilte_t;
 
-
-class ImsMa: public RefBase
-{
-public:
-    ImsMa(uint32_t simID = 0,uint32_t operatorID = 0);
+class ImsMa : public RefBase {
+  public:
+    ImsMa(uint32_t simID = 0, uint32_t operatorID = 0);
     virtual ~ImsMa();
     /**
-     *@ Description: IMS MediaAdaptor module init, it will also initialize related modules of below layer
+     *@ Description: IMS MediaAdaptor module init, it will also initialize related modules of below
+     *layer
      *@     init module maybe include:
      *@     common: v2olte, mediacontent, mediasession
      *@     MA_SOURCE: mediasender, mediasource, rtpsender
@@ -255,7 +242,8 @@ public:
     status_t Init(ma_datapath_t type);
 
     /*
-     *@ Description: IMS MediaAdaptor module start, it will also start related modules of below layer
+     *@ Description: IMS MediaAdaptor module start, it will also start related modules of below
+     *layer
      *@ Parameters:
      *@     type: start which media adaptor data path
      *@ Return:
@@ -271,7 +259,7 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t Stop(ma_datapath_t type,int32_t bitCtrlCmd = MA_STOP_RX_PUSH_BLANK);
+    status_t Stop(ma_datapath_t type, int32_t bitCtrlCmd = MA_STOP_RX_PUSH_BLANK);
 
     /**
      *@ Description:
@@ -281,7 +269,7 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t Pause(ma_datapath_t type,imsma_pause_resume_params_t* params =NULL);
+    status_t Pause(ma_datapath_t type, imsma_pause_resume_params_t* params = NULL);
 
     /**
      *@ Description:
@@ -290,10 +278,11 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t Resume(ma_datapath_t type,imsma_pause_resume_params_t* params=NULL);
+    status_t Resume(ma_datapath_t type, imsma_pause_resume_params_t* params = NULL);
 
     /**
-     *@ Description: IMS MediaAdaptor module reset, it will also reset related modules of below layer
+     *@ Description: IMS MediaAdaptor module reset, it will also reset related modules of below
+     *layer
      *@     if want set new configuration to MA, need call reset function
      *@ Parameters:
      *@     type: reset which media adaptor data path
@@ -301,23 +290,21 @@ public:
      *@     status_t type, OK indicate successful, otherwise error type will return
      *@ should reset add bitCtrlCmd ??
      */
-    status_t Reset(ma_datapath_t type,int32_t bitCtrlCmd = MA_STOP_RX_PUSH_BLANK);
-
-
+    status_t Reset(ma_datapath_t type, int32_t bitCtrlCmd = MA_STOP_RX_PUSH_BLANK);
 
     /**
      *@ Description: sensor_resolution_t is not fit for HAL3 change, for the HW ratio
-         *@     element need to be calculated based on specific logic, camera module is thought to be common
-         *@     one ,just want to be a provider.
+     *@     element need to be calculated based on specific logic, camera module is thought to be
+     *common
+     *@     one ,just want to be a provider.
      *@ Parameters:
-     *@     sensor_resolution_vilte has a new sensor degree, it is used for HW ratio.it is a new structure
-         *@     sensorCnt is the number of all sensor
+     *@     sensor_resolution_vilte has a new sensor degree, it is used for HW ratio.it is a new
+     *structure
+     *@     sensorCnt is the number of all sensor
      *@ Return:
      *@     NA
-         */
-    static status_t setSensorParameters(sensor_info_vilte *sensor, int32_t sensorCnt);
-
-
+     */
+    static status_t setSensorParameters(sensor_info_vilte* sensor, int32_t sensorCnt);
 
     /**
         tell codec the save power mode to condig EGL to drop fps
@@ -332,8 +319,9 @@ public:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
 
-
-    static int32_t getCodecCapability(video_codec_fmtp_t **codeccap,int32_t *prefer_WHRatio = NULL,uint32_t operatorID = 0, VT_Quality quality = QUALITY_DEFAULT);
+    static int32_t getCodecCapability(video_codec_fmtp_t** codeccap, int32_t* prefer_WHRatio = NULL,
+                                      uint32_t operatorID = 0,
+                                      VT_Quality quality = QUALITY_DEFAULT);
 
     /**
      *@ Description: This is a static function for upper layer get codec bitrate table
@@ -342,24 +330,27 @@ public:
      *@ pvideo_media_bitrate: each format bitrate table for diff profile / level
      *@
      */
-    static void getCodecBitrateTable(uint32_t *tableCnt,
-                                     video_media_bitrate_t **bitrateTable,uint32_t operatorID = 0);
+    static void getCodecBitrateTable(uint32_t* tableCnt, video_media_bitrate_t** bitrateTable,
+                                     uint32_t operatorID = 0);
 
     /*get codec sps by format*/
-    static void  getCodecParameterSets(
-        video_format_t informat,  //in
-        uint32_t *levelCapNumbers,  //out
-        video_codec_level_fmtp_t **codeclevelcap,uint32_t operatorID = 0, VT_Quality quality = QUALITY_DEFAULT);
+    static void getCodecParameterSets(video_format_t informat,    // in
+                                      uint32_t* levelCapNumbers,  // out
+                                      video_codec_level_fmtp_t** codeclevelcap,
+                                      uint32_t operatorID = 0,
+                                      VT_Quality quality = QUALITY_DEFAULT);
 
     /**
-     *@ Description: This is a static function for upper layer get RTP/RTCP capability, before instalization
+     *@ Description: This is a static function for upper layer get RTP/RTCP capability, before
+     *instalization
      *@ Parameters:
      *@     h264_enc_cap_t: return profile_id and h264 level of encoder
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
 
-    static int32_t getRtpRtcpCapability(rtp_rtcp_capability_t** pRtpRtcpCap, uint32_t operatorID = 0);
+    static int32_t getRtpRtcpCapability(rtp_rtcp_capability_t** pRtpRtcpCap,
+                                        uint32_t operatorID = 0);
 
     /**
      *@ Description: Config media stream for MA initialization
@@ -368,7 +359,7 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t InitMediaConfig(media_config_t *config);
+    status_t InitMediaConfig(media_config_t* config);
 
     /**
      *@ Description: Config media stream for MA initialization
@@ -377,7 +368,7 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t UpdateMediaConfig(media_config_t *config);
+    status_t UpdateMediaConfig(media_config_t* config);
 
     /**
      *@ Description: Set surface of peer side for MA
@@ -393,22 +384,22 @@ public:
 
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t SetNotify(const sp<AMessage> &msg);
-
+    status_t SetNotify(const sp<AMessage>& msg);
 
     /**
-    *@ Description: Google demo VT Code show change quality interface and value. Currently, IMS MA will do nothing
-    *@ Parameters:
-    *@  VT_Quality:  high, middle, low, default selection
-    *@ Return:
-    *@  status_t type, OK indicate successful, otherwise error type will return
-    */
+     *@ Description: Google demo VT Code show change quality interface and value. Currently, IMS MA
+     *will do nothing
+     *@ Parameters:
+     *@  VT_Quality:  high, middle, low, default selection
+     *@ Return:
+     *@  status_t type, OK indicate successful, otherwise error type will return
+     */
     status_t SetVTQuality(VT_Quality quality);
 
     /**
-    *@ Description: In Camera HAL3, bufferqueue is the YUV data patch from App to ImsMa source
-           *@              ImsMa source create BQ and pass the producer handler to App, source get the
-           *@              consumer client to receive
+     *@ Description: In Camera HAL3, bufferqueue is the YUV data patch from App to ImsMa source
+     *@              ImsMa source create BQ and pass the producer handler to App, source get the
+     *@              consumer client to receive
      *@ Parameters:
      *@   outBufferProducer: output Bufferqueue producer
      *@ Return:
@@ -417,12 +408,11 @@ public:
     status_t getBufferQueueProducer(sp<IGraphicBufferProducer>* outBufferProducer);
 
     /*
-    *@ Description: set  current camera facing for CVO and  degree for rotate
-    *@ Parameters:facing 1 font,0 back; degree 0,90,180,270
-    *@
-    */
+     *@ Description: set  current camera facing for CVO and  degree for rotate
+     *@ Parameters:facing 1 font,0 back; degree 0,90,180,270
+     *@
+     */
     status_t setCurrentCameraId(uint32_t index);
-
 
     /**
 
@@ -450,7 +440,6 @@ public:
      */
     status_t SnapShot(sp<IMemory>& buffer, snapshot_mode_t mode);
 
-
     /**
      *@ Description: Set record parameters
      *@ Parameters:
@@ -459,7 +448,7 @@ public:
      *@ Return:
      *@     status_t type, OK indicate successful, otherwise error type will return
      */
-    status_t SetRecordParameters(record_quality_t quality,  char* file_name);
+    status_t SetRecordParameters(record_quality_t quality, char* file_name);
 
     /**
      *@ Description: Indicate MA to start record
@@ -479,84 +468,75 @@ public:
      */
     status_t StopRecord(void);
 
-
     /**
-    *@ Description: VT query the local turnOffVideo status of MA
-    *@ Parameters:
-    *@ Return:
-    *@  imsma_turn_off_video_mode_t : currenly only MA_TURN_OFF_VIDEO_ENABLE, MA_TURN_OFF_VIDEO_DISABLE is used
-    **/
+     *@ Description: VT query the local turnOffVideo status of MA
+     *@ Parameters:
+     *@ Return:
+     *@  imsma_turn_off_video_mode_t : currenly only MA_TURN_OFF_VIDEO_ENABLE,
+     *MA_TURN_OFF_VIDEO_DISABLE is used
+     **/
     imsma_turn_off_video_mode_t GetTurnOffVideoByLocalState();
 
-
     /**
-    *@ Description: VT query the peer turn off  status of MA
-    *@ Parameters:
-    *@ Return:
-    *@  imsma_turn_off_video_mode_t : currenly only MA_TURN_OFF_VIDEO_ENABLE, MA_TURN_OFF_VIDEO_DISABLE is used
-    **/
+     *@ Description: VT query the peer turn off  status of MA
+     *@ Parameters:
+     *@ Return:
+     *@  imsma_turn_off_video_mode_t : currenly only MA_TURN_OFF_VIDEO_ENABLE,
+     *MA_TURN_OFF_VIDEO_DISABLE is used
+     **/
     imsma_turn_off_video_mode_t GetTurnOffVideoByPeerState();
 
-
-
     /*
-    *@ Description: Change sensor degree
-    *@ Parameters:
-    *@    degree:
-    *@ Return:
-    *@
-    */
+     *@ Description: Change sensor degree
+     *@ Parameters:
+     *@    degree:
+     *@ Return:
+     *@
+     */
 
     status_t setDeviceRotationDegree(int32_t degree);
 
-
     /*
-    *@ Description: set handover state for disable downgrade check
-    *@ Parameters:
-    *@    state: true-start handover false-stop handover
-    *@ Return:
-    *@
-    */
+     *@ Description: set handover state for disable downgrade check
+     *@ Parameters:
+     *@    state: true-start handover false-stop handover
+     *@ Return:
+     *@
+     */
     status_t setHandoverState(bool state);
 
-private:
+  private:
     enum {
-        create           = 0x01,
-        downlink_init    = 0x02,
-        uplink_init      = 0x04,
+        create = 0x01,
+        downlink_init = 0x02,
+        uplink_init = 0x04,
 
         downlink_started = 0x08,
-        uplink_started   = 0x10,
+        uplink_started = 0x10,
 
         downlink_stopped = 0x20,
-        uplink_stopped   = 0x40,
+        uplink_stopped = 0x40,
 
-        reseted          = 0x80,
+        reseted = 0x80,
 
-        notifyset        = 0x100,
-        peerSurfaceSet   = 0x200,
-        localSurfaceSet  = 0x400,
-        initParamSet     = 0x800,
+        notifyset = 0x100,
+        peerSurfaceSet = 0x200,
+        localSurfaceSet = 0x400,
+        initParamSet = 0x800,
 
-        downlink_paused  = 0x1000,
-        uplink_paused     = 0x2000,
+        downlink_paused = 0x1000,
+        uplink_paused = 0x2000,
 
-        downlink_hold  = 0x4000,//by local
-        uplink_hold      = 0x8000,  //by local
+        downlink_hold = 0x4000,  // by local
+        uplink_hold = 0x8000,    // by local
 
-        downlink_turn_off_video  = 0x10000, // by peer
-        uplink_turn_off_video       = 0x20000,     //by local
+        downlink_turn_off_video = 0x10000,  // by peer
+        uplink_turn_off_video = 0x20000,    // by local
 
-        uplink_held      = 0x40000,  //by peer hold
+        uplink_held = 0x40000,  // by peer hold
     };
 
-
-
-    enum FlagMode {
-        SET,
-        CLEAR,
-        ASSIGN
-    };
+    enum FlagMode { SET, CLEAR, ASSIGN };
 
     uint32_t mSimID;
     uint32_t mOperatorID;
@@ -564,55 +544,52 @@ private:
 
     struct MediaSession;
     sp<MediaSession> mMediaSession;
-    sp<AMessage> mHandleMsg; // Msg to MediaSession
+    sp<AMessage> mHandleMsg;  // Msg to MediaSession
     const sp<IGraphicBufferProducer> mLocalSurface;
     const sp<IGraphicBufferProducer> mPeerSurface;
     sp<ALooper> mMsLooper;
     mutable Mutex mLock;
     int32_t mQuality;
 
-
-    //params
+    // params
 
     media_config_t mInitMediaConfig;
     rtp_rtcp_config_t mInitRtpRtcpCap;
     video_codec_fmtp_t mInitCodecCap;
-    static video_codec_fmtp_t*  mGetCodecCapPtr  ;//declare
-    static video_media_bitrate_t* mGetCodecBitrateTablePtr ;
+    static video_codec_fmtp_t* mGetCodecCapPtr;  // declare
+    static video_media_bitrate_t* mGetCodecBitrateTablePtr;
     static video_codec_level_fmtp_t* mGetVideoCodecLevelFmtpPtr;
-    //static sensor_resolution_vilte* mSensorParameterPtr;
+    // static sensor_resolution_vilte* mSensorParameterPtr;
     static sensor_resolution_t* mSensorResolution;
-//Mark off for HAL3
-//    String8 g_CameraparamGet;
-//  String8 g_CameraparamSet;
+    // Mark off for HAL3
+    //     String8 g_CameraparamGet;
+    //   String8 g_CameraparamSet;
 
-    //for debug, to remeber the instance ID
+    // for debug, to remeber the instance ID
     static int32_t sMultiInstanceID;
     int32_t mMultiInstanceID;
     static int32_t mSensorCnt;
     int32_t mRTPfd;
     int32_t mRTCPfd;
 
-    status_t CheckSetBR(media_config_t *config);
+    status_t CheckSetBR(media_config_t* config);
     status_t makeMyselfSocket(rtp_rtcp_config_t* config);
-    int bindSock(uint8_t type, uint16_t port, uint8_t *address);
-    int ConnectSock(int fd, uint8_t type, uint16_t port, uint8_t *address);
+    int bindSock(uint8_t type, uint16_t port, uint8_t* address);
+    int ConnectSock(int fd, uint8_t type, uint16_t port, uint8_t* address);
     void printIPv4(const char* name, uint8_t* ip);
     void printIPv6(const char* name, uint8_t* ip);
-    void PreConnect(int fd, char *ifname, uint32_t network_id);
+    void PreConnect(int fd, char* ifname, uint32_t network_id);
 
     void modifyFlags(unsigned value, FlagMode mode);
-    status_t PostAndAwaitResponse(sp<AMessage> *response);
-    status_t SetTurnOffVideo_l(ma_datapath_t type,imsma_turn_off_video_mode_t mode,imsma_turn_off_video_direction_t direction);
-    status_t SetHold_l(ma_datapath_t type,imsma_hold_mode_t mode,imsma_hold_direction_t direction);
-    //for mormal pause and resume
-    status_t Pause_l(ma_datapath_t type,int32_t bitCtrlCmd = 0);
-    status_t Resume_l(ma_datapath_t type,int32_t bitCtrlCmd = 0);
-    status_t Stop_l(ma_datapath_t type,int32_t bitCtrlCmd = 0);
-
-
-
-
+    status_t PostAndAwaitResponse(sp<AMessage>* response);
+    status_t SetTurnOffVideo_l(ma_datapath_t type, imsma_turn_off_video_mode_t mode,
+                               imsma_turn_off_video_direction_t direction);
+    status_t SetHold_l(ma_datapath_t type, imsma_hold_mode_t mode,
+                       imsma_hold_direction_t direction);
+    // for mormal pause and resume
+    status_t Pause_l(ma_datapath_t type, int32_t bitCtrlCmd = 0);
+    status_t Resume_l(ma_datapath_t type, int32_t bitCtrlCmd = 0);
+    status_t Stop_l(ma_datapath_t type, int32_t bitCtrlCmd = 0);
 };
-}
-#endif //_IMS_MEDIA_ADAPTOR_H_
+}  // namespace android
+#endif  //_IMS_MEDIA_ADAPTOR_H_

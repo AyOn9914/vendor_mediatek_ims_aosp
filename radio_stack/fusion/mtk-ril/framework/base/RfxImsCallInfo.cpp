@@ -27,13 +27,19 @@
  * Class RfxImsCallInfo
  *****************************************************************************/
 
-RfxImsCallInfo::RfxImsCallInfo(): mCallId(0),
-mCallState(STATE_TERMINATED), mNumber(""), mIsConference(false), mIsConferenceHost(false),
-mIsEcc(false), mIsVideo(false), mIsMT(false), mName("") {
-}
+RfxImsCallInfo::RfxImsCallInfo()
+    : mCallId(0),
+      mCallState(STATE_TERMINATED),
+      mNumber(""),
+      mIsConference(false),
+      mIsConferenceHost(false),
+      mIsEcc(false),
+      mIsVideo(false),
+      mIsMT(false),
+      mName("") {}
 
-RfxImsCallInfo::RfxImsCallInfo(int callId, int callState,
-        String8 number, bool isConference, bool isConferenceHost, bool isEcc, bool isVideo, bool isMT) {
+RfxImsCallInfo::RfxImsCallInfo(int callId, int callState, String8 number, bool isConference,
+                               bool isConferenceHost, bool isEcc, bool isVideo, bool isMT) {
     mCallId = callId;
     mNumber = number;
     mCallState = callState;
@@ -64,49 +70,27 @@ RfxImsCallInfo::~RfxImsCallInfo() {
     }
 }
 
-int RfxImsCallInfo::getCallId() {
-    return mCallId;
-}
+int RfxImsCallInfo::getCallId() { return mCallId; }
 
-int RfxImsCallInfo::getCallState() {
-    return mCallState;
-}
+int RfxImsCallInfo::getCallState() { return mCallState; }
 
-String8 RfxImsCallInfo::getNumber() {
-    return mNumber;
-}
+String8 RfxImsCallInfo::getNumber() { return mNumber; }
 
-bool RfxImsCallInfo::isConference() {
-    return mIsConference;
-}
+bool RfxImsCallInfo::isConference() { return mIsConference; }
 
-bool RfxImsCallInfo::isConferenceHost() {
-    return mIsConferenceHost;
-}
+bool RfxImsCallInfo::isConferenceHost() { return mIsConferenceHost; }
 
-bool RfxImsCallInfo::isEcc() {
-    return mIsEcc;
-}
+bool RfxImsCallInfo::isEcc() { return mIsEcc; }
 
-bool RfxImsCallInfo::isVideo() {
-    return mIsVideo;
-}
+bool RfxImsCallInfo::isVideo() { return mIsVideo; }
 
-bool RfxImsCallInfo::isMT() {
-    return mIsMT;
-}
+bool RfxImsCallInfo::isMT() { return mIsMT; }
 
-String8 RfxImsCallInfo::getName() {
-    return mName;
-}
+String8 RfxImsCallInfo::getName() { return mName; }
 
-Vector<RfxImsCallInfo*> RfxImsCallInfo::getParticipantList() {
-    return mConferenceParticipant;
-}
+Vector<RfxImsCallInfo*> RfxImsCallInfo::getParticipantList() { return mConferenceParticipant; }
 
-void RfxImsCallInfo::setCallId(int callId) {
-    mCallId = callId;
-}
+void RfxImsCallInfo::setCallId(int callId) { mCallId = callId; }
 
 void RfxImsCallInfo::setCallState(int callState) {
     mCallState = callState;
@@ -116,32 +100,20 @@ void RfxImsCallInfo::setCallState(int callState) {
     }
 }
 
-void RfxImsCallInfo::setNumber(String8 number) {
-    mNumber = number;
-}
+void RfxImsCallInfo::setNumber(String8 number) { mNumber = number; }
 
-void RfxImsCallInfo::setIsConference(bool isConference) {
-    mIsConference = isConference;
-}
+void RfxImsCallInfo::setIsConference(bool isConference) { mIsConference = isConference; }
 
 void RfxImsCallInfo::setIsConferenceHost(bool isConferenceHost) {
     mIsConferenceHost = isConferenceHost;
 }
 
-void RfxImsCallInfo::setIsEcc(bool isEcc) {
-    mIsEcc = isEcc;
-}
+void RfxImsCallInfo::setIsEcc(bool isEcc) { mIsEcc = isEcc; }
 
-void RfxImsCallInfo::setIsVideo(bool isVideo) {
-    mIsVideo = isVideo;
-}
+void RfxImsCallInfo::setIsVideo(bool isVideo) { mIsVideo = isVideo; }
 
-void RfxImsCallInfo::setIsMT(bool isMT) {
-    mIsMT = isMT;
-}
-void RfxImsCallInfo::setName(String8 name) {
-    mName = name;
-}
+void RfxImsCallInfo::setIsMT(bool isMT) { mIsMT = isMT; }
+void RfxImsCallInfo::setName(String8 name) { mName = name; }
 
 void RfxImsCallInfo::addParticipant(RfxImsCallInfo* call) {
     mConferenceParticipant.push_back(call);
@@ -157,7 +129,7 @@ void RfxImsCallInfo::removeParticipant(RfxImsCallInfo* call) {
         RfxImsCallInfo* participant = mConferenceParticipant[i];
         if (*participant == *call) {
             RFX_LOG_D(RFX_LOG_TAG, "removeParticipant %s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, participant->getNumber().string()));
+                      RfxRilUtils::pii(RFX_LOG_TAG, participant->getNumber().string()));
             mConferenceParticipant.erase(mConferenceParticipant.begin() + i);
             delete participant;
             // Expect to remove only 1 participant. NE may happen if remove more than

@@ -30,10 +30,10 @@ class GsmSmsAddress;
  * Class SmsMessage
  *****************************************************************************/
 class SmsMessage {
-public:
+  public:
     SmsMessage();
     virtual ~SmsMessage();
-    static SmsMessage* createFromPdu(BYTE *pdu, int length);
+    static SmsMessage* createFromPdu(BYTE* pdu, int length);
     bool isReplace();
     bool isWapush();
     bool isSmsForSUPL();
@@ -44,16 +44,16 @@ public:
     int getSeqNumber();
     int getTotalSegnumber();
 
-private:
-    void parsePdu(BYTE *pdu, int length);
-    void parseSmsDeliver(PduParser *parser, int firstByte);
-    void parseUserData(PduParser *parser, bool hasUserDataHeader);
+  private:
+    void parsePdu(BYTE* pdu, int length);
+    void parseSmsDeliver(PduParser* parser, int firstByte);
+    void parseUserData(PduParser* parser, bool hasUserDataHeader);
     void parseWappushUserData();
     void parseMessageBody();
     void extractEmailAddressFromMessageBody();
 
-private:
-    BYTE *mPdu;
+  private:
+    BYTE* mPdu;
     string mScAddress;
     int mMti;
     bool mReplyPathPresent;
@@ -65,9 +65,9 @@ private:
     bool mMwiSense;
     bool mMwiDontStore;
     int mVoiceMailCount;
-    BYTE *mUserData;
+    BYTE* mUserData;
     int mUserDataLength;
-    SmsHeader *mUserDataHeader;
+    SmsHeader* mUserDataHeader;
     MessageClass mMessageClass;
     string mEmailFrom;
     string mEmailBody;
@@ -78,22 +78,22 @@ private:
 };
 
 class WappushMessage {
-public:
-    WappushMessage(BYTE *pdu, int length);
+  public:
+    WappushMessage(BYTE* pdu, int length);
     virtual ~WappushMessage();
     void parsePdu();
     bool isWapushForSUPL();
     BYTE* getUserData();
     int getUserDataLength();
 
-private:
-    BYTE *mPdu;
+  private:
+    BYTE* mPdu;
     int mTransactionId;
     int mPduType;
     int mPduLength;
     string mWapAppId;
     string mContentType;
-    BYTE *mUserData;
+    BYTE* mUserData;
     int mUserDataLength;
     static const string MIME_TYPE_SUPL;
     static const string XWAP_APP_ID_SUPL;

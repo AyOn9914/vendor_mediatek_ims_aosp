@@ -27,33 +27,32 @@
 class RmcSuppServUrcEntryHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcSuppServUrcEntryHandler);
 
-    public:
-        RmcSuppServUrcEntryHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServUrcEntryHandler();
+  public:
+    RmcSuppServUrcEntryHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServUrcEntryHandler();
 
     // Override
-    protected:
+  protected:
     // Process URC here
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        bool isECMCCSS257Received = false;
-        bool isCRINGReceived = false;
-        RIL_SuppSvcNotification tmpSvcNotify;
+  private:
+    bool isECMCCSS257Received = false;
+    bool isCRINGReceived = false;
+    RIL_SuppSvcNotification tmpSvcNotify;
 
-        void handleOnUssd(const sp<RfxMclMessage>& msg);
-        void handleOnFusionUssd(const sp<RfxMclMessage>& msg);
-        void handleOnCfuNotify(const sp<RfxMclMessage>& msg);
-        void handleOnLteSuppSvcNotification(const sp<RfxMclMessage>& msg);
-        void retrieveCallForwardedToNumber(char *rawString, char *number);
-        void handleOnUssi(const sp<RfxMclMessage>& msg);
-        void handleOnXui(const sp<RfxMclMessage>& msg);
-        void handleXcapResponseCodeNotify(const sp<RfxMclMessage>& msg);
-        void handleCRINGReveiced();
-        void handleECPI133Received(const sp<RfxMclMessage>& msg);
-        void handleECMCCSS257Received();
-        void resetFlagAndSvcNotify();
-
+    void handleOnUssd(const sp<RfxMclMessage>& msg);
+    void handleOnFusionUssd(const sp<RfxMclMessage>& msg);
+    void handleOnCfuNotify(const sp<RfxMclMessage>& msg);
+    void handleOnLteSuppSvcNotification(const sp<RfxMclMessage>& msg);
+    void retrieveCallForwardedToNumber(char* rawString, char* number);
+    void handleOnUssi(const sp<RfxMclMessage>& msg);
+    void handleOnXui(const sp<RfxMclMessage>& msg);
+    void handleXcapResponseCodeNotify(const sp<RfxMclMessage>& msg);
+    void handleCRINGReveiced();
+    void handleECPI133Received(const sp<RfxMclMessage>& msg);
+    void handleECMCCSS257Received();
+    void resetFlagAndSvcNotify();
 };
 #endif /* __RMC_SUPP_SERV_URC_ENTRY_HANDLER_H__ */

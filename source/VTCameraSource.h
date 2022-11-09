@@ -29,8 +29,7 @@
 
 //#include "foundation/ABase.h"
 
-namespace android
-{
+namespace android {
 // ----------------------------------------------------------------------------
 
 class IGraphicBufferAlloc;
@@ -57,14 +56,11 @@ class GraphicBuffer;
 // may be dropped.  It is possible to wait for the buffers to be
 // returned (but not implemented)
 
-#define DEBUG_PENDING_BUFFERS   0
+#define DEBUG_PENDING_BUFFERS 0
 
-class VTCameraSource : public MediaSource,
-    public MediaBufferObserver,
-    protected ConsumerListener
-{
-public:
-    enum { MIN_UNDEQUEUED_BUFFERS = 4};
+class VTCameraSource : public MediaSource, public MediaBufferObserver, protected ConsumerListener {
+  public:
+    enum { MIN_UNDEQUEUED_BUFFERS = 4 };
 
     struct FrameAvailableListener : public virtual RefBase {
         // onFrameAvailable() is called from queueBuffer() is the FIFO is
@@ -80,16 +76,16 @@ public:
     virtual ~VTCameraSource();
 
     // For the MediaSource interface for use by StageFrightRecorder:
-    virtual status_t start(MetaData *params = NULL);
+    virtual status_t start(MetaData* params = NULL);
     virtual status_t stop();
-    virtual status_t read(MediaBufferBase **buffer,
-                          const ReadOptions *options = NULL);
+    virtual status_t read(MediaBufferBase** buffer, const ReadOptions* options = NULL);
     virtual sp<MetaData> getFormat();
 
     // Get / Set the frame rate used for encoding. Default fps = 30
-    status_t setFrameRate(int32_t fps) ;
-    status_t setResolutionDegree(int srcWidth, int srcHight,int tarWidth, int tarHeight,int degree,int rotateMethod = 4);
-    status_t createInputProducer(sp<IGraphicBufferProducer>* outBufferProducer,int32_t hal);
+    status_t setFrameRate(int32_t fps);
+    status_t setResolutionDegree(int srcWidth, int srcHight, int tarWidth, int tarHeight,
+                                 int degree, int rotateMethod = 4);
+    status_t createInputProducer(sp<IGraphicBufferProducer>* outBufferProducer, int32_t hal);
     int32_t getFrameRate() const;
 
     // The call for the StageFrightRecorder to tell us that
@@ -111,16 +107,16 @@ public:
     void setFrameAvailableListener(const sp<FrameAvailableListener>& listener);
 
     // dump our state in a String
-    //void dump(String8& result) const;
-    //void dump(String8& result, const char* prefix, char* buffer,
+    // void dump(String8& result) const;
+    // void dump(String8& result, const char* prefix, char* buffer,
     //                                                size_t SIZE) const;
 
     // metaDataStoredInVideoBuffers tells the encoder what kind of metadata
     // is passed through the buffers. Currently, it is set to ANWBuffer
-    //MetadataBufferType  : 1 normal 2 nativewindow mode
+    // MetadataBufferType  : 1 normal 2 nativewindow mode
     MetadataBufferType metaDataStoredInVideoBuffers() const;
 
-    //sp<IGraphicBufferProducer> getProducer() const { return mProducer; }
+    // sp<IGraphicBufferProducer> getProducer() const { return mProducer; }
 
     // To be called before start()
     status_t setMaxAcquiredBufferCount(size_t count);
@@ -128,10 +124,9 @@ public:
     // To be called before start()
     status_t setUseAbsoluteTimestamps();
 
-    static void* getMediaBufferHandleVA(MediaBufferBase *buffer,int32_t *format);
+    static void* getMediaBufferHandleVA(MediaBufferBase* buffer, int32_t* format);
 
-protected:
-
+  protected:
     // Implementation of the BufferQueue::ConsumerListener interface.  These
     // calls are used to notify the Surface of asynchronous events in the
     // BufferQueue.
@@ -156,7 +151,7 @@ protected:
 
     static bool isExternalFormat(uint32_t format);
 
-private:
+  private:
     int32_t mMultiInstanceID;
     // A BufferQueue, represented by these interfaces, is the exchange point
     // between the producer and this consumer
@@ -200,7 +195,7 @@ private:
     size_t mNumPendingBuffers;
 
 #if DEBUG_PENDING_BUFFERS
-    Vector<MediaBufferBase *> mPendingBuffers;
+    Vector<MediaBufferBase*> mPendingBuffers;
 #endif
 
     // mCurrentTimestamp is the timestamp for the current texture. It
@@ -244,7 +239,7 @@ private:
 
     int mLongTimeNoDataTd;
 
-	MetadataBufferType mBufferType;
+    MetadataBufferType mBufferType;
 
     // mFrameAvailableCondition condition used to indicate whether there
     // is a frame available for dequeuing
@@ -253,13 +248,13 @@ private:
     Condition mMediaBuffersAvailableCondition;
 
     // Allocate and return a new MediaBuffer and pass the ANW buffer as metadata into it.
-    void passMetadataBuffer_l(MediaBufferBase **buffer, ANativeWindowBuffer *bufferHandle) const;
+    void passMetadataBuffer_l(MediaBufferBase** buffer, ANativeWindowBuffer* bufferHandle) const;
 
     // Avoid copying and equating and default constructor
-    //DISALLOW_EVIL_CONSTRUCTORS(SurfaceMediaSource);
+    // DISALLOW_EVIL_CONSTRUCTORS(SurfaceMediaSource);
 };
 
 // ----------------------------------------------------------------------------
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_GUI_SURFACEMEDIASOURCE_H
+#endif  // ANDROID_GUI_SURFACEMEDIASOURCE_H

@@ -32,30 +32,29 @@
 #include "hardware/ccci_intf.h"
 #endif
 
-#define NUM_ELEMS(x) (sizeof(x)/sizeof(x[0]))
-#define MIN(a,b) ((a)<(b) ? (a) : (b))
-typedef void (*STATUSCALLBACK)(int slotId, const RfxStatusKeyEnum key,
-            const RfxVariant &value);
+#define NUM_ELEMS(x) (sizeof(x) / sizeof(x[0]))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+typedef void (*STATUSCALLBACK)(int slotId, const RfxStatusKeyEnum key, const RfxVariant& value);
 
 #define OPERATOR_KDDI 129
 #define MNGMT_PACKET_LENGTH 192
 
 class RfxRilUtils {
-
-public:
+  public:
     static int rfxGetSimCount();
     static int isEngLoad();
     static int isUserLoad();
     static int isLteSupport();
     static int isImsSupport();
     static int isMultipleImsSupport();
-    static int triggerCCCIIoctlEx(int request, int *param);
+    static int triggerCCCIIoctlEx(int request, int* param);
     static int triggerCCCIIoctl(int request);
     static int triggerPhantomPacket(String8 s);
     static RilRunMode getRilRunMode();
     static void setRilRunMode(RilRunMode mode);
-    static void setStatusValueForGT(int slotId, const RfxStatusKeyEnum key, const RfxVariant &value);
-    static void updateStatusToGT(int slotId, const RfxStatusKeyEnum key, const RfxVariant &value);
+    static void setStatusValueForGT(int slotId, const RfxStatusKeyEnum key,
+                                    const RfxVariant& value);
+    static void updateStatusToGT(int slotId, const RfxStatusKeyEnum key, const RfxVariant& value);
     static void setStatusCallbackForGT(STATUSCALLBACK cb);
     /// M: add for op09 volte setting @{
     static bool isOp09();
@@ -65,7 +64,7 @@ public:
     static int getMajorSim();
     static void printLog(int level, String8 tag, String8 log, int slot);
     static bool isInLogReductionList(int reqId);
-    static int handleAee(const char *modem_warning, const char *modem_version);
+    static int handleAee(const char* modem_warning, const char* modem_version);
 
     // External SIM [Start]
     static int isExternalSimSupport();
@@ -94,7 +93,7 @@ public:
     static bool isVilteEnable(int slotId);
     static bool isDigitsSupport();
     static bool isSmsSupport();
-    static bool isSimSwitchUrc(const char *line);
+    static bool isSimSwitchUrc(const char* line);
     // Get the protocol stack id by slot id, the slot id is 0-based, protocol stack id is 1-based
     static int getProtocolStackId(int slotId);
 
@@ -102,13 +101,13 @@ public:
     static bool isUiccCLFSupport();
     /// M: GSMA TS.27 13.3.7 @}
     static bool hideStatusLog(const RfxStatusKeyEnum key);
-    static void getLogicalModemId(char *modemId, int size, int slotId);
+    static void getLogicalModemId(char* modemId, int size, int slotId);
 
     static bool isGwsdSupport();
 
-    static const char * pii(const char * tag, const char * hiddenData);
+    static const char* pii(const char* tag, const char* hiddenData);
 
-private:
+  private:
     static const char* boolToString(bool value);
     static char convertCharToHex(char ch);
 

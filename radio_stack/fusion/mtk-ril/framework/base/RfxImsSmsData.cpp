@@ -20,9 +20,9 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxImsSmsData);
 
-RfxImsSmsData::RfxImsSmsData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxImsSmsData::RfxImsSmsData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)_data;
+        RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)_data;
 
         if (pIms->tech == RADIO_TECH_3GPP) {
             copyImsGsmSmsData(_data, _length);
@@ -35,7 +35,7 @@ RfxImsSmsData::RfxImsSmsData(void *_data, int _length) : RfxBaseData(_data, _len
 RfxImsSmsData::~RfxImsSmsData() {
     // free memory
     if (m_data != NULL) {
-        RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)m_data;
+        RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)m_data;
         if (pIms->tech == RADIO_TECH_3GPP) {
             releaseImsGsmSmsData();
         } else {
@@ -44,9 +44,9 @@ RfxImsSmsData::~RfxImsSmsData() {
     }
 }
 
-void RfxImsSmsData::copyImsGsmSmsData(void *data, int length) {
-    RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)data;
-    RIL_IMS_SMS_Message *pData = (RIL_IMS_SMS_Message *)calloc(1, sizeof(RIL_IMS_SMS_Message));
+void RfxImsSmsData::copyImsGsmSmsData(void* data, int length) {
+    RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)data;
+    RIL_IMS_SMS_Message* pData = (RIL_IMS_SMS_Message*)calloc(1, sizeof(RIL_IMS_SMS_Message));
     char** pStrs = pIms->message.gsmMessage;
     char** pDstStrs = NULL;
     int count = GSM_SMS_MESSAGE_STRS_COUNT;
@@ -56,7 +56,7 @@ void RfxImsSmsData::copyImsGsmSmsData(void *data, int length) {
     pData->messageRef = pIms->messageRef;
 
     if (pStrs != NULL) {
-        pDstStrs = (char**)calloc(count, sizeof(char *));
+        pDstStrs = (char**)calloc(count, sizeof(char*));
         RFX_ASSERT(pDstStrs != NULL);
         for (int i = 0; i < count; i++) {
             if (pStrs[i] != NULL) {
@@ -72,7 +72,7 @@ void RfxImsSmsData::copyImsGsmSmsData(void *data, int length) {
 
 void RfxImsSmsData::releaseImsGsmSmsData() {
     if (m_data != NULL) {
-        RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)m_data;
+        RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)m_data;
         char** pStrs = pIms->message.gsmMessage;
         int count = GSM_SMS_MESSAGE_STRS_COUNT;
 
@@ -91,15 +91,14 @@ void RfxImsSmsData::releaseImsGsmSmsData() {
     }
 }
 
-void RfxImsSmsData::copyImsCdmaSmsData(void *data, int length) {
-    RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)data;
-    RIL_IMS_SMS_Message *pData = (RIL_IMS_SMS_Message *)calloc(1, sizeof(RIL_IMS_SMS_Message));
+void RfxImsSmsData::copyImsCdmaSmsData(void* data, int length) {
+    RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)data;
+    RIL_IMS_SMS_Message* pData = (RIL_IMS_SMS_Message*)calloc(1, sizeof(RIL_IMS_SMS_Message));
     RFX_ASSERT(pData != NULL);
     pData->tech = pIms->tech;
     pData->messageRef = pIms->messageRef;
     if (pIms->message.cdmaMessage != NULL) {
-        pData->message.cdmaMessage =
-            (RIL_CDMA_SMS_Message *)malloc(sizeof(RIL_CDMA_SMS_Message));
+        pData->message.cdmaMessage = (RIL_CDMA_SMS_Message*)malloc(sizeof(RIL_CDMA_SMS_Message));
         RFX_ASSERT(pData->message.cdmaMessage != NULL);
         *(pData->message.cdmaMessage) = *(pIms->message.cdmaMessage);
     }
@@ -109,7 +108,7 @@ void RfxImsSmsData::copyImsCdmaSmsData(void *data, int length) {
 
 void RfxImsSmsData::releaseImsCdmaSmsData() {
     if (m_data != NULL) {
-        RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)m_data;
+        RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)m_data;
         free(pIms->message.cdmaMessage);
         pIms->message.cdmaMessage = NULL;
         free(m_data);

@@ -22,7 +22,6 @@
 #include <Errors.h>
 #include <Tokenizer.h>
 
-
 namespace android {
 
 /*
@@ -47,7 +46,7 @@ namespace android {
  * TODO Support escape sequences and quoted values when needed.
  */
 class PropertyMap {
-public:
+  public:
     /* Creates an empty property map. */
     PropertyMap();
     ~PropertyMap();
@@ -81,17 +80,17 @@ public:
     /* Loads a property map from a file. */
     static status_t load(const String8& filename, PropertyMap** outMap);
 
-private:
+  private:
     class Parser {
         PropertyMap* mMap;
         Tokenizer* mTokenizer;
 
-    public:
+      public:
         Parser(PropertyMap* map, Tokenizer* tokenizer);
         ~Parser();
         status_t parse();
 
-    private:
+      private:
         status_t parseType();
         status_t parseKey();
         status_t parseKeyProperty();
@@ -102,6 +101,6 @@ private:
     KeyedVector<String8, String8> mProperties;
 };
 
-} // namespace android
+}  // namespace android
 
-#endif // _UTILS_PROPERTY_MAP_H
+#endif  // _UTILS_PROPERTY_MAP_H

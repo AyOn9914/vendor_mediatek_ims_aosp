@@ -18,10 +18,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxFooData);
 
-RfxFooData::RfxFooData(void *data, int length) : RfxBaseData(data, length) {
-    RIL_Foo *pTmp = (RIL_Foo *) data;
+RfxFooData::RfxFooData(void* data, int length) : RfxBaseData(data, length) {
+    RIL_Foo* pTmp = (RIL_Foo*)data;
     m_length = length;
-    RIL_Foo *res = (RIL_Foo *) calloc(1, sizeof(RIL_Foo));
+    RIL_Foo* res = (RIL_Foo*)calloc(1, sizeof(RIL_Foo));
     if (res == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
@@ -33,7 +33,7 @@ RfxFooData::RfxFooData(void *data, int length) : RfxBaseData(data, length) {
 
 RfxFooData::RfxFooData(int timeout, int power) : RfxBaseData(NULL, 0) {
     m_length = sizeof(RIL_Foo);
-    RIL_Foo *res = (RIL_Foo *) calloc(1, sizeof(RIL_Foo));
+    RIL_Foo* res = (RIL_Foo*)calloc(1, sizeof(RIL_Foo));
     if (res == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
@@ -43,6 +43,4 @@ RfxFooData::RfxFooData(int timeout, int power) : RfxBaseData(NULL, 0) {
     m_data = res;
 }
 
-RfxFooData::~RfxFooData() {
-    free(m_data);
-}
+RfxFooData::~RfxFooData() { free(m_data); }

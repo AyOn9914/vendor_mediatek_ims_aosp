@@ -24,11 +24,10 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxLceDataResponseData);
 
-RfxLceDataResponseData::RfxLceDataResponseData(void *data, int length)
-        : RfxBaseData(data, length) {
+RfxLceDataResponseData::RfxLceDataResponseData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_LceDataInfo *tmpPtr = (RIL_LceDataInfo *)data;
-        RIL_LceDataInfo *response = (RIL_LceDataInfo*)calloc(1, sizeof(RIL_LceDataInfo));
+        RIL_LceDataInfo* tmpPtr = (RIL_LceDataInfo*)data;
+        RIL_LceDataInfo* response = (RIL_LceDataInfo*)calloc(1, sizeof(RIL_LceDataInfo));
         RFX_ASSERT(response != NULL);
         response->last_hop_capacity_kbps = tmpPtr->last_hop_capacity_kbps;
         response->confidence_level = tmpPtr->confidence_level;

@@ -26,23 +26,23 @@
 
 RFX_IMPLEMENT_CLASS("RtcSampleController", RtcSampleController, RfxController);
 
-
 void RtcSampleController::onInit() {
     RfxController::onInit();  // Required: invoke super class implementation
 
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CARD_TYPE,
-        RfxStatusChangeCallback(this, &RtcSampleController::onCardTypeChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CARD_TYPE,
+            RfxStatusChangeCallback(this, &RtcSampleController::onCardTypeChanged));
 
     // use wp<> to retain other object's pointer,
     // if use *, it would be dangling pointer if the object is deleted by others
     // if use sp<>, it will impact the object's life cycel principle which is,
     // who create the object, who delete it
-    m_hello_controller = (RtcHelloController *)findController(RFX_OBJ_CLASS_INFO(RtcHelloController));
+    m_hello_controller =
+            (RtcHelloController*)findController(RFX_OBJ_CLASS_INFO(RtcHelloController));
 }
 
-void RtcSampleController::onCardTypeChanged(RfxStatusKeyEnum key,
-    RfxVariant old_value, RfxVariant value) {
-
+void RtcSampleController::onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                            RfxVariant value) {
     // do something
     // post emit the signal, it's not sync invoke, that means
     // the real invoke will not happen in postEmit(), it will

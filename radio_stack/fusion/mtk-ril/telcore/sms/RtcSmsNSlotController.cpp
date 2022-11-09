@@ -26,20 +26,16 @@
 /*****************************************************************************
  * Defines
  *****************************************************************************/
-#define EVENT_SMS_DISPATCH_SUPL_SMS         1
+#define EVENT_SMS_DISPATCH_SUPL_SMS 1
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcSmsNSlotController", RtcSmsNSlotController, RfxController);
 
-RtcSmsNSlotController::RtcSmsNSlotController() :
-        m_smsThread(NULL),
-        mDispatcherList(NULL) {
-}
+RtcSmsNSlotController::RtcSmsNSlotController() : m_smsThread(NULL), mDispatcherList(NULL) {}
 
-RtcSmsNSlotController::~RtcSmsNSlotController() {
-}
+RtcSmsNSlotController::~RtcSmsNSlotController() {}
 
 void RtcSmsNSlotController::onInit() {
     RfxController::onInit();
@@ -53,7 +49,6 @@ void RtcSmsNSlotController::onInit() {
         RFX_OBJ_CREATE(messageDispatcher, SuplMsgDispatcher, this);
         mDispatcherList->add(messageDispatcher);
     }
-
 }
 
 void RtcSmsNSlotController::onDeinit() {
@@ -75,12 +70,11 @@ void RtcSmsNSlotController::onDeinit() {
     RfxController::onDeinit();
 }
 
-void RtcSmsNSlotController::onHandleSmsMessage(const sp<RtcSmsParsingMessage> & message) {
-    logD(SMS_TAG, "[RtcSmsNSlotController]onHandleSmsMessage %d",
-        message->getId());
+void RtcSmsNSlotController::onHandleSmsMessage(const sp<RtcSmsParsingMessage>& message) {
+    logD(SMS_TAG, "[RtcSmsNSlotController]onHandleSmsMessage %d", message->getId());
     switch (message->getId()) {
         case EVENT_SMS_DISPATCH_SUPL_SMS: {
-            Parcel *p = message->getParcel();
+            Parcel* p = message->getParcel();
             p->setDataPosition(0);
             int slotId = p->readInt32();
             const char* data = p->readCString();
@@ -96,9 +90,7 @@ void RtcSmsNSlotController::onHandleSmsMessage(const sp<RtcSmsParsingMessage> & 
     }
 }
 
-sp<RtcSmsThread> RtcSmsNSlotController::getSmsThread() {
-    return m_smsThread;
-}
+sp<RtcSmsThread> RtcSmsNSlotController::getSmsThread() { return m_smsThread; }
 
 void RtcSmsNSlotController::dispatchSms(const sp<RfxMessage>& msg) {
     if (mDispatcherList == NULL) {
@@ -123,11 +115,11 @@ void RtcSmsNSlotController::dispatchSms(const sp<RfxMessage>& msg) {
     strncpy(pdu, data, length);
     pdu[length] = '\0';
 
-    Parcel *p = new Parcel();
+    Parcel* p = new Parcel();
     p->writeInt32(slotId);
     p->writeCString(pdu);
-    sp<RtcSmsParsingMessage> smsMsg = RtcSmsParsingMessage::obtainMessage(
-              EVENT_SMS_DISPATCH_SUPL_SMS, p);
+    sp<RtcSmsParsingMessage> smsMsg =
+            RtcSmsParsingMessage::obtainMessage(EVENT_SMS_DISPATCH_SUPL_SMS, p);
     sp<RtcSmsParsingThreadHandler> handler = new RtcSmsParsingThreadHandler(smsMsg);
     if (m_smsThread->getLooper() == NULL) {
         logD(SMS_TAG, "[RtcSmsNSlotController]sendSmsSmsMessage: ignore message");

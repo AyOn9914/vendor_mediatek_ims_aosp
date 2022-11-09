@@ -32,7 +32,7 @@ RfxNwServiceState::RfxNwServiceState() {
 }
 
 RfxNwServiceState::RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
-        int rilVoiceRadioTech, int rilDataRadioTech) {
+                                     int rilVoiceRadioTech, int rilDataRadioTech) {
     mRilVoiceRegState = rilVoiceRegState;
     mRilDataRegState = rilDataRegState;
     mRilVoiceRadioTech = rilVoiceRadioTech;
@@ -41,8 +41,8 @@ RfxNwServiceState::RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
 }
 // for iwlan
 RfxNwServiceState::RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
-        int rilVoiceRadioTech, int rilDataRadioTech,
-        int rilIwlanRegState) {
+                                     int rilVoiceRadioTech, int rilDataRadioTech,
+                                     int rilIwlanRegState) {
     mRilVoiceRegState = rilVoiceRegState;
     mRilDataRegState = rilDataRegState;
     mRilVoiceRadioTech = rilVoiceRadioTech;
@@ -50,48 +50,36 @@ RfxNwServiceState::RfxNwServiceState(int rilVoiceRegState, int rilDataRegState,
     mRilIwlanRegState = rilIwlanRegState;
 }
 
+RfxNwServiceState::~RfxNwServiceState() {}
 
-RfxNwServiceState::~RfxNwServiceState() {
-}
-
-int RfxNwServiceState::getRilVoiceRegState() {
-    return mRilVoiceRegState;
-}
+int RfxNwServiceState::getRilVoiceRegState() { return mRilVoiceRegState; }
 
 void RfxNwServiceState::setRilVoiceRegState(int rilVoiceRegState) {
     mRilVoiceRegState = rilVoiceRegState;
 }
 
-int RfxNwServiceState::getRilDataRegState() {
-    return mRilDataRegState;
-}
+int RfxNwServiceState::getRilDataRegState() { return mRilDataRegState; }
 
 void RfxNwServiceState::setRilDataRegState(int rilDataRegState) {
     mRilDataRegState = rilDataRegState;
 }
 
-int RfxNwServiceState::getRilVoiceRadioTech() {
-    return mRilVoiceRadioTech;
-}
+int RfxNwServiceState::getRilVoiceRadioTech() { return mRilVoiceRadioTech; }
 
 void RfxNwServiceState::setRilVoiceRadioTech(int rilVoiceRadioTech) {
     mRilVoiceRadioTech = rilVoiceRadioTech;
 }
 
-int RfxNwServiceState::getRilDataRadioTech() {
-    return mRilDataRadioTech;
-}
+int RfxNwServiceState::getRilDataRadioTech() { return mRilDataRadioTech; }
 
 void RfxNwServiceState::setRilDataRadioTech(int rilDataRadioTech) {
     mRilDataRadioTech = rilDataRadioTech;
 }
 
-int RfxNwServiceState::getIwlanRegState() {
-    return mRilIwlanRegState;
-}
+int RfxNwServiceState::getIwlanRegState() { return mRilIwlanRegState; }
 
 String8 RfxNwServiceState::toString() {
     return String8::format("cs_reg=%d, cs_rat=%d, ps_reg=%d, ps_rat=%d, iwlan_reg=%d",
-            mRilVoiceRegState, mRilVoiceRadioTech, mRilDataRegState, mRilDataRadioTech,
-            mRilIwlanRegState);
+                           mRilVoiceRegState, mRilVoiceRadioTech, mRilDataRegState,
+                           mRilDataRadioTech, mRilIwlanRegState);
 }

@@ -18,16 +18,15 @@
 #include <ril_internal.h>
 
 namespace radioConfig {
-    void registerService(RIL_RadioFunctions *callbacks, android::CommandInfo *commands);
-    int getSimSlotsStatusResponse(int slotId, android::ClientId clientId, int responseType,
-            int token, RIL_Errno e, void *response, size_t responselen);
-    int setSimSlotsMappingResponse(int slotId, android::ClientId clientId, int responseType,
-            int token, RIL_Errno e, void *response, size_t responselen);
-    int setPreferredDataModemResponse(int slotId, android::ClientId clientId, int responseType,
-            int token, RIL_Errno e, void *response, size_t responselen);
-    int simSlotStatusChangedInd(int slotId,
-            int indicationType, int token, RIL_Errno e, void *response,
-            size_t responselen);
-    int getPhoneCapabilityResponse(int slotId, android::ClientId clientId, int responseType,
-            int token, RIL_Errno e, void *response, size_t responselen);
-}
+void registerService(RIL_RadioFunctions* callbacks, android::CommandInfo* commands);
+int getSimSlotsStatusResponse(int slotId, android::ClientId clientId, int responseType, int token,
+                              RIL_Errno e, void* response, size_t responselen);
+int setSimSlotsMappingResponse(int slotId, android::ClientId clientId, int responseType, int token,
+                               RIL_Errno e, void* response, size_t responselen);
+int setPreferredDataModemResponse(int slotId, android::ClientId clientId, int responseType,
+                                  int token, RIL_Errno e, void* response, size_t responselen);
+int simSlotStatusChangedInd(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+                            size_t responselen);
+int getPhoneCapabilityResponse(int slotId, android::ClientId clientId, int responseType, int token,
+                               RIL_Errno e, void* response, size_t responselen);
+}  // namespace radioConfig

@@ -26,36 +26,30 @@ enum {
     NOTIFY_CALLBACK,
 };
 
-class BpVTClient: public BpInterface<IVTClient> {
- public:
-  explicit BpVTClient(const sp<IBinder>& impl):BpInterface<IVTClient>(impl) {}
+class BpVTClient : public BpInterface<IVTClient> {
+  public:
+    explicit BpVTClient(const sp<IBinder>& impl) : BpInterface<IVTClient>(impl) {}
 
-  virtual void notifyCallback(
-          int32_t id,
-          int32_t msgType,
-          int32_t arg1,
-          int32_t arg2,
-          int32_t arg3,
-          const String8 & obj1,
-          const String8 & obj2,
-          const sp<IGraphicBufferProducer> & obj3) {
-      Parcel data, reply;
-      data.writeInterfaceToken(IVTClient::getInterfaceDescriptor());
-      data.writeInt32(id);
-      data.writeInt32(msgType);
-      data.writeInt32(arg1);
-      data.writeInt32(arg2);
-      data.writeInt32(arg3);
-      data.writeString8(obj1);
-      data.writeString8(obj2);
-      data.writeStrongBinder(obj3->asBinder(obj3));
-      remote()->transact(NOTIFY_CALLBACK, data, &reply);
-  }
+    virtual void notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
+                                int32_t arg3, const String8& obj1, const String8& obj2,
+                                const sp<IGraphicBufferProducer>& obj3) {
+        Parcel data, reply;
+        data.writeInterfaceToken(IVTClient::getInterfaceDescriptor());
+        data.writeInt32(id);
+        data.writeInt32(msgType);
+        data.writeInt32(arg1);
+        data.writeInt32(arg2);
+        data.writeInt32(arg3);
+        data.writeString8(obj1);
+        data.writeString8(obj2);
+        data.writeStrongBinder(obj3->asBinder(obj3));
+        remote()->transact(NOTIFY_CALLBACK, data, &reply);
+    }
 };
 
 IMPLEMENT_META_INTERFACE(VTClient, "android.hardware.IVTClient");
 
-status_t BnVTClient::onTransact(uint32_t code, const Parcel& data, Parcel * reply, uint32_t flags) {
+status_t BnVTClient::onTransact(uint32_t code, const Parcel& data, Parcel* reply, uint32_t flags) {
     switch (code) {
         case NOTIFY_CALLBACK: {
             CHECK_INTERFACE(IVTClient, data, reply);
@@ -66,26 +60,17 @@ status_t BnVTClient::onTransact(uint32_t code, const Parcel& data, Parcel * repl
             int32_t arg3 = data.readInt32();
             const String8 obj1(data.readString8());
             const String8 obj2(data.readString8());
-            sp<IGraphicBufferProducer> obj3
-                    = interface_cast<IGraphicBufferProducer> (data.readStrongBinder());
+            sp<IGraphicBufferProducer> obj3 =
+                    interface_cast<IGraphicBufferProducer>(data.readStrongBinder());
 
-            notifyCallback(
-                    id,
-                    msgType,
-                    arg1,
-                    arg2,
-                    arg3,
-                    obj1,
-                    obj2,
-                    obj3);
+            notifyCallback(id, msgType, arg1, arg2, arg3, obj1, obj2, obj3);
 
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         default:
             return BBinder::onTransact(code, data, reply, flags);
     }
 }
 
-}
+}  // namespace VTService

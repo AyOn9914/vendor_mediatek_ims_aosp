@@ -24,26 +24,24 @@
  * Register Data Class
  *****************************************************************************/
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaWriteRuimSmsReq, RmcCdmaWriteRuimSmsRsp, RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaWriteRuimSmsReq, RmcCdmaWriteRuimSmsRsp,
+                                RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM);
 
 /*****************************************************************************
  * Class RmcCdmaWriteRuimSmsReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaWriteRuimSmsReq);
-RmcCdmaWriteRuimSmsReq::RmcCdmaWriteRuimSmsReq(void *data, int length) :
-        RmcSingleAtReq(data, length), m_index(-1) {
+RmcCdmaWriteRuimSmsReq::RmcCdmaWriteRuimSmsReq(void* data, int length)
+    : RmcSingleAtReq(data, length), m_index(-1) {
     RFX_ASSERT(length == sizeof(m_writeArgs));
-    m_writeArgs = *((RIL_CDMA_SMS_WriteArgs *)data);
+    m_writeArgs = *((RIL_CDMA_SMS_WriteArgs*)data);
     m_data = &m_writeArgs;
     m_length = length;
 }
 
-RmcCdmaWriteRuimSmsReq::~RmcCdmaWriteRuimSmsReq() {
-}
+RmcCdmaWriteRuimSmsReq::~RmcCdmaWriteRuimSmsReq() {}
 
-
-RmcAtSendInfo* RmcCdmaWriteRuimSmsReq::onGetAtInfo(RfxBaseHandler *h) {
+RmcAtSendInfo* RmcCdmaWriteRuimSmsReq::onGetAtInfo(RfxBaseHandler* h) {
     RFX_UNUSED(h);
     String8 hexPdu;
     String8 number;
@@ -51,13 +49,13 @@ RmcAtSendInfo* RmcCdmaWriteRuimSmsReq::onGetAtInfo(RfxBaseHandler *h) {
         this->setError(RIL_E_SYSTEM_ERR);
         return NULL;
     }
-    String8 cmd = String8::format("AT+EC2KCMGW=\"0\",\"%s\",%d",
-            hexPdu.string(), m_writeArgs.status);
+    String8 cmd =
+            String8::format("AT+EC2KCMGW=\"0\",\"%s\",%d", hexPdu.string(), m_writeArgs.status);
     String8 responsePrefix("+EC2KCMGW:");
     return new RmcSingleLineAtSendInfo(cmd, responsePrefix);
 }
 
-bool RmcCdmaWriteRuimSmsReq::onHandleIntermediates(RfxAtLine * line, RfxBaseHandler * h) {
+bool RmcCdmaWriteRuimSmsReq::onHandleIntermediates(RfxAtLine* line, RfxBaseHandler* h) {
     RFX_UNUSED(h);
     int err;
     char* storage = line->atTokNextstr(&err);
@@ -73,36 +71,33 @@ bool RmcCdmaWriteRuimSmsReq::onHandleIntermediates(RfxAtLine * line, RfxBaseHand
     return false;
 }
 
-
 /*****************************************************************************
-* Class RmcCdmaWriteRuimSmsRsp
-*****************************************************************************/
+ * Class RmcCdmaWriteRuimSmsRsp
+ *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaWriteRuimSmsRsp);
-RmcCdmaWriteRuimSmsRsp::RmcCdmaWriteRuimSmsRsp(void *data, int length):
-        RmcVoidRsp(data, length), m_index(-1) {
+RmcCdmaWriteRuimSmsRsp::RmcCdmaWriteRuimSmsRsp(void* data, int length)
+    : RmcVoidRsp(data, length), m_index(-1) {
     if (data != NULL) {
-        m_index = *((int *)data);
-        m_data = (void *)&m_index;
+        m_index = *((int*)data);
+        m_data = (void*)&m_index;
         m_length = length;
     }
 }
 
 RmcCdmaWriteRuimSmsRsp::RmcCdmaWriteRuimSmsRsp(int index, RIL_Errno e)
-        : RmcVoidRsp(e), m_index(index) {
+    : RmcVoidRsp(e), m_index(index) {
     if (e == RIL_E_SUCCESS) {
-        m_data = (void *)&m_index;
+        m_data = (void*)&m_index;
         m_length = sizeof(m_index);
     }
 }
 
-
-RmcCdmaWriteRuimSmsRsp::~RmcCdmaWriteRuimSmsRsp() {
-}
+RmcCdmaWriteRuimSmsRsp::~RmcCdmaWriteRuimSmsRsp() {}
 
 /*****************************************************************************
  * Class RmcCdmaWriteRuimSmsHdlr
  *****************************************************************************/
-RmcBaseRspData *RmcCdmaWriteRuimSmsHdlr::onGetRspData(RmcBaseReqData *req) {
-    RmcCdmaWriteRuimSmsReq *writeReq = (RmcCdmaWriteRuimSmsReq *)req;
+RmcBaseRspData* RmcCdmaWriteRuimSmsHdlr::onGetRspData(RmcBaseReqData* req) {
+    RmcCdmaWriteRuimSmsReq* writeReq = (RmcCdmaWriteRuimSmsReq*)req;
     return new RmcCdmaWriteRuimSmsRsp(writeReq->getIndex(), req->getError());
 }

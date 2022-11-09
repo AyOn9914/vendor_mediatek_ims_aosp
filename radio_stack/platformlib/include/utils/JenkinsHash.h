@@ -24,7 +24,6 @@
 
 #include <TypeHelpers.h>
 
-
 namespace android {
 
 /* The Jenkins hash of a sequence of 32 bit words A, B, C is:
@@ -33,7 +32,8 @@ namespace android {
 #ifdef __clang__
 __attribute__((no_sanitize("integer")))
 #endif
-inline uint32_t JenkinsHashMix(uint32_t hash, uint32_t data) {
+inline uint32_t
+JenkinsHashMix(uint32_t hash, uint32_t data) {
     hash += data;
     hash += (hash << 10);
     hash ^= (hash >> 6);
@@ -47,6 +47,6 @@ uint32_t JenkinsHashMixBytes(uint32_t hash, const uint8_t* bytes, size_t size);
 
 uint32_t JenkinsHashMixShorts(uint32_t hash, const uint16_t* shorts, size_t size);
 
-}
+}  // namespace android
 
-#endif // ANDROID_JENKINS_HASH_H
+#endif  // ANDROID_JENKINS_HASH_H

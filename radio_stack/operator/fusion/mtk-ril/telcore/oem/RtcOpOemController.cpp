@@ -28,11 +28,9 @@
 
 RFX_IMPLEMENT_CLASS("RtcOpOemController", RtcOpOemController, RtcOemController);
 
-RtcOpOemController::RtcOpOemController() {
-}
+RtcOpOemController::RtcOpOemController() {}
 
-RtcOpOemController::~RtcOpOemController() {
-}
+RtcOpOemController::~RtcOpOemController() {}
 
 void RtcOpOemController::onInit() {
     RtcOemController::onInit();

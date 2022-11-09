@@ -28,34 +28,34 @@
  *****************************************************************************/
 
 class RmcGsmSmsBaseHandler : public RfxBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsBaseHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsBaseHandler);
 
-public:
+  public:
     RmcGsmSmsBaseHandler(int slot_id, int channel_id);
 
-protected:
+  protected:
     // Utility functions
-    int smsPackPdu(const char* smsc, const char *tpdu, char *pdu, bool check);
+    int smsPackPdu(const char* smsc, const char* tpdu, char* pdu, bool check);
     bool smsFoCheck(int fo);
     bool smsPidCheck(int pid);
     bool smsDcsCheck(int dcs);
-    void smsDecodeDcs(int dcs, SMS_ENCODING_ENUM *alphabet_type,
-            SMS_MESSAGE_CLASS_ENUM *msg_class, bool *is_compress);
+    void smsDecodeDcs(int dcs, SMS_ENCODING_ENUM* alphabet_type, SMS_MESSAGE_CLASS_ENUM* msg_class,
+                      bool* is_compress);
     bool smsIsLenIn8bit(int dcs);
     unsigned int smsMsgLenInOctet(int dcs, int len);
-    int smsHexCharToDecInt(char *hex, int length);
-    bool smsSubmitPduCheck(int pdu_len, char *pdu_ptr, TPDU_ERROR_CAUSE_ENUM  *error_cause);
-    bool smsDeliverPduCheck(int pdu_len, char *pdu, TPDU_ERROR_CAUSE_ENUM *error_cause);
+    int smsHexCharToDecInt(char* hex, int length);
+    bool smsSubmitPduCheck(int pdu_len, char* pdu_ptr, TPDU_ERROR_CAUSE_ENUM* error_cause);
+    bool smsDeliverPduCheck(int pdu_len, char* pdu, TPDU_ERROR_CAUSE_ENUM* error_cause);
     int atGetCmsError(const sp<RfxAtResponse> p_response);
     void showCurrIncomingSmsType();
     int smsCheckReceivedPdu(int length, char* pdu, bool check);
     int hexCharToInt(char c);
-    void hexStringToBytes(const char *in, int inLength, char *out, int outLength);
+    void hexStringToBytes(const char* in, int inLength, char* out, int outLength);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
-private:
+  private:
     String8 mTag;
 };
 #endif /* __RMC_GSM_SMS_BASE_HANDLER_H__ */

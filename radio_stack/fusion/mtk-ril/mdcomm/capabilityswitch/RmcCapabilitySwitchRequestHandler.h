@@ -40,15 +40,15 @@ class RmcCapabilitySwitchRequestHandler : public RfxBaseHandler {
     static void notifySIMInitDone(int slot_id);
 
   protected:
-    virtual void onHandleRequest(const sp<RfxMclMessage> &msg);
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
   private:
     void queryBearer();
     void queryActiveMode();
     int queryMainProtocol();
     void sendRadioCapabilityDoneIfNeeded();
-    void requestGetRadioCapability(const sp<RfxMclMessage> &msg);
-    void requestSetRadioCapability(const sp<RfxMclMessage> &msg);
+    void requestGetRadioCapability(const sp<RfxMclMessage>& msg);
+    void requestSetRadioCapability(const sp<RfxMclMessage>& msg);
     void setSimSwitchProp(int old_major_slot, int new_major_slot);
     void switchCapability(int old_major_slot, int new_major_slot);
     void resetRadio();
@@ -67,10 +67,8 @@ class RmcCapabilitySwitchRequestHandler : public RfxBaseHandler {
 
   private:
     char rat_properties[MAX_SIM_COUNT][RFX_PROPERTY_VALUE_MAX] = {
-        "ro.vendor.mtk_protocol1_rat_config",
-        "persist.vendor.radio.mtk_ps2_rat",
-        "persist.vendor.radio.mtk_ps3_rat",
-        "persist.vendor.radio.mtk_ps4_rat"};
+            "ro.vendor.mtk_protocol1_rat_config", "persist.vendor.radio.mtk_ps2_rat",
+            "persist.vendor.radio.mtk_ps3_rat", "persist.vendor.radio.mtk_ps4_rat"};
     static Mutex s_sim_init_state_mutex;
     static int s_sim_init_state;
     static Mutex s_first_instance_mutex;

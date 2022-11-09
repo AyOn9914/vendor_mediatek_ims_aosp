@@ -28,11 +28,11 @@
 class RmcAtciCommonRequestHandler : public RmcAtciRequestHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcAtciCommonRequestHandler);
 
-public:
+  public:
     RmcAtciCommonRequestHandler(int slot_id, int channel_id);
     virtual ~RmcAtciCommonRequestHandler() {}
 
-protected:
+  protected:
     virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 };

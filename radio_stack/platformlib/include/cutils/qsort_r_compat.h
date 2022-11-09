@@ -30,10 +30,10 @@ extern "C" {
 #endif
 
 void qsort_r_compat(void* base, size_t nel, size_t width, void* thunk,
-        int (*compar)(void*, const void* , const void* ));
+                    int (*compar)(void*, const void*, const void*));
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // _LIBS_CUTILS_QSORT_R_COMPAT_H
+#endif  // _LIBS_CUTILS_QSORT_R_COMPAT_H

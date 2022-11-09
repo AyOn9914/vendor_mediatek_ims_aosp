@@ -18,12 +18,11 @@
 #include "telephony/mtk_ril.h"
 RFX_IMPLEMENT_DATA_CLASS(RfxImsDataInfoNotifyData);
 
-RfxImsDataInfoNotifyData::RfxImsDataInfoNotifyData(void *data, int length)
+RfxImsDataInfoNotifyData::RfxImsDataInfoNotifyData(void* data, int length)
     : RfxBaseData(data, length) {
     if (NULL != data) {
-        RIL_IMS_DataInfoNotify *pIn =
-                (RIL_IMS_DataInfoNotify*)data;
-        RIL_IMS_DataInfoNotify *pOut =
+        RIL_IMS_DataInfoNotify* pIn = (RIL_IMS_DataInfoNotify*)data;
+        RIL_IMS_DataInfoNotify* pOut =
                 (RIL_IMS_DataInfoNotify*)calloc(1, sizeof(RIL_IMS_DataInfoNotify));
         RFX_ASSERT(pOut != NULL);
 
@@ -38,7 +37,7 @@ RfxImsDataInfoNotifyData::RfxImsDataInfoNotifyData(void *data, int length)
 
 RfxImsDataInfoNotifyData::~RfxImsDataInfoNotifyData() {
     if (m_data) {
-        RIL_IMS_DataInfoNotify *p = (RIL_IMS_DataInfoNotify*)m_data;
+        RIL_IMS_DataInfoNotify* p = (RIL_IMS_DataInfoNotify*)m_data;
         free(p->type);
         free(p->event);
         free(p->extra);

@@ -25,30 +25,30 @@
 #include <telephony/mtk_ril.h>
 #include <utils/String8.h>
 
-#define ECC_PATH           "/system/vendor/etc/"
-#define ECC_OM_FILE_PATH   "/system/vendor/etc/ecc_list.xml"
-#define ECC_TABLE          "EccTable"
-#define ECC_ENTRY          "EccEntry"
-#define ECC_NUMBER         "Ecc"
-#define ECC_CATEGORY       "Category"
-#define ECC_CONDITION      "Condition"
-#define ECC_PLMN           "Plmn"
-#define ECC_DEFAULT        "112,911"
+#define ECC_PATH "/system/vendor/etc/"
+#define ECC_OM_FILE_PATH "/system/vendor/etc/ecc_list.xml"
+#define ECC_TABLE "EccTable"
+#define ECC_ENTRY "EccEntry"
+#define ECC_NUMBER "Ecc"
+#define ECC_CATEGORY "Category"
+#define ECC_CONDITION "Condition"
+#define ECC_PLMN "Plmn"
+#define ECC_DEFAULT "112,911"
 #define ECC_DEFAULT_NO_SIM "112,911,000,08,110,118,119,999"
-#define ECC_CTA            "110,119,120,122"
-#define ECC_OPERATOR_PROP  "persist.vendor.operator.optr"
+#define ECC_CTA "110,119,120,122"
+#define ECC_OPERATOR_PROP "persist.vendor.operator.optr"
 
-#define PROPERTY_ECC_COUNT           "ro.vendor.semc.ecclist.num"
-#define PROPERTY_ECC_NUMBER          "ro.vendor.semc.ecclist.number."
-#define PROPERTY_ECC_TYPE            "ro.vendor.semc.ecclist.type."
-#define PROPERTY_ECC_PLMN            "ro.vendor.semc.ecclist.plmn."
-#define PROPERTY_ECC_CONDITION       "ro.vendor.semc.ecclist.non_ecc."
-#define PROPERTY_ECC_TYPE_KEY_POLICE         "police"
-#define PROPERTY_ECC_TYPE_KEY_AMBULANCE      "ambulance"
-#define PROPERTY_ECC_TYPE_KEY_FIRE_BRIGADE   "firebrigade"
-#define PROPERTY_ECC_TYPE_KEY_MARINE_GUARD   "marineguard"
+#define PROPERTY_ECC_COUNT "ro.vendor.semc.ecclist.num"
+#define PROPERTY_ECC_NUMBER "ro.vendor.semc.ecclist.number."
+#define PROPERTY_ECC_TYPE "ro.vendor.semc.ecclist.type."
+#define PROPERTY_ECC_PLMN "ro.vendor.semc.ecclist.plmn."
+#define PROPERTY_ECC_CONDITION "ro.vendor.semc.ecclist.non_ecc."
+#define PROPERTY_ECC_TYPE_KEY_POLICE "police"
+#define PROPERTY_ECC_TYPE_KEY_AMBULANCE "ambulance"
+#define PROPERTY_ECC_TYPE_KEY_FIRE_BRIGADE "firebrigade"
+#define PROPERTY_ECC_TYPE_KEY_MARINE_GUARD "marineguard"
 #define PROPERTY_ECC_TYPE_KEY_MOUTAIN_RESCUE "mountainrescue"
-#define PROPERTY_ECC_TEST                    "persist.vendor.em.hidl.testecc"
+#define PROPERTY_ECC_TEST "persist.vendor.em.hidl.testecc"
 
 #define ECC_DEBUG (0)
 
@@ -58,61 +58,61 @@ using namespace std;
 using namespace android;
 
 static const char PROPERTY_ECC_LIST[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "ril.ecclist",
-    "ril.ecclist1",
-    "ril.ecclist2",
-    "ril.ecclist3",
+        "ril.ecclist",
+        "ril.ecclist1",
+        "ril.ecclist2",
+        "ril.ecclist3",
 };
 
 static const char PROPERTY_SPECIAL_ECC_LIST[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.special.ecclist",
-    "vendor.ril.special.ecclist1",
-    "vendor.ril.special.ecclist2",
-    "vendor.ril.special.ecclist3",
+        "vendor.ril.special.ecclist",
+        "vendor.ril.special.ecclist1",
+        "vendor.ril.special.ecclist2",
+        "vendor.ril.special.ecclist3",
 };
 
 static const char PROPERTY_NW_ECC_LIST[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.ecc.service.category.list",
-    "vendor.ril.ecc.service.category.list.1",
-    "vendor.ril.ecc.service.category.list.2",
-    "vendor.ril.ecc.service.category.list.3",
+        "vendor.ril.ecc.service.category.list",
+        "vendor.ril.ecc.service.category.list.1",
+        "vendor.ril.ecc.service.category.list.2",
+        "vendor.ril.ecc.service.category.list.3",
 };
 
 static const char PROPERTY_NW_ECC_MCC[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.ecc.service.category.mcc",
-    "vendor.ril.ecc.service.category.mcc.1",
-    "vendor.ril.ecc.service.category.mcc.2",
-    "vendor.ril.ecc.service.category.mcc.3",
+        "vendor.ril.ecc.service.category.mcc",
+        "vendor.ril.ecc.service.category.mcc.1",
+        "vendor.ril.ecc.service.category.mcc.2",
+        "vendor.ril.ecc.service.category.mcc.3",
 };
 
 typedef enum {
-    CONDITION_NO_SIM   = 0, // Only ECC when NO SIM
-    CONDITION_ALWAYS   = 1, // Always ECC
-    CONDITION_MMI      = 2, // Fake/Special ECC (normal call setup flow)
-    CONDITION_SIM_ONLY = 3, // Only ECC when SIM insert
-    CONDITION_NEVER    = 4  // Not ECC in any condition (ex: customer service number)
+    CONDITION_NO_SIM = 0,    // Only ECC when NO SIM
+    CONDITION_ALWAYS = 1,    // Always ECC
+    CONDITION_MMI = 2,       // Fake/Special ECC (normal call setup flow)
+    CONDITION_SIM_ONLY = 3,  // Only ECC when SIM insert
+    CONDITION_NEVER = 4      // Not ECC in any condition (ex: customer service number)
 } EmergencyNumberCondition;
 
 typedef enum {
     /**
      * Indicates the number is from the network signal.
      */
-    SOURCE_NETWORK      = 1 << 0,
+    SOURCE_NETWORK = 1 << 0,
     /**
      * Indicates the number is from the sim card.
      */
-    SOURCE_SIM          = 1 << 1,
+    SOURCE_SIM = 1 << 1,
     /**
      * Indicates the number is from the XML config.
      * Will mapping to AOSP source type MODEM_CONFIG
      */
-    SOURCE_CONFIG       = 1 << 2,
+    SOURCE_CONFIG = 1 << 2,
     /**
      * Indicates the number is available as default. Per the reference, 112, 911 must always be
      * available; additionally, 000, 08, 110, 999, 118 and 119 must be available when sim is not
      * present.
      */
-    SOURCE_DEFAULT      = 1 << 3,
+    SOURCE_DEFAULT = 1 << 3,
     /**
      * Indicates the number is from the OEM property.
      * Will mapping to AOSP source type MODEM_CONFIG
@@ -122,22 +122,22 @@ typedef enum {
      * Indicates the number is from framework
      * Will mapping to AOSP source type MODEM_CONFIG
      */
-    SOURCE_FRAMEWORK    = 1 << 5,
+    SOURCE_FRAMEWORK = 1 << 5,
     /**
      * Indicates the number is from test property which add through
      * Engineer Mode -> Telephony -> Emergency Numbers
      * Will mapping to AOSP source type MODEM_CONFIG
      */
-    SOURCE_TEST         = 1 << 6,
+    SOURCE_TEST = 1 << 6,
     /**
      * Indicates the number is from China CTA requirement
      * Only add when no SIM insert and China PLMN detected on other slot
      * Will mapping to AOSP source type MODEM_CONFIG
      */
-    SOURCE_CTA         = 1 << 7
+    SOURCE_CTA = 1 << 7
 } EmergencyNumberSource;
 
-struct EmergencyNumber{
+struct EmergencyNumber {
     string number;
     string mcc;
     string mnc;
@@ -147,31 +147,30 @@ struct EmergencyNumber{
 };
 
 class EccNumberSource {
-public:
+  public:
     EccNumberSource(int slotId);
     virtual ~EccNumberSource();
 
-// Override
-public:
-
+    // Override
+  public:
     // Add emergency number list to whole list
     //
     // RETURNS:
-    virtual void addToEccList(vector<EmergencyNumber> &list);
+    virtual void addToEccList(vector<EmergencyNumber>& list);
 
-protected:
-    bool findAndMerge(EmergencyNumber number, vector<EmergencyNumber> &list);
+  protected:
+    bool findAndMerge(EmergencyNumber number, vector<EmergencyNumber>& list);
     bool isSimilar(EmergencyNumber number1, EmergencyNumber number2);
     bool addEmergencyNumber(EmergencyNumber ecc, string plmn, bool isSimInsert);
     int getPriority(EmergencyNumber number);
 
-protected:
+  protected:
     vector<EmergencyNumber> mEccList;
     int mSlotId;
 };
 
 class SimEccNumberSource : public EccNumberSource {
-public:
+  public:
     SimEccNumberSource(int slotId);
     virtual ~SimEccNumberSource();
 
@@ -182,7 +181,7 @@ public:
 };
 
 class NetworkEccNumberSource : public EccNumberSource {
-public:
+  public:
     NetworkEccNumberSource(int slotId);
     virtual ~NetworkEccNumberSource();
 
@@ -198,7 +197,7 @@ public:
 };
 
 class DefaultEccNumberSource : public EccNumberSource {
-public:
+  public:
     DefaultEccNumberSource(int slotId);
     virtual ~DefaultEccNumberSource();
 
@@ -209,7 +208,7 @@ public:
 };
 
 class XmlEccNumberSource : public EccNumberSource {
-public:
+  public:
     XmlEccNumberSource(int slotId);
     virtual ~XmlEccNumberSource();
 
@@ -218,35 +217,35 @@ public:
     // RETURNS: true if ECC changes
     bool update(string plmn, bool isSimInsert);
 
-private:
+  private:
     string getConfigFilePath();
     string getMccList(string region);
 };
 
 // ECC number from framework
 class FrameworkEccNumberSource : public EccNumberSource {
-public:
+  public:
     FrameworkEccNumberSource(int slotId);
     virtual ~FrameworkEccNumberSource();
 
     // Set framework ECC lis
     //
     // RETURNS: void
-    void set(const char *eccWithSim, const char *eccNoSim);
+    void set(const char* eccWithSim, const char* eccNoSim);
 
     // Update framework ECC list SIM status changes
     //
     // RETURNS: true if ECC changes
     bool update(bool isSimInsert);
 
-private:
+  private:
     String8 mEccListWithCard;
     String8 mEccListNoCard;
 };
 
 // ECC number from OEM property
 class OemPropertyEccNumberSource : public EccNumberSource {
-public:
+  public:
     OemPropertyEccNumberSource(int slotId);
     virtual ~OemPropertyEccNumberSource();
 
@@ -258,7 +257,7 @@ public:
 
 // ECC number from EM test
 class TestEccNumberSource : public EccNumberSource {
-public:
+  public:
     TestEccNumberSource(int slotId);
     virtual ~TestEccNumberSource();
 
@@ -270,7 +269,7 @@ public:
 
 // ECC number from CTA requirement
 class CtaEccNumberSource : public EccNumberSource {
-public:
+  public:
     CtaEccNumberSource(int slotId);
     virtual ~CtaEccNumberSource();
 

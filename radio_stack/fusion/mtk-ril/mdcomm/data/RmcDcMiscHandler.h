@@ -29,28 +29,27 @@
 class RmcDcMiscHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcDcMiscHandler);
 
-    public:
-        RmcDcMiscHandler(int slotId, int channelId);
-        virtual ~RmcDcMiscHandler();
+  public:
+    RmcDcMiscHandler(int slotId, int channelId);
+    virtual ~RmcDcMiscHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void init();
-        void handleSetFdModeRequest(const sp<RfxMclMessage>& msg);
-        void handleStartLceRequest(const sp<RfxMclMessage>& msg);
-        void handleStopLceRequest(const sp<RfxMclMessage>& msg);
-        void handlePullLceDataRequest(const sp<RfxMclMessage>& msg);
-        void handleLceStatusChanged(const sp<RfxMclMessage>& msg);
-        void handleSetLinkCapacityReportingCriteriaRequest(const sp<RfxMclMessage>& msg);
-        void handleLinkCapacityEstimate(const sp<RfxMclMessage>& msg);
-        void handleNetworkRejectCause(const sp<RfxMclMessage>& msg);
-        void handleSendDeviceStateRequest(const sp<RfxMclMessage>& msg);
+  private:
+    void init();
+    void handleSetFdModeRequest(const sp<RfxMclMessage>& msg);
+    void handleStartLceRequest(const sp<RfxMclMessage>& msg);
+    void handleStopLceRequest(const sp<RfxMclMessage>& msg);
+    void handlePullLceDataRequest(const sp<RfxMclMessage>& msg);
+    void handleLceStatusChanged(const sp<RfxMclMessage>& msg);
+    void handleSetLinkCapacityReportingCriteriaRequest(const sp<RfxMclMessage>& msg);
+    void handleLinkCapacityEstimate(const sp<RfxMclMessage>& msg);
+    void handleNetworkRejectCause(const sp<RfxMclMessage>& msg);
+    void handleSendDeviceStateRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        RmcDcMiscImpl *m_pRmcDcMiscImpl;
-
+  private:
+    RmcDcMiscImpl* m_pRmcDcMiscImpl;
 };
 #endif /* __RMC_MISC_REQ_HANDLER_H__ */

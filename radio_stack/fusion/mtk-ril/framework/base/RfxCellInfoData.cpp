@@ -18,31 +18,31 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCellInfoData);
 
-RfxCellInfoData::RfxCellInfoData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCellInfoData::RfxCellInfoData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
         m_length = length;
         int countCell = m_length / sizeof(RIL_CellInfo_v12);
 
-        RIL_CellInfo_v12 *pCell = (RIL_CellInfo_v12 *) calloc(countCell, sizeof(RIL_CellInfo_v12));
+        RIL_CellInfo_v12* pCell = (RIL_CellInfo_v12*)calloc(countCell, sizeof(RIL_CellInfo_v12));
         if (pCell == NULL) goto error;
-        memcpy(pCell, (RIL_CellInfo_v12 *)data, m_length);
+        memcpy(pCell, (RIL_CellInfo_v12*)data, m_length);
         // alloc memory for string
-        RIL_CellInfo_v12 *tmp = (RIL_CellInfo_v12 *)data;
+        RIL_CellInfo_v12* tmp = (RIL_CellInfo_v12*)data;
         for (int i = 0; i < countCell; i++) {
             switch (pCell[i].cellInfoType) {
                 case RIL_CELL_INFO_TYPE_GSM: {
                     asprintf(&(pCell[i].CellInfo.gsm.cellIdentityGsm.operName.long_name), "%s",
-                        tmp[i].CellInfo.gsm.cellIdentityGsm.operName.long_name);
+                             tmp[i].CellInfo.gsm.cellIdentityGsm.operName.long_name);
                     asprintf(&(pCell[i].CellInfo.gsm.cellIdentityGsm.operName.short_name), "%s",
-                        tmp[i].CellInfo.gsm.cellIdentityGsm.operName.short_name);
+                             tmp[i].CellInfo.gsm.cellIdentityGsm.operName.short_name);
                     break;
                 }
 
                 case RIL_CELL_INFO_TYPE_WCDMA: {
                     asprintf(&(pCell[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name), "%s",
-                        tmp[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
+                             tmp[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
                     asprintf(&(pCell[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name), "%s",
-                        tmp[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
+                             tmp[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
                     break;
                 }
 
@@ -53,24 +53,24 @@ RfxCellInfoData::RfxCellInfoData(void *data, int length) : RfxBaseData(data, len
 
                 case RIL_CELL_INFO_TYPE_LTE: {
                     asprintf(&(pCell[i].CellInfo.lte.cellIdentityLte.operName.long_name), "%s",
-                        tmp[i].CellInfo.lte.cellIdentityLte.operName.long_name);
+                             tmp[i].CellInfo.lte.cellIdentityLte.operName.long_name);
                     asprintf(&(pCell[i].CellInfo.lte.cellIdentityLte.operName.short_name), "%s",
-                        tmp[i].CellInfo.lte.cellIdentityLte.operName.short_name);
+                             tmp[i].CellInfo.lte.cellIdentityLte.operName.short_name);
                     break;
                 }
 
                 case RIL_CELL_INFO_TYPE_TD_SCDMA: {
-                    asprintf(&(pCell[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.long_name), "%s",
-                        tmp[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.long_name);
-                    asprintf(&(pCell[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.short_name), "%s",
-                        tmp[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.short_name);
+                    asprintf(&(pCell[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.long_name),
+                             "%s", tmp[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.long_name);
+                    asprintf(&(pCell[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.short_name),
+                             "%s", tmp[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.short_name);
                     break;
                 }
                 case RIL_CELL_INFO_TYPE_NR: {
                     asprintf(&(pCell[i].CellInfo.nr.cellidentity.operName.long_name), "%s",
-                        tmp[i].CellInfo.nr.cellidentity.operName.long_name);
+                             tmp[i].CellInfo.nr.cellidentity.operName.long_name);
                     asprintf(&(pCell[i].CellInfo.nr.cellidentity.operName.short_name), "%s",
-                        tmp[i].CellInfo.nr.cellidentity.operName.short_name);
+                             tmp[i].CellInfo.nr.cellidentity.operName.short_name);
                     break;
                 }
                 case RIL_CELL_INFO_TYPE_NONE:
@@ -88,7 +88,7 @@ error:
 RfxCellInfoData::~RfxCellInfoData() {
     if (m_data) {
         int countCell = m_length / sizeof(RIL_CellInfo_v12);
-        RIL_CellInfo_v12 *pCell = (RIL_CellInfo_v12 *) m_data;
+        RIL_CellInfo_v12* pCell = (RIL_CellInfo_v12*)m_data;
         for (int i = 0; i < countCell; i++) {
             switch (pCell[i].cellInfoType) {
                 case RIL_CELL_INFO_TYPE_GSM: {
@@ -127,7 +127,7 @@ RfxCellInfoData::~RfxCellInfoData() {
                         free(pCell[i].CellInfo.tdscdma.cellIdentityTdscdma.operName.short_name);
                     break;
                 }
-                case RIL_CELL_INFO_TYPE_NR:{
+                case RIL_CELL_INFO_TYPE_NR: {
                     if (pCell[i].CellInfo.nr.cellidentity.operName.long_name)
                         free(pCell[i].CellInfo.nr.cellidentity.operName.long_name);
                     if (pCell[i].CellInfo.nr.cellidentity.operName.short_name)

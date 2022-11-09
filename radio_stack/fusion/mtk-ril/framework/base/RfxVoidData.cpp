@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVoidData);
 
-RfxVoidData::RfxVoidData(void *data, int length) : RfxBaseData(data, length) {
+RfxVoidData::RfxVoidData(void* data, int length) : RfxBaseData(data, length) {
     m_length = 0;
     m_data = NULL;
 }

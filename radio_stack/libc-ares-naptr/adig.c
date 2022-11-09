@@ -17,34 +17,34 @@
 #include "ares_setup.h"
 
 #ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 #ifdef HAVE_NETINET_IN_H
-#  include <netinet/in.h>
+#include <netinet/in.h>
 #endif
 #ifdef HAVE_ARPA_INET_H
-#  include <arpa/inet.h>
+#include <arpa/inet.h>
 #endif
 #ifdef HAVE_NETDB_H
-#  include <netdb.h>
+#include <netdb.h>
 #endif
 #ifdef HAVE_ARPA_NAMESER_H
-#  include <arpa/nameser.h>
+#include <arpa/nameser.h>
 #else
-#  include "nameser.h"
+#include "nameser.h"
 #endif
 #ifdef HAVE_ARPA_NAMESER_COMPAT_H
-#  include <arpa/nameser_compat.h>
+#include <arpa/nameser_compat.h>
 #endif
 
 #ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
+#include <sys/time.h>
 #endif
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
+#include <unistd.h>
 #endif
 #ifdef HAVE_STRINGS_H
-#  include <strings.h>
+#include <strings.h>
 #endif
 
 #include <stdio.h>
@@ -60,25 +60,18 @@
 #include "ares_nowarn.h"
 #include "ares_private.h"
 
-
-
-
-
-
-int main(int argc, char **argv)
-{
-    struct records_naptr * result_list = NULL, *ptr = NULL;
-    struct query_type hints = {0,SOCK_STREAM,0,53,0};
-    //aes_getrecords(argv[1], argv[2],&hints,&result_list);
-    if(aes_getrecords(argv[1], argv[2],&hints,&result_list) == 1)
-    {
-	ptr = result_list;
-        do
-	{
-		printf("naptr results: %p %d %d %s %p %s %p %s %p %s %p %p\n",ptr,ptr->order,ptr->pref,ptr->flags,ptr->flags,ptr->service,ptr->service,ptr->regexp,ptr->regexp,ptr->fqdn,ptr
-->fqdn,ptr->next);
-		ptr = ptr->next;
-	}while(ptr);
+int main(int argc, char** argv) {
+    struct records_naptr *result_list = NULL, *ptr = NULL;
+    struct query_type hints = {0, SOCK_STREAM, 0, 53, 0};
+    // aes_getrecords(argv[1], argv[2],&hints,&result_list);
+    if (aes_getrecords(argv[1], argv[2], &hints, &result_list) == 1) {
+        ptr = result_list;
+        do {
+            printf("naptr results: %p %d %d %s %p %s %p %s %p %s %p %p\n", ptr, ptr->order,
+                   ptr->pref, ptr->flags, ptr->flags, ptr->service, ptr->service, ptr->regexp,
+                   ptr->regexp, ptr->fqdn, ptr->fqdn, ptr->next);
+            ptr = ptr->next;
+        } while (ptr);
     }
     aes_getrecords_free(result_list);
 }

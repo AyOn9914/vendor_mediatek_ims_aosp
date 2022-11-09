@@ -21,16 +21,16 @@
 //         four-byte-aligned to avoid the potential on-target process error !!!
 
 typedef enum {
-    SHFTR_IN_Q1P15_OUT_Q1P31 =  0,  // 16-bit Q1.15 input, 32-bit Q1.31 output
-    SHFTR_IN_Q1P31_OUT_Q1P15 =  1,  // 32-bit Q1.31 input, 16-bit Q1.15 output
-    SHFTR_IN_Q9P23_OUT_Q1P31 =  2,  // 32-bit Q9.23 input, 32-bit Q1.31 output
-    SHFTR_IN_Q1P31_OUT_Q9P23 =  3,  // 32-bit Q1.31 input, 32-bit Q9.23 output
-    SHFTR_IN_Q1P15_OUT_Q9P23 =  4,  // 16-bit Q1.15 input, 32-bit Q9.23 output
-    SHFTR_IN_Q9P23_OUT_Q1P15 =  5,  // 32-bit Q9.23 input, 16-bit Q1.15 output
-    SHFTR_IN_Q1P15_OUT_Q1P23 =  6,  // 16-bit Q1.15 input, 24-bit Q1.23 output
-    SHFTR_IN_Q1P23_OUT_Q1P15 =  7,  // 24-bit Q1.23 input, 16-bit Q1.15 output
-    SHFTR_IN_Q1P31_OUT_Q1P23 =  8,  // 32-bit Q1.31 input, 24-bit Q1.23 output
-    SHFTR_IN_Q1P23_OUT_Q1P31 =  9,  // 24-bit Q1.23 input, 32-bit Q1.31 output
+    SHFTR_IN_Q1P15_OUT_Q1P31 = 0,   // 16-bit Q1.15 input, 32-bit Q1.31 output
+    SHFTR_IN_Q1P31_OUT_Q1P15 = 1,   // 32-bit Q1.31 input, 16-bit Q1.15 output
+    SHFTR_IN_Q9P23_OUT_Q1P31 = 2,   // 32-bit Q9.23 input, 32-bit Q1.31 output
+    SHFTR_IN_Q1P31_OUT_Q9P23 = 3,   // 32-bit Q1.31 input, 32-bit Q9.23 output
+    SHFTR_IN_Q1P15_OUT_Q9P23 = 4,   // 16-bit Q1.15 input, 32-bit Q9.23 output
+    SHFTR_IN_Q9P23_OUT_Q1P15 = 5,   // 32-bit Q9.23 input, 16-bit Q1.15 output
+    SHFTR_IN_Q1P15_OUT_Q1P23 = 6,   // 16-bit Q1.15 input, 24-bit Q1.23 output
+    SHFTR_IN_Q1P23_OUT_Q1P15 = 7,   // 24-bit Q1.23 input, 16-bit Q1.15 output
+    SHFTR_IN_Q1P31_OUT_Q1P23 = 8,   // 32-bit Q1.31 input, 24-bit Q1.23 output
+    SHFTR_IN_Q1P23_OUT_Q1P31 = 9,   // 24-bit Q1.23 input, 32-bit Q1.31 output
     SHFTR_IN_Q9P23_OUT_Q1P23 = 10,  // 32-bit Q9.23 input, 24-bit Q1.23 output
     SHFTR_IN_Q1P23_OUT_Q9P23 = 11   // 24-bit Q1.23 input, 32-bit Q9.23 output
 } SHFTR_PCM_FORMAT;
@@ -79,10 +79,7 @@ typedef enum {
     Note:
     Support N-in-N-out
 */
-int Shifter_Process(    void *p_in_buf,
-                        unsigned int *p_in_byte_cnt,
-                        void *p_ou_buf,
-                        unsigned int *p_ou_byte_cnt,
-                        unsigned int PCM_Format);
+int Shifter_Process(void* p_in_buf, unsigned int* p_in_byte_cnt, void* p_ou_buf,
+                    unsigned int* p_ou_byte_cnt, unsigned int PCM_Format);
 
-#endif // __SHIFTER_EXP_H__
+#endif  // __SHIFTER_EXP_H__

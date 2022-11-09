@@ -24,19 +24,16 @@
 #include "ares.h"
 #include "ares_private.h" /* for memdebug */
 
-void ares_free_hostent(struct hostent *host)
-{
-  char **p;
+void ares_free_hostent(struct hostent* host) {
+    char** p;
 
-  if (!host)
-    return;
+    if (!host) return;
 
-  free((char *)(host->h_name));
-  for (p = host->h_aliases; *p; p++)
-    free(*p);
-  free(host->h_aliases);
-  free(host->h_addr_list[0]); /* no matter if there is one or many entries,
-                                 there is only one malloc for all of them */
-  free(host->h_addr_list);
-  free(host);
+    free((char*)(host->h_name));
+    for (p = host->h_aliases; *p; p++) free(*p);
+    free(host->h_aliases);
+    free(host->h_addr_list[0]); /* no matter if there is one or many entries,
+                                   there is only one malloc for all of them */
+    free(host->h_addr_list);
+    free(host);
 }

@@ -25,15 +25,14 @@
 
 #include <media/stagefright/MPEG4Writer.h>
 
-namespace android
-{
+namespace android {
 
 struct ABuffer;
 struct AMessage;
 struct MediaAdapter;
-class  MediaBuffer;
+class MediaBuffer;
 struct MediaSource;
-class  MetaData;
+class MetaData;
 struct MediaWriter;
 
 // MediaMuxer is used to mux multiple tracks into a video. Currently, we only
@@ -43,21 +42,21 @@ struct MediaWriter;
 // If muxing operation need to be cancelled, the app is responsible for
 // deleting the output file after stop.
 struct MediaMuxer : public RefBase {
-public:
+  public:
     // Please update media/java/android/media/MediaMuxer.java if the
     // SampleFlags is updated.
     enum SampleFlags {
         SAMPLE_FLAG_SYNC = 1,
         SAMPLE_FLAG_CODEC_CONFIG = 2,
-        SAMPLE_FLAG_EOS =4,
+        SAMPLE_FLAG_EOS = 4,
     };
 
     // Please update media/java/android/media/MediaMuxer.java if the
     // OutputFormat is updated.
     enum OutputFormat {
         OUTPUT_FORMAT_MPEG_4 = 0,
-        OUTPUT_FORMAT_WEBM   = 1,
-        OUTPUT_FORMAT_LIST_END // must be last - used to validate format type
+        OUTPUT_FORMAT_WEBM = 1,
+        OUTPUT_FORMAT_LIST_END  // must be last - used to validate format type
     };
 
     // Construct the muxer with the file descriptor. Note that the MediaMuxer
@@ -66,9 +65,8 @@ public:
 
     virtual ~MediaMuxer();
 
-
     void setListener(const sp<IMediaRecorderClient>& listener) {
-        if(mWriter !=NULL) {
+        if (mWriter != NULL) {
             mWriter->setListener(listener);
         }
     }
@@ -79,14 +77,13 @@ public:
      * @param format the track's format.
      * @return the track's index or negative number if error.
      */
-    ssize_t addTrack(const sp<AMessage> &format);
+    ssize_t addTrack(const sp<AMessage>& format);
 
     /**
      * Start muxing. Make sure all the tracks have been added before
      * calling this.
      */
     status_t start();
-
 
     /**
      * Set the orientation hint.
@@ -129,24 +126,18 @@ public:
      *              MediaCodec::BUFFER_FLAG_SYNCFRAME.
      * @return OK if no error.
      */
-    status_t writeSampleData(const sp<ABuffer> &buffer, size_t trackIndex,
-                             int64_t timeUs, uint32_t flags) ;
+    status_t writeSampleData(const sp<ABuffer>& buffer, size_t trackIndex, int64_t timeUs,
+                             uint32_t flags);
 
-
-private:
+  private:
     const OutputFormat mFormat;
     sp<MediaWriter> mWriter;
-    Vector< sp<MediaAdapter> > mTrackList;  // Each track has its MediaAdapter.
-    sp<MetaData> mFileMeta;  // Metadata for the whole file.
+    Vector<sp<MediaAdapter> > mTrackList;  // Each track has its MediaAdapter.
+    sp<MetaData> mFileMeta;                // Metadata for the whole file.
 
     Mutex mMuxerLock;
 
-    enum State {
-        UNINITIALIZED,
-        INITIALIZED,
-        STARTED,
-        STOPPED
-    };
+    enum State { UNINITIALIZED, INITIALIZED, STARTED, STOPPED };
     State mState;
 
     DISALLOW_EVIL_CONSTRUCTORS(MediaMuxer);

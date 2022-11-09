@@ -20,10 +20,7 @@
 #include "rfx_gt_log.h"
 #include "RfxRilUtils.h"
 
-
 /*****************************************************************************
  * Implementation
  *****************************************************************************/
-bool __rfx_is_gt_mode() {
-    return RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK;
-}
+bool __rfx_is_gt_mode() { return RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK; }

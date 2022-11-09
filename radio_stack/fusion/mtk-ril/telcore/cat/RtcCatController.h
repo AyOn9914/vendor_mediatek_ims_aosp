@@ -94,11 +94,11 @@ typedef enum {
 #define INVALID_VALUE -1
 
 // Envelpoe Command Type
-#define MENU_SELECTION_TAG  0xD3
-#define EVENT_DOWNLOAD_TAG  0xD6
+#define MENU_SELECTION_TAG 0xD3
+#define EVENT_DOWNLOAD_TAG 0xD6
 
 // Event notify buffer size
-#define EVENT_NOTIFY_BUFFER_LEN    10
+#define EVENT_NOTIFY_BUFFER_LEN 10
 #define STK_REFRESH_DELAY_TIME 200
 /*****************************************************************************
  * typedef
@@ -108,7 +108,7 @@ typedef struct {
     int cmdType;
     int cmdNum;
     int cmdQualifier;
-    //int source;
+    // int source;
     bool needResponse;
 } ProactiveCmdRecord;
 
@@ -124,42 +124,37 @@ class RtcCatController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcCatController);
 
-public:
+  public:
     RtcCatController();
     virtual ~RtcCatController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onDeinit();
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-public:
-
-private:
-    void onCardTypeChanged(RfxStatusKeyEnum key,
-                           RfxVariant oldValue,
-                           RfxVariant newValue);
-    void onCdma3GSwitchCard(RfxStatusKeyEnum key,
-                           RfxVariant oldValue,
-                           RfxVariant newValue);
+  public:
+  private:
+    void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
+    void onCdma3GSwitchCard(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
     int checkEventNotifyFreeBuffer();
-    int checkStkCmdDisplay(char *cmd_str);
-    int decodeStkRefreshAid(char *cmd, char **paid);
-    char* decodeStkRefreshFileChange(char *str, int **cmd, int *cmd_length);
+    int checkStkCmdDisplay(char* cmd_str);
+    int decodeStkRefreshAid(char* cmd, char** paid);
+    char* decodeStkRefreshFileChange(char* str, int** cmd, int* cmd_length);
     unsigned int findStkCallDuration(char* str);
     void freeAllStkQueuedEventNotify();
     void freeStkQueuedEventNotify(int index);
     void freeStkQueuedProactivCmd();
     void freeCachedMenu();
-    int getStkCommandType(char *cmd);
-    int getStkCommandNumber(char *cmd);
+    int getStkCommandType(char* cmd);
+    int getStkCommandNumber(char* cmd);
     char* getStkQueuedEventNotify(int index);
-    int getStkResultCode(char *cmd);
+    int getStkResultCode(char* cmd);
     void handleSimRefresh(char* urc);
     void handleStkCommand(char* cmd, int cmdClass);
     void parseStkCmdQualifier(char* cmd, int* cmdQual);
@@ -173,7 +168,7 @@ private:
     void handleQueryCpinResponse(const sp<RfxMessage>& message);
     void handleSimRefreshAfterQueryCpin();
     void requestHandleStkServiceIsRunning();
-    int rild_sms_hexCharToDecInt(char *hex, int length);
+    int rild_sms_hexCharToDecInt(char* hex, int length);
     void setStkCachedEventNotify(char* cmd);
     void sendEventWithDelay(int id, int delayTime);
     void retryQueryCpinState();
@@ -186,13 +181,13 @@ private:
     void parseStkEnvelopeCommandType(char* cmd, int* cmdType);
     bool isIgnoredEnvelopeCommand(const sp<RfxMessage>& message);
 
-private:
+  private:
     bool isEventNotifyQueued;
     bool isProaCmdQueued;
     bool isStkServiceRunning;
     char* pEvent_notify[EVENT_NOTIFY_BUFFER_LEN];
     char* pProactive_cmd;
-    SimRefreshResponse *pSimRefreshRspWithType;
+    SimRefreshResponse* pSimRefreshRspWithType;
     TimerHandle mTimeoutHandle;
     int mCPinRetry;
     int mCardType;

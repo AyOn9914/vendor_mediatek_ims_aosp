@@ -24,6 +24,6 @@ namespace android {
 #define IMS_WWOP_RIL3_SERVICE_NAME "OpImsRILd3"
 #define IMS_WWOP_RIL4_SERVICE_NAME "OpImsRILd4"
 
-}   // namespace android
+}  // namespace android
 
-#endif //RIL_RILOP_INTERNAL_H
+#endif  // RIL_RILOP_INTERNAL_H

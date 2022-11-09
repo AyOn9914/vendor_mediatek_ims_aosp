@@ -23,19 +23,19 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsStartSessionReqData);
 
 RfxEmbmsStartSessionReqData::RfxEmbmsStartSessionReqData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_StartSessionReq*)data, length);
 }
 
 RfxEmbmsStartSessionReqData::RfxEmbmsStartSessionReqData(RIL_EMBMS_StartSessionReq* data,
-    int length)
-    : RfxBaseData(data, length)  {
+                                                         int length)
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsStartSessionReqData::copyData(RIL_EMBMS_StartSessionReq *data, int length) {
+void RfxEmbmsStartSessionReqData::copyData(RIL_EMBMS_StartSessionReq* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_StartSessionReq *) calloc(1, sizeof(RIL_EMBMS_StartSessionReq));
+    m_data = (RIL_EMBMS_StartSessionReq*)calloc(1, sizeof(RIL_EMBMS_StartSessionReq));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

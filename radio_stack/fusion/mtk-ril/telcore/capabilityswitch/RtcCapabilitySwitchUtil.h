@@ -41,7 +41,6 @@
  *****************************************************************************/
 
 class RtcCapabilitySwitchUtil {
-
   public:
     static int getRafFromNetworkType(int type);
     static int getNetworkTypeFromRaf(int raf);

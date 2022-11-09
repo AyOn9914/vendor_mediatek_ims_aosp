@@ -25,7 +25,6 @@
 #include "RfxObject.h"
 #include "RfxClassInfo.h"
 
-
 /****************************************************************************
  * Class RfxEmitFrame
  *****************************************************************************/
@@ -35,14 +34,14 @@
  *   will be handled by this object.
  */
 class RfxEmitFrame {
-    static RfxEmitFrame *s_emit_frame_list;
-public:
-    // Constructor / Distructor
-    RfxEmitFrame() : stop(false), prev(NULL) {
-    }
+    static RfxEmitFrame* s_emit_frame_list;
 
-// Method
-public:
+  public:
+    // Constructor / Distructor
+    RfxEmitFrame() : stop(false), prev(NULL) {}
+
+    // Method
+  public:
     // Enter this emit stack frame
     void enter() {
         prev = s_emit_frame_list;
@@ -61,43 +60,34 @@ public:
         s_emit_frame_list->stop = true;
     }
 
-// Variable
-public:
+    // Variable
+  public:
     // whether this emit loop should be stop
-    bool         stop;
+    bool stop;
     // The previous emit frame for pop
-    RfxEmitFrame    *prev;
+    RfxEmitFrame* prev;
 };
-
 
 RfxEmitFrame* RfxEmitFrame::s_emit_frame_list = NULL;
 
-
-void rfxStopEmit() {
-    RfxEmitFrame::stopEmit();
-}
-
+void rfxStopEmit() { RfxEmitFrame::stopEmit(); }
 
 /*****************************************************************************
  * Class RfxPostEmitData
  *****************************************************************************/
 
 class RfxPostEmitData {
-public:
-    RfxPostEmitData():
-        emit_funcptr(NULL),
-        arguments(NULL),
-        callback_obj(NULL),
-        callback_funcptr(NULL) {}
+  public:
+    RfxPostEmitData()
+        : emit_funcptr(NULL), arguments(NULL), callback_obj(NULL), callback_funcptr(NULL) {}
 
-    RfxSlotList                 slots;
-    RfxEmitEntryFuncPtr         emit_funcptr;
-    RfxSignalArg               *arguments;
+    RfxSlotList slots;
+    RfxEmitEntryFuncPtr emit_funcptr;
+    RfxSignalArg* arguments;
 
-    wp<RfxObject>               callback_obj;
-    RfxSlotObjMemFuncPtr        callback_funcptr;
+    wp<RfxObject> callback_obj;
+    RfxSlotObjMemFuncPtr callback_funcptr;
 };
-
 
 /*****************************************************************************
  * Class RfxAsyncSignalUtil
@@ -105,90 +95,71 @@ public:
 
 RFX_OBJ_IMPLEMENT_SINGLETON_CLASS(RfxAsyncSignalUtil);
 
-void RfxAsyncSignalUtil::regPostEmit(
-    const RfxBaseSignal         *baseSignal,
-    RfxEmitEntryFuncPtr          emit_funcptr,
-    RfxSignalArg                *arguments,
-    RfxObject                   *callback_obj,
-    RfxSlotObjMemFuncPtr        callback_funcptr
-)
-{
+void RfxAsyncSignalUtil::regPostEmit(const RfxBaseSignal* baseSignal,
+                                     RfxEmitEntryFuncPtr emit_funcptr, RfxSignalArg* arguments,
+                                     RfxObject* callback_obj,
+                                     RfxSlotObjMemFuncPtr callback_funcptr) {
     RfxPostEmitData* emitdata;
     emitdata = new RfxPostEmitData();
 
     emitdata->slots.assignWithList(baseSignal->m_slot_list);
-    emitdata->emit_funcptr      = emit_funcptr;
-    emitdata->arguments         = arguments;
-    emitdata->callback_obj      = callback_obj;
-    emitdata->callback_funcptr  = callback_funcptr;
+    emitdata->emit_funcptr = emit_funcptr;
+    emitdata->arguments = arguments;
+    emitdata->callback_obj = callback_obj;
+    emitdata->callback_funcptr = callback_funcptr;
 
     rfxPostInvoke(this, &RfxAsyncSignalUtil::processPostEmit, (void*)emitdata);
 }
 
-
-void RfxAsyncSignalUtil::processPostEmit(void *data)
-{
+void RfxAsyncSignalUtil::processPostEmit(void* data) {
     RfxPostEmitData* emitdata = (RfxPostEmitData*)data;
 
     // invoke signal
-    RfxBaseSignal::emitSlots(
-        &emitdata->slots,
-        emitdata->emit_funcptr,
-        emitdata->arguments
-    );
+    RfxBaseSignal::emitSlots(&emitdata->slots, emitdata->emit_funcptr, emitdata->arguments);
 
     // TODO: how about callback_obj is dead
     // callback if assigned callback
-    if (emitdata->callback_obj.promote().get() && emitdata->callback_funcptr)
-    {
-        (*emitdata->emit_funcptr)(
-            emitdata->callback_obj.promote().get(),
-            emitdata->callback_funcptr,
-            emitdata->arguments);
+    if (emitdata->callback_obj.promote().get() && emitdata->callback_funcptr) {
+        (*emitdata->emit_funcptr)(emitdata->callback_obj.promote().get(),
+                                  emitdata->callback_funcptr, emitdata->arguments);
     }
 
     // free the argument
-    delete(emitdata->arguments);
+    delete (emitdata->arguments);
 
     // free the post data
-    delete(emitdata);
+    delete (emitdata);
 }
-
 
 /*****************************************************************************
  * Class RfxSlotList
  *****************************************************************************/
 
-RfxSlotList::SlotListEntry *RfxSlotList::findEntry(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc) const
-{
+RfxSlotList::SlotListEntry* RfxSlotList::findEntry(RfxObject* obj,
+                                                   RfxSlotObjMemFuncPtr memFunc) const {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(memFunc != NULL);
 
     RfxSlot slot_to_find(obj, memFunc);
 
     /* search if any handler is equal to the given handler */
-    SlotListEntry *i;
-    for (i = m_list_head; i != NULL; i = i->m_next)
-    {
-        if (i->m_slot.equalTo(slot_to_find))
-        {
+    SlotListEntry* i;
+    for (i = m_list_head; i != NULL; i = i->m_next) {
+        if (i->m_slot.equalTo(slot_to_find)) {
             return i;
         }
     }
     return NULL;
 }
 
-
-void RfxSlotList::pushSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
-{
+void RfxSlotList::pushSlot(RfxObject* obj, RfxSlotObjMemFuncPtr memFunc) {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(memFunc != NULL);
 
     removeAllInvalidateSlots();
 
-    SlotListEntry *entry = findEntry(obj, memFunc);
-    if (entry != NULL)
-    {
+    SlotListEntry* entry = findEntry(obj, memFunc);
+    if (entry != NULL) {
         // Do nothing if exist
         return;
     }
@@ -197,28 +168,22 @@ void RfxSlotList::pushSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
     entry = new SlotListEntry(obj, memFunc);
 
     // Add this slot to the end of list
-    if (m_list_head == NULL)
-    {
+    if (m_list_head == NULL) {
         m_list_head = entry;
-    }
-    else
-    {
+    } else {
         entry->m_next = m_list_head;
         m_list_head = entry;
     }
 }
 
-
-void RfxSlotList::appendSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
-{
+void RfxSlotList::appendSlot(RfxObject* obj, RfxSlotObjMemFuncPtr memFunc) {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(memFunc != NULL);
 
     removeAllInvalidateSlots();
 
-    SlotListEntry *entry = findEntry(obj, memFunc);
-    if (entry != NULL)
-    {
+    SlotListEntry* entry = findEntry(obj, memFunc);
+    if (entry != NULL) {
         // Do nothing if exist
         return;
     }
@@ -227,24 +192,18 @@ void RfxSlotList::appendSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
     entry = new SlotListEntry(obj, memFunc);
 
     // Add this slot to the end of list
-    if (m_list_head == NULL)
-    {
+    if (m_list_head == NULL) {
         m_list_head = entry;
-    }
-    else
-    {
-        SlotListEntry *tmp = m_list_head;
-        while (tmp->m_next != NULL)
-        {
+    } else {
+        SlotListEntry* tmp = m_list_head;
+        while (tmp->m_next != NULL) {
             tmp = tmp->m_next;
         }
         tmp->m_next = entry;
     }
 }
 
-
-void RfxSlotList::removeSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
-{
+void RfxSlotList::removeSlot(RfxObject* obj, RfxSlotObjMemFuncPtr memFunc) {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(memFunc != NULL);
 
@@ -252,122 +211,91 @@ void RfxSlotList::removeSlot(RfxObject *obj, RfxSlotObjMemFuncPtr memFunc)
 
     // Find the slot and remove from the list
     RfxSlot slot_to_find(obj, memFunc);
-    SlotListEntry **entryPtr = &m_list_head;
-    while (*entryPtr != NULL)
-    {
-        SlotListEntry *entry = *entryPtr;
-        if (entry->m_slot.equalTo(slot_to_find))
-        {
+    SlotListEntry** entryPtr = &m_list_head;
+    while (*entryPtr != NULL) {
+        SlotListEntry* entry = *entryPtr;
+        if (entry->m_slot.equalTo(slot_to_find)) {
             *entryPtr = entry->m_next;
-            delete(entry);
+            delete (entry);
             return;
         }
         entryPtr = &(entry->m_next);
     }
 }
 
-
-void RfxSlotList::clear()
-{
-    SlotListEntry *i = m_list_head;
-    while (i != NULL)
-    {
-        SlotListEntry *next = i->m_next;
-        delete(i);
+void RfxSlotList::clear() {
+    SlotListEntry* i = m_list_head;
+    while (i != NULL) {
+        SlotListEntry* next = i->m_next;
+        delete (i);
         i = next;
     }
     m_list_head = NULL;
 }
 
-
-int RfxSlotList::getCount() const
-{
+int RfxSlotList::getCount() const {
     int cnt = 0;
-    SlotListEntry *i = m_list_head;
-    while (i != NULL)
-    {
+    SlotListEntry* i = m_list_head;
+    while (i != NULL) {
         cnt++;
         i = i->m_next;
     }
     return cnt;
 }
 
-
-void RfxSlotList::assignWithList(const RfxSlotList &other)
-{
+void RfxSlotList::assignWithList(const RfxSlotList& other) {
     // Must be empty list
     RFX_ASSERT(m_list_head == NULL);
 
-    SlotListEntry **entryPtr = &m_list_head;
-    SlotListEntry *i;
-    for (i = other.m_list_head; i != NULL; i = i->m_next)
-    {
-        SlotListEntry *entry;
+    SlotListEntry** entryPtr = &m_list_head;
+    SlotListEntry* i;
+    for (i = other.m_list_head; i != NULL; i = i->m_next) {
+        SlotListEntry* entry;
         entry = new SlotListEntry(i->m_slot.m_obj_ptr.promote().get(), i->m_slot.m_callback);
         *entryPtr = entry;
         entryPtr = &(entry->m_next);
     }
 }
 
-
-void RfxSlotList::removeAllInvalidateSlots()
-{
-    SlotListEntry **entryPtr = &m_list_head;
-    while (*entryPtr != NULL)
-    {
-        SlotListEntry *entry = *entryPtr;
-        if (!entry->m_slot.isValid())
-        {
+void RfxSlotList::removeAllInvalidateSlots() {
+    SlotListEntry** entryPtr = &m_list_head;
+    while (*entryPtr != NULL) {
+        SlotListEntry* entry = *entryPtr;
+        if (!entry->m_slot.isValid()) {
             *entryPtr = entry->m_next;
-            delete(entry);
-        }
-        else
-        {
+            delete (entry);
+        } else {
             entryPtr = &(entry->m_next);
         }
     }
 }
 
-
 /*****************************************************************************
  * class RfxBaseSignal
  *****************************************************************************/
 
-int RfxBaseSignal::getSlotCount() const
-{
-    return m_slot_list.getCount();
-}
+int RfxBaseSignal::getSlotCount() const { return m_slot_list.getCount(); }
 
-
-void RfxBaseSignal::emitImpl(RfxEmitEntryFuncPtr emit_funcptr, void *arguments) const
-{
+void RfxBaseSignal::emitImpl(RfxEmitEntryFuncPtr emit_funcptr, void* arguments) const {
     RfxSlotList tmp_slot_list(m_slot_list);
     emitSlots(&tmp_slot_list, emit_funcptr, arguments);
 }
 
-
-void RfxBaseSignal::emitSlots(
-    const RfxSlotList *slot_list,
-    RfxEmitEntryFuncPtr emit_funcptr,
-    void *arguments,
-    RfxObject *object)
-{
+void RfxBaseSignal::emitSlots(const RfxSlotList* slot_list, RfxEmitEntryFuncPtr emit_funcptr,
+                              void* arguments, RfxObject* object) {
     RfxEmitFrame emitFrame;
     emitFrame.enter();
 
     // for all signal handler in callback list
-    RfxSlotList::SlotListEntry *i = slot_list->getHead();
-    for (; i != NULL; i = i->m_next)
-    {
-        if (!i->m_slot.isValid())
-        {
+    RfxSlotList::SlotListEntry* i = slot_list->getHead();
+    for (; i != NULL; i = i->m_next) {
+        if (!i->m_slot.isValid()) {
             continue;
         }
 
         // Callback the object slot member method
-        RfxObject *obj = i->m_slot.m_obj_ptr.promote().get();
-        if (object != NULL && object != obj)
-        {
+        RfxObject* obj = i->m_slot.m_obj_ptr.promote().get();
+        if (object != NULL && object != obj) {
             continue;
         }
         RfxSlotObjMemFuncPtr callback = (RfxSlotObjMemFuncPtr)i->m_slot.m_callback;
@@ -376,20 +304,16 @@ void RfxBaseSignal::emitSlots(
         (*emit_funcptr)(obj, callback, arguments);
 
         // break if handler is not return
-        if (emitFrame.stop)
-        {
+        if (emitFrame.stop) {
             break;
         }
     }
     emitFrame.leave();
 }
 
-
-void RfxBaseSignal::baseConnectFront(RfxObject *obj, RfxSlotObjMemFuncPtr func)
-{
+void RfxBaseSignal::baseConnectFront(RfxObject* obj, RfxSlotObjMemFuncPtr func) {
     // Ignore NULL object pointer
-    if (obj == NULL)
-    {
+    if (obj == NULL) {
         return;
     }
     RFX_OBJ_ASSERT_VALID(obj);
@@ -398,12 +322,9 @@ void RfxBaseSignal::baseConnectFront(RfxObject *obj, RfxSlotObjMemFuncPtr func)
     m_slot_list.pushSlot(obj, func);
 }
 
-
-void RfxBaseSignal::baseConnect(RfxObject *obj, RfxSlotObjMemFuncPtr func)
-{
+void RfxBaseSignal::baseConnect(RfxObject* obj, RfxSlotObjMemFuncPtr func) {
     // Ignore NULL object pointer
-    if (obj == NULL)
-    {
+    if (obj == NULL) {
         return;
     }
     RFX_OBJ_ASSERT_VALID(obj);
@@ -412,9 +333,7 @@ void RfxBaseSignal::baseConnect(RfxObject *obj, RfxSlotObjMemFuncPtr func)
     m_slot_list.appendSlot(obj, func);
 }
 
-
-void RfxBaseSignal::baseDisconnect(RfxObject *obj, RfxSlotObjMemFuncPtr func)
-{
+void RfxBaseSignal::baseDisconnect(RfxObject* obj, RfxSlotObjMemFuncPtr func) {
     RFX_OBJ_ASSERT_VALID(obj);
     RFX_ASSERT(func != NULL);
 

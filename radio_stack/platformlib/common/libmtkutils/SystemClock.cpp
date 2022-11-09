@@ -38,37 +38,30 @@ namespace android {
 /*
  * native public static long uptimeMillis();
  */
-int64_t uptimeMillis()
-{
+int64_t uptimeMillis() {
     int64_t when = systemTime(SYSTEM_TIME_MONOTONIC);
-    return (int64_t) nanoseconds_to_milliseconds(when);
+    return (int64_t)nanoseconds_to_milliseconds(when);
 }
 
 /*
  * native public static long elapsedRealtime();
  */
-int64_t elapsedRealtime()
-{
-        return nanoseconds_to_milliseconds(elapsedRealtimeNano());
-}
+int64_t elapsedRealtime() { return nanoseconds_to_milliseconds(elapsedRealtimeNano()); }
 
-#define METHOD_CLOCK_GETTIME    0
-#define METHOD_IOCTL            1
-#define METHOD_SYSTEMTIME       2
+#define METHOD_CLOCK_GETTIME 0
+#define METHOD_IOCTL 1
+#define METHOD_SYSTEMTIME 2
 
 /*
  * To debug/verify the timestamps returned by the kernel, change
  * DEBUG_TIMESTAMP to 1 and call the timestamp routine from a single thread
  * in the test program. b/10899829
  */
-#define DEBUG_TIMESTAMP         0
+#define DEBUG_TIMESTAMP 0
 
 #if DEBUG_TIMESTAMP && defined(__arm__)
-static inline void checkTimeStamps(int64_t timestamp,
-                                   int64_t volatile *prevTimestampPtr,
-                                   int volatile *prevMethodPtr,
-                                   int curMethod)
-{
+static inline void checkTimeStamps(int64_t timestamp, int64_t volatile* prevTimestampPtr,
+                                   int volatile* prevMethodPtr, int curMethod) {
     /*
      * Disable the check for SDK since the prebuilt toolchain doesn't contain
      * gettid, and int64_t is different on the ARM platform
@@ -78,15 +71,14 @@ static inline void checkTimeStamps(int64_t timestamp,
     int prevMethod = *prevMethodPtr;
 
     if (timestamp < prevTimestamp) {
-        static const char *gettime_method_names[] = {
-            "clock_gettime",
-            "ioctl",
-            "systemTime",
+        static const char* gettime_method_names[] = {
+                "clock_gettime",
+                "ioctl",
+                "systemTime",
         };
 
-        ALOGW("time going backwards: prev %lld(%s) vs now %lld(%s), tid=%d",
-              prevTimestamp, gettime_method_names[prevMethod],
-              timestamp, gettime_method_names[curMethod],
+        ALOGW("time going backwards: prev %lld(%s) vs now %lld(%s), tid=%d", prevTimestamp,
+              gettime_method_names[prevMethod], timestamp, gettime_method_names[curMethod],
               gettid());
     }
     // NOTE - not atomic and may generate spurious warnings if the 64-bit
@@ -101,8 +93,7 @@ static inline void checkTimeStamps(int64_t timestamp,
 /*
  * native public static long elapsedRealtimeNano();
  */
-int64_t elapsedRealtimeNano()
-{
+int64_t elapsedRealtimeNano() {
     struct timespec ts;
     if (clock_gettime(CLOCK_BOOTTIME, &ts) == 0) {
         return seconds_to_nanoseconds(ts.tv_sec) + ts.tv_nsec;
@@ -114,4 +105,4 @@ int64_t elapsedRealtimeNano()
     return systemTime(SYSTEM_TIME_MONOTONIC);
 }
 
-}; // namespace android
+};  // namespace android

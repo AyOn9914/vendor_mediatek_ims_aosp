@@ -29,12 +29,12 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxLinkCapacityEstimateData);
 
-RfxLinkCapacityEstimateData::RfxLinkCapacityEstimateData(void *data, int length)
-        : RfxBaseData(data, length) {
+RfxLinkCapacityEstimateData::RfxLinkCapacityEstimateData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_LinkCapacityEstimate *tmpPtr = (RIL_LinkCapacityEstimate *)data;
-        RIL_LinkCapacityEstimate *response =
-                (RIL_LinkCapacityEstimate *)calloc(1, sizeof(RIL_LinkCapacityEstimate));
+        RIL_LinkCapacityEstimate* tmpPtr = (RIL_LinkCapacityEstimate*)data;
+        RIL_LinkCapacityEstimate* response =
+                (RIL_LinkCapacityEstimate*)calloc(1, sizeof(RIL_LinkCapacityEstimate));
         if (response == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "Memory allocation failed for response");
             return;

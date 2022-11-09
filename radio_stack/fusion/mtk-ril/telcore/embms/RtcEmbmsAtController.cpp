@@ -44,16 +44,16 @@
 #include "embms/RfxEmbmsLocalSaiNotifyData.h"
 #include "embms/RfxEmbmsLocalOosNotifyData.h"
 
-//extern "C" {
+// extern "C" {
 //#include "at_tok.h"
-//}
+// }
 
 #define RFX_LOG_TAG "RtcEmbmsAt"
 #define VDBG 1
 
-#define EMBMS_OK        "OK\n"
-#define EMBMS_ERROR     "ERROR\n"
-#define EMBMS_FLIGTH_MODE   "%MBMSEV:99\n"
+#define EMBMS_OK "OK\n"
+#define EMBMS_ERROR "ERROR\n"
+#define EMBMS_FLIGTH_MODE "%MBMSEV:99\n"
 
 /*****************************************************************************
  * Class RfxDataController
@@ -63,20 +63,19 @@
 
 RFX_IMPLEMENT_CLASS("RtcEmbmsAtController", RtcEmbmsAtController, RfxController);
 
-RtcEmbmsAtController::RtcEmbmsAtController() :
-    mSessionInfoList(NULL),
-    mIsActiveSession(false),
-    mIsFlightOn(false),
-    mIsEmbmsSupport(false),
-    mEmbmsEnabled(false),
-    mSdkVersion(11001){
+RtcEmbmsAtController::RtcEmbmsAtController()
+    : mSessionInfoList(NULL),
+      mIsActiveSession(false),
+      mIsFlightOn(false),
+      mIsEmbmsSupport(false),
+      mEmbmsEnabled(false),
+      mSdkVersion(11001) {
     // If you want to debug like old behavior.
-    //mSdkVersion = 10603;
+    // mSdkVersion = 10603;
     mSdkVersion = 11001;
 }
 
-RtcEmbmsAtController::~RtcEmbmsAtController() {
-}
+RtcEmbmsAtController::~RtcEmbmsAtController() {}
 
 void RtcEmbmsAtController::onInit() {
     RfxController::onInit();  // Required: invoke super class implementation
@@ -93,7 +92,7 @@ void RtcEmbmsAtController::onInit() {
             RFX_MSG_REQUEST_EMBMS_GET_TIME,
             RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE,
             RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY,
-            };
+    };
     const int urc_id_list[] = {
             RFX_MSG_URC_EMBMS_AT_INFO,
             RFX_MSG_URC_EMBMS_START_SESSION_RESPONSE,
@@ -103,14 +102,13 @@ void RtcEmbmsAtController::onInit() {
             RFX_MSG_URC_EMBMS_AVAILABLE_SESSION,
             RFX_MSG_URC_EMBMS_SAI_LIST_NOTIFICATION,
             RFX_MSG_URC_EMBMS_OOS_NOTIFICATION,
-        };
+    };
 
     mIsEmbmsSupport = isEmbmsSupported();
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
     // Register even if not mIsEmbmsSupport, to intercept msg
-    registerToHandleRequest(request_id_list,
-            sizeof(request_id_list) / sizeof(int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(int));
     if (mIsEmbmsSupport) {
         registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(int));
     }
@@ -119,20 +117,20 @@ void RtcEmbmsAtController::onInit() {
     mIsFlightOn = false;
     mEmbmsEnabled = false;
 
-    // When sim switch happens, context will be moved to main protocol, session cleared, but embms enabled on new sim.
-    // So eMBMS MBMSAL layer will disable eMBMS and make it as reseted.
-    // No matter DSS_NO_RESET or not.
-    getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT,
-        RfxStatusChangeCallback(this, &RtcEmbmsAtController::onMainCapabilityChanged));
+    // When sim switch happens, context will be moved to main protocol, session cleared, but embms
+    // enabled on new sim. So eMBMS MBMSAL layer will disable eMBMS and make it as reseted. No
+    // matter DSS_NO_RESET or not.
+    getNonSlotScopeStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT,
+            RfxStatusChangeCallback(this, &RtcEmbmsAtController::onMainCapabilityChanged));
 
     // On L+L platform, default sim switch will not necessary trigger sim switch.
     // Modem may not aware of this at all.
     if (RtcEmbmsUtils::isDualLteSupport()) {
-        getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_DEFAULT_DATA_SIM,
-            RfxStatusChangeCallback(this, &RtcEmbmsAtController::onDefaultDataChanged));
+        getNonSlotScopeStatusManager()->registerStatusChanged(
+                RFX_STATUS_KEY_DEFAULT_DATA_SIM,
+                RfxStatusChangeCallback(this, &RtcEmbmsAtController::onDefaultDataChanged));
     }
-
-
 
     RfxMainThread::waitLooper();
 }
@@ -147,7 +145,7 @@ void RtcEmbmsAtController::onDeinit() {
 
 bool RtcEmbmsAtController::onHandleRequest(const sp<RfxMessage>& message) {
     logD(RFX_LOG_TAG, "Slot[%d] Handle request %s", this->getSlotId(),
-        idToString(message->getId()));
+         idToString(message->getId()));
 
     switch (message->getId()) {
         // common commands can send to md1(gsm)/md3(c2k) both.
@@ -197,14 +195,12 @@ bool RtcEmbmsAtController::onHandleResponse(const sp<RfxMessage>& message) {
 }
 
 bool RtcEmbmsAtController::onHandleUrc(const sp<RfxMessage>& message) {
-    logI(RFX_LOG_TAG, "Handle URC %s Slot %d (DefaultDataSlot:%d)"
-        , idToString(message->getId()),
-        message->getSlotId(),
-        RtcEmbmsUtils::getDefaultDataSlotId());
+    logI(RFX_LOG_TAG, "Handle URC %s Slot %d (DefaultDataSlot:%d)", idToString(message->getId()),
+         message->getSlotId(), RtcEmbmsUtils::getDefaultDataSlotId());
 
     if (getSlotId() != RtcEmbmsUtils::getDefaultDataSlotId()) {
         logW(RFX_LOG_TAG, "ignore URC due to not on DefaultDataSlot:%d",
-            RtcEmbmsUtils::getDefaultDataSlotId());
+             RtcEmbmsUtils::getDefaultDataSlotId());
         return true;
     }
 
@@ -254,20 +250,18 @@ bool RtcEmbmsAtController::onHandleUrc(const sp<RfxMessage>& message) {
     return true;
 }
 
-bool RtcEmbmsAtController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
-
+bool RtcEmbmsAtController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
+                                                  bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
-    if((radioState == (int)RADIO_STATE_UNAVAILABLE ||
-        radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_EMBMS_AT_CMD)) {
+    if ((radioState == (int)RADIO_STATE_UNAVAILABLE || radioState == (int)RADIO_STATE_OFF) &&
+        (msgId == RFX_MSG_REQUEST_EMBMS_AT_CMD)) {
         return false;
     }
-    //others will print in RfxController::onCheckIfRejectMessage
+    // others will print in RfxController::onCheckIfRejectMessage
     return RfxController::onCheckIfRejectMessage(message, isModemPowerOff, radioState);
 }
 
-int RtcEmbmsAtController::strStartsWith(const char *line, const char *prefix) {
+int RtcEmbmsAtController::strStartsWith(const char* line, const char* prefix) {
     return RfxMisc::strStartsWith(line, prefix);
 }
 
@@ -279,20 +273,19 @@ void RtcEmbmsAtController::handleAtRequest(const sp<RfxMessage>& request) {
         responseErrorString(request);
         return;
     }
-    char *data = (char*)(request->getData()->getData());
+    char* data = (char*)(request->getData()->getData());
 
     logI(RFX_LOG_TAG, "handleAtRequest:%s", (char*)data);
 
     // Check AT command format.
     if (data != NULL) {
         int totalLength = strlen(data);
-        if (totalLength > (512*3-1)) {
+        if (totalLength > (512 * 3 - 1)) {
             logE(RFX_LOG_TAG, "Error!! The length is too long (more than 512*3)");
             return;
-        } else if (totalLength > 0 &&
-                data[totalLength - 1] != '\r' &&
-                data[totalLength - 1] != '\n') {
-            logV(RFX_LOG_TAG, "Dbg terminate character:%d", data[totalLength - 1] );
+        } else if (totalLength > 0 && data[totalLength - 1] != '\r' &&
+                   data[totalLength - 1] != '\n') {
+            logV(RFX_LOG_TAG, "Dbg terminate character:%d", data[totalLength - 1]);
         }
     }
 
@@ -332,7 +325,7 @@ void RtcEmbmsAtController::handleAtRequest(const sp<RfxMessage>& request) {
     } else if (strStartsWith(data, "ATE")) {
         logV(RFX_LOG_TAG, "Pass to rild");
         need_forward = 1;
-    // --- Special handle area ---
+        // --- Special handle area ---
     } else if (strStartsWith(data, "AT%MBMSCMD=\"SIB16_GET_NETWORK_TIME\"")) {
         logD(RFX_LOG_TAG, "requestAtGetNetworkTime");
         requestAtGetNetworkTime(request);
@@ -361,22 +354,22 @@ void RtcEmbmsAtController::handleAtRequest(const sp<RfxMessage>& request) {
         requestAtActivate(request, EMBMS_DEACTIVE_ALL_SESSION);
     } else if (mSdkVersion >= 10901) {
         if (strStartsWith(data, "AT+CEREG")) {
-            //AT+CEREG=?
-            //AT+CEREG=<n>
-            //AT+CEREG?
+            // AT+CEREG=?
+            // AT+CEREG=<n>
+            // AT+CEREG?
             logV(RFX_LOG_TAG, "Pass to rild");
             need_forward = 1;
         } else if (strStartsWith(data, "AT") && strlen(data) == 2) {
             logV(RFX_LOG_TAG, "Pass to rild");
             need_forward = 1;
         }
-    // --- Not support area ---
+        // --- Not support area ---
     } else {
         logE(RFX_LOG_TAG, "Not support");
         responseErrorString(request);
     }
 
-    if (need_forward) {/* Need forward */
+    if (need_forward) { /* Need forward */
         handleRequestDefault(request);
     }
 }
@@ -386,8 +379,8 @@ void RtcEmbmsAtController::responseErrorString(const sp<RfxMessage>& msg) {
     responseToSocket(msg, responseStr.string());
 }
 
-void RtcEmbmsAtController::urcToSocket(const sp<RfxMessage>& msg,
-    const char *responseStr, const char *responseStr_mask) {
+void RtcEmbmsAtController::urcToSocket(const sp<RfxMessage>& msg, const char* responseStr,
+                                       const char* responseStr_mask) {
     if (responseStr_mask) {
         logI(RFX_LOG_TAG, "urcToSocket:%s", responseStr_mask);
     } else {
@@ -397,25 +390,21 @@ void RtcEmbmsAtController::urcToSocket(const sp<RfxMessage>& msg,
     if (responseStr) {
         strLen = strlen(responseStr);
     }
-    sp<RfxMessage> newMsg = RfxMessage::obtainUrc(msg->getSlotId(),
-                                        RFX_MSG_URC_EMBMS_AT_INFO,
-                                        RfxStringData((void*)responseStr, strLen),
-                                        RADIO_TECH_GROUP_GSM);
+    sp<RfxMessage> newMsg =
+            RfxMessage::obtainUrc(msg->getSlotId(), RFX_MSG_URC_EMBMS_AT_INFO,
+                                  RfxStringData((void*)responseStr, strLen), RADIO_TECH_GROUP_GSM);
     responseToRilj(newMsg);
 }
 
-void RtcEmbmsAtController::responseToSocket(const sp<RfxMessage>& msg,
-    const char *responseStr) {
+void RtcEmbmsAtController::responseToSocket(const sp<RfxMessage>& msg, const char* responseStr) {
     logI(RFX_LOG_TAG, "responseToSocket:%s", responseStr);
     int strLen = 0;
     if (responseStr) {
         strLen = strlen(responseStr);
     }
-    sp<RfxMessage> newMsg = RfxMessage::obtainResponse(msg->getSlotId(),
-                                    RFX_MSG_REQUEST_EMBMS_AT_CMD,
-                                    msg->getError(),
-                                    RfxStringData((void*)responseStr, strLen),
-                                    msg);
+    sp<RfxMessage> newMsg = RfxMessage::obtainResponse(
+            msg->getSlotId(), RFX_MSG_REQUEST_EMBMS_AT_CMD, msg->getError(),
+            RfxStringData((void*)responseStr, strLen), msg);
     responseToRilj(newMsg);
 }
 
@@ -423,42 +412,37 @@ void RtcEmbmsAtController::handleAtResponse(const sp<RfxMessage>& response) {
     int32_t type = response->getType();
     int32_t token = response->getToken();
     int32_t error = response->getError();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     if (error != RIL_E_SUCCESS) {
         responseErrorString(response);
         return;
     } else {
         responseStr = (char*)(response->getData()->getData());
-        logV(RFX_LOG_TAG, "type: %d, token %d, error %d, str:%s"
-                , type, token, error, responseStr);
+        logV(RFX_LOG_TAG, "type: %d, token %d, error %d, str:%s", type, token, error, responseStr);
         responseToSocket(response, responseStr);
     }
 }
 
 void RtcEmbmsAtController::handleRequestDefault(const sp<RfxMessage>& request) {
-    sp<RfxMessage> message = RfxMessage::obtainRequest( request->getSlotId(),
-                                                        request->getId(),
-                                                        request,
-                                                        true,
-                                                        RADIO_TECH_GROUP_GSM);
+    sp<RfxMessage> message = RfxMessage::obtainRequest(request->getSlotId(), request->getId(),
+                                                       request, true, RADIO_TECH_GROUP_GSM);
 
     requestToMcl(message);
-    logV(RFX_LOG_TAG, "Send request %s",idToString(request->getId()));
+    logV(RFX_LOG_TAG, "Send request %s", idToString(request->getId()));
 }
-
 
 void RtcEmbmsAtController::requestAtEnable(const sp<RfxMessage>& request) {
     // new: AT%MBMSCMD="ENABLE_EMBMS",[0,1]
     // old: AT%MBMSCMD="MBMS_PREFERENCE",[0,1]
-    char *data = (char*)(request->getData()->getData());
+    char* data = (char*)(request->getData()->getData());
     int input_err = 0;
     int enable;
 
     int count;
     int type;
     int trans_id;
-    char *line;
+    char* line;
 
     mIsFlightOn = false;
 
@@ -499,8 +483,8 @@ void RtcEmbmsAtController::requestAtEnable(const sp<RfxMessage>& request) {
     intdata[0] = trans_id;
     intdata[1] = EMBMS_COMMAND_ATCI;
 
-    sp<RfxMessage> newMsg = RfxMessage::obtainRequest(msg_id,
-        RfxIntsData(intdata, 2), request, false);
+    sp<RfxMessage> newMsg =
+            RfxMessage::obtainRequest(msg_id, RfxIntsData(intdata, 2), request, false);
 
     requestToMcl(newMsg);
 }
@@ -508,19 +492,19 @@ void RtcEmbmsAtController::requestAtEnable(const sp<RfxMessage>& request) {
 void RtcEmbmsAtController::handleEnableResponse(const sp<RfxMessage>& response) {
     RIL_EMBMS_LocalEnableResp* entry = NULL;
     int id = response->getId();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     mIsActiveSession = false;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_LocalEnableResp *) response->getData()->getData();
-        logI(RFX_LOG_TAG, "handleEnableResponse request %d,tid %d,rsp %d,idx_valid %d,idx %d,iface_name %s",
-            id, entry->trans_id, entry->response, entry->interface_index_valid,
-            entry->interface_index, entry->interface_name);
+        entry = (RIL_EMBMS_LocalEnableResp*)response->getData()->getData();
+        logI(RFX_LOG_TAG,
+             "handleEnableResponse request %d,tid %d,rsp %d,idx_valid %d,idx %d,iface_name %s", id,
+             entry->trans_id, entry->response, entry->interface_index_valid, entry->interface_index,
+             entry->interface_name);
     } else {
         logI(RFX_LOG_TAG, "handleEnableResponse error!");
     }
-
 
     if (response->getError() == RIL_E_SUCCESS && entry->response == EMBMS_GENERAL_SUCCESS) {
         // for RJIL old middleware version
@@ -528,9 +512,9 @@ void RtcEmbmsAtController::handleEnableResponse(const sp<RfxMessage>& response) 
             asprintf(&responseStr, EMBMS_OK);
         } else {
             //%MBMSCMD:rmnet1,1
-            //OK
+            // OK
             asprintf(&responseStr, "%%MBMSCMD:%s,%d\nOK\n", entry->interface_name,
-                entry->interface_index);
+                     entry->interface_index);
         }
         mEmbmsEnabled = true;
     } else {
@@ -544,12 +528,12 @@ void RtcEmbmsAtController::handleEnableResponse(const sp<RfxMessage>& response) 
 void RtcEmbmsAtController::handleDisableResponse(const sp<RfxMessage>& response) {
     RIL_EMBMS_DisableResp* entry = NULL;
     int id = response->getId();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_DisableResp *) response->getData()->getData();
-        logI(RFX_LOG_TAG, "handleDisableResponse request %d,tid %d,rsp %d",
-        id, entry->trans_id, entry->response);
+        entry = (RIL_EMBMS_DisableResp*)response->getData()->getData();
+        logI(RFX_LOG_TAG, "handleDisableResponse request %d,tid %d,rsp %d", id, entry->trans_id,
+             entry->response);
     } else {
         logI(RFX_LOG_TAG, "handleDisableResponse error!");
     }
@@ -565,12 +549,11 @@ void RtcEmbmsAtController::handleDisableResponse(const sp<RfxMessage>& response)
         asprintf(&responseStr, EMBMS_ERROR);
     }
 
-
     // Do not response silent disable eMBMS to middleware
     // The original default sim is not current default sim, so do not response
     if (getSlotId() != RtcEmbmsUtils::getDefaultDataSlotId()) {
         logI(RFX_LOG_TAG, "ignore DisableResponse due to not on DefaultDataSlot:%d",
-            RtcEmbmsUtils::getDefaultDataSlotId());
+             RtcEmbmsUtils::getDefaultDataSlotId());
     } else {
         responseToSocket(response, responseStr);
     }
@@ -583,18 +566,18 @@ void RtcEmbmsAtController::handleStartSessionResponse(const sp<RfxMessage>& resp
     int id = response->getId();
     // Only handle fail case here; asynchronous success response later.
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_LocalStartSessionResp *) response->getData()->getData();
+        entry = (RIL_EMBMS_LocalStartSessionResp*)response->getData()->getData();
 
-        logI(RFX_LOG_TAG, "handleStartSessionResponse response %d,tid %d,rsp %d,tmgi %s",
-        id, entry->trans_id, entry->response, entry->tmgi);
+        logI(RFX_LOG_TAG, "handleStartSessionResponse response %d,tid %d,rsp %d,tmgi %s", id,
+             entry->trans_id, entry->response, entry->tmgi);
 
         if (entry->response != EMBMS_GENERAL_SUCCESS) {
             int index;
             RtcEmbmsSessionInfo* sessionInfo =
-                RtcEmbmsUtils::findSessionByTransId(mSessionInfoList, entry->trans_id, &index);
+                    RtcEmbmsUtils::findSessionByTransId(mSessionInfoList, entry->trans_id, &index);
             if (sessionInfo != NULL) {
                 logD(RFX_LOG_TAG, "Send resposne %s",
-                        idToString(sessionInfo->mOriginalRequest->getId()));
+                     idToString(sessionInfo->mOriginalRequest->getId()));
                 responseErrorString(response);
                 delete mSessionInfoList->itemAt(index);
                 mSessionInfoList->removeAt(index);
@@ -612,16 +595,16 @@ void RtcEmbmsAtController::handleStartSessionResponse(const sp<RfxMessage>& resp
 void RtcEmbmsAtController::handleStartSessionUrc(const sp<RfxMessage>& response) {
     RIL_EMBMS_LocalStartSessionResp* entry = NULL;
     int index;
-    entry = (RIL_EMBMS_LocalStartSessionResp *) response->getData()->getData();
+    entry = (RIL_EMBMS_LocalStartSessionResp*)response->getData()->getData();
 
-    logI(RFX_LOG_TAG, "handleStartSessionUrc, reason:%d, valid%d",
-        entry->response, entry->tmgi_info_valid);
+    logI(RFX_LOG_TAG, "handleStartSessionUrc, reason:%d, valid%d", entry->response,
+         entry->tmgi_info_valid);
     if (entry->tmgi_info_valid == 1) {
         logI(RFX_LOG_TAG, "urc tmgi:%s", entry->tmgi);
         RtcEmbmsSessionInfo* sessionInfo = RtcEmbmsUtils::findSessionByTmgi(
-                                        mSessionInfoList, strlen(entry->tmgi), entry->tmgi, &index);
+                mSessionInfoList, strlen(entry->tmgi), entry->tmgi, &index);
         if (sessionInfo != NULL && index != -1) {
-            char *responseStr = NULL;
+            char* responseStr = NULL;
             // To avoid when MD response EMSSS too slow and middleware re-send AVAILABILITY_INFO,
             // and then EMSESS URC come back before ACTIVATE. Just ignore previous URC
             if (sessionInfo->mOriginalRequest == NULL) {
@@ -646,12 +629,12 @@ void RtcEmbmsAtController::handleStartSessionUrc(const sp<RfxMessage>& response)
 void RtcEmbmsAtController::handleStopSessionResponse(const sp<RfxMessage>& response) {
     RIL_EMBMS_LocalStartSessionResp* entry = NULL;
     int id = response->getId();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_LocalStartSessionResp *) response->getData()->getData();
-        logI(RFX_LOG_TAG, "handleStopSessionResponse request %d,tid %d,rsp %d,tmgi %s",
-        id, entry->trans_id, entry->response, entry->tmgi);
+        entry = (RIL_EMBMS_LocalStartSessionResp*)response->getData()->getData();
+        logI(RFX_LOG_TAG, "handleStopSessionResponse request %d,tid %d,rsp %d,tmgi %s", id,
+             entry->trans_id, entry->response, entry->tmgi);
     } else {
         logI(RFX_LOG_TAG, "handleStopSessionResponse error!");
     }
@@ -670,8 +653,8 @@ void RtcEmbmsAtController::requestAtSetAvailbility(const sp<RfxMessage>& request
     //  AT%MBMSCMD="AVAILABILITY_INFO",<TMGI>,<SAI_COUNT>,
     //  [<sai1>,<FREQUENCY_COUNT>,[<Freq1>,[<Freq2>,..]],
     //  [<sai2>,<FREQUENCY_COUNT>,[<Freq1>,[<Freq2>,..]]..]]
-    char *data = (char*)(request->getData()->getData());
-    char *tmgi;
+    char* data = (char*)(request->getData()->getData());
+    char* tmgi;
     int input_err = 0;
     RtcEmbmsSessionInfo inputInfo;
     int sai_count = 0;
@@ -727,8 +710,8 @@ void RtcEmbmsAtController::requestAtSetAvailbility(const sp<RfxMessage>& request
     if (VDBG) logV(RFX_LOG_TAG, "sai_count = %d", sai_count);
 
     if (inputInfo.mSaiCount > EMBMS_MAX_NUM_SAI) {
-        logE(RFX_LOG_TAG, "Cut sai_count(%d) to EMBMS_MAX_NUM_SAI(%d)",
-                inputInfo.mSaiCount, EMBMS_MAX_NUM_SAI);
+        logE(RFX_LOG_TAG, "Cut sai_count(%d) to EMBMS_MAX_NUM_SAI(%d)", inputInfo.mSaiCount,
+             EMBMS_MAX_NUM_SAI);
         inputInfo.mSaiCount = EMBMS_MAX_NUM_SAI;
     }
 
@@ -779,8 +762,8 @@ void RtcEmbmsAtController::requestAtSetAvailbility(const sp<RfxMessage>& request
 
     //  Update or add
     int index;
-    RtcEmbmsSessionInfo* sessionInfo = RtcEmbmsUtils::findSessionByTmgi(
-                                    mSessionInfoList, tmgi_len, tmgi, &index);
+    RtcEmbmsSessionInfo* sessionInfo =
+            RtcEmbmsUtils::findSessionByTmgi(mSessionInfoList, tmgi_len, tmgi, &index);
 
     if (index == -1) {
         RtcEmbmsSessionInfo* info = new RtcEmbmsSessionInfo();
@@ -809,14 +792,14 @@ void RtcEmbmsAtController::requestAtSetAvailbility(const sp<RfxMessage>& request
 
     delete atline_free;
     atline_free = NULL;
-    char *responseStr = (char *) EMBMS_OK;
+    char* responseStr = (char*)EMBMS_OK;
     responseToSocket(request, responseStr);
 }
 
-void RtcEmbmsAtController::requestAtActivate(const sp<RfxMessage>& request
-    , embms_at_activesession_enum type) {
-    char *data = (char*)(request->getData()->getData());
-    char *tmgi;
+void RtcEmbmsAtController::requestAtActivate(const sp<RfxMessage>& request,
+                                             embms_at_activesession_enum type) {
+    char* data = (char*)(request->getData()->getData());
+    char* tmgi;
     int sessionId = INVALID_EMBMS_SESSION_ID;
     int input_err = 0;
     int trans_id;
@@ -894,8 +877,8 @@ void RtcEmbmsAtController::requestAtActivate(const sp<RfxMessage>& request
             }
         } else {  // EMBMS_DEACTIVE_SESSION
             int index;
-            RtcEmbmsSessionInfo* sessionInfo = RtcEmbmsUtils::findSessionByTmgi(
-                                            mSessionInfoList, strlen(tmgi), tmgi, &index);
+            RtcEmbmsSessionInfo* sessionInfo =
+                    RtcEmbmsUtils::findSessionByTmgi(mSessionInfoList, strlen(tmgi), tmgi, &index);
             if (index != -1) {
                 delete mSessionInfoList->itemAt(index);
                 mSessionInfoList->removeAt(index);
@@ -917,14 +900,14 @@ void RtcEmbmsAtController::requestAtActivate(const sp<RfxMessage>& request
         logV(RFX_LOG_TAG, "entry.tmgi:%s", entry.tmgi);
         entry.session_id = sessionId;
 
-        sp<RfxMessage> newMsg = RfxMessage::obtainRequest(msg_id,
-            RfxEmbmsLocalStopSessionReqData(&entry, sizeof(entry)), request, false);
+        sp<RfxMessage> newMsg = RfxMessage::obtainRequest(
+                msg_id, RfxEmbmsLocalStopSessionReqData(&entry, sizeof(entry)), request, false);
 
         requestToMcl(newMsg);
     } else if (type == EMBMS_ACTIVE_SESSION) {
         int index;
-        RtcEmbmsSessionInfo* sessionInfo = RtcEmbmsUtils::findSessionByTmgi(
-                                        mSessionInfoList, strlen(tmgi), tmgi, &index);
+        RtcEmbmsSessionInfo* sessionInfo =
+                RtcEmbmsUtils::findSessionByTmgi(mSessionInfoList, strlen(tmgi), tmgi, &index);
         if (index == -1) {
             logE(RFX_LOG_TAG, "Can't find availbility info for %s!!", tmgi);
             responseErrorString(request);
@@ -949,8 +932,8 @@ void RtcEmbmsAtController::requestAtActivate(const sp<RfxMessage>& request
             entry.saiList[i] = sessionInfo->mSais[i];
         }
 
-        sp<RfxMessage> newMsg = RfxMessage::obtainRequest(msg_id,
-            RfxEmbmsLocalStartSessionReqData(&entry, sizeof(entry)), request, false);
+        sp<RfxMessage> newMsg = RfxMessage::obtainRequest(
+                msg_id, RfxEmbmsLocalStartSessionReqData(&entry, sizeof(entry)), request, false);
 
         requestToMcl(newMsg);
     }
@@ -966,7 +949,7 @@ void RtcEmbmsAtController::requestAtGetCoverage(const sp<RfxMessage>& request) {
     intdata[0] = trans_id;
 
     sp<RfxMessage> newMsg = RfxMessage::obtainRequest(RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE,
-        RfxIntsData(intdata, 1), request, false);
+                                                      RfxIntsData(intdata, 1), request, false);
 
     requestToMcl(newMsg);
 }
@@ -974,13 +957,13 @@ void RtcEmbmsAtController::requestAtGetCoverage(const sp<RfxMessage>& request) {
 void RtcEmbmsAtController::handleGetCoverageResponse(const sp<RfxMessage>& response) {
     RIL_EMBMS_GetCoverageResp* entry = NULL;
     int id = response->getId();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
     uint32_t result_status;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_GetCoverageResp *) response->getData()->getData();
-        logI(RFX_LOG_TAG, "handleGetCoverageResponse request %d,tid %d,rsp %d,valid %d,cov %d",
-            id, entry->trans_id, entry->response, entry->coverage_state_valid, entry->coverage_state);
+        entry = (RIL_EMBMS_GetCoverageResp*)response->getData()->getData();
+        logI(RFX_LOG_TAG, "handleGetCoverageResponse request %d,tid %d,rsp %d,valid %d,cov %d", id,
+             entry->trans_id, entry->response, entry->coverage_state_valid, entry->coverage_state);
 
         if (entry->coverage_state_valid) {
             result_status = getCoverageState(entry->coverage_state);
@@ -992,7 +975,6 @@ void RtcEmbmsAtController::handleGetCoverageResponse(const sp<RfxMessage>& respo
     } else {
         logI(RFX_LOG_TAG, "handleGetCoverageResponse error!");
     }
-
 
     if (response->getError() == RIL_E_SUCCESS && entry->response == EMBMS_GENERAL_SUCCESS) {
         // for RJIL old middleware version
@@ -1017,7 +999,7 @@ void RtcEmbmsAtController::requestAtGetNetworkTime(const sp<RfxMessage>& request
     intdata[0] = trans_id;
 
     sp<RfxMessage> newMsg = RfxMessage::obtainRequest(RFX_MSG_REQUEST_EMBMS_GET_TIME,
-        RfxIntsData(intdata, 1), request, false);
+                                                      RfxIntsData(intdata, 1), request, false);
 
     requestToMcl(newMsg);
 }
@@ -1025,32 +1007,30 @@ void RtcEmbmsAtController::requestAtGetNetworkTime(const sp<RfxMessage>& request
 void RtcEmbmsAtController::handleGetNetworkTimeResponse(const sp<RfxMessage>& response) {
     RIL_EMBMS_GetTimeResp* entry = NULL;
     int id = response->getId();
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_GetTimeResp *) response->getData()->getData();
+        entry = (RIL_EMBMS_GetTimeResp*)response->getData()->getData();
 
-        if (entry->response == (int32_t) EMBMS_GET_TIME_SIB16) {
-            entry->response = (int32_t) EMBMS_GENERAL_SUCCESS;
+        if (entry->response == (int32_t)EMBMS_GET_TIME_SIB16) {
+            entry->response = (int32_t)EMBMS_GENERAL_SUCCESS;
             // The timing information is consisting of time Info UTC part of SIB-16.
             // The field indicates the integer count of 10 ms units since 00:00:00
             // on 1 January, 1900 as per 3GPP specification, 36.331
             entry->milli_sec = entry->milli_sec / 10ll;
         }
-        logI(RFX_LOG_TAG, "handleGetNetworkTimeResponse request %d,tid %d,rsp %u,sec %lu",
-            id, entry->trans_id, entry->response,
-            entry->milli_sec);
+        logI(RFX_LOG_TAG, "handleGetNetworkTimeResponse request %d,tid %d,rsp %u,sec %lu", id,
+             entry->trans_id, entry->response, entry->milli_sec);
         logI(RFX_LOG_TAG, "dlsaving_valid %d, dlsaving %d,ls_valid %d,ls %d,lto_valid %d,lto %d",
-            entry->day_light_saving_valid, entry->day_light_saving,
-            entry->leap_seconds_valid, entry->leap_seconds,
-            entry->local_time_offset_valid, entry->local_time_offset);
+             entry->day_light_saving_valid, entry->day_light_saving, entry->leap_seconds_valid,
+             entry->leap_seconds, entry->local_time_offset_valid, entry->local_time_offset);
     } else {
         logI(RFX_LOG_TAG, "handleGetNetworkTimeResponse error!");
     }
 
-    if (response->getError() == RIL_E_SUCCESS
-        && entry->response == (int32_t) EMBMS_GENERAL_SUCCESS) {
-        asprintf(&responseStr, "%%MBMSCMD:%llu\nOK\n", (long long unsigned int) entry->milli_sec);
+    if (response->getError() == RIL_E_SUCCESS &&
+        entry->response == (int32_t)EMBMS_GENERAL_SUCCESS) {
+        asprintf(&responseStr, "%%MBMSCMD:%llu\nOK\n", (long long unsigned int)entry->milli_sec);
     } else {
         asprintf(&responseStr, EMBMS_ERROR);
     }
@@ -1066,7 +1046,7 @@ void RtcEmbmsAtController::handleTriggerCellInfoNotifyResponse(const sp<RfxMessa
 }
 
 void RtcEmbmsAtController::handleAtUrc(const sp<RfxMessage>& response) {
-    char *responseStr = NULL;
+    char* responseStr = NULL;
 
     responseStr = (char*)(response->getData()->getData());
     // logI(RFX_LOG_TAG, "handleAtUrc %s", responseStr);
@@ -1082,23 +1062,23 @@ void RtcEmbmsAtController::handleCellInfoUrc(const sp<RfxMessage>& response) {
     char* ecgi_mask = NULL;
     char* cell_id_mask = NULL;
 
-    int *data = (int *) response->getData()->getData();
+    int* data = (int*)response->getData()->getData();
     int data_length = response->getData()->getDataLength();
     cell_id = data[0];
     status = data[1];
     plmn = data[2];
     cell_id_mask = RtcEmbmsUtils::addLogMask(cell_id);
 
-    logI(RFX_LOG_TAG, "handleCellInfoUrc cell_id %s, status %d, plmn %d",
-        cell_id_mask, status,plmn);
+    logI(RFX_LOG_TAG, "handleCellInfoUrc cell_id %s, status %d, plmn %d", cell_id_mask, status,
+         plmn);
 
     // Register with LTE network. Change flight mode to false.
     if (status == 1) {
         mIsFlightOn = false;
     }
 
-    char *responseStr = NULL;
-    char *responseStr_mask = NULL;
+    char* responseStr = NULL;
+    char* responseStr_mask = NULL;
     asprintf(&responseStr, "+CEREG:%d\n", status);
     urcToSocket(response, responseStr, NULL);
     free(responseStr);
@@ -1118,19 +1098,18 @@ void RtcEmbmsAtController::handleCellInfoUrc(const sp<RfxMessage>& response) {
         cell_id_mask = NULL;
         free(cell_id_mask);
     }
-
 }
 
 void RtcEmbmsAtController::handleCoverageUrc(const sp<RfxMessage>& response) {
     int32_t srv_status;
-    int     result_status;
+    int result_status;
 
-    int *data = (int *) response->getData()->getData();
+    int* data = (int*)response->getData()->getData();
     int data_length = response->getData()->getDataLength();
     srv_status = data[0];
     result_status = getCoverageState(srv_status);
 
-    char *responseStr = NULL;
+    char* responseStr = NULL;
     if (RtcEmbmsUtils::isRjilSupport()) {
         asprintf(&responseStr, "%%MBMSEV:%d\n", result_status);
     } else {
@@ -1142,22 +1121,22 @@ void RtcEmbmsAtController::handleCoverageUrc(const sp<RfxMessage>& response) {
 
 void RtcEmbmsAtController::handleSessionListUrc(const sp<RfxMessage>& response) {
     uint32_t tmgi_info_count;
-    char*    tmp_tmgi;
+    char* tmp_tmgi;
     int32_t trans_id = -1;
     int32_t tmp;
     // %MBMSEV: 96 -> Active TMGIs (all currently activated TMGIs)
-    // %MBMSEV: 97 -> Available TMGIs (all currently activated TMGIs + Available TMGIs that can be activated)
-    // %MBMSEV:[96,97],count, TMGI1, TMGI2..
+    // %MBMSEV: 97 -> Available TMGIs (all currently activated TMGIs + Available TMGIs that can be
+    // activated) %MBMSEV:[96,97],count, TMGI1, TMGI2..
     String8 responseStr;
     RIL_EMBMS_LocalSessionNotify* input_data =
-        (RIL_EMBMS_LocalSessionNotify *) response->getData()->getData();
+            (RIL_EMBMS_LocalSessionNotify*)response->getData()->getData();
 
     if (mIsFlightOn) {
         logI(RFX_LOG_TAG, "skip due to flight mode");
         return;
     }
 
-    if (response->getId()== RFX_MSG_URC_EMBMS_ACTIVE_SESSION) {
+    if (response->getId() == RFX_MSG_URC_EMBMS_ACTIVE_SESSION) {
         responseStr = String8("%MBMSEV:96");
     } else {  // RFX_MSG_URC_EMBMS_AVAILABLE_SESSION
         responseStr = String8("%MBMSEV:97");
@@ -1173,15 +1152,15 @@ void RtcEmbmsAtController::handleSessionListUrc(const sp<RfxMessage>& response) 
         responseStr.append(String8::format(",%s", input_data->tmgix[i]));
     }
     //
-    if (RtcEmbmsUtils::isRjilSupport()) { //version 1.1.1x~1.1.20c
+    if (RtcEmbmsUtils::isRjilSupport()) {  // version 1.1.1x~1.1.20c
         responseStr = String8("%MBMSEV:0");
         logD(RFX_LOG_TAG, "%s", responseStr.string());
         urcToSocket(response, responseStr.string(), NULL);
-    } else if (mSdkVersion < 10901){
+    } else if (mSdkVersion < 10901) {
         responseStr = String8("%MBMSEV:0,0");
         logD(RFX_LOG_TAG, "%s", responseStr.string());
         urcToSocket(response, responseStr.string(), NULL);
-    } else {//mSdkVersion >= 10901
+    } else {  // mSdkVersion >= 10901
         responseStr.append(String8("\n"));
         logD(RFX_LOG_TAG, "%s", responseStr.string());
         urcToSocket(response, responseStr.string(), NULL);
@@ -1194,13 +1173,12 @@ void RtcEmbmsAtController::handleSessionListUrc(const sp<RfxMessage>& response) 
 
 void RtcEmbmsAtController::handleActiveSessionStatus(const sp<RfxMessage>& response) {
     RIL_EMBMS_LocalSessionNotify* entry = NULL;
-    bool    isActive = false;
+    bool isActive = false;
 
     if (response->getError() == RIL_E_SUCCESS) {
-        entry = (RIL_EMBMS_LocalSessionNotify *) response->getData()->getData();
+        entry = (RIL_EMBMS_LocalSessionNotify*)response->getData()->getData();
 
-        logI(RFX_LOG_TAG, "handleActiveSessionStatus tmgi_info_count %d",
-        entry->tmgi_info_count);
+        logI(RFX_LOG_TAG, "handleActiveSessionStatus tmgi_info_count %d", entry->tmgi_info_count);
     } else {
         logI(RFX_LOG_TAG, "handleActiveSessionStatus error!");
         return;
@@ -1213,15 +1191,15 @@ void RtcEmbmsAtController::handleActiveSessionStatus(const sp<RfxMessage>& respo
         int intdata[1];
         intdata[0] = (mIsActiveSession) ? 1 : 0;
         // responseInts
-        sp<RfxMessage> newMsg = RfxMessage::obtainUrc(response->getSlotId(),
-                                        RFX_MSG_URC_RTC_EMBMS_SESSION_STATUS,
-                                        RfxIntsData(intdata, 1), RADIO_TECH_GROUP_GSM);
+        sp<RfxMessage> newMsg =
+                RfxMessage::obtainUrc(response->getSlotId(), RFX_MSG_URC_RTC_EMBMS_SESSION_STATUS,
+                                      RfxIntsData(intdata, 1), RADIO_TECH_GROUP_GSM);
         responseToRilj(newMsg);
     }
 }
 
 void RtcEmbmsAtController::handleOosUrc(const sp<RfxMessage>& response) {
-    RIL_EMBMS_LocalOosNotify* data = (RIL_EMBMS_LocalOosNotify *) response->getData()->getData();
+    RIL_EMBMS_LocalOosNotify* data = (RIL_EMBMS_LocalOosNotify*)response->getData()->getData();
     // %MBMSEV:95,count, TMGI1, TMGI2..
     String8 responseStr("%MBMSEV:95");
 
@@ -1238,13 +1216,13 @@ void RtcEmbmsAtController::handleOosUrc(const sp<RfxMessage>& response) {
     }
     responseStr.append(String8("\n"));
     if (tmgi_info_count > 0) {
-        urcToSocket(response ,responseStr.string(), NULL);
+        urcToSocket(response, responseStr.string(), NULL);
     }
 }
 
 void RtcEmbmsAtController::handleSaiUrc(const sp<RfxMessage>& response) {
     RIL_EMBMS_LocalSaiNotify* input_data =
-        (RIL_EMBMS_LocalSaiNotify *) response->getData()->getData();
+            (RIL_EMBMS_LocalSaiNotify*)response->getData()->getData();
     RIL_EMBMS_SaiNotify output_data;
     memset(&output_data, 0, sizeof(output_data));
     // %MBMSEV:98,<SAI_COUNT>,[<csai1>, <csai2>, <csai3>,...], <INTER_FREQUENCY_COUNT>,
@@ -1303,16 +1281,16 @@ void RtcEmbmsAtController::handleSaiUrc(const sp<RfxMessage>& response) {
     for (uint32_t i = 0; i < output_data.nf_total; i++) {
         // <Frequency_1>, <SAI_COUNT_1>
         responseStr.append(String8::format(",%d,%d", output_data.neiFreqData[i],
-                                output_data.nsai_count_per_group[i]));
+                                           output_data.nsai_count_per_group[i]));
 
         // <nsai11>
         for (uint32_t j = 0; j < output_data.nsai_count_per_group[i]; j++) {
-            responseStr.append(String8::format(",%d", output_data.neiSaiData[tail_index+j]));
+            responseStr.append(String8::format(",%d", output_data.neiSaiData[tail_index + j]));
         }
         tail_index += output_data.nsai_count_per_group[i];
     }
     responseStr.append(String8("\n"));
-    urcToSocket(response ,responseStr.string(), NULL);
+    urcToSocket(response, responseStr.string(), NULL);
 }
 
 int RtcEmbmsAtController::getCoverageState(int srv_status) {
@@ -1379,8 +1357,8 @@ bool RtcEmbmsAtController::isEmbmsSupported() {
     return isEmbmsSupported;
 }
 
-void RtcEmbmsAtController::onMainCapabilityChanged(RfxStatusKeyEnum key,
-    RfxVariant old_value, RfxVariant new_value) {
+void RtcEmbmsAtController::onMainCapabilityChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                   RfxVariant new_value) {
     String8 responseStr(EMBMS_FLIGTH_MODE);
 
     EMBMS_UNUSED(key);
@@ -1388,19 +1366,18 @@ void RtcEmbmsAtController::onMainCapabilityChanged(RfxStatusKeyEnum key,
     int oldType = old_value.asInt();
     int newType = new_value.asInt();
 
-    logI(RFX_LOG_TAG, "onMainCapabilityChanged[%d] embms:%d, cap %d->%d", getSlotId() ,mEmbmsEnabled
-        ,oldType, newType);
+    logI(RFX_LOG_TAG, "onMainCapabilityChanged[%d] embms:%d, cap %d->%d", getSlotId(),
+         mEmbmsEnabled, oldType, newType);
 
     if (oldType != newType && mEmbmsEnabled) {
         logI(RFX_LOG_TAG, "capabilty change %d:%d", oldType, newType);
 
-        sp<RfxMessage> response = RfxMessage::obtainUrc(getSlotId(),
-                                        RFX_MSG_URC_EMBMS_AT_INFO,
-                                        RfxStringData( (void *)responseStr.string(),
-                                            responseStr.length()),
-                                        RADIO_TECH_GROUP_GSM);
+        sp<RfxMessage> response = RfxMessage::obtainUrc(
+                getSlotId(), RFX_MSG_URC_EMBMS_AT_INFO,
+                RfxStringData((void*)responseStr.string(), responseStr.length()),
+                RADIO_TECH_GROUP_GSM);
 
-        urcToSocket(response ,responseStr.string(), NULL);
+        urcToSocket(response, responseStr.string(), NULL);
         mIsFlightOn = true;
         mEmbmsEnabled = false;
         //  clear active info
@@ -1410,28 +1387,26 @@ void RtcEmbmsAtController::onMainCapabilityChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcEmbmsAtController::onDefaultDataChanged(RfxStatusKeyEnum key,
-    RfxVariant old_value, RfxVariant new_value) {
-
+void RtcEmbmsAtController::onDefaultDataChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                RfxVariant new_value) {
     String8 responseStr(EMBMS_FLIGTH_MODE);
 
     EMBMS_UNUSED(key);
 
     int oldSim = old_value.asInt();
     int newSim = new_value.asInt();
-    logI(RFX_LOG_TAG, "onDefaultDataChanged[%d] embms:%d, cap %d->%d", getSlotId() ,mEmbmsEnabled
-        ,oldSim, newSim);
+    logI(RFX_LOG_TAG, "onDefaultDataChanged[%d] embms:%d, cap %d->%d", getSlotId(), mEmbmsEnabled,
+         oldSim, newSim);
 
     if (oldSim != newSim) {
         if (mEmbmsEnabled) {
             logI(RFX_LOG_TAG, "default sim change %d:%d", oldSim, newSim);
-            sp<RfxMessage> response = RfxMessage::obtainUrc(getSlotId(),
-                                            RFX_MSG_URC_EMBMS_AT_INFO,
-                                            RfxStringData( (void *)responseStr.string(),
-                                                responseStr.length()),
-                                            RADIO_TECH_GROUP_GSM);
+            sp<RfxMessage> response = RfxMessage::obtainUrc(
+                    getSlotId(), RFX_MSG_URC_EMBMS_AT_INFO,
+                    RfxStringData((void*)responseStr.string(), responseStr.length()),
+                    RADIO_TECH_GROUP_GSM);
 
-            urcToSocket(response ,responseStr.string(), NULL);
+            urcToSocket(response, responseStr.string(), NULL);
             mIsFlightOn = true;
 
             // Do not response silent disable eMBMS to middleware
@@ -1441,18 +1416,16 @@ void RtcEmbmsAtController::onDefaultDataChanged(RfxStatusKeyEnum key,
             intdata[1] = EMBMS_COMMAND_ATCI;
 
             // ignore rilToken since not used
-            sp<RfxMessage> newMsg = RfxMessage::obtainRequest(getSlotId(),
-                RFX_MSG_REQUEST_EMBMS_DISABLE,
-                RfxIntsData(intdata, 2),
-                RADIO_TECH_GROUP_GSM);
+            sp<RfxMessage> newMsg =
+                    RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_EMBMS_DISABLE,
+                                              RfxIntsData(intdata, 2), RADIO_TECH_GROUP_GSM);
             requestToMcl(newMsg);
         }
 
         if (newSim == getSlotId()) {
-            sp<RfxMessage> newMsg = RfxMessage::obtainRequest(getSlotId(),
-                RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY,
-                RfxVoidData(),
-                RADIO_TECH_GROUP_GSM);
+            sp<RfxMessage> newMsg = RfxMessage::obtainRequest(
+                    getSlotId(), RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY, RfxVoidData(),
+                    RADIO_TECH_GROUP_GSM);
             requestToMcl(newMsg);
         }
     }

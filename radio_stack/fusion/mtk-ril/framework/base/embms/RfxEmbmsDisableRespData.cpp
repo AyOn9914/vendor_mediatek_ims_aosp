@@ -23,18 +23,18 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsDisableRespData);
 
 RfxEmbmsDisableRespData::RfxEmbmsDisableRespData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_DisableResp*)data, length);
 }
 
 RfxEmbmsDisableRespData::RfxEmbmsDisableRespData(RIL_EMBMS_DisableResp* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsDisableRespData::copyData(RIL_EMBMS_DisableResp *data, int length) {
+void RfxEmbmsDisableRespData::copyData(RIL_EMBMS_DisableResp* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_DisableResp *) calloc(1, sizeof(RIL_EMBMS_DisableResp));
+    m_data = (RIL_EMBMS_DisableResp*)calloc(1, sizeof(RIL_EMBMS_DisableResp));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

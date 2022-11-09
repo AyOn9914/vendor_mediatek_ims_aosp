@@ -24,12 +24,11 @@
 /*****************************************************************************
  * Class RmcDcOnDemandReqHandler
  *****************************************************************************/
-RmcDcOnDemandReqHandler::RmcDcOnDemandReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager)
-: RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {
-}
+RmcDcOnDemandReqHandler::RmcDcOnDemandReqHandler(int slot_id, int channel_id,
+                                                 RmcDcPdnManager* pdnManager)
+    : RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {}
 
-RmcDcOnDemandReqHandler::~RmcDcOnDemandReqHandler() {
-}
+RmcDcOnDemandReqHandler::~RmcDcOnDemandReqHandler() {}
 
 void RmcDcOnDemandReqHandler::requestSetupDataCall(const sp<RfxMclMessage>& msg) {
     RmcDcCommonReqHandler::requestSetupDataCall(msg);

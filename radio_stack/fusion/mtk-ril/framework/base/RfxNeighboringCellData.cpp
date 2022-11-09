@@ -18,27 +18,28 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxNeighboringCellData);
 
-RfxNeighboringCellData::RfxNeighboringCellData(void *data, int length) : RfxBaseData(data, length)  {
+RfxNeighboringCellData::RfxNeighboringCellData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
         m_length = length;
-        int countStrings = length/sizeof(RIL_NeighboringCell *);
-        copyCells((RIL_NeighboringCell **)data, countStrings);
+        int countStrings = length / sizeof(RIL_NeighboringCell*);
+        copyCells((RIL_NeighboringCell**)data, countStrings);
     }
 }
 
-RfxNeighboringCellData::RfxNeighboringCellData(RIL_NeighboringCell **data, int countStrings) :
-        RfxBaseData(data, countStrings * sizeof(RIL_NeighboringCell *))  {
+RfxNeighboringCellData::RfxNeighboringCellData(RIL_NeighboringCell** data, int countStrings)
+    : RfxBaseData(data, countStrings * sizeof(RIL_NeighboringCell*)) {
     if (data != NULL) {
-        m_length = countStrings * sizeof(RIL_NeighboringCell *);
+        m_length = countStrings * sizeof(RIL_NeighboringCell*);
         copyCells(data, countStrings);
     }
 }
 
-void RfxNeighboringCellData::copyCells(RIL_NeighboringCell **data, int countCell) {
-    RIL_NeighboringCell **pCell = (RIL_NeighboringCell **) calloc(countCell, sizeof(RIL_NeighboringCell *));
+void RfxNeighboringCellData::copyCells(RIL_NeighboringCell** data, int countCell) {
+    RIL_NeighboringCell** pCell =
+            (RIL_NeighboringCell**)calloc(countCell, sizeof(RIL_NeighboringCell*));
     if (pCell == NULL) goto error;
     for (int i = 0; i < countCell; i++) {
-        pCell[i] = (RIL_NeighboringCell *) calloc(1, sizeof(RIL_NeighboringCell));
+        pCell[i] = (RIL_NeighboringCell*)calloc(1, sizeof(RIL_NeighboringCell));
         if (pCell[i] == NULL) goto error;
         asprintf(&pCell[i]->cid, "%s", data[i]->cid);
         pCell[i]->rssi = data[i]->rssi;
@@ -52,8 +53,8 @@ error:
 
 RfxNeighboringCellData::~RfxNeighboringCellData() {
     if (m_data) {
-        RIL_NeighboringCell **pTmp = (RIL_NeighboringCell **) m_data;
-        int countCell = m_length/sizeof(RIL_NeighboringCell *);
+        RIL_NeighboringCell** pTmp = (RIL_NeighboringCell**)m_data;
+        int countCell = m_length / sizeof(RIL_NeighboringCell*);
         for (int i = 0; i < countCell; i++) {
             if (pTmp[i]) {
                 if (pTmp[i]->cid) {

@@ -34,100 +34,98 @@
 #include "utils/Mutex.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::Mutex;
 using ::android::RefBase;
 using ::android::sp;
+using ::android::Thread;
 
 class RfxSender : public Thread {
-    public:
-        RfxSender(int fd, int channel_id, RfxChannelContext *context);
+  public:
+    RfxSender(int fd, int channel_id, RfxChannelContext* context);
 
-    private:
-        class MclMessageHandler : public MessageHandler {
-            public:
-                MclMessageHandler(RfxSender* _sender, const sp<RfxMclMessage>& _msg) :
-                        msg(_msg), sender(_sender) {}
-                virtual ~MclMessageHandler() {}
+  private:
+    class MclMessageHandler : public MessageHandler {
+      public:
+        MclMessageHandler(RfxSender* _sender, const sp<RfxMclMessage>& _msg)
+            : msg(_msg), sender(_sender) {}
+        virtual ~MclMessageHandler() {}
 
-            public:
-                virtual void handleMessage(const Message& message);
+      public:
+        virtual void handleMessage(const Message& message);
 
-            private:
-                sp<RfxMclMessage> msg;
-                RfxSender* sender;
-        };
+      private:
+        sp<RfxMclMessage> msg;
+        RfxSender* sender;
+    };
 
-    public:
-        void enqueueMessage(const sp<RfxMclMessage>& msg);
+  public:
+    void enqueueMessage(const sp<RfxMclMessage>& msg);
 
-        void enqueueMessageFront(const sp<RfxMclMessage>& msg);
+    void enqueueMessageFront(const sp<RfxMclMessage>& msg);
 
-        sp<Looper> waitLooper(); // Must invoke after new RfxSender
+    sp<Looper> waitLooper();  // Must invoke after new RfxSender
 
-    private:
-        virtual bool threadLoop();
+  private:
+    virtual bool threadLoop();
 
-        void processMessage(const sp<RfxMclMessage>& msg);
+    void processMessage(const sp<RfxMclMessage>& msg);
 
-    public:
-        sp<RfxAtResponse> atSendCommandSinglelineAck (const char *command,
-                const char *responsePrefix, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandSingleline (const char *command, const char *responsePrefix);
-        sp<RfxAtResponse> atSendCommandNumericAck (const char *command, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandNumeric (const char *command);
-        sp<RfxAtResponse> atSendCommandMultilineAck (const char *command,
-                const char *responsePrefix, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandMultiline (const char *command, const char *responsePrefix);
-        sp<RfxAtResponse> atSendCommandAck (const char *command, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommand (const char *command);
-        sp<RfxAtResponse> atSendCommandRawAck (const char *command, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandRaw (const char *command);
+  public:
+    sp<RfxAtResponse> atSendCommandSinglelineAck(const char* command, const char* responsePrefix,
+                                                 RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandSingleline(const char* command, const char* responsePrefix);
+    sp<RfxAtResponse> atSendCommandNumericAck(const char* command, RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandNumeric(const char* command);
+    sp<RfxAtResponse> atSendCommandMultilineAck(const char* command, const char* responsePrefix,
+                                                RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandMultiline(const char* command, const char* responsePrefix);
+    sp<RfxAtResponse> atSendCommandAck(const char* command, RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommand(const char* command);
+    sp<RfxAtResponse> atSendCommandRawAck(const char* command, RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandRaw(const char* command);
 
-        int sendUserData(int clientId, unsigned char* data, size_t length);
-        int sendUserData(int clientId, int config, unsigned char* data, size_t length);
+    int sendUserData(int clientId, unsigned char* data, size_t length);
+    int sendUserData(int clientId, int config, unsigned char* data, size_t length);
 
-        int getFd() const {
-            return m_fd;
-        }
-        void setFd(int fd) {
-            m_fd = fd;
-        }
+    int getFd() const { return m_fd; }
+    void setFd(int fd) { m_fd = fd; }
 
-    private:
-        sp<RfxAtResponse> atSendCommandFullAck(const char *command, AtCommandType type,
-                const char *responsePrefix, long long timeoutMsec, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandFull(const char *command, AtCommandType type,
-                const char *responsePrefix, long long timeoutMsec);
-        sp<RfxAtResponse> atSendCommandFullNolockAck(const char *command, AtCommandType type,
-                const char *responsePrefix, long long timeoutMsec, RIL_Token ackToken);
-        sp<RfxAtResponse> atSendCommandFullNolock(const char *command, AtCommandType type,
-                const char *responsePrefix, long long timeoutMsec);
+  private:
+    sp<RfxAtResponse> atSendCommandFullAck(const char* command, AtCommandType type,
+                                           const char* responsePrefix, long long timeoutMsec,
+                                           RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandFull(const char* command, AtCommandType type,
+                                        const char* responsePrefix, long long timeoutMsec);
+    sp<RfxAtResponse> atSendCommandFullNolockAck(const char* command, AtCommandType type,
+                                                 const char* responsePrefix, long long timeoutMsec,
+                                                 RIL_Token ackToken);
+    sp<RfxAtResponse> atSendCommandFullNolock(const char* command, AtCommandType type,
+                                              const char* responsePrefix, long long timeoutMsec);
 
-        int getATCommandTimeout(const char *command);
+    int getATCommandTimeout(const char* command);
 
-        int writeline(const char *s);
-        int writelineUserData(unsigned char* frame, size_t length);
-        void printLog(int level, String8 log);
+    int writeline(const char* s);
+    int writelineUserData(unsigned char* frame, size_t length);
+    void printLog(int level, String8 log);
 
-    private:
-        sp<Looper> m_looper;
-        int m_fd;
-        int m_channel_id;
-        Message m_dummy_msg;
-        friend MclMessageHandler;
-        int m_atTimeoutMsec;
-        RfxChannelContext *m_context;
-        pthread_t m_threadId;
-        const char* mName;
+  private:
+    sp<Looper> m_looper;
+    int m_fd;
+    int m_channel_id;
+    Message m_dummy_msg;
+    friend MclMessageHandler;
+    int m_atTimeoutMsec;
+    RfxChannelContext* m_context;
+    pthread_t m_threadId;
+    const char* mName;
 
-        sem_t mWaitLooperSem;
-        bool mNeedWaitLooper;
-        Mutex mWaitLooperMutex;
-        int mIsFuzzyTesting;
-        int mFuzzyTestingTimeout;
+    sem_t mWaitLooperSem;
+    bool mNeedWaitLooper;
+    Mutex mWaitLooperMutex;
+    int mIsFuzzyTesting;
+    int mFuzzyTestingTimeout;
 };
 
 #endif

@@ -22,25 +22,24 @@
 #include "RfxViaUtils.h"
 #include <libmtkrilutils.h>
 
-static const int request[] = {
-    RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE,
-    RFX_MSG_REQUEST_DATA_REGISTRATION_STATE,
-    RFX_MSG_REQUEST_OPERATOR,
-    RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE
-};
+static const int request[] = {RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE,
+                              RFX_MSG_REQUEST_DATA_REGISTRATION_STATE, RFX_MSG_REQUEST_OPERATOR,
+                              RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE};
 
 // register data
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoiceRegStateData, RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxDataRegStateData, RFX_MSG_REQUEST_DATA_REGISTRATION_STATE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoiceRegStateData,
+                                RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxDataRegStateData,
+                                RFX_MSG_REQUEST_DATA_REGISTRATION_STATE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringsData, RFX_MSG_REQUEST_OPERATOR);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE);
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcNetworkRealTimeRequestHandler, RIL_CMD_PROXY_7);
 
-RmcNetworkRealTimeRequestHandler::RmcNetworkRealTimeRequestHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id),
-        m_emergency_only(0) {
+RmcNetworkRealTimeRequestHandler::RmcNetworkRealTimeRequestHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id), m_emergency_only(0) {
     int err;
     sp<RfxAtResponse> p_response;
     logV(LOG_TAG, "%s[%d] start", __FUNCTION__, slot_id);
@@ -48,7 +47,7 @@ RmcNetworkRealTimeRequestHandler::RmcNetworkRealTimeRequestHandler(int slot_id, 
     m_slot_id = slot_id;
     m_channel_id = channel_id;
 
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     resetVoiceRegStateCache(voice_reg_state_cache[m_slot_id], CACHE_GROUP_ALL);
     resetDataRegStateCache(data_reg_state_cache[m_slot_id], CACHE_GROUP_ALL);
     resetVoiceRegStateCache(urc_voice_reg_state_cache[m_slot_id], CACHE_GROUP_ALL);
@@ -57,8 +56,7 @@ RmcNetworkRealTimeRequestHandler::RmcNetworkRealTimeRequestHandler(int slot_id, 
     updateServiceStateValue();
 }
 
-RmcNetworkRealTimeRequestHandler::~RmcNetworkRealTimeRequestHandler() {
-}
+RmcNetworkRealTimeRequestHandler::~RmcNetworkRealTimeRequestHandler() {}
 
 void RmcNetworkRealTimeRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
@@ -83,7 +81,7 @@ void RmcNetworkRealTimeRequestHandler::onHandleRequest(const sp<RfxMclMessage>& 
 }
 
 static RIL_CellInfoType getCellInfoTypeRadioTechnology(int rat) {
-    switch(rat) {
+    switch (rat) {
         case RADIO_TECH_GPRS:
         case RADIO_TECH_EDGE:
         case RADIO_TECH_GSM: {
@@ -120,8 +118,8 @@ static RIL_CellInfoType getCellInfoTypeRadioTechnology(int rat) {
 }
 
 void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessage>& msg) {
-    RIL_VoiceRegistrationStateResponse *pData = (RIL_VoiceRegistrationStateResponse *)
-            alloca(sizeof(RIL_VoiceRegistrationStateResponse));
+    RIL_VoiceRegistrationStateResponse* pData =
+            (RIL_VoiceRegistrationStateResponse*)alloca(sizeof(RIL_VoiceRegistrationStateResponse));
     int err = 0;
     int mcc = 0;
     int mnc = 0;
@@ -138,7 +136,7 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
     if ((urc_voice_reg_state_cache[m_slot_id]->denied_reason > 0) &&
         (urc_voice_reg_state_cache[m_slot_id]->lac == voice_reg_state_cache[m_slot_id]->lac) &&
         (urc_voice_reg_state_cache[m_slot_id]->cid == voice_reg_state_cache[m_slot_id]->cid)) {
-         // we have reject cause with the same lac/cid, we use it.
+        // we have reject cause with the same lac/cid, we use it.
         pData->reasonForDenial = urc_voice_reg_state_cache[m_slot_id]->denied_reason;
     } else {
         pData->reasonForDenial = voice_reg_state_cache[m_slot_id]->denied_reason;
@@ -155,17 +153,21 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
     }
 #endif
 
-    if (strlen(op_info_cache[m_slot_id]->mccMnc) == 5 || strlen(op_info_cache[m_slot_id]->mccMnc) == 6) {
-        if (strlen(op_info_cache[m_slot_id]->mccMnc) == 6) mnc_len = 3;
-        else mnc_len = 2;
+    if (strlen(op_info_cache[m_slot_id]->mccMnc) == 5 ||
+        strlen(op_info_cache[m_slot_id]->mccMnc) == 6) {
+        if (strlen(op_info_cache[m_slot_id]->mccMnc) == 6)
+            mnc_len = 3;
+        else
+            mnc_len = 2;
         char mcc_str[4] = {0};
         char mnc_str[4] = {0};
         strncpy(mcc_str, op_info_cache[m_slot_id]->mccMnc, 3);
-        strncpy(mnc_str, (op_info_cache[m_slot_id]->mccMnc+3), (strlen(op_info_cache[m_slot_id]->mccMnc)-3));
+        strncpy(mnc_str, (op_info_cache[m_slot_id]->mccMnc + 3),
+                (strlen(op_info_cache[m_slot_id]->mccMnc) - 3));
         mcc = atoi(mcc_str);
         mnc = atoi(mnc_str);
-        err = getOperatorNamesFromNumericCode(
-                op_info_cache[m_slot_id]->mccMnc, longname, shortname, MAX_OPER_NAME_LENGTH);
+        err = getOperatorNamesFromNumericCode(op_info_cache[m_slot_id]->mccMnc, longname, shortname,
+                                              MAX_OPER_NAME_LENGTH);
         if (err < 0) {
             memset(longname, 0, MAX_OPER_NAME_LENGTH);
             memset(shortname, 0, MAX_OPER_NAME_LENGTH);
@@ -174,7 +176,8 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
         mcc = INT_MAX;
         mnc = INT_MAX;
         // reset longname/shortname because mccmnc may be empty and these are empty too.
-        // It happends when the MD is in service right after poll_operator and before poll_voice/data
+        // It happends when the MD is in service right after poll_operator and before
+        // poll_voice/data
         memset(longname, 0, MAX_OPER_NAME_LENGTH);
         memset(shortname, 0, MAX_OPER_NAME_LENGTH);
     }
@@ -187,7 +190,7 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
         pthread_mutex_lock(&s_voiceRegStateMutex[m_slot_id]);
         // if AT+ECELL provides old data
         if (voice_reg_state_cache[m_slot_id]->lac != mdEcell[m_slot_id]->lacTac ||
-                voice_reg_state_cache[m_slot_id]->cid != mdEcell[m_slot_id]->cid) {
+            voice_reg_state_cache[m_slot_id]->cid != mdEcell[m_slot_id]->cid) {
             // reset
             memset(mdEcell[m_slot_id], 0, sizeof(MD_ECELL));
             mdEcell[m_slot_id]->bsic = 0xFF;
@@ -198,13 +201,13 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
 
     pData->cellIdentity.cellInfoType =
             getCellInfoTypeRadioTechnology(voice_reg_state_cache[m_slot_id]->radio_technology);
-    switch(pData->cellIdentity.cellInfoType) {
+    switch (pData->cellIdentity.cellInfoType) {
         case RIL_CELL_INFO_TYPE_GSM: {
             pData->cellIdentity.cellIdentityGsm.mcc = mcc;
             pData->cellIdentity.cellIdentityGsm.mnc = mnc;
-            pData->cellIdentity.cellIdentityGsm.mnc_len= mnc_len;
+            pData->cellIdentity.cellIdentityGsm.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityGsm.lac = voice_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityGsm.cid = (int) voice_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityGsm.cid = (int)voice_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityGsm.arfcn = mdEcell[m_slot_id]->arfcn;
             pData->cellIdentity.cellIdentityGsm.bsic = mdEcell[m_slot_id]->bsic;
             pData->cellIdentity.cellIdentityGsm.operName.long_name = longname;
@@ -215,9 +218,9 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
         case RIL_CELL_INFO_TYPE_WCDMA: {
             pData->cellIdentity.cellIdentityWcdma.mcc = mcc;
             pData->cellIdentity.cellIdentityWcdma.mnc = mnc;
-            pData->cellIdentity.cellIdentityWcdma.mnc_len= mnc_len;
+            pData->cellIdentity.cellIdentityWcdma.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityWcdma.lac = voice_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityWcdma.cid = (int) voice_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityWcdma.cid = (int)voice_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityWcdma.psc = voice_reg_state_cache[m_slot_id]->psc;
             pData->cellIdentity.cellIdentityWcdma.uarfcn = mdEcell[m_slot_id]->arfcn;
             pData->cellIdentity.cellIdentityWcdma.operName.long_name = longname;
@@ -226,11 +229,16 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
         }
 
         case RIL_CELL_INFO_TYPE_CDMA: {
-            pData->cellIdentity.cellIdentityCdma.networkId = voice_reg_state_cache[m_slot_id]->network_id;
-            pData->cellIdentity.cellIdentityCdma.systemId = voice_reg_state_cache[m_slot_id]->system_id;
-            pData->cellIdentity.cellIdentityCdma.basestationId = voice_reg_state_cache[m_slot_id]->base_station_id;
-            pData->cellIdentity.cellIdentityCdma.longitude = voice_reg_state_cache[m_slot_id]->base_station_longitude;
-            pData->cellIdentity.cellIdentityCdma.latitude = voice_reg_state_cache[m_slot_id]->base_station_latitude;
+            pData->cellIdentity.cellIdentityCdma.networkId =
+                    voice_reg_state_cache[m_slot_id]->network_id;
+            pData->cellIdentity.cellIdentityCdma.systemId =
+                    voice_reg_state_cache[m_slot_id]->system_id;
+            pData->cellIdentity.cellIdentityCdma.basestationId =
+                    voice_reg_state_cache[m_slot_id]->base_station_id;
+            pData->cellIdentity.cellIdentityCdma.longitude =
+                    voice_reg_state_cache[m_slot_id]->base_station_longitude;
+            pData->cellIdentity.cellIdentityCdma.latitude =
+                    voice_reg_state_cache[m_slot_id]->base_station_latitude;
             pData->cellIdentity.cellIdentityCdma.operName.long_name = longname;
             pData->cellIdentity.cellIdentityCdma.operName.short_name = shortname;
             break;
@@ -239,8 +247,8 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
         case RIL_CELL_INFO_TYPE_LTE: {
             pData->cellIdentity.cellIdentityLte.mcc = mcc;
             pData->cellIdentity.cellIdentityLte.mnc = mnc;
-            pData->cellIdentity.cellIdentityLte.mnc_len= mnc_len;
-            pData->cellIdentity.cellIdentityLte.ci = (int) voice_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityLte.mnc_len = mnc_len;
+            pData->cellIdentity.cellIdentityLte.ci = (int)voice_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityLte.pci = mdEcell[m_slot_id]->pscPci;
             pData->cellIdentity.cellIdentityLte.tac = voice_reg_state_cache[m_slot_id]->lac;
             pData->cellIdentity.cellIdentityLte.earfcn = mdEcell[m_slot_id]->arfcn;
@@ -255,7 +263,8 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
             pData->cellIdentity.cellIdentityTdscdma.mnc = mnc;
             pData->cellIdentity.cellIdentityTdscdma.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityTdscdma.lac = voice_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityTdscdma.cid = (int) voice_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityTdscdma.cid =
+                    (int)voice_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityTdscdma.cpid = INT_MAX;
             pData->cellIdentity.cellIdentityTdscdma.operName.long_name = longname;
             pData->cellIdentity.cellIdentityTdscdma.operName.short_name = shortname;
@@ -277,7 +286,8 @@ void RmcNetworkRealTimeRequestHandler::sendVoiceRegResponse(const sp<RfxMclMessa
     }
     pthread_mutex_unlock(&s_voiceRegStateMutex[m_slot_id]);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxVoiceRegStateData(pData, sizeof(RIL_VoiceRegistrationStateResponse)), msg, false);
 
     // response to TeleCore
@@ -300,15 +310,15 @@ void RmcNetworkRealTimeRequestHandler::printVoiceCache(RIL_VOICE_REG_STATE_CACHE
     if (!lac_s || !cid_s || !bsla_s || !bslo_s || !bsid_s || !sid_s || !nid_s) {
         logE(LOG_TAG, "[%s] can not get memeory to print log", __func__);
     } else {
-        logV(LOG_TAG, " VoiceCache: "
-            "registration_state=%d lac=%s cid=%s radio_technology=%d base_station_id=%s "
-            "base_station_latitude=%s base_station_longitude=%s css=%d system_id=%s "
-            "network_id=%s roaming_indicator=%d is_in_prl=%d default_roaming_indicator=%d "
-            "denied_reason=%d psc=%d network_exist=%d", cache.registration_state, lac_s,
-            cid_s, cache.radio_technology, bsid_s, bsla_s,
-            bslo_s, cache.css, sid_s, nid_s,
-            cache.roaming_indicator, cache.is_in_prl, cache.default_roaming_indicator,
-            cache.denied_reason, cache.psc, cache.network_exist);
+        logV(LOG_TAG,
+             " VoiceCache: "
+             "registration_state=%d lac=%s cid=%s radio_technology=%d base_station_id=%s "
+             "base_station_latitude=%s base_station_longitude=%s css=%d system_id=%s "
+             "network_id=%s roaming_indicator=%d is_in_prl=%d default_roaming_indicator=%d "
+             "denied_reason=%d psc=%d network_exist=%d",
+             cache.registration_state, lac_s, cid_s, cache.radio_technology, bsid_s, bsla_s, bslo_s,
+             cache.css, sid_s, nid_s, cache.roaming_indicator, cache.is_in_prl,
+             cache.default_roaming_indicator, cache.denied_reason, cache.psc, cache.network_exist);
     }
     if (lac_s) free(lac_s);
     if (cid_s) free(cid_s);
@@ -322,16 +332,14 @@ void RmcNetworkRealTimeRequestHandler::printVoiceCache(RIL_VOICE_REG_STATE_CACHE
 int RmcNetworkRealTimeRequestHandler::convertToAndroidRegState(unsigned int uiRegState) {
     unsigned int uiRet = 0;
 
-    logD(LOG_TAG, "convertToAndroidRegState s_emergencly_only=%d"
-        ", m_cdma_emergency_only=%d"
-        ", m_ims_ecc_only=%d",
-        m_emergency_only,
-        m_cdma_emergency_only,
-        m_ims_ecc_only);
+    logD(LOG_TAG,
+         "convertToAndroidRegState s_emergencly_only=%d"
+         ", m_cdma_emergency_only=%d"
+         ", m_ims_ecc_only=%d",
+         m_emergency_only, m_cdma_emergency_only, m_ims_ecc_only);
     /* Ref RIL_RegState in RIL.h*/
-    if (m_emergency_only == 1 ||
-            m_cdma_emergency_only == 1 ||
-            m_ims_ecc_only == 1) {  // ims ecc only is true only if ps is out of service
+    if (m_emergency_only == 1 || m_cdma_emergency_only == 1 ||
+        m_ims_ecc_only == 1) {  // ims ecc only is true only if ps is out of service
         switch (uiRegState) {
             case 0:
                 uiRet = 10;
@@ -378,14 +386,15 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
     */
     int ims_ecc_support = ims_ecc_state[m_slot_id];
     int radio_state = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE, 0);
-    MD_EREG *mMdEreg = mdEreg[m_slot_id];
-    MD_ECELL *mMdEcell = mdEcell[m_slot_id];
+    MD_EREG* mMdEreg = mdEreg[m_slot_id];
+    MD_ECELL* mMdEcell = mdEcell[m_slot_id];
 
     resetVoiceRegStateCache(voice_reg_state_cache[m_slot_id], CACHE_GROUP_COMMON_REQ);
 
     /* +EREG: <n>,<stat> */
     /* +EREG: <n>,<stat>,<lac>,<ci>,<eAct>,<nwk_existence >,<roam_indicator> */
-    /* +EREG: <n>,<stat>,<lac>,<ci>,<eAct>,<nwk_existence >,<roam_indicator>,<cause_type>,<reject_cause> */
+    /* +EREG: <n>,<stat>,<lac>,<ci>,<eAct>,<nwk_existence
+     * >,<roam_indicator>,<cause_type>,<reject_cause> */
 
     dumpEregCache(__func__, mMdEreg, mMdEcell, true);
 
@@ -394,11 +403,11 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
 
     /* <stat> */
     voice_reg_state_cache[m_slot_id]->registration_state = mMdEreg->stat;
-    if (voice_reg_state_cache[m_slot_id]->registration_state > 10 )  // for LTE
+    if (voice_reg_state_cache[m_slot_id]->registration_state > 10)  // for LTE
     {
         // TODO: add C2K flag
         if (voice_reg_state_cache[m_slot_id]->registration_state < 101 ||
-                voice_reg_state_cache[m_slot_id]->registration_state > 104) {// for C2K
+            voice_reg_state_cache[m_slot_id]->registration_state > 104) {  // for C2K
             logE(LOG_TAG, "The value in the field <stat> is not valid: %d",
                  voice_reg_state_cache[m_slot_id]->registration_state);
             goto error;
@@ -412,7 +421,7 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
     /* <lac> */
     voice_reg_state_cache[m_slot_id]->lac = mMdEreg->lac;
     if (voice_reg_state_cache[m_slot_id]->lac > 0xffff &&
-                voice_reg_state_cache[m_slot_id]->lac != 0xffffffff ) {
+        voice_reg_state_cache[m_slot_id]->lac != 0xffffffff) {
         logE(LOG_TAG, "The value in the field <lac> or <stat> is not valid. <stat>:%d, <lac>:%d",
              voice_reg_state_cache[m_slot_id]->registration_state,
              voice_reg_state_cache[m_slot_id]->lac);
@@ -422,13 +431,13 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
     /* <ci> */
     voice_reg_state_cache[m_slot_id]->cid = mMdEreg->ci;
     if ((mMdEreg->eAct != 0x8000 &&  // 2/3/4G
-            voice_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
-            voice_reg_state_cache[m_slot_id]->cid != 0xffffffff) ||
-            (mMdEreg->eAct == 0x8000 &&  // 5G
-            voice_reg_state_cache[m_slot_id]->cid > 0x0fffffffff &&
-            voice_reg_state_cache[m_slot_id]->cid != 0xffffffffff)) {
+         voice_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
+         voice_reg_state_cache[m_slot_id]->cid != 0xffffffff) ||
+        (mMdEreg->eAct == 0x8000 &&  // 5G
+         voice_reg_state_cache[m_slot_id]->cid > 0x0fffffffff &&
+         voice_reg_state_cache[m_slot_id]->cid != 0xffffffffff)) {
         logE(LOG_TAG, "The value in the field <ci> is not valid: %llX",
-                voice_reg_state_cache[m_slot_id]->cid);
+             voice_reg_state_cache[m_slot_id]->cid);
         goto error;
     }
 
@@ -444,21 +453,16 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
     }
 
     /* <eAct> mapping */
-    if (!isInService(voice_reg_state_cache[m_slot_id]->registration_state))
-    {
-        if (convertCSNetworkType(voice_reg_state_cache[m_slot_id]->radio_technology) == 14)
-        {
+    if (!isInService(voice_reg_state_cache[m_slot_id]->registration_state)) {
+        if (convertCSNetworkType(voice_reg_state_cache[m_slot_id]->radio_technology) == 14) {
             m4gRat = true;
         }
-        if (convertCSNetworkType(voice_reg_state_cache[m_slot_id]->radio_technology)
-                == RADIO_TECH_NR)
-        {
+        if (convertCSNetworkType(voice_reg_state_cache[m_slot_id]->radio_technology) ==
+            RADIO_TECH_NR) {
             m5gRat = true;
         }
         voice_reg_state_cache[m_slot_id]->radio_technology = 0;
-    }
-    else
-    {
+    } else {
         voice_reg_state_cache[m_slot_id]->radio_technology =
                 convertCSNetworkType(voice_reg_state_cache[m_slot_id]->radio_technology);
     }
@@ -477,8 +481,7 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
 
     /* <cause_type> */
     cause_type = mMdEreg->cause_type;
-    if (cause_type != 0)
-    {
+    if (cause_type != 0) {
         logE(LOG_TAG, "The value in the field <cause_type> is not valid: %d", cause_type);
         goto error;
     }
@@ -489,7 +492,7 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
     pthread_mutex_unlock(&mdEregMutex[m_slot_id]);
 
 #ifdef MTK_TC1_COMMON_SERVICE
-    if(!isInService(voice_reg_state_cache[m_slot_id]->registration_state)) {
+    if (!isInService(voice_reg_state_cache[m_slot_id]->registration_state)) {
         int reg_info = 0;
         int ext_info = 0;
         p_response = NULL;
@@ -499,10 +502,9 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
 
         // check error
         err = p_response->getError();
-        if (err != 0 ||
-                p_response == NULL ||
-                p_response->getSuccess() == 0 ||
-                p_response->getIntermediates() == NULL) goto done;
+        if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+            p_response->getIntermediates() == NULL)
+            goto done;
 
         // handle intermediate
         line = p_response->getIntermediates();
@@ -530,10 +532,9 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
 
                 // check error
                 err = p_response->getError();
-                if (err != 0 ||
-                        p_response == NULL ||
-                        p_response->getSuccess() == 0 ||
-                        p_response->getIntermediates() == NULL) goto done;
+                if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+                    p_response->getIntermediates() == NULL)
+                    goto done;
 
                 // handle intermediate
                 line = p_response->getIntermediates();
@@ -552,27 +553,25 @@ void RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationState(const sp<Rf
                     logE(LOG_TAG, "The value in the field <stat> is not valid: %d", reg_info);
                     goto done;
                 }
-                voice_reg_state_cache[m_slot_id]->registration_state
-                        = convertRegState(reg_info, true);
+                voice_reg_state_cache[m_slot_id]->registration_state =
+                        convertRegState(reg_info, true);
 
                 if (line->atTokHasmore()) {
                     /* <lac> */
                     voice_reg_state_cache[m_slot_id]->lac = line->atTokNexthexint(&err);
-                    if (err < 0 ||
-                            (voice_reg_state_cache[m_slot_id]->lac > 0xffff &&
-                            voice_reg_state_cache[m_slot_id]->lac != 0xffffffff)) {
+                    if (err < 0 || (voice_reg_state_cache[m_slot_id]->lac > 0xffff &&
+                                    voice_reg_state_cache[m_slot_id]->lac != 0xffffffff)) {
                         logE(LOG_TAG, "The value in the field <lac> is not valid: %d",
-                                voice_reg_state_cache[m_slot_id]->lac);
+                             voice_reg_state_cache[m_slot_id]->lac);
                         goto done;
                     }
 
                     /* <cid> */
                     voice_reg_state_cache[m_slot_id]->cid = line->atTokNexthexint(&err);
-                    if (err < 0 ||
-                            (voice_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
-                            voice_reg_state_cache[m_slot_id]->cid != 0xffffffff)) {
+                    if (err < 0 || (voice_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
+                                    voice_reg_state_cache[m_slot_id]->cid != 0xffffffff)) {
                         logE(LOG_TAG, "The value in the field <cid> is not valid: %llX",
-                                voice_reg_state_cache[m_slot_id]->cid);
+                             voice_reg_state_cache[m_slot_id]->cid);
                         goto done;
                     }
 
@@ -595,9 +594,9 @@ done:
     if (ims_ecc_support > 0) {
         ims_emergency_only = 1;
     }
-    if(!isInService(voice_reg_state_cache[m_slot_id]->registration_state) &&
-            !isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
-            (ims_emergency_only == 1)) {
+    if (!isInService(voice_reg_state_cache[m_slot_id]->registration_state) &&
+        !isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
+        (ims_emergency_only == 1)) {
         m_ims_ecc_only = 1;
     } else {
         m_ims_ecc_only = 0;
@@ -607,47 +606,45 @@ done:
         cdma_network_exist = 1;
     } else {
         if (((voice_reg_state_cache[m_slot_id]->registration_state == 0) ||
-                    (voice_reg_state_cache[m_slot_id]->registration_state == 2) ||
-                    (voice_reg_state_cache[m_slot_id]->registration_state == 3)) &&
-                    ((voice_reg_state_cache[m_slot_id]->cid != 0x0fffffff) &&
-                    (voice_reg_state_cache[m_slot_id]->lac != 0xffff) &&
-                    (voice_reg_state_cache[m_slot_id]->cid != (unsigned int)-1) &&
-                    (voice_reg_state_cache[m_slot_id]->lac != (unsigned int)-1)) &&
-                    (!m4gRat) &&
-                    (!m5gRat)) {
-                cdma_network_exist = 1;
-            }
+             (voice_reg_state_cache[m_slot_id]->registration_state == 2) ||
+             (voice_reg_state_cache[m_slot_id]->registration_state == 3)) &&
+            ((voice_reg_state_cache[m_slot_id]->cid != 0x0fffffff) &&
+             (voice_reg_state_cache[m_slot_id]->lac != 0xffff) &&
+             (voice_reg_state_cache[m_slot_id]->cid != (unsigned int)-1) &&
+             (voice_reg_state_cache[m_slot_id]->lac != (unsigned int)-1)) &&
+            (!m4gRat) && (!m5gRat)) {
+            cdma_network_exist = 1;
+        }
     }
     if ((cdma_network_exist == 1) && (radio_state == RADIO_STATE_ON) &&
-            !isInService(voice_reg_state_cache[m_slot_id]->registration_state) &&
-            !isInService(data_reg_state_cache[m_slot_id]->registration_state)) {
+        !isInService(voice_reg_state_cache[m_slot_id]->registration_state) &&
+        !isInService(data_reg_state_cache[m_slot_id]->registration_state)) {
         m_cdma_emergency_only = 1;
     } else {
         m_cdma_emergency_only = 0;
     }
     // TODO: restricted state for dual SIM
-    if(voice_reg_state_cache[m_slot_id]->registration_state == 4) {
+    if (voice_reg_state_cache[m_slot_id]->registration_state == 4) {
         /* registration_state(4) is 'Unknown' */
         // logD(LOG_TAG, "No valid info to distinguish limited service and no service");
     } else {
         // if cid is 0x0fffffff means it is invalid
         // if lac is 0xffff means it is invalid
         if (((voice_reg_state_cache[m_slot_id]->registration_state == 0) ||
-                (voice_reg_state_cache[m_slot_id]->registration_state == 2) ||
-                (voice_reg_state_cache[m_slot_id]->registration_state == 3)) &&
-                ((voice_reg_state_cache[m_slot_id]->cid != 0x0fffffff) &&
-                (voice_reg_state_cache[m_slot_id]->lac != 0xffff) &&
-                (voice_reg_state_cache[m_slot_id]->cid != (unsigned int)-1) &&
-                (voice_reg_state_cache[m_slot_id]->lac != (unsigned int)-1)) &&
-                // do not set ECC when it is LTE/NR. ECC depends IMS.
-                (!m4gRat) &&
-                (!m5gRat)) {
+             (voice_reg_state_cache[m_slot_id]->registration_state == 2) ||
+             (voice_reg_state_cache[m_slot_id]->registration_state == 3)) &&
+            ((voice_reg_state_cache[m_slot_id]->cid != 0x0fffffff) &&
+             (voice_reg_state_cache[m_slot_id]->lac != 0xffff) &&
+             (voice_reg_state_cache[m_slot_id]->cid != (unsigned int)-1) &&
+             (voice_reg_state_cache[m_slot_id]->lac != (unsigned int)-1)) &&
+            // do not set ECC when it is LTE/NR. ECC depends IMS.
+            (!m4gRat) && (!m5gRat)) {
             if (m_emergency_only == 0) {
                 m_emergency_only = 1;
                 // logD(LOG_TAG, "Set slot%d m_emergencly_only to true", m_slot_id);
             }
         } else {
-            if(m_emergency_only == 1) {
+            if (m_emergency_only == 1) {
                 m_emergency_only = 0;
                 // logD(LOG_TAG, "Set slot%d s_emergencly_only to false", m_slot_id);
             }
@@ -678,23 +675,25 @@ error:
     pthread_mutex_unlock(&s_voiceRegStateMutex[m_slot_id]);
     logE(LOG_TAG, "requestVoiceRegistrationState must never return an error when radio is on");
     sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringsData(), msg, false);
+                                                               RfxStringsData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
 }
 
-int RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationStateCdma(const sp<RfxMclMessage>& msg) {
+int RmcNetworkRealTimeRequestHandler::requestVoiceRegistrationStateCdma(
+        const sp<RfxMclMessage>& msg) {
     RFX_UNUSED(msg);
     int err = 0;
-    ViaBaseHandler *mViaHandler = RfxViaUtils::getViaHandler();
+    ViaBaseHandler* mViaHandler = RfxViaUtils::getViaHandler();
     pthread_mutex_lock(&s_voiceRegStateMutex[m_slot_id]);
     if (mViaHandler != NULL) {
         err = mViaHandler->getCdmaLocationInfo(this, voice_reg_state_cache[m_slot_id]);
         if (err < 0) {
             goto error;
         }
-    } else goto error;
+    } else
+        goto error;
     pthread_mutex_unlock(&s_voiceRegStateMutex[m_slot_id]);
     return 16;
 
@@ -704,8 +703,7 @@ error:
     return 0;
 }
 
-static unsigned int convertCellSpeedSupport(unsigned int uiResponse)
-{
+static unsigned int convertCellSpeedSupport(unsigned int uiResponse) {
     // Cell speed support is bitwise value of cell capability:
     // bit7 0x80  bit6 0x40  bit5 0x20  bit4 0x10  bit3 0x08  bit2 0x04  bit1 0x02  bit0 0x01
     // Dual-Cell  HSUPA+     HSDPA+     HSUPA      HSDPA      UMTS       EDGE       GPRS
@@ -714,19 +712,16 @@ static unsigned int convertCellSpeedSupport(unsigned int uiResponse)
     unsigned int RIL_RADIO_TECHNOLOGY_MTK = 128;
 
     if ((uiResponse & 0x2000) != 0) {
-        //support carrier aggregation (LTEA)
-        uiRet = 19; // ServiceState.RIL_RADIO_TECHNOLOGY_LTE_CA
+        // support carrier aggregation (LTEA)
+        uiRet = 19;  // ServiceState.RIL_RADIO_TECHNOLOGY_LTE_CA
     } else if ((uiResponse & 0x1000) != 0) {
-        uiRet = 14; // ServiceState.RIL_RADIO_TECHNOLOGY_LTE
-    } else if ((uiResponse & 0x80) != 0 ||
-            (uiResponse & 0x40) != 0 ||
-            (uiResponse & 0x20) != 0) {
-        uiRet = 15; // ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP
-    } else if ((uiResponse & 0x10) != 0 &&
-            (uiResponse & 0x08) != 0) {
-        uiRet = 11; // ServiceState.RIL_RADIO_TECHNOLOGY_HSPA
+        uiRet = 14;  // ServiceState.RIL_RADIO_TECHNOLOGY_LTE
+    } else if ((uiResponse & 0x80) != 0 || (uiResponse & 0x40) != 0 || (uiResponse & 0x20) != 0) {
+        uiRet = 15;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP
+    } else if ((uiResponse & 0x10) != 0 && (uiResponse & 0x08) != 0) {
+        uiRet = 11;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSPA
     } else if ((uiResponse & 0x10) != 0) {
-        uiRet = 10; // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPA
+        uiRet = 10;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPA
     } else if ((uiResponse & 0x08) != 0) {
         uiRet = 9;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPA
     } else if ((uiResponse & 0x04) != 0) {
@@ -742,8 +737,7 @@ static unsigned int convertCellSpeedSupport(unsigned int uiResponse)
     return uiRet;
 }
 
-static unsigned int convertPSBearerCapability(unsigned int uiResponse)
-{
+static unsigned int convertPSBearerCapability(unsigned int uiResponse) {
     /*
      *typedef enum
      *{
@@ -774,64 +768,65 @@ static unsigned int convertPSBearerCapability(unsigned int uiResponse)
 
     unsigned int RIL_RADIO_TECHNOLOGY_MTK = 128;
 
-    switch (uiResponse)
-    {
+    switch (uiResponse) {
         case 1:
-            uiRet = 1;                           // ServiceState.RIL_RADIO_TECHNOLOGY_GPRS
+            uiRet = 1;  // ServiceState.RIL_RADIO_TECHNOLOGY_GPRS
             break;
         case 2:
-            uiRet = 2;                           // ServiceState.RIL_RADIO_TECHNOLOGY_EDGE
+            uiRet = 2;  // ServiceState.RIL_RADIO_TECHNOLOGY_EDGE
             break;
         case 3:
-            uiRet = 3;                           // ServiceState.RIL_RADIO_TECHNOLOGY_UMTS
+            uiRet = 3;  // ServiceState.RIL_RADIO_TECHNOLOGY_UMTS
             break;
         case 4:
-            uiRet = 9;                           // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPA
+            uiRet = 9;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPA
             break;
         case 5:
-            uiRet = 10;                          // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPA
+            uiRet = 10;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPA
             break;
         case 6:
-            uiRet = 11;                          // ServiceState.RIL_RADIO_TECHNOLOGY_HSPA
+            uiRet = 11;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSPA
             break;
         case 7:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+1;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPAP
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 1;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPAP
             break;
         case 8:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+2;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPAP_UPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 2;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSDPAP_UPA
             break;
         case 9:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+3;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPAP
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 3;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPAP
             break;
         case 10:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+4;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPAP_DPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 4;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSUPAP_DPA
             break;
         case 11:
-            uiRet = 15;                          // ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP
+            uiRet = 15;  // ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP
             break;
         case 12:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+5;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_DPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 5;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_DPA
             break;
         case 13:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+6;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_UPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 6;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_UPA
             break;
         case 14:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+7;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 7;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP
             break;
         case 15:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+8;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP_UPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK +
+                    8;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP_UPA
             break;
         case 16:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+9;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP_DPA
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK +
+                    9;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSDPAP_DPA
             break;
         case 17:
-            uiRet = RIL_RADIO_TECHNOLOGY_MTK+10; // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSPAP
+            uiRet = RIL_RADIO_TECHNOLOGY_MTK + 10;  // ServiceState.RIL_RADIO_TECHNOLOGY_DC_HSPAP
             break;
         case 18:
-            uiRet = 14;                          // ServiceState.RIL_RADIO_TECHNOLOGY_LTE
+            uiRet = 14;  // ServiceState.RIL_RADIO_TECHNOLOGY_LTE
             break;
         default:
-            uiRet = 0;                           // ServiceState.RIL_RADIO_TECHNOLOGY_UNKNOWN
+            uiRet = 0;  // ServiceState.RIL_RADIO_TECHNOLOGY_UNKNOWN
             break;
     }
 
@@ -839,8 +834,8 @@ static unsigned int convertPSBearerCapability(unsigned int uiResponse)
 }
 
 void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessage>& msg) {
-    RIL_DataRegistrationStateResponse *pData = (RIL_DataRegistrationStateResponse *)
-            alloca(sizeof(RIL_DataRegistrationStateResponse));
+    RIL_DataRegistrationStateResponse* pData =
+            (RIL_DataRegistrationStateResponse*)alloca(sizeof(RIL_DataRegistrationStateResponse));
     int err = 0;
     int mcc = 0;
     int mnc = 0;
@@ -853,7 +848,7 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
     if ((urc_data_reg_state_cache[m_slot_id]->denied_reason > 0) &&
         (urc_data_reg_state_cache[m_slot_id]->lac == data_reg_state_cache[m_slot_id]->lac) &&
         (urc_data_reg_state_cache[m_slot_id]->cid == data_reg_state_cache[m_slot_id]->cid)) {
-         // we have reject cause with the same lac/cid, we use it.
+        // we have reject cause with the same lac/cid, we use it.
         pData->reasonDataDenied = urc_data_reg_state_cache[m_slot_id]->denied_reason;
     } else {
         pData->reasonDataDenied = data_reg_state_cache[m_slot_id]->denied_reason;
@@ -861,8 +856,8 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
     pData->maxDataCalls = data_reg_state_cache[m_slot_id]->max_simultaneous_data_call;
     // Add for MTK_TC1_FEATURE - ERI
 #ifdef MTK_TC1_COMMON_SERVICE
-    if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state)
-            && RfxNwServiceState::isCdmaGroup(data_reg_state_cache[m_slot_id]->radio_technology)) {
+    if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
+        RfxNwServiceState::isCdmaGroup(data_reg_state_cache[m_slot_id]->radio_technology)) {
         if (isFemtocellSupport() && isCdmaDataInFemtocell()) {
             // Support the Femtocell network: The response values of Roaming Indicator
             // should be the value "99" while connected to the Femtocell network.
@@ -872,28 +867,32 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         }
     } else {
         pData->dataDefaultRoamingIndicator = -1;
-        if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state)
-                && (data_reg_state_cache[m_slot_id]->radio_technology == RADIO_TECH_LTE
-                || data_reg_state_cache[m_slot_id]->radio_technology == RADIO_TECH_LTE_CA)) {
+        if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
+            (data_reg_state_cache[m_slot_id]->radio_technology == RADIO_TECH_LTE ||
+             data_reg_state_cache[m_slot_id]->radio_technology == RADIO_TECH_LTE_CA)) {
             if (femto_cell_cache[m_slot_id]->is_femtocell != 0 ||
-                    femto_cell_cache[m_slot_id]->is_csg_cell == 1) {
+                femto_cell_cache[m_slot_id]->is_csg_cell == 1) {
                 pData->dataRoamingIndicator = 99;
             }
         }
     }
 #endif
 
-    if (strlen(op_info_cache[m_slot_id]->mccMnc) == 5 || strlen(op_info_cache[m_slot_id]->mccMnc) == 6) {
-        if (strlen(op_info_cache[m_slot_id]->mccMnc) == 6) mnc_len = 3;
-        else mnc_len = 2;
+    if (strlen(op_info_cache[m_slot_id]->mccMnc) == 5 ||
+        strlen(op_info_cache[m_slot_id]->mccMnc) == 6) {
+        if (strlen(op_info_cache[m_slot_id]->mccMnc) == 6)
+            mnc_len = 3;
+        else
+            mnc_len = 2;
         char mcc_str[4] = {0};
         char mnc_str[4] = {0};
         strncpy(mcc_str, op_info_cache[m_slot_id]->mccMnc, 3);
-        strncpy(mnc_str, (op_info_cache[m_slot_id]->mccMnc+3), (strlen(op_info_cache[m_slot_id]->mccMnc)-3));
+        strncpy(mnc_str, (op_info_cache[m_slot_id]->mccMnc + 3),
+                (strlen(op_info_cache[m_slot_id]->mccMnc) - 3));
         mcc = atoi(mcc_str);
         mnc = atoi(mnc_str);
-        err = getOperatorNamesFromNumericCode(
-                op_info_cache[m_slot_id]->mccMnc, longname, shortname, MAX_OPER_NAME_LENGTH);
+        err = getOperatorNamesFromNumericCode(op_info_cache[m_slot_id]->mccMnc, longname, shortname,
+                                              MAX_OPER_NAME_LENGTH);
         if (err < 0) {
             memset(longname, 0, MAX_OPER_NAME_LENGTH);
             memset(shortname, 0, MAX_OPER_NAME_LENGTH);
@@ -902,7 +901,8 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         mcc = INT_MAX;
         mnc = INT_MAX;
         // reset longname/shortname because mccmnc may be empty and these are empty too.
-        // It happends when the MD is in service right after poll_operator and before poll_voice/data
+        // It happends when the MD is in service right after poll_operator and before
+        // poll_voice/data
         memset(longname, 0, MAX_OPER_NAME_LENGTH);
         memset(shortname, 0, MAX_OPER_NAME_LENGTH);
     }
@@ -911,7 +911,7 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         refreshEcellCache();
         // if AT+ECELL provides old data
         if (data_reg_state_cache[m_slot_id]->lac != mdEcell[m_slot_id]->lacTac ||
-                data_reg_state_cache[m_slot_id]->cid != mdEcell[m_slot_id]->cid) {
+            data_reg_state_cache[m_slot_id]->cid != mdEcell[m_slot_id]->cid) {
             // reset
             memset(mdEcell[m_slot_id], 0, sizeof(MD_ECELL));
             mdEcell[m_slot_id]->bsic = 0xFF;
@@ -922,13 +922,13 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
 
     pData->cellIdentity.cellInfoType =
             getCellInfoTypeRadioTechnology(data_reg_state_cache[m_slot_id]->radio_technology);
-    switch(pData->cellIdentity.cellInfoType) {
+    switch (pData->cellIdentity.cellInfoType) {
         case RIL_CELL_INFO_TYPE_GSM: {
             pData->cellIdentity.cellIdentityGsm.mcc = mcc;
             pData->cellIdentity.cellIdentityGsm.mnc = mnc;
             pData->cellIdentity.cellIdentityGsm.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityGsm.lac = data_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityGsm.cid = (int) data_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityGsm.cid = (int)data_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityGsm.arfcn = mdEcell[m_slot_id]->arfcn;
             pData->cellIdentity.cellIdentityGsm.bsic = 0xFF;
             pData->cellIdentity.cellIdentityGsm.operName.long_name = longname;
@@ -939,9 +939,9 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         case RIL_CELL_INFO_TYPE_WCDMA: {
             pData->cellIdentity.cellIdentityWcdma.mcc = mcc;
             pData->cellIdentity.cellIdentityWcdma.mnc = mnc;
-            pData->cellIdentity.cellIdentityWcdma.mnc_len= mnc_len;
+            pData->cellIdentity.cellIdentityWcdma.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityWcdma.lac = data_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityWcdma.cid = (int) data_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityWcdma.cid = (int)data_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityWcdma.psc = voice_reg_state_cache[m_slot_id]->psc;
             pData->cellIdentity.cellIdentityWcdma.uarfcn = mdEcell[m_slot_id]->arfcn;
             pData->cellIdentity.cellIdentityWcdma.operName.long_name = longname;
@@ -950,11 +950,16 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         }
 
         case RIL_CELL_INFO_TYPE_CDMA: {
-            pData->cellIdentity.cellIdentityCdma.networkId = voice_reg_state_cache[m_slot_id]->network_id;
-            pData->cellIdentity.cellIdentityCdma.systemId = voice_reg_state_cache[m_slot_id]->system_id;
-            pData->cellIdentity.cellIdentityCdma.basestationId = voice_reg_state_cache[m_slot_id]->base_station_id;
-            pData->cellIdentity.cellIdentityCdma.longitude = voice_reg_state_cache[m_slot_id]->base_station_longitude;
-            pData->cellIdentity.cellIdentityCdma.latitude = voice_reg_state_cache[m_slot_id]->base_station_latitude;
+            pData->cellIdentity.cellIdentityCdma.networkId =
+                    voice_reg_state_cache[m_slot_id]->network_id;
+            pData->cellIdentity.cellIdentityCdma.systemId =
+                    voice_reg_state_cache[m_slot_id]->system_id;
+            pData->cellIdentity.cellIdentityCdma.basestationId =
+                    voice_reg_state_cache[m_slot_id]->base_station_id;
+            pData->cellIdentity.cellIdentityCdma.longitude =
+                    voice_reg_state_cache[m_slot_id]->base_station_longitude;
+            pData->cellIdentity.cellIdentityCdma.latitude =
+                    voice_reg_state_cache[m_slot_id]->base_station_latitude;
             pData->cellIdentity.cellIdentityCdma.operName.long_name = longname;
             pData->cellIdentity.cellIdentityCdma.operName.short_name = shortname;
             break;
@@ -963,16 +968,18 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         case RIL_CELL_INFO_TYPE_LTE: {
             pData->cellIdentity.cellIdentityLte.mcc = mcc;
             pData->cellIdentity.cellIdentityLte.mnc = mnc;
-            pData->cellIdentity.cellIdentityLte.mnc_len= mnc_len;
-            pData->cellIdentity.cellIdentityLte.ci = (int) data_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityLte.mnc_len = mnc_len;
+            pData->cellIdentity.cellIdentityLte.ci = (int)data_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityLte.pci = mdEcell[m_slot_id]->pscPci;
-            pData->cellIdentity.cellIdentityLte.tac = data_reg_state_cache[m_slot_id]->lac; //RILD doesn't use Tac.
+            pData->cellIdentity.cellIdentityLte.tac =
+                    data_reg_state_cache[m_slot_id]->lac;  // RILD doesn't use Tac.
             pData->cellIdentity.cellIdentityLte.earfcn = mdEcell[m_slot_id]->arfcn;
             pData->cellIdentity.cellIdentityLte.operName.long_name = longname;
             pData->cellIdentity.cellIdentityLte.operName.short_name = shortname;
             pData->cellIdentity.cellIdentityLte.bandwidth = 100 * ca_cache[m_slot_id]->pcell_bw;
             // lte vops info
-            pData->lteVopsInfo.isVopsSupported = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_VOPS);
+            pData->lteVopsInfo.isVopsSupported =
+                    getMclStatusManager()->getIntValue(RFX_STATUS_KEY_VOPS);
             pData->lteVopsInfo.isEmcBearerSupported = ims_ecc_state[m_slot_id] ? 1 : 0;
             // NR non-standalone
             pData->nrIndicators.isDcNrRestricted = data_reg_state_cache[m_slot_id]->dcnr_restricted;
@@ -986,7 +993,7 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
             pData->cellIdentity.cellIdentityTdscdma.mnc = mnc;
             pData->cellIdentity.cellIdentityTdscdma.mnc_len = mnc_len;
             pData->cellIdentity.cellIdentityTdscdma.lac = data_reg_state_cache[m_slot_id]->lac;
-            pData->cellIdentity.cellIdentityTdscdma.cid = (int) data_reg_state_cache[m_slot_id]->cid;
+            pData->cellIdentity.cellIdentityTdscdma.cid = (int)data_reg_state_cache[m_slot_id]->cid;
             pData->cellIdentity.cellIdentityTdscdma.cpid = INT_MAX;
             pData->cellIdentity.cellIdentityTdscdma.operName.long_name = longname;
             pData->cellIdentity.cellIdentityTdscdma.operName.short_name = shortname;
@@ -1007,11 +1014,11 @@ void RmcNetworkRealTimeRequestHandler::sendDataRegResponse(const sp<RfxMclMessag
         }
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxDataRegStateData(pData, sizeof(RIL_DataRegistrationStateResponse)), msg, false);
     // response to TeleCore
     responseToTelCore(response);
-
 }
 
 void RmcNetworkRealTimeRequestHandler::combineDataRegState(const sp<RfxMclMessage>& msg) {
@@ -1021,23 +1028,20 @@ void RmcNetworkRealTimeRequestHandler::combineDataRegState(const sp<RfxMclMessag
 
 void RmcNetworkRealTimeRequestHandler::printDataCache() {
     char* lac_s = getMask(data_reg_state_cache[m_slot_id]->lac);
-    char* cid_s = getMask((int) data_reg_state_cache[m_slot_id]->cid);
+    char* cid_s = getMask((int)data_reg_state_cache[m_slot_id]->cid);
     if (!lac_s || !cid_s) {
         logE(LOG_TAG, "[%s] can not get memeory to print log", __func__);
     } else {
         logV(LOG_TAG, "printDataCache: reg=%d, lac=%s, cid=%s, rat=%d, reason=%d",
-                 data_reg_state_cache[m_slot_id]->registration_state,
-                 lac_s,
-                 cid_s,
-                 data_reg_state_cache[m_slot_id]->radio_technology,
-                 data_reg_state_cache[m_slot_id]->denied_reason);
+             data_reg_state_cache[m_slot_id]->registration_state, lac_s, cid_s,
+             data_reg_state_cache[m_slot_id]->radio_technology,
+             data_reg_state_cache[m_slot_id]->denied_reason);
     }
     if (lac_s) free(lac_s);
     if (cid_s) free(cid_s);
 }
 
-void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<RfxMclMessage>& msg)
-{
+void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<RfxMclMessage>& msg) {
     /* +EGREG: <n>, <stat>, <lac>, <cid>, <eAct>, <rac>,
             <nwk_existence>, <roam_indicator>, <cause_type>, <reject_cause> */
 
@@ -1048,8 +1052,8 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
     int skip;
     int count = 3;
     int cause_type;
-    MD_EGREG *mMdEgreg = mdEgreg[m_slot_id];
-    MD_ECELL *mMdEcell = mdEcell[m_slot_id];
+    MD_EGREG* mMdEgreg = mdEgreg[m_slot_id];
+    MD_ECELL* mMdEcell = mdEcell[m_slot_id];
     pthread_mutex_lock(&mdEgregMutex[m_slot_id]);
 
     resetDataRegStateCache(data_reg_state_cache[m_slot_id], CACHE_GROUP_COMMON_REQ);
@@ -1059,11 +1063,11 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
     /* <stat> */
     data_reg_state_cache[m_slot_id]->registration_state = mMdEgreg->stat;
 
-    if (data_reg_state_cache[m_slot_id]->registration_state > 10 )  //for LTE
+    if (data_reg_state_cache[m_slot_id]->registration_state > 10)  // for LTE
     {
         // TODO: add C2K flag
         if (data_reg_state_cache[m_slot_id]->registration_state < 101 ||
-                data_reg_state_cache[m_slot_id]->registration_state > 104)  // for C2K
+            data_reg_state_cache[m_slot_id]->registration_state > 104)  // for C2K
         {
             logE(LOG_TAG, "The value in the field <stat> is not valid: %d",
                  data_reg_state_cache[m_slot_id]->registration_state);
@@ -1071,30 +1075,30 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
         }
     }
 
-    //For LTE and C2K
+    // For LTE and C2K
     data_reg_state_cache[m_slot_id]->registration_state =
             convertRegState(data_reg_state_cache[m_slot_id]->registration_state, false);
 
     /* <lac> */
     data_reg_state_cache[m_slot_id]->lac = mMdEgreg->lac;
     if (data_reg_state_cache[m_slot_id]->lac > 0xffff &&
-            data_reg_state_cache[m_slot_id]->lac != 0xffffffff) {
+        data_reg_state_cache[m_slot_id]->lac != 0xffffffff) {
         logE(LOG_TAG, "The value in the field <lac> or <stat> is not valid. <stat>:%d, <lac>:%d",
-                 data_reg_state_cache[m_slot_id]->registration_state,
-                 data_reg_state_cache[m_slot_id]->lac);
+             data_reg_state_cache[m_slot_id]->registration_state,
+             data_reg_state_cache[m_slot_id]->lac);
         goto error;
     }
 
     /* <ci> */
     data_reg_state_cache[m_slot_id]->cid = mMdEgreg->ci;
     if ((mMdEgreg->eAct != 0x8000 &&  // 2/3/4g
-            data_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
-            data_reg_state_cache[m_slot_id]->cid != 0xffffffff) ||
-            (mMdEgreg->eAct == 0x8000 &&  // 5g
-            data_reg_state_cache[m_slot_id]->cid > 0x0fffffffff &&
-            data_reg_state_cache[m_slot_id]->cid != 0xffffffffff)) {
+         data_reg_state_cache[m_slot_id]->cid > 0x0fffffff &&
+         data_reg_state_cache[m_slot_id]->cid != 0xffffffff) ||
+        (mMdEgreg->eAct == 0x8000 &&  // 5g
+         data_reg_state_cache[m_slot_id]->cid > 0x0fffffffff &&
+         data_reg_state_cache[m_slot_id]->cid != 0xffffffffff)) {
         logE(LOG_TAG, "The value in the field <ci> is not valid: %llX",
-                data_reg_state_cache[m_slot_id]->cid);
+             data_reg_state_cache[m_slot_id]->cid);
         goto error;
     }
 
@@ -1109,14 +1113,11 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
     }
 
     /* <eAct> mapping */
-    if (!isInService(data_reg_state_cache[m_slot_id]->registration_state))
-    {
+    if (!isInService(data_reg_state_cache[m_slot_id]->registration_state)) {
         data_reg_state_cache[m_slot_id]->lac = -1;
         data_reg_state_cache[m_slot_id]->cid = -1;
         data_reg_state_cache[m_slot_id]->radio_technology = 0;
-    }
-    else
-    {
+    } else {
         data_reg_state_cache[m_slot_id]->radio_technology =
                 convertPSNetworkType(data_reg_state_cache[m_slot_id]->radio_technology);
     }
@@ -1143,15 +1144,14 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
 
     /* <cause_type> */
     cause_type = mMdEgreg->cause_type;
-    if (cause_type != 0)
-    {
+    if (cause_type != 0) {
         logE(LOG_TAG, "The value in the field <cause_type> is not valid: %d", cause_type);
         goto error;
     }
     if (isFemtocellSupport()) {
         isFemtoCell(data_reg_state_cache[m_slot_id]->registration_state,
-                (int) data_reg_state_cache[m_slot_id]->cid,
-                data_reg_state_cache[m_slot_id]->radio_technology);
+                    (int)data_reg_state_cache[m_slot_id]->cid,
+                    data_reg_state_cache[m_slot_id]->radio_technology);
     }
 
     /* <reject_cause> */
@@ -1160,27 +1160,24 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
 
     pthread_mutex_unlock(&mdEgregMutex[m_slot_id]);
     // Query PSBEARER when PS registered
-    if (isInService(data_reg_state_cache[m_slot_id]->registration_state)
-               && data_reg_state_cache[m_slot_id]->radio_technology != 6
-               && data_reg_state_cache[m_slot_id]->radio_technology != 8
-               && data_reg_state_cache[m_slot_id]->radio_technology != 13) {
+    if (isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
+        data_reg_state_cache[m_slot_id]->radio_technology != 6 &&
+        data_reg_state_cache[m_slot_id]->radio_technology != 8 &&
+        data_reg_state_cache[m_slot_id]->radio_technology != 13) {
         requestDataRegistrationStateGsm();
         int bw_sum = 0;
         // check ca is actived or config
         // if nw support ca but not use ca, ca_band[0] should be 3 (deactive)
         if (ca_cache[m_slot_id]->ca_info == 2 || ca_cache[m_slot_id]->ca_info == 0) {
-            bw_sum = ca_cache[m_slot_id]->pcell_bw +
-                ca_cache[m_slot_id]->scell_bw1 +
-                ca_cache[m_slot_id]->scell_bw2 +
-                ca_cache[m_slot_id]->scell_bw3 +
-                ca_cache[m_slot_id]->scell_bw4;
+            bw_sum = ca_cache[m_slot_id]->pcell_bw + ca_cache[m_slot_id]->scell_bw1 +
+                     ca_cache[m_slot_id]->scell_bw2 + ca_cache[m_slot_id]->scell_bw3 +
+                     ca_cache[m_slot_id]->scell_bw4;
         }
         if (ca_filter_switch[m_slot_id]) {
-            if (data_reg_state_cache[m_slot_id]->radio_technology == 19 &&
-                bw_sum <= 200) {
+            if (data_reg_state_cache[m_slot_id]->radio_technology == 19 && bw_sum <= 200) {
                 // downgrade LTE_CA to LTE when sum of bands is 20Mhz or less
                 logD(LOG_TAG, "Downgrade LTE_CA to LTE when ca_info:%d, bw_sum:%d MHZ",
-                        ca_cache[m_slot_id]->ca_info, bw_sum/10);
+                     ca_cache[m_slot_id]->ca_info, bw_sum / 10);
                 data_reg_state_cache[m_slot_id]->radio_technology = 14;
             }
         }
@@ -1189,11 +1186,10 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationState(const sp<Rfx
         m_dc_support[m_slot_id] = false;
     }
     printDataCache();
-    //TODO: restricted state for dual SIM
+    // TODO: restricted state for dual SIM
 
     // After data_reg & ca_cache is updated, send PhysicalChannelConfigs URC
-    sendEvent(RFX_MSG_EVENT_RERESH_PHYSICAL_CONFIG, RfxVoidData(),
-            RIL_CMD_PROXY_3, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_RERESH_PHYSICAL_CONFIG, RfxVoidData(), RIL_CMD_PROXY_3, m_slot_id);
 
     combineDataRegState(msg);
 
@@ -1203,14 +1199,13 @@ error:
     pthread_mutex_unlock(&mdEgregMutex[m_slot_id]);
     logE(LOG_TAG, "requestDataRegistrationState must never return an error when radio is on");
     sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringsData(), msg, false);
+                                                               RfxStringsData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
 }
 
-void RmcNetworkRealTimeRequestHandler::requestDataRegistrationStateGsm()
-{
+void RmcNetworkRealTimeRequestHandler::requestDataRegistrationStateGsm() {
     int err;
     sp<RfxAtResponse> p_response;
     RfxAtLine* line;
@@ -1218,7 +1213,7 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationStateGsm()
     int cell_data_speed = 0;
     int max_data_bearer = 0;
 
-    //support carrier aggregation (LTEA)
+    // support carrier aggregation (LTEA)
     int ignoreMaxDataBearerCapability = 0;
 
     // send AT command
@@ -1226,10 +1221,9 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationStateGsm()
 
     // check error
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto skipR7R8;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto skipR7R8;
 
     // handle intermediate
     line = p_response->getIntermediates();
@@ -1244,7 +1238,7 @@ void RmcNetworkRealTimeRequestHandler::requestDataRegistrationStateGsm()
     psBearerCount++;
 
     // <max_data_bearer_capability> is only support on 3G
-    if (cell_data_speed >= 0x1000){
+    if (cell_data_speed >= 0x1000) {
         ignoreMaxDataBearerCapability = 1;
     }
 
@@ -1276,34 +1270,32 @@ skipR7R8:
                 // Save mtk_data_type to PROPERTY_MTK_DATA_TYPE
                 char* mtk_data_type = NULL;
                 asprintf(&mtk_data_type, "%d", data_reg_state_cache[m_slot_id]->radio_technology);
-                setMSimProperty(m_slot_id, (char *)PROPERTY_MTK_DATA_TYPE, mtk_data_type);
+                setMSimProperty(m_slot_id, (char*)PROPERTY_MTK_DATA_TYPE, mtk_data_type);
                 if (mtk_data_type) free(mtk_data_type);
                 // RIL_RADIO_TECHNOLOGY_HSPAP = 15
                 data_reg_state_cache[m_slot_id]->radio_technology = 15;
             } else {
                 // clear it if it is not mtk's type
-                setMSimProperty(m_slot_id, (char *)PROPERTY_MTK_DATA_TYPE, (char*)"0");
+                setMSimProperty(m_slot_id, (char*)PROPERTY_MTK_DATA_TYPE, (char*)"0");
             }
         }
     }
     // update CA band info
     updateCaBandInfo();
     return;
-
 }
 
-void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& msg)
-{
+void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& msg) {
     int err;
     int skip;
-    char *resp[3];
+    char* resp[3];
     sp<RfxMclMessage> response;
     sp<RfxMclMessage> urc;
     RfxAtLine* line;
     char nemric[MAX_OPER_NAME_LENGTH];
     char longname[MAX_OPER_NAME_LENGTH], shortname[MAX_OPER_NAME_LENGTH];
     sp<RfxAtResponse> p_response;
-    MD_EOPS *mMdEops = mdEops[m_slot_id];
+    MD_EOPS* mMdEops = mdEops[m_slot_id];
 
     memset(resp, 0, sizeof(resp));
 
@@ -1315,10 +1307,8 @@ void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& 
 
     // check error
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         logE(LOG_TAG, "EOPS got error response");
         goto error;
     } else {
@@ -1330,52 +1320,56 @@ void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& 
         if (err >= 0) {
             /* <mode> */
             skip = line->atTokNextint(&err);
-            if ((err >= 0) &&( skip >= 0 && skip <= 4 && skip != 2)) {
+            if ((err >= 0) && (skip >= 0 && skip <= 4 && skip != 2)) {
                 mMdEops->mode = skip;
                 // a "+EOPS: 0" response is possible
                 if (line->atTokHasmore()) {
                     /* <format> */
                     skip = line->atTokNextint(&err);
-                    if (err >= 0 && skip == 2)
-                    {
+                    if (err >= 0 && skip == 2) {
                         mMdEops->format = skip;
                         /* <oper> */
                         resp[2] = line->atTokNextstr(&err);
-                        strncpy(mMdEops->oper, resp[2], strlen(resp[2]) > 9 ? 9 : (1+strlen(resp[2])));
-                        /* Modem might response invalid PLMN ex: "", "000000" , "??????", ignore it */
+                        strncpy(mMdEops->oper, resp[2],
+                                strlen(resp[2]) > 9 ? 9 : (1 + strlen(resp[2])));
+                        /* Modem might response invalid PLMN ex: "", "000000" , "??????", ignore it
+                         */
                         // request_operator returns valid plmn when in service.
                         setLastValidPlmn(resp[2]);
                         bool hasService =
-                            isInService(urc_data_reg_state_cache[m_slot_id]->registration_state) ||
-                            isInService(urc_voice_reg_state_cache[m_slot_id]->registration_state);
-                        if ((!hasService) ||
-                                (!((*resp[2] >= '0') && (*resp[2] <= '9'))) ||
-                                (0 == strcmp(resp[2], "000000"))) {
+                                isInService(
+                                        urc_data_reg_state_cache[m_slot_id]->registration_state) ||
+                                isInService(
+                                        urc_voice_reg_state_cache[m_slot_id]->registration_state);
+                        if ((!hasService) || (!((*resp[2] >= '0') && (*resp[2] <= '9'))) ||
+                            (0 == strcmp(resp[2], "000000"))) {
                             memset(resp, 0, sizeof(resp));
                             if (!hasService) {
                                 // clear key/cache when we are not in service
                                 // keep the previous value when MD report invalid.
                                 getMclStatusManager()->setString8Value(RFX_STATUS_KEY_OPERATOR,
-                                        String8(""));
+                                                                       String8(""));
                                 memset(op_info_cache[m_slot_id]->mccMnc, 0, 8);
                                 memset(op_info_cache[m_slot_id]->longName, 0, MAX_OPER_NAME_LENGTH);
-                                memset(op_info_cache[m_slot_id]->shortName, 0, MAX_OPER_NAME_LENGTH);
+                                memset(op_info_cache[m_slot_id]->shortName, 0,
+                                       MAX_OPER_NAME_LENGTH);
                             }
                             pthread_mutex_unlock(&mdEopsMutex[m_slot_id]);
                             response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                                    RfxStringsData(resp, 3), msg, false);
+                                                                     RfxStringsData(resp, 3), msg,
+                                                                     false);
                             // response to TeleCore
                             responseToTelCore(response);
                             return;
                         }
 
-                        err = getOperatorNamesFromNumericCode(
-                                resp[2], eons_info[m_slot_id].lac, longname, shortname, MAX_OPER_NAME_LENGTH);
+                        err = getOperatorNamesFromNumericCode(resp[2], eons_info[m_slot_id].lac,
+                                                              longname, shortname,
+                                                              MAX_OPER_NAME_LENGTH);
                         String8 oper(resp[2]);
                         getMclStatusManager()->setString8Value(RFX_STATUS_KEY_OPERATOR, oper);
 
-                        if(err >= 0)
-                        {
+                        if (err >= 0) {
                             resp[0] = longname;
                             resp[1] = shortname;
                         }
@@ -1383,8 +1377,8 @@ void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& 
                         strncpy(op_info_cache[m_slot_id]->longName, longname, strlen(longname));
                         strncpy(op_info_cache[m_slot_id]->shortName, shortname, strlen(shortname));
                         pthread_mutex_unlock(&mdEopsMutex[m_slot_id]);
-                        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                                RfxStringsData(resp, 3), msg, false);
+                        response = RfxMclMessage::obtainResponse(
+                                msg->getId(), RIL_E_SUCCESS, RfxStringsData(resp, 3), msg, false);
                         // response to TeleCore
                         responseToTelCore(response);
                         return;
@@ -1394,8 +1388,8 @@ void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& 
         }
     }
     pthread_mutex_unlock(&mdEopsMutex[m_slot_id]);
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringsData(resp, 3), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxStringsData(resp, 3),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 
@@ -1403,13 +1397,14 @@ void RmcNetworkRealTimeRequestHandler::requestOperator(const sp<RfxMclMessage>& 
 error:
     pthread_mutex_unlock(&mdEopsMutex[m_slot_id]);
     logE(LOG_TAG, "requestOperator must never return error when radio is on");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringsData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxStringsData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcNetworkRealTimeRequestHandler::requestQueryNetworkSelectionMode(const sp<RfxMclMessage>& msg) {
+void RmcNetworkRealTimeRequestHandler::requestQueryNetworkSelectionMode(
+        const sp<RfxMclMessage>& msg) {
     int err;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
@@ -1422,21 +1417,22 @@ void RmcNetworkRealTimeRequestHandler::requestQueryNetworkSelectionMode(const sp
     }
 
     logD(LOG_TAG, "requestQueryNetworkSelectionMode return %d", mdEops[m_slot_id]->mode);
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&resp, 1), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(&resp, 1),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 
     return;
 error:
     logE(LOG_TAG, "requestQueryNetworkSelectionMode must never return error when radio is on");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcNetworkRealTimeRequestHandler::resetVoiceRegStateCache(RIL_VOICE_REG_STATE_CACHE *voiceCache, RIL_CACHE_GROUP source) {
+void RmcNetworkRealTimeRequestHandler::resetVoiceRegStateCache(
+        RIL_VOICE_REG_STATE_CACHE* voiceCache, RIL_CACHE_GROUP source) {
     pthread_mutex_lock(&s_voiceRegStateMutex[m_slot_id]);
     if (source == CACHE_GROUP_ALL) {
         (*voiceCache).registration_state = 0;
@@ -1481,8 +1477,8 @@ void RmcNetworkRealTimeRequestHandler::resetVoiceRegStateCache(RIL_VOICE_REG_STA
     pthread_mutex_unlock(&s_voiceRegStateMutex[m_slot_id]);
 }
 
-void RmcNetworkRealTimeRequestHandler::resetDataRegStateCache(RIL_DATA_REG_STATE_CACHE *dataCache,
-        RIL_CACHE_GROUP source) {
+void RmcNetworkRealTimeRequestHandler::resetDataRegStateCache(RIL_DATA_REG_STATE_CACHE* dataCache,
+                                                              RIL_CACHE_GROUP source) {
     (*dataCache).registration_state = 0;
     (*dataCache).lac = 0xffffffff;
     (*dataCache).cid = 0x0fffffff;
@@ -1511,13 +1507,13 @@ void RmcNetworkRealTimeRequestHandler::resetDataRegStateCache(RIL_DATA_REG_STATE
 
 void RmcNetworkRealTimeRequestHandler::updateServiceStateValue() {
     pthread_mutex_lock(&s_voiceRegStateMutex[m_slot_id]);
-    getMclStatusManager()->setServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE,
-            RfxNwServiceState(
-                    voice_reg_state_cache[m_slot_id]->registration_state,
-                    data_reg_state_cache[m_slot_id]->registration_state,
-                    voice_reg_state_cache[m_slot_id]->radio_technology,
-                    data_reg_state_cache[m_slot_id]->radio_technology,
-                    ril_wfc_reg_status[m_slot_id]));
+    getMclStatusManager()->setServiceStateValue(
+            RFX_STATUS_KEY_SERVICE_STATE,
+            RfxNwServiceState(voice_reg_state_cache[m_slot_id]->registration_state,
+                              data_reg_state_cache[m_slot_id]->registration_state,
+                              voice_reg_state_cache[m_slot_id]->radio_technology,
+                              data_reg_state_cache[m_slot_id]->radio_technology,
+                              ril_wfc_reg_status[m_slot_id]));
     pthread_mutex_unlock(&s_voiceRegStateMutex[m_slot_id]);
 }
 
@@ -1541,12 +1537,12 @@ void RmcNetworkRealTimeRequestHandler::updateCaBandInfo() {
 
     resetCaCache(ca_cache[m_slot_id]);
 
-    int *ca_info = &(ca_cache[m_slot_id]->ca_info);
-    int *pcell_bw = &(ca_cache[m_slot_id]->pcell_bw);
-    int *scell_bw1 = &(ca_cache[m_slot_id]->scell_bw1);
-    int *scell_bw2 = &(ca_cache[m_slot_id]->scell_bw2);
-    int *scell_bw3 = &(ca_cache[m_slot_id]->scell_bw3);
-    int *scell_bw4 = &(ca_cache[m_slot_id]->scell_bw4);
+    int* ca_info = &(ca_cache[m_slot_id]->ca_info);
+    int* pcell_bw = &(ca_cache[m_slot_id]->pcell_bw);
+    int* scell_bw1 = &(ca_cache[m_slot_id]->scell_bw1);
+    int* scell_bw2 = &(ca_cache[m_slot_id]->scell_bw2);
+    int* scell_bw3 = &(ca_cache[m_slot_id]->scell_bw3);
+    int* scell_bw4 = &(ca_cache[m_slot_id]->scell_bw4);
 
     pthread_mutex_lock(&s_caMutex[m_slot_id]);
 
@@ -1556,10 +1552,9 @@ void RmcNetworkRealTimeRequestHandler::updateCaBandInfo() {
 
     // check error
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto error;
 
     // handle intermediate
     line = p_response->getIntermediates();
@@ -1594,10 +1589,9 @@ void RmcNetworkRealTimeRequestHandler::updateCaBandInfo() {
             p_response = atSendCommandSingleline("AT+ELTEBWINFO=1", "+ELTEBWINFO:");
             // check error
             err = p_response->getError();
-            if (err != 0 ||
-                    p_response == NULL ||
-                    p_response->getSuccess() == 0 ||
-                    p_response->getIntermediates() == NULL) goto error;
+            if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+                p_response->getIntermediates() == NULL)
+                goto error;
 
             // handle intermediate
             line = p_response->getIntermediates();
@@ -1623,22 +1617,25 @@ error:
 }
 
 void RmcNetworkRealTimeRequestHandler::updateDcStatus(int cell, int max) {
-    if ((cell & 0x80) == 0x80) m_dc_support[m_slot_id] = true;
-    else if (max >= 12 && max <= 17) m_dc_support[m_slot_id] = true;
-    else m_dc_support[m_slot_id] = false;
+    if ((cell & 0x80) == 0x80)
+        m_dc_support[m_slot_id] = true;
+    else if (max >= 12 && max <= 17)
+        m_dc_support[m_slot_id] = true;
+    else
+        m_dc_support[m_slot_id] = false;
 }
 
 int RmcNetworkRealTimeRequestHandler::isCdmaVoiceInFemtocell() {
     int isFemtocell = 0;
-    if (RfxNwServiceState::isInService(voice_reg_state_cache[m_slot_id]->registration_state)
-            && RfxNwServiceState::isCdmaGroup(voice_reg_state_cache[m_slot_id]->radio_technology)) {
+    if (RfxNwServiceState::isInService(voice_reg_state_cache[m_slot_id]->registration_state) &&
+        RfxNwServiceState::isCdmaGroup(voice_reg_state_cache[m_slot_id]->radio_technology)) {
         if (femto_cell_cache[m_slot_id]->is_1x_femtocell == 1) {
             isFemtocell = 1;
         } else {
             isFemtocell = isInFemtocell(voice_reg_state_cache[m_slot_id]->sector_id,
-                    voice_reg_state_cache[m_slot_id]->subnet_mask,
-                    voice_reg_state_cache[m_slot_id]->network_id,
-                    voice_reg_state_cache[m_slot_id]->radio_technology);
+                                        voice_reg_state_cache[m_slot_id]->subnet_mask,
+                                        voice_reg_state_cache[m_slot_id]->network_id,
+                                        voice_reg_state_cache[m_slot_id]->radio_technology);
             logD(LOG_TAG, "isCdmaVoiceInFemtocell(): CDMA CS in femtocell ? %d", isFemtocell);
         }
     }
@@ -1647,31 +1644,31 @@ int RmcNetworkRealTimeRequestHandler::isCdmaVoiceInFemtocell() {
 
 int RmcNetworkRealTimeRequestHandler::isCdmaDataInFemtocell() {
     int isFemtocell = 0;
-    if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state)
-            && RfxNwServiceState::isCdmaGroup(data_reg_state_cache[m_slot_id]->radio_technology)) {
-        if (femto_cell_cache[m_slot_id]->is_1x_femtocell == 1
-                || femto_cell_cache[m_slot_id]->is_evdo_femtocell == 1) {
+    if (RfxNwServiceState::isInService(data_reg_state_cache[m_slot_id]->registration_state) &&
+        RfxNwServiceState::isCdmaGroup(data_reg_state_cache[m_slot_id]->radio_technology)) {
+        if (femto_cell_cache[m_slot_id]->is_1x_femtocell == 1 ||
+            femto_cell_cache[m_slot_id]->is_evdo_femtocell == 1) {
             isFemtocell = 1;
         } else {
             isFemtocell = isInFemtocell(voice_reg_state_cache[m_slot_id]->sector_id,
-                    voice_reg_state_cache[m_slot_id]->subnet_mask,
-                    voice_reg_state_cache[m_slot_id]->network_id,
-                    data_reg_state_cache[m_slot_id]->radio_technology);
+                                        voice_reg_state_cache[m_slot_id]->subnet_mask,
+                                        voice_reg_state_cache[m_slot_id]->network_id,
+                                        data_reg_state_cache[m_slot_id]->radio_technology);
             logD(LOG_TAG, "isCdmaDataInFemtocell(): CDMA PS in femtocell ? %d", isFemtocell);
         }
     }
     return isFemtocell;
 }
 
-int RmcNetworkRealTimeRequestHandler::isInFemtocell(char *sector_id, char *subnet_mask,
-        int network_id, int radio_technology) {
+int RmcNetworkRealTimeRequestHandler::isInFemtocell(char* sector_id, char* subnet_mask,
+                                                    int network_id, int radio_technology) {
     char oxtet7;
     int subnet_mask_value = 0;
     if (strlen(subnet_mask) > 0) {
         subnet_mask_value = strtol(subnet_mask, NULL, 16);
     }
     logD(LOG_TAG, "isInFemtocell, sector_id:%s, subnet_mask:%x, network_id:%d, radio_tech:%d",
-            sector_id, subnet_mask_value, network_id, radio_technology);
+         sector_id, subnet_mask_value, network_id, radio_technology);
     switch (radio_technology) {
         case 6:  // 1xRTT
             // 1X Femtocell Visual Indicator VZ_REQ_1XEV1XRTT_8757:

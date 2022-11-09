@@ -21,11 +21,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxEtwsNotiData);
 
-RfxEtwsNotiData::RfxEtwsNotiData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxEtwsNotiData::RfxEtwsNotiData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_CBEtwsNotification *pEtwsNoti = (RIL_CBEtwsNotification*)_data;
-        RIL_CBEtwsNotification *pData = (RIL_CBEtwsNotification *)calloc(1,
-                sizeof(RIL_CBEtwsNotification));
+        RIL_CBEtwsNotification* pEtwsNoti = (RIL_CBEtwsNotification*)_data;
+        RIL_CBEtwsNotification* pData =
+                (RIL_CBEtwsNotification*)calloc(1, sizeof(RIL_CBEtwsNotification));
 
         if (pData != NULL) {
             pData->warningType = pEtwsNoti->warningType;
@@ -48,7 +48,7 @@ RfxEtwsNotiData::RfxEtwsNotiData(void *_data, int _length) : RfxBaseData(_data, 
 RfxEtwsNotiData::~RfxEtwsNotiData() {
     // free memory
     if (m_data != NULL) {
-        RIL_CBEtwsNotification *pData = (RIL_CBEtwsNotification*)m_data;
+        RIL_CBEtwsNotification* pData = (RIL_CBEtwsNotification*)m_data;
         if (pData->plmnId != NULL) {
             free(pData->plmnId);
             pData->plmnId = NULL;

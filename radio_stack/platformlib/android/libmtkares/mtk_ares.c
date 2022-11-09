@@ -16,12 +16,9 @@
 
 #include <mtk_ares.h>
 
-int mtk_aes_getrecords_free(struct records_naptr *head)
-{
-    return aes_getrecords_free(head);
-}
+int mtk_aes_getrecords_free(struct records_naptr* head) { return aes_getrecords_free(head); }
 
-int mtk_aes_getrecords(const char * hostname, const char *service, const struct query_type * hints,struct records_naptr **result)
-{
+int mtk_aes_getrecords(const char* hostname, const char* service, const struct query_type* hints,
+                       struct records_naptr** result) {
     return aes_getrecords(hostname, service, hints, result);
 }

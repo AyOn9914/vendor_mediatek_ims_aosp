@@ -22,27 +22,27 @@
 /*****************************************************************************
  * Constants
  *****************************************************************************/
-static const int ELT_ID_CONCATENATED_8_BIT_REFERENCE       = 0x00;
-static const int HEADER_ID_AND_HEADER_LEN_SIZE             = 2;
-static const int BYTE_BIT_MASK                             = 0xff;
+static const int ELT_ID_CONCATENATED_8_BIT_REFERENCE = 0x00;
+static const int HEADER_ID_AND_HEADER_LEN_SIZE = 2;
+static const int BYTE_BIT_MASK = 0xff;
 
 /*****************************************************************************
  * Class RtcSmsUserDataHeader
  *****************************************************************************/
-RtcSmsUserDataHeader::RtcSmsUserDataHeader(unsigned char *header, int len, bool is3Gpp2)
-        : mConcatSms(false), mError(false) {
+RtcSmsUserDataHeader::RtcSmsUserDataHeader(unsigned char* header, int len, bool is3Gpp2)
+    : mConcatSms(false), mError(false) {
     int offset = 0;
     int headerId = header[offset++] & BYTE_BIT_MASK;
     int headerLen = header[offset++] & BYTE_BIT_MASK;
     if ((headerLen <= len + HEADER_ID_AND_HEADER_LEN_SIZE) &&
-            (headerId == ELT_ID_CONCATENATED_8_BIT_REFERENCE)) {
+        (headerId == ELT_ID_CONCATENATED_8_BIT_REFERENCE)) {
         mConcatRef.refNumber = header[offset++] & BYTE_BIT_MASK;
         mConcatRef.msgCount = header[offset++] & BYTE_BIT_MASK;
         mConcatRef.seqNumber = header[offset++] & BYTE_BIT_MASK;
         mConcatRef.isEightBits = true;
         mConcatRef.is3Gpp2 = is3Gpp2;
         if (mConcatRef.msgCount != 0 && mConcatRef.seqNumber != 0 &&
-                mConcatRef.seqNumber <= mConcatRef.msgCount) {
+            mConcatRef.seqNumber <= mConcatRef.msgCount) {
             mConcatSms = true;
         }
     } else {

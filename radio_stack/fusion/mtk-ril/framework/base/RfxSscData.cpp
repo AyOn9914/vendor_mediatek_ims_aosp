@@ -18,10 +18,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSscData);
 
-RfxSscData::RfxSscData(void *data, int length) : RfxBaseData(data, length)  {
-    RIL_SystemSelectionChannels* pTmp = (RIL_SystemSelectionChannels*) data;
-    RIL_SystemSelectionChannels *pData =
-        (RIL_SystemSelectionChannels *) calloc(1, sizeof(RIL_SystemSelectionChannels));
+RfxSscData::RfxSscData(void* data, int length) : RfxBaseData(data, length) {
+    RIL_SystemSelectionChannels* pTmp = (RIL_SystemSelectionChannels*)data;
+    RIL_SystemSelectionChannels* pData =
+            (RIL_SystemSelectionChannels*)calloc(1, sizeof(RIL_SystemSelectionChannels));
 
     if (pData != NULL) {
         memcpy(pData, pTmp, sizeof(RIL_SystemSelectionChannels));

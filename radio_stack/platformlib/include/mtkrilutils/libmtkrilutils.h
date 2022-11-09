@@ -113,10 +113,10 @@ int isEmulatorRunning();
 int isInternalLoad();
 int isEngLoad();
 int isUserLoad();
-void setMSimProperty(int phoneId, char *pPropertyName, char *pUpdateValue);
-void getMSimProperty(int phoneId, char *pPropertyName,char *pPropertyValue);
-void maskString(char *src, char *dst, int maskNum, char maskPtn);
-void givePrintableIccid(char *iccid, char *maskIccid);
+void setMSimProperty(int phoneId, char* pPropertyName, char* pUpdateValue);
+void getMSimProperty(int phoneId, char* pPropertyName, char* pPropertyValue);
+void maskString(char* src, char* dst, int maskNum, char maskPtn);
+void givePrintableIccid(char* iccid, char* maskIccid);
 // Notice: caller should free the return string by himself.
 unsigned char* pii(char* input);
 int isSrlteSupport();
@@ -160,7 +160,7 @@ int isOp07Support();
 int isOp08Support();
 int isOp12Support();
 int isOp16Support();
-int getClassType(char *apn, int supportedApnTypesBitmask);
+int getClassType(char* apn, int supportedApnTypesBitmask);
 
 /// M: [SIM Switch] {@
 // return true if both slots are cdma cards
@@ -170,13 +170,13 @@ bool hasCdmaCard();
 // return true if vsim is inserted
 bool hasVsimCard();
 /// M: [SIM Switch] @}
-int isOp17MccMnc(char *mccmnc);
-int isOp129MccMnc(char *mccmnc);
+int isOp17MccMnc(char* mccmnc);
+int isOp129MccMnc(char* mccmnc);
 int isOp01Volte();
 int isApFallbackSupport();
 int isMdFallbackSupport();
 int isInternationalRoamingEnabled();
-int readMccMnc(RIL_SOCKET_ID rid, char *mccmnc);
+int readMccMnc(RIL_SOCKET_ID rid, char* mccmnc);
 int isMultipleImsSupport();
 int isMalSupported();
 
@@ -189,24 +189,24 @@ int getRildInterfaceCtrlSupport();
 int isExternalSimSupport();
 int isExternalSimOnlySlot(RIL_SOCKET_ID rid);
 int isPersistExternalSimDisabled();
-void setExternalSimProperty(int phoneId, char *pPropertyName, char *pUpdateValue);
+void setExternalSimProperty(int phoneId, char* pPropertyName, char* pUpdateValue);
 // External SIM [End]
 
 bool isDssNoResetSupport();
 
-int strStartsWith(const char *line, const char *prefix);
-int needToHidenLog(const char *prefix);
+int strStartsWith(const char* line, const char* prefix);
+int needToHidenLog(const char* prefix);
 const char* getHidenLogPreFix(int i);
 
 // hVoLTE/E911 feature
 bool isRedialFeatureEnabled();
 int isOMSupport();
-int isLogReductionCmd(const char *target);
-void setMSimPropertyThreadSafe(
-        int phoneId, char *pPropertyName, char *pUpdateValue, pthread_mutex_t* mutex);
+int isLogReductionCmd(const char* target);
+void setMSimPropertyThreadSafe(int phoneId, char* pPropertyName, char* pUpdateValue,
+                               pthread_mutex_t* mutex);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // LIBMTKRILUTILS_H
+#endif  // LIBMTKRILUTILS_H

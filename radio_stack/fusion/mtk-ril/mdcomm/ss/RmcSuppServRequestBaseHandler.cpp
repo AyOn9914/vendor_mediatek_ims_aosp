@@ -34,8 +34,8 @@
 #include <mtk_properties.h>
 #include <string.h>
 
-RmcSuppServRequestBaseHandler::RmcSuppServRequestBaseHandler(int slot_id,
-        int channel_id):RfxBaseHandler(slot_id, channel_id){
+RmcSuppServRequestBaseHandler::RmcSuppServRequestBaseHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     // do nothing
 }
 
@@ -45,16 +45,16 @@ RmcSuppServRequestBaseHandler::~RmcSuppServRequestBaseHandler() {
 
 void RmcSuppServRequestBaseHandler::requestClirOperation(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
-    int *n = (int *) (msg->getData()->getData());
+    int* n = (int*)(msg->getData()->getData());
     int err;
     char* cmd = NULL;
     // char* line = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
-    int responses[2]={0};
+    int responses[2] = {0};
     bool isTerminalBasedSolution = false;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     if (msg->getData()->getDataLength() != 0) {
         asprintf(&cmd, "AT+CLIR=%d", n[0]);
@@ -63,7 +63,6 @@ void RmcSuppServRequestBaseHandler::requestClirOperation(const sp<RfxMclMessage>
         p_response = atSendCommandMultiline(cmd, "+CLIR:");
         free(cmd);
     } else {
-
         /**
          * Get CLIR: +CLIR?
          * This action will trigger CLIR interrogation. Need to check FDN so use proprietary command
@@ -196,8 +195,8 @@ void RmcSuppServRequestBaseHandler::requestClirOperation(const sp<RfxMclMessage>
 
 error:
     /* For SET CLIR responseVoid will ignore the responses */
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -208,14 +207,14 @@ void RmcSuppServRequestBaseHandler::handleSetClirResponse(int clir_n) {
     char str[MTK_PROPERTY_VALUE_MAX];
 
     snprintf(str, sizeof(str), "%d", clir_n);
-    setMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_N, str);
+    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_N, str);
 
     // sync value to RfxStatusManager
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_TBCLIR_N, clir_n);
 }
 
 void RmcSuppServRequestBaseHandler::handleGetClirResponse(int (&responses)[2],
-        bool isTerminalBasedSolution) {
+                                                          bool isTerminalBasedSolution) {
     char clir_n[MTK_PROPERTY_VALUE_MAX];
     char clir_m[MTK_PROPERTY_VALUE_MAX];
 
@@ -225,8 +224,8 @@ void RmcSuppServRequestBaseHandler::handleGetClirResponse(int (&responses)[2],
     snprintf(clir_n, sizeof(clir_n), "0");
     snprintf(clir_m, sizeof(clir_m), "4");
 
-    getMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_N, clir_n);
-    getMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_M, clir_m);
+    getMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_N, clir_n);
+    getMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_M, clir_m);
     logD(TAG, "handleGetClirResponse: from property, clir_n = %s, clir_m = %s", clir_n, clir_m);
 
     if (isTerminalBasedSolution) {
@@ -235,8 +234,8 @@ void RmcSuppServRequestBaseHandler::handleGetClirResponse(int (&responses)[2],
         responses[0] = atoi(clir_n);
         responses[1] = atoi(clir_m);
     } else {
-        logD(TAG, "handleGetClirResponse: from modem, clir_n = %d, clir_m = %d",
-                responses[0], responses[1]);
+        logD(TAG, "handleGetClirResponse: from modem, clir_n = %d, clir_m = %d", responses[0],
+             responses[1]);
         // For PS domain:
         // There are only two possible CLIR value in XCAP server: HIDE_NUMBER or SHOW_NUMBER
         // If UE gets any result among of them and the local value is NETWORK_DEFAULT,
@@ -263,23 +262,24 @@ void RmcSuppServRequestBaseHandler::resetClirProperty() {
 
     snprintf(str_n, sizeof(str_n), "%d", 0);
     snprintf(str_m, sizeof(str_m), "%d", 4);
-    setMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_N, str_n);
-    setMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_M, str_m);
+    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_N, str_n);
+    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_M, str_m);
 }
 
-void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclMessage>& msg, CallForwardOperationE op) {
-    RIL_CallForwardInfo* p_args = (RIL_CallForwardInfo*) (msg->getData()->getData());
+void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclMessage>& msg,
+                                                                CallForwardOperationE op) {
+    RIL_CallForwardInfo* p_args = (RIL_CallForwardInfo*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     std::string finalCommand("AT+ECUSD=1,1,\"");
     RfxAtLine* p_cur = NULL;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
-    RIL_CallForwardInfo ** pp_CfInfoResponses = NULL;
-    RIL_CallForwardInfo * p_CfInfoResponse = NULL;
+    RIL_CallForwardInfo** pp_CfInfoResponses = NULL;
+    RIL_CallForwardInfo* p_CfInfoResponse = NULL;
     HasSIFlagE eSiStatus = HAS_NONE;
     char* pStrTmp = NULL;
-    char *cmd = NULL;
-    char *tmpCmd = NULL;
+    char* cmd = NULL;
+    char* tmpCmd = NULL;
     int resLength = 0;
     int dnlen = 0;
     int serviceClass = 0;
@@ -310,7 +310,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
      * Interrogation        *#SC**BS#
      */
 
-     if ((CCFC_E_QUERY == op) && (p_args->reason >= CF_ALL)) {
+    if ((CCFC_E_QUERY == op) && (p_args->reason >= CF_ALL)) {
         logE(TAG, "CF_ALL & CF_ALLCOND cannot be used in QUERY");
         goto error;
     }
@@ -329,32 +329,32 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
     }
 
     /* Check Op Code and MMI Service Code */
-    finalCommand = finalCommand + ssStatusToOpCodeString((SsStatusE) p_args->status) +
-            callForwardReasonToServiceCodeString((CallForwardReasonE) p_args->reason);
+    finalCommand = finalCommand + ssStatusToOpCodeString((SsStatusE)p_args->status) +
+                   callForwardReasonToServiceCodeString((CallForwardReasonE)p_args->reason);
 
     /* Check SIA: Dial number. Only Registration need to pack DN and others are ignored. */
-    if ((p_args->number != NULL)
-        && ((p_args->status == SS_REGISTER) || (p_args->status == SS_ACTIVATE))) {
-
-        eSiStatus = (HasSIFlagE) (eSiStatus | HAS_SIA);
+    if ((p_args->number != NULL) &&
+        ((p_args->status == SS_REGISTER) || (p_args->status == SS_ACTIVATE))) {
+        eSiStatus = (HasSIFlagE)(eSiStatus | HAS_SIA);
         p_args->number = extractNetworkPortionAlt(p_args->number);
         if (NULL == p_args->number) {
             logE(TAG, "Number after extracted is null");
             goto error;
         }
-        dnlen = strlen((const char *) p_args->number);
+        dnlen = strlen((const char*)p_args->number);
         if (dnlen == 0) {
             logE(TAG, "cur number len is 0");
             goto error;
         }
-        //BEGIN mtk08470 [20130109][ALPS00436983]
-        // number string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
+        // BEGIN mtk08470 [20130109][ALPS00436983]
+        //  number string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
         if (dnlen > MAX_RIL_USSD_NUMBER_LENGTH) {
             logE(TAG, "cur number len = %d, max = %d", dnlen, MAX_RIL_USSD_NUMBER_LENGTH);
             goto error;
         }
-        //END mtk08470 [20130109][ALPS00436983]
-        if ((p_args->toa == TYPE_ADDRESS_INTERNATIONAL) && (strncmp((const char *)p_args->number, "+", 1))) {
+        // END mtk08470 [20130109][ALPS00436983]
+        if ((p_args->toa == TYPE_ADDRESS_INTERNATIONAL) &&
+            (strncmp((const char*)p_args->number, "+", 1))) {
             finalCommand = finalCommand + "*+" + p_args->number;
             dnlen++;
         } else {
@@ -362,7 +362,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
         }
 
         /* Add this check for sensitive log */
-        const char *tmpNumber = encryptString(p_args->number);
+        const char* tmpNumber = encryptString(p_args->number);
         logD(TAG, "toa:%d, number:%s, len:%d", p_args->toa, tmpNumber, dnlen);
         free((char*)tmpNumber);
     } else {
@@ -375,22 +375,26 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
     /* Check SIB */
     if (p_args->serviceClass != 0) {
         if (eSiStatus == HAS_SIA) {
-            finalCommand = finalCommand + "*" + InfoClassToMmiBSCodeString((AtInfoClassE) p_args->serviceClass);
+            finalCommand = finalCommand + "*" +
+                           InfoClassToMmiBSCodeString((AtInfoClassE)p_args->serviceClass);
         } else {
-            finalCommand = finalCommand + "**" + InfoClassToMmiBSCodeString((AtInfoClassE) p_args->serviceClass);
+            finalCommand = finalCommand + "**" +
+                           InfoClassToMmiBSCodeString((AtInfoClassE)p_args->serviceClass);
         }
 
-        eSiStatus = (HasSIFlagE) (eSiStatus | HAS_SIB);
+        eSiStatus = (HasSIFlagE)(eSiStatus | HAS_SIB);
         serviceClass = p_args->serviceClass;
         logD(TAG, "Reserve serviceClass. serviceClass = %d", serviceClass);
-        logD(TAG, "BS code from serviceClass = %s", InfoClassToMmiBSCodeString((AtInfoClassE) serviceClass));
+        logD(TAG, "BS code from serviceClass = %s",
+             InfoClassToMmiBSCodeString((AtInfoClassE)serviceClass));
     }
 
     /* Check SIC: No reply timer */
     /* shall we check CF_ALL and CF_ALLCOND ? In ril.h time is for CF_NORPLY only. */
-    if (((p_args->reason == CF_NORPLY) || (p_args->reason == CF_ALL) || (p_args->reason == CF_ALLCOND))
-        && (p_args->status == SS_REGISTER || p_args->status == SS_ACTIVATE) && (p_args->timeSeconds!=0)) {
-
+    if (((p_args->reason == CF_NORPLY) || (p_args->reason == CF_ALL) ||
+         (p_args->reason == CF_ALLCOND)) &&
+        (p_args->status == SS_REGISTER || p_args->status == SS_ACTIVATE) &&
+        (p_args->timeSeconds != 0)) {
         if (eSiStatus == HAS_NONE) {
             finalCommand = finalCommand + "***" + std::to_string(p_args->timeSeconds);
         } else if (eSiStatus == HAS_SIA) {
@@ -408,7 +412,6 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
     free(tmpCmd);
 
     if (CCFC_E_QUERY == op) {
-
         /**
          * RIL_REQUEST_QUERY_CALL_FORWARD_STATUS
          *
@@ -431,7 +434,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
          *  GENERIC_FAILURE
          */
 
-         p_response = atSendCommandMultiline(finalCommand.c_str(), "+CCFC:");
+        p_response = atSendCommandMultiline(finalCommand.c_str(), "+CCFC:");
     } else {
         /* add DN length */
         if (dnlen != 0) {
@@ -456,7 +459,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
     }
 
     err = p_response->getError();
-    if (err < 0 ||  p_response == NULL) {
+    if (err < 0 || p_response == NULL) {
         logE(TAG, "requestCallForwardOperation Fail");
         goto error;
     }
@@ -511,14 +514,15 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
 
         logD(TAG, "%d of +CCFC: received!", resLength);
 
-        pp_CfInfoResponses = (RIL_CallForwardInfo **) alloca(resLength * sizeof(RIL_CallForwardInfo *));
-        memset(pp_CfInfoResponses, 0, resLength * sizeof(RIL_CallForwardInfo *));
+        pp_CfInfoResponses =
+                (RIL_CallForwardInfo**)alloca(resLength * sizeof(RIL_CallForwardInfo*));
+        memset(pp_CfInfoResponses, 0, resLength * sizeof(RIL_CallForwardInfo*));
 
         resLength = 0; /* reset resLength for decoding */
 
         for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
-            char *line  = NULL;
-            int  bsCode = 0;
+            char* line = NULL;
+            int bsCode = 0;
 
             line = p_cur->getLine();
 
@@ -528,19 +532,18 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
             }
 
             if (p_CfInfoResponse == NULL) {
-                p_CfInfoResponse = (RIL_CallForwardInfo *) alloca(sizeof(RIL_CallForwardInfo));
+                p_CfInfoResponse = (RIL_CallForwardInfo*)alloca(sizeof(RIL_CallForwardInfo));
                 memset(p_CfInfoResponse, 0, sizeof(RIL_CallForwardInfo));
                 p_CfInfoResponse->reason = p_args->reason;
             }
 
-            ((RIL_CallForwardInfo   **)pp_CfInfoResponses)[resLength] = p_CfInfoResponse;
+            ((RIL_CallForwardInfo**)pp_CfInfoResponses)[resLength] = p_CfInfoResponse;
 
             /**
              * For Query CCFC only
              * +CCFC: <status>,<class1>[,<number>,<type>
              * [,<subaddr>,<satype>[,<time>]]]
              */
-
 
             p_cur->atTokStart(&err);
             if (err < 0) {
@@ -551,13 +554,13 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
             p_CfInfoResponse->status = p_cur->atTokNextint(&err);
             if (err < 0) {
                 logE(TAG, "+CCFC: status fail!");
-                //continue;
+                // continue;
             }
 
             bsCode = p_cur->atTokNextint(&err);
             if (err < 0) {
                 logE(TAG, "+CCFC: bsCode fail!");
-                //continue;
+                // continue;
             }
 
             if (serviceClass != 0 && p_CfInfoResponse->status == 0 && bsCode == 0) {
@@ -567,12 +570,12 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
             }
 
             if (p_cur->atTokHasmore()) {
-                p_CfInfoResponse->number = p_cur-> atTokNextstr(&err);
+                p_CfInfoResponse->number = p_cur->atTokNextstr(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: number fail!");
                 }
 
-                p_CfInfoResponse->toa = p_cur-> atTokNextint(&err);
+                p_CfInfoResponse->toa = p_cur->atTokNextint(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: toa fail!");
                 }
@@ -580,19 +583,19 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
 
             if (p_cur->atTokHasmore()) {
                 /* skip subaddr */
-                pStrTmp = p_cur-> atTokNextstr(&err);
-                if(err < 0) {
+                pStrTmp = p_cur->atTokNextstr(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: sub fail!");
                 }
 
                 /* skip satype */
-                p_CfInfoResponse->timeSeconds = p_cur-> atTokNextint(&err);
-                if(err < 0) {
+                p_CfInfoResponse->timeSeconds = p_cur->atTokNextint(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: sa type fail!");
                 }
 
-                p_CfInfoResponse->timeSeconds = p_cur-> atTokNextint(&err);
-                if(err < 0) {
+                p_CfInfoResponse->timeSeconds = p_cur->atTokNextint(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: time fail!");
                 }
             }
@@ -602,20 +605,16 @@ void RmcSuppServRequestBaseHandler::requestCallForwardOperation(const sp<RfxMclM
              * conversion when receive a result for data sync (CS domain).
              */
             if (serviceClass == CLASS_MTK_VIDEO &&
-                    p_CfInfoResponse->serviceClass == CLASS_DATA_SYNC) {
+                p_CfInfoResponse->serviceClass == CLASS_DATA_SYNC) {
                 logD(TAG, "requestCallForward, change CLASS_DATA_SYNC to CLASS_MTK_VIDEO");
                 p_CfInfoResponse->serviceClass = CLASS_MTK_VIDEO;
             }
 
-
             /* Add this check for sensitive log */
-            const char *tmpNumber = encryptString(p_CfInfoResponse->number);
+            const char* tmpNumber = encryptString(p_CfInfoResponse->number);
             logD(TAG, "CfInfoResponse status:%d class:%d num:%s toa:%d time:%d",
-                    p_CfInfoResponse->status,
-                    p_CfInfoResponse->serviceClass,
-                    tmpNumber,
-                    p_CfInfoResponse->toa,
-                    p_CfInfoResponse->timeSeconds);
+                 p_CfInfoResponse->status, p_CfInfoResponse->serviceClass, tmpNumber,
+                 p_CfInfoResponse->toa, p_CfInfoResponse->timeSeconds);
 
             free((char*)tmpNumber);
 
@@ -630,27 +629,29 @@ error:
     // RIL_onRequestComplete(t, ret, pp_CfInfoResponses, resLength*sizeof(RIL_CallForwardInfo *));
     // at_response_free(p_response);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxCallForwardInfosData(pp_CfInfoResponses, resLength * sizeof(RIL_CallForwardInfo *)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret,
+            RfxCallForwardInfosData(pp_CfInfoResponses, resLength * sizeof(RIL_CallForwardInfo*)),
+            msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
-        const sp<RfxMclMessage>& msg, CallForwardOperationE op) {
-    RIL_CallForwardInfoEx* p_args = (RIL_CallForwardInfoEx*) (msg->getData()->getData());
+void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(const sp<RfxMclMessage>& msg,
+                                                                  CallForwardOperationE op) {
+    RIL_CallForwardInfoEx* p_args = (RIL_CallForwardInfoEx*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     std::string finalCommand("AT+ECUSD=1,1,\"");
     RfxAtLine* p_cur = NULL;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
-    RIL_CallForwardInfoEx ** pp_CfInfoResponses = NULL;
-    RIL_CallForwardInfoEx * p_CfInfoResponse = NULL;
+    RIL_CallForwardInfoEx** pp_CfInfoResponses = NULL;
+    RIL_CallForwardInfoEx* p_CfInfoResponse = NULL;
     HasSIFlagE eSiStatus = HAS_NONE;
     char* pStrTmp = NULL;
-    char *cmd = NULL;
-    char *tmpCmd = NULL;
+    char* cmd = NULL;
+    char* tmpCmd = NULL;
     int resLength = 0;
     int dnlen = 0;
     int serviceClass = 0;
@@ -683,7 +684,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
      * Interrogation        *#SC**BS#
      */
 
-     if ((CCFC_E_QUERY == op) && (p_args->reason >= CF_ALL)) {
+    if ((CCFC_E_QUERY == op) && (p_args->reason >= CF_ALL)) {
         logE(TAG, "CF_ALL & CF_ALLCOND cannot be used in QUERY");
         goto error;
     }
@@ -691,7 +692,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
     /* For Query Call Forwarding in O version, RILJ doesn't assign cf.status. The default value of
      * cf.status is 0, which means Deactivation in SsStatusE. We need chaneg it to Interrogation.
      */
-     if (CCFC_E_QUERY == op) {
+    if (CCFC_E_QUERY == op) {
         logW(TAG, "Call Forwarding: change DEACTIVATE to INTERROGATE");
         p_args->status = SS_INTERROGATE;
     }
@@ -702,32 +703,32 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
     }
 
     /* Check Op Code and MMI Service Code */
-    finalCommand = finalCommand + ssStatusToOpCodeString((SsStatusE) p_args->status) +
-            callForwardReasonToServiceCodeString((CallForwardReasonE) p_args->reason);
+    finalCommand = finalCommand + ssStatusToOpCodeString((SsStatusE)p_args->status) +
+                   callForwardReasonToServiceCodeString((CallForwardReasonE)p_args->reason);
 
     /* Check SIA: Dial number. Only Registration need to pack DN and others are ignored. */
-    if ((p_args->number != NULL)
-        && ((p_args->status == SS_REGISTER) || (p_args->status == SS_ACTIVATE))) {
-
-        eSiStatus = (HasSIFlagE) (eSiStatus | HAS_SIA);
+    if ((p_args->number != NULL) &&
+        ((p_args->status == SS_REGISTER) || (p_args->status == SS_ACTIVATE))) {
+        eSiStatus = (HasSIFlagE)(eSiStatus | HAS_SIA);
         p_args->number = extractNetworkPortionAlt(p_args->number);
         if (NULL == p_args->number) {
             logE(TAG, "Number after extracted is null");
             goto error;
         }
-        dnlen = strlen((const char *) p_args->number);
+        dnlen = strlen((const char*)p_args->number);
         if (dnlen == 0) {
             logE(TAG, "cur number len is 0");
             goto error;
         }
-        //BEGIN mtk08470 [20130109][ALPS00436983]
-        // number string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
+        // BEGIN mtk08470 [20130109][ALPS00436983]
+        //  number string cannot more than MAX_RIL_USSD_NUMBER_LENGTH digits
         if (dnlen > MAX_RIL_USSD_NUMBER_LENGTH) {
             logE(TAG, "cur number len = %d, max = %d", dnlen, MAX_RIL_USSD_NUMBER_LENGTH);
             goto error;
         }
-        //END mtk08470 [20130109][ALPS00436983]
-        if ((p_args->toa == TYPE_ADDRESS_INTERNATIONAL) && (strncmp((const char *)p_args->number, "+", 1))) {
+        // END mtk08470 [20130109][ALPS00436983]
+        if ((p_args->toa == TYPE_ADDRESS_INTERNATIONAL) &&
+            (strncmp((const char*)p_args->number, "+", 1))) {
             finalCommand = finalCommand + "*+" + p_args->number;
             dnlen++;
         } else {
@@ -735,7 +736,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
         }
 
         /* Add this check for sensitive log */
-        const char *tmpNumber = encryptString(p_args->number);
+        const char* tmpNumber = encryptString(p_args->number);
         logD(TAG, "toa:%d, number:%s, len:%d", p_args->toa, tmpNumber, dnlen);
         free((char*)tmpNumber);
     } else {
@@ -748,22 +749,26 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
     /* Check SIB */
     if (p_args->serviceClass != 0) {
         if (eSiStatus == HAS_SIA) {
-            finalCommand = finalCommand + "*" + InfoClassToMmiBSCodeString((AtInfoClassE) p_args->serviceClass);
+            finalCommand = finalCommand + "*" +
+                           InfoClassToMmiBSCodeString((AtInfoClassE)p_args->serviceClass);
         } else {
-            finalCommand = finalCommand + "**" + InfoClassToMmiBSCodeString((AtInfoClassE) p_args->serviceClass);
+            finalCommand = finalCommand + "**" +
+                           InfoClassToMmiBSCodeString((AtInfoClassE)p_args->serviceClass);
         }
 
-        eSiStatus = (HasSIFlagE) (eSiStatus | HAS_SIB);
+        eSiStatus = (HasSIFlagE)(eSiStatus | HAS_SIB);
         serviceClass = p_args->serviceClass;
         logD(TAG, "Reserve serviceClass. serviceClass = %d", serviceClass);
-        logD(TAG, "BS code from serviceClass = %s", InfoClassToMmiBSCodeString((AtInfoClassE) serviceClass));
+        logD(TAG, "BS code from serviceClass = %s",
+             InfoClassToMmiBSCodeString((AtInfoClassE)serviceClass));
     }
 
     /* Check SIC: No reply timer */
     /* shall we check CF_ALL and CF_ALLCOND ? In ril.h time is for CF_NORPLY only. */
-    if (((p_args->reason == CF_NORPLY) || (p_args->reason == CF_ALL) || (p_args->reason == CF_ALLCOND))
-        && (p_args->status == SS_REGISTER || p_args->status == SS_ACTIVATE) && (p_args->timeSeconds!=0)) {
-
+    if (((p_args->reason == CF_NORPLY) || (p_args->reason == CF_ALL) ||
+         (p_args->reason == CF_ALLCOND)) &&
+        (p_args->status == SS_REGISTER || p_args->status == SS_ACTIVATE) &&
+        (p_args->timeSeconds != 0)) {
         if (eSiStatus == HAS_NONE) {
             finalCommand = finalCommand + "***" + std::to_string(p_args->timeSeconds);
         } else if (eSiStatus == HAS_SIA) {
@@ -791,13 +796,15 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
     } else {
         // set
         if (p_args->timeSlotBegin != 0 && p_args->timeSlotEnd != 0) {
-
             if (eSiStatus == HAS_NONE) {
-                finalCommand = finalCommand + "****" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
+                finalCommand =
+                        finalCommand + "****" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
             } else if (eSiStatus == HAS_SIA) {
-                finalCommand = finalCommand + "***" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
+                finalCommand =
+                        finalCommand + "***" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
             } else {
-                finalCommand = finalCommand + "**" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
+                finalCommand =
+                        finalCommand + "**" + p_args->timeSlotBegin + "*" + p_args->timeSlotEnd;
             }
         }
     }
@@ -810,7 +817,6 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
     free(tmpCmd);
 
     if (CCFC_E_QUERY == op) {
-
         /**
          * RIL_REQUEST_QUERY_CALL_FORWARD_STATUS
          *
@@ -833,7 +839,7 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
          *  GENERIC_FAILURE
          */
 
-         p_response = atSendCommandMultiline(finalCommand.c_str(), "+CCFC:");
+        p_response = atSendCommandMultiline(finalCommand.c_str(), "+CCFC:");
     } else {
         /* add DN length */
         if (dnlen != 0) {
@@ -854,11 +860,11 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
          *  GENERIC_FAILURE
          */
 
-         p_response = atSendCommand(finalCommand.c_str());
+        p_response = atSendCommand(finalCommand.c_str());
     }
 
     err = p_response->getError();
-    if (err < 0 ||  p_response == NULL) {
+    if (err < 0 || p_response == NULL) {
         logE(TAG, "requestCallForwardOperationEx Fail");
         goto error;
     }
@@ -914,14 +920,15 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
 
         logD(TAG, "%d of +CCFC: received!", resLength);
 
-        pp_CfInfoResponses = (RIL_CallForwardInfoEx **) alloca(resLength * sizeof(RIL_CallForwardInfoEx *));
-        memset(pp_CfInfoResponses, 0, resLength * sizeof(RIL_CallForwardInfoEx *));
+        pp_CfInfoResponses =
+                (RIL_CallForwardInfoEx**)alloca(resLength * sizeof(RIL_CallForwardInfoEx*));
+        memset(pp_CfInfoResponses, 0, resLength * sizeof(RIL_CallForwardInfoEx*));
 
         resLength = 0; /* reset resLength for decoding */
 
         for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
-            char *line  = NULL;
-            int  bsCode = 0;
+            char* line = NULL;
+            int bsCode = 0;
 
             line = p_cur->getLine();
 
@@ -931,19 +938,18 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
             }
 
             if (p_CfInfoResponse == NULL) {
-                p_CfInfoResponse = (RIL_CallForwardInfoEx *) alloca(sizeof(RIL_CallForwardInfoEx));
+                p_CfInfoResponse = (RIL_CallForwardInfoEx*)alloca(sizeof(RIL_CallForwardInfoEx));
                 memset(p_CfInfoResponse, 0, sizeof(RIL_CallForwardInfoEx));
                 p_CfInfoResponse->reason = p_args->reason;
             }
 
-            ((RIL_CallForwardInfoEx   **)pp_CfInfoResponses)[resLength] = p_CfInfoResponse;
+            ((RIL_CallForwardInfoEx**)pp_CfInfoResponses)[resLength] = p_CfInfoResponse;
 
             /**
              * For Query CCFC only
              * +CCFC: <status>,<class1>[,<number>,<type>
              * [,<subaddr>,<satype>[,<time>]]]
              */
-
 
             p_cur->atTokStart(&err);
             if (err < 0) {
@@ -954,13 +960,13 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
             p_CfInfoResponse->status = p_cur->atTokNextint(&err);
             if (err < 0) {
                 logE(TAG, "+CCFC: status fail!");
-                //continue;
+                // continue;
             }
 
             bsCode = p_cur->atTokNextint(&err);
             if (err < 0) {
                 logE(TAG, "+CCFC: bsCode fail!");
-                //continue;
+                // continue;
             }
 
             if (serviceClass != 0 && p_CfInfoResponse->status == 0 && bsCode == 0) {
@@ -970,12 +976,12 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
             }
 
             if (p_cur->atTokHasmore()) {
-                p_CfInfoResponse->number = p_cur-> atTokNextstr(&err);
+                p_CfInfoResponse->number = p_cur->atTokNextstr(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: number fail!");
                 }
 
-                p_CfInfoResponse->toa = p_cur-> atTokNextint(&err);
+                p_CfInfoResponse->toa = p_cur->atTokNextint(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: toa fail!");
                 }
@@ -983,40 +989,40 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
 
             if (p_cur->atTokHasmore()) {
                 /* skip subaddr */
-                pStrTmp = p_cur-> atTokNextstr(&err);
-                if(err < 0) {
+                pStrTmp = p_cur->atTokNextstr(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: sub fail!");
                 }
 
                 /* skip satype */
-                p_CfInfoResponse->timeSeconds = p_cur-> atTokNextint(&err);
-                if(err < 0) {
+                p_CfInfoResponse->timeSeconds = p_cur->atTokNextint(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: sa type fail!");
                 }
 
-                p_CfInfoResponse->timeSeconds = p_cur-> atTokNextint(&err);
-                if(err < 0) {
+                p_CfInfoResponse->timeSeconds = p_cur->atTokNextint(&err);
+                if (err < 0) {
                     logE(TAG, "+CCFC: time fail!");
                 }
             }
 
             if (p_cur->atTokHasmore()) {
-                p_CfInfoResponse->timeSlotBegin = p_cur-> atTokNextstr(&err);
+                p_CfInfoResponse->timeSlotBegin = p_cur->atTokNextstr(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: timeSlotBegin fail!");
                 }
 
-                p_CfInfoResponse->timeSlotEnd = p_cur-> atTokNextstr(&err);
+                p_CfInfoResponse->timeSlotEnd = p_cur->atTokNextstr(&err);
                 if (err < 0) {
                     logE(TAG, "+CCFC: timeSlotEnd fail!");
                 }
             }
-/* Remove this conversion because MTK does not support 3G VT now
-#ifdef MTK_VT3G324M_SUPPORT
-           if (p_CfInfoResponse->serviceClass == CLASS_DATA_SYNC) {
-              p_CfInfoResponse->serviceClass = CLASS_MTK_VIDEO;
-           }
-#endif */
+            /* Remove this conversion because MTK does not support 3G VT now
+            #ifdef MTK_VT3G324M_SUPPORT
+                       if (p_CfInfoResponse->serviceClass == CLASS_DATA_SYNC) {
+                          p_CfInfoResponse->serviceClass = CLASS_MTK_VIDEO;
+                       }
+            #endif */
 
             // For TC3 requirement
             if (RfxRilUtils::isVilteEnable(msg->getSlotId())) {
@@ -1027,13 +1033,10 @@ void RmcSuppServRequestBaseHandler::requestCallForwardExOperation(
             }
 
             /* Add this check for sensitive log */
-            const char *tmpNumber = encryptString(p_CfInfoResponse->number);
+            const char* tmpNumber = encryptString(p_CfInfoResponse->number);
             logD(TAG, "CfInfoResponse status:%d class:%d num:%s toa:%d time:%d",
-                    p_CfInfoResponse->status,
-                    p_CfInfoResponse->serviceClass,
-                    tmpNumber,
-                    p_CfInfoResponse->toa,
-                    p_CfInfoResponse->timeSeconds);
+                 p_CfInfoResponse->status, p_CfInfoResponse->serviceClass, tmpNumber,
+                 p_CfInfoResponse->toa, p_CfInfoResponse->timeSeconds);
 
             p_CfInfoResponse = NULL;
             resLength++;
@@ -1047,36 +1050,37 @@ error:
     // RIL_onRequestComplete(t, ret, pp_CfInfoResponses, resLength*sizeof(RIL_CallForwardInfoEx *));
     // at_response_free(p_response);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxCallForwardInfosExData(pp_CfInfoResponses, resLength * sizeof(RIL_CallForwardInfoEx *)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret,
+            RfxCallForwardInfosExData(pp_CfInfoResponses,
+                                      resLength * sizeof(RIL_CallForwardInfoEx*)),
+            msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-
 void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclMessage>& msg,
-            CallWaitingOperationE op) {
+                                                                CallWaitingOperationE op) {
     sp<RfxAtResponse> p_response;
-    int *p_int = (int *) (msg->getData()->getData());
+    int* p_int = (int*)(msg->getData()->getData());
     int err;
     char* cmd = NULL;
-    RfxAtLine *p_cur;
+    RfxAtLine* p_cur;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
-    int responses[2]={0};
+    int responses[2] = {0};
     int resLength = 0;
     int sendBsCode = 0;
     int responseForAll = 0;
     bool bHandleTBCW = false;
     bool bHandleSyncTBCWWithCS = false;
 
-    char tbCWStatus[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tbCWStatus[RFX_PROPERTY_VALUE_MAX] = {0};
 
-    getMSimProperty(m_slot_id, (char *)PROPERTY_TBCW_MODE, tbCWStatus);
+    getMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, tbCWStatus);
 
     if (strlen(tbCWStatus) == 0) {
-        strncpy(tbCWStatus, TBCW_DISABLED,
-                strlen(TBCW_DISABLED));
+        strncpy(tbCWStatus, TBCW_DISABLED, strlen(TBCW_DISABLED));
     }
 
     if (msg->getData()->getDataLength() == sizeof(int)) {
@@ -1090,7 +1094,7 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
 
         // Default new SS service class feature is supported.
         if ((sendBsCode == CLASS_MTK_VIDEO) ||
-           (sendBsCode == (CLASS_MTK_VIDEO + CLASS_DATA_SYNC))) {
+            (sendBsCode == (CLASS_MTK_VIDEO + CLASS_DATA_SYNC))) {
             sendBsCode = CLASS_DATA_SYNC;
         }
 
@@ -1100,13 +1104,11 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
         logD(TAG, "p_int[0] = %d, p_int[1] = %d", p_int[0], p_int[1]);
         if (p_int[1] != 0) {
             /* with InfoClass */
-            asprintf(&cmd, "AT+ECUSD=1,1,\"%s43*%s#\"",
-                     ssStatusToOpCodeString(SsStatusE(p_int[0])),
+            asprintf(&cmd, "AT+ECUSD=1,1,\"%s43*%s#\"", ssStatusToOpCodeString(SsStatusE(p_int[0])),
                      InfoClassToMmiBSCodeString(AtInfoClassE(p_int[1])));
         } else {
             /* User did not input InfoClass */
-            asprintf(&cmd, "AT+ECUSD=1,1,\"%s43#\"",
-                     ssStatusToOpCodeString(SsStatusE(p_int[0])));
+            asprintf(&cmd, "AT+ECUSD=1,1,\"%s43#\"", ssStatusToOpCodeString(SsStatusE(p_int[0])));
         }
 
         // p_response = atSendCommand(cmd);
@@ -1152,7 +1154,7 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
         case CME_832_TERMINAL_BASE_SOLUTION:
             bHandleTBCW = true;
             handleTerminalBaseCallWaitingResponse(tbCWStatus, responses, sendBsCode, p_int,
-                            responseForAll, p_response, op);
+                                                  responseForAll, p_response, op);
             break;
         case CME_OPERATION_NOT_SUPPORTED:
             ret = RIL_E_REQUEST_NOT_SUPPORTED;
@@ -1186,16 +1188,16 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
         // Default new SS service class feature is supported in
         responses[1] = 0;
 
-        int tmpEnable = 0;   // Keep the enable status for temporary. If the service class from
-                             // network responses is match from AP, than assign the status to the
-                             // responses[0].
+        int tmpEnable = 0;  // Keep the enable status for temporary. If the service class from
+                            // network responses is match from AP, than assign the status to the
+                            // responses[0].
 
-        bool find = false;   // Check the responses from network are with the service class which
-                             // is AP needed.
+        bool find = false;  // Check the responses from network are with the service class which
+                            // is AP needed.
 
         for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
-            char *line  = NULL;
-            int  bsCode = 0;
+            char* line = NULL;
+            int bsCode = 0;
 
             line = p_cur->getLine();
 
@@ -1216,7 +1218,7 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
              * 253 Set TBCW disable, sync between CS/IMS
              * 254 Set TBCW active, sync between CS/IMS
              * 255 TBCW
-            */
+             */
             tmpEnable = p_cur->atTokNextint(&err);
             if (err < 0) {
                 goto error;
@@ -1244,17 +1246,17 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
             logD(TAG, "CCWA tmpEnable = %d, bsCode = %d", tmpEnable, bsCode);
 
             /*
-              * MD will send +CCWA:255,0 to add to indicate it's terminal base call waiting
-              * solution. AP needs to reassign the call waiting status from system property
-              * and send back to FWK.
-              */
+             * MD will send +CCWA:255,0 to add to indicate it's terminal base call waiting
+             * solution. AP needs to reassign the call waiting status from system property
+             * and send back to FWK.
+             */
             if (tmpEnable == 255) {
                 if (strcmp(tbCWStatus, TBCW_OFF) == 0 ||
-                        strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) == 0) {
+                    strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) == 0) {
                     logD(TAG, "CCWA 0xff is received and return terminal base cw disable");
                     responses[0] = 0;
                 } else if (strcmp(tbCWStatus, TBCW_ON) == 0 ||
-                        strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) == 0) {
+                           strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) == 0) {
                     logD(TAG, "CCWA 0xff is received and return terminal base cw enable");
                     responses[0] = 1;
                 } else {
@@ -1265,13 +1267,10 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
                         // Call waiting type. 0 is terminal base for both Volte and
                         // CS, 1 is termianl base only for Volte, and CS is network
                         // base.
-                        setMSimProperty(m_slot_id,
-                                (char *)PROPERTY_TBCW_MODE,
-                                (char *)TBCW_ON_VOLTE_ONLY);
+                        setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE,
+                                        (char*)TBCW_ON_VOLTE_ONLY);
                     } else {
-                        setMSimProperty(m_slot_id,
-                                (char *)PROPERTY_TBCW_MODE,
-                                (char *)TBCW_ON);
+                        setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_ON);
                     }
                 }
                 if (sendBsCode != 0) {
@@ -1286,15 +1285,13 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
                  * tbCWStatus is TBCW mode enable but MD tell us the solution is NW solution.
                  * We need to reset the tbcw property to TBCW mode disabled.
                  */
-                if (strcmp(tbCWStatus, TBCW_DISABLED) != 0
-                        && strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) != 0
-                        && strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) != 0) {
+                if (strcmp(tbCWStatus, TBCW_DISABLED) != 0 &&
+                    strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) != 0 &&
+                    strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) != 0) {
                     logD(TAG, "Receive CCWA normal event and set TBCW mode to disable");
-                    setMSimProperty(m_slot_id,
-                            (char *)PROPERTY_TBCW_MODE,
-                            (char *)TBCW_DISABLED);
+                    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_DISABLED);
                 }
-            } else if (tmpEnable == 253 || tmpEnable == 254)  {
+            } else if (tmpEnable == 253 || tmpEnable == 254) {
                 bHandleSyncTBCWWithCS = true;
             }
 
@@ -1302,11 +1299,11 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
             // Default new SS service class feature is supported.
             if (sendBsCode != 0) {
                 if (sendBsCode == bsCode) {
-                   /*
-                    *Set response[1] to 1 to indicated that the call waiting is enabled
-                    *(Refer to CallWaitingCheckBoxPreference.java).
-                    */
-                    if (tmpEnable == 1 || tmpEnable == 254) {   // CS only
+                    /*
+                     *Set response[1] to 1 to indicated that the call waiting is enabled
+                     *(Refer to CallWaitingCheckBoxPreference.java).
+                     */
+                    if (tmpEnable == 1 || tmpEnable == 254) {  // CS only
                         responses[0] = 1;
                     } else if (tmpEnable == 0 || tmpEnable == 253) {
                         responses[0] = 0;
@@ -1314,7 +1311,7 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
 
                     responses[1] = bsCode;
 
-                    //Check if call waiting is queried via MMI command
+                    // Check if call waiting is queried via MMI command
                     if (p_int[0] == CLASS_MTK_VIDEO + CLASS_DATA_SYNC) {
                         responses[1] = CLASS_MTK_VIDEO + CLASS_DATA_SYNC;
                     }
@@ -1323,16 +1320,16 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
                     find = true;
                     break;
                 }
-            } else {    /* For call wating query by MMI command */
-                if (tmpEnable == 1 || tmpEnable == 254) {   // CS only
+            } else { /* For call wating query by MMI command */
+                if (tmpEnable == 1 || tmpEnable == 254) {  // CS only
                     responses[0] = 1;
                 } else if (tmpEnable == 0 || tmpEnable == 253) {
                     responses[0] = 0;
                 }
 
                 if (responses[0] == 1) {
-                    responses[1] |=
-                        (bsCode == CLASS_DATA_SYNC) ? CLASS_MTK_VIDEO + CLASS_DATA_SYNC : bsCode;
+                    responses[1] |= (bsCode == CLASS_DATA_SYNC) ? CLASS_MTK_VIDEO + CLASS_DATA_SYNC
+                                                                : bsCode;
                 }
                 if (responseForAll == 0) {
                     responseForAll = responses[0];
@@ -1351,9 +1348,10 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
         logD(TAG, "%d of +CCWA: decoded!", resLength);
 
         /*
-           For solving [ALPS00113964]Call waiting of VT hasn't response when turn on call waiting item, MTK04070, 2012.01.12
-           sendBsCode = 0   --> Voice Call Waiting, refer to SERVICE_CLASS_NONE  in CommandInterface.java, GsmPhone.java
-           sendBsCode = 512 --> Video Call Waiting, refer to SERVICE_CLASS_VIDEO in CommandInterface.java, GsmPhone.java
+           For solving [ALPS00113964]Call waiting of VT hasn't response when turn on call waiting
+           item, MTK04070, 2012.01.12 sendBsCode = 0   --> Voice Call Waiting, refer to
+           SERVICE_CLASS_NONE  in CommandInterface.java, GsmPhone.java sendBsCode = 512 --> Video
+           Call Waiting, refer to SERVICE_CLASS_VIDEO in CommandInterface.java, GsmPhone.java
 
            Query Call Waiting: Network returned +CCWA: 1, 11 or/and +CCWA: 1, 24
            MmiBSCodeToInfoClassX method will convert 11 to 1(CLASS_VOICE), and convert 24 to
@@ -1371,24 +1369,17 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
         if (bHandleSyncTBCWWithCS) {
             if (responses[0] == 1 && ((responses[1] & 0x01) == 0x01)) {
                 logW(TAG, "TBCW sync with CS enable");
-                setMSimProperty(m_slot_id,
-                                (char *)PROPERTY_TBCW_MODE,
-                                (char *)TBCW_ON);
+                setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_ON);
             } else {
                 logW(TAG, "TBCW sync with CS disable");
-                setMSimProperty(m_slot_id,
-                                (char *)PROPERTY_TBCW_MODE,
-                                (char *)TBCW_OFF);
+                setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_OFF);
             }
         }
     } else if (p_response->getIntermediates() == NULL && !bHandleTBCW) {
-        if (strcmp(tbCWStatus, TBCW_DISABLED) != 0
-                && strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) != 0
-                && strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) != 0) {
+        if (strcmp(tbCWStatus, TBCW_DISABLED) != 0 && strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) != 0 &&
+            strcmp(tbCWStatus, TBCW_OFF_VOLTE_ONLY) != 0) {
             logD(TAG, "Set call waiting by CS scussfully and set TBCW mode to disable");
-            setMSimProperty(m_slot_id,
-                    (char *)PROPERTY_TBCW_MODE,
-                    (char *)TBCW_DISABLED);
+            setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_DISABLED);
         }
     }
 
@@ -1396,23 +1387,23 @@ void RmcSuppServRequestBaseHandler::requestCallWaitingOperation(const sp<RfxMclM
 
 error:
     /* For SET CCWA responseVoid will ignore the responses */
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcSuppServRequestBaseHandler::requestColpOperation(const sp<RfxMclMessage>& msg) {
-    int* n = (int *) (msg->getData()->getData());
+    int* n = (int*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
-    int responses[2]={0};
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    int responses[2] = {0};
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     if (msg->getData()->getDataLength() != 0) {
         /**
@@ -1531,23 +1522,23 @@ void RmcSuppServRequestBaseHandler::requestColpOperation(const sp<RfxMclMessage>
 
 error:
     /* For SET COLP responseVoid will ignore the responses */
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcSuppServRequestBaseHandler::requestColrOperation(const sp<RfxMclMessage>& msg) {
-    int* n = (int *) (msg->getData()->getData());
+    int* n = (int*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int responses[2] = {0};
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     if (msg->getData()->getDataLength() != 0) {
         /**
@@ -1652,29 +1643,31 @@ void RmcSuppServRequestBaseHandler::requestColrOperation(const sp<RfxMclMessage>
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(&responses[0], sizeof(responses[0])/sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(&responses[0], sizeof(responses[0]) / sizeof(int)), msg,
+            false);
 
     // response to Telcore
     responseToTelCore(response);
 }
 
-void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& msg, CallBarringOperationE op) {
+void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& msg,
+                                                       CallBarringOperationE op) {
     logD(TAG, "requestCallBarring: %d", op);
     sp<RfxAtResponse> p_response;
     int err = -1;
     char* cmd = NULL;
-    RfxAtLine * p_cur;
-    const char** strings = (const char**) (msg->getData()->getData());
+    RfxAtLine* p_cur;
+    const char** strings = (const char**)(msg->getData()->getData());
     int response = -1;
-    const char * p_serviceClass = NULL;
+    const char* p_serviceClass = NULL;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int resLength = 0;
     int* p_res = NULL;
     int sendBsCode = 0;
     int allResponse = -1;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
     int wfcState = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_WFC_STATE, -1);
 
     // [ALPS00451149][MTK02772]
@@ -1686,7 +1679,8 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
     sp<RfxMclMessage> resp;
 
     // Check radio state first
-    RIL_RadioState state = (RIL_RadioState) getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
+    RIL_RadioState state =
+            (RIL_RadioState)getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
     if (state == RADIO_STATE_UNAVAILABLE || state == RADIO_STATE_OFF) {
         if (wfcState != 1) {
             logD(TAG, "Modem is power off, just response to RILJ");
@@ -1696,25 +1690,23 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
     }
 
     do {
-         //ALPS00839044: Modem needs more time for some special cards.
-         //The detail of the time 2.5s is in the note of this CR.
-         if( count == 13 ) {
-             logE(TAG, "Set Facility Lock: CME_SIM_BUSY and time out.");
-             goto error;
-         }
+        // ALPS00839044: Modem needs more time for some special cards.
+        // The detail of the time 2.5s is in the note of this CR.
+        if (count == 13) {
+            logE(TAG, "Set Facility Lock: CME_SIM_BUSY and time out.");
+            goto error;
+        }
 
-        if ( msg->getData()->getDataLength() == 4*sizeof(char*) ) {
+        if (msg->getData()->getDataLength() == 4 * sizeof(char*)) {
             /* Query Facility Lock */
 
-            if ((0 == strcmp("AB",strings[0]))
-                || (0 == strcmp("AG",strings[0]))
-                || (0 == strcmp("AC",strings[0]))) {
-
-                logE(TAG, "Call Barring Error: %s Cannot be used for Query!",strings[0]);
+            if ((0 == strcmp("AB", strings[0])) || (0 == strcmp("AG", strings[0])) ||
+                (0 == strcmp("AC", strings[0]))) {
+                logE(TAG, "Call Barring Error: %s Cannot be used for Query!", strings[0]);
                 goto error;
             }
 
-            if ((NULL != strings[2]) && (0 != strcmp (strings[2],"0"))) {
+            if ((NULL != strings[2]) && (0 != strcmp(strings[2], "0"))) {
                 p_serviceClass = strings[2];
                 sendBsCode = atoi(p_serviceClass);
             }
@@ -1727,19 +1719,21 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
 
             /* PASSWD is given and CLASS is necessary. Because of NW related operation */
             /* asprintf(&cmd, "AT+CLCK=\"%s\",2,\"%s\",\"%s\"", strings[0], strings[1], strings[2]);
-                asprintf(&cmd, "AT+ECUSD=1,1,\"*#%s**%s#\"", callBarFacToServiceCodeStrings(strings[0]),
+                asprintf(&cmd, "AT+ECUSD=1,1,\"*#%s**%s#\"",
+            callBarFacToServiceCodeStrings(strings[0]),
                                                       InfoClassToMmiBSCodeString(atoi(p_serviceClass)));
 
             } else {*/
             /* BS_ALL NULL BSCodeString */
-            // When query call barring setting, don't send BS code because some network cannot support BS code.
+            // When query call barring setting, don't send BS code because some network cannot
+            // support BS code.
             asprintf(&cmd, "AT+ECUSD=1,1,\"*#%s#\"", callBarFacToServiceCodeStrings(strings[0]));
             //}
 
             p_response = atSendCommandMultiline(cmd, "+CLCK:");
 
-        } else if ( msg->getData()->getDataLength() == 5*sizeof(char*) ) {
-            if(NULL == strings[2]) {
+        } else if (msg->getData()->getDataLength() == 5 * sizeof(char*)) {
+            if (NULL == strings[2]) {
                 logE(TAG, "Set Facility Lock: Pwd cannot be null!");
                 ret = RIL_E_PASSWORD_INCORRECT;
                 goto error;
@@ -1748,43 +1742,45 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
             /* Set Facility Lock */
             if (strlen(strings[2]) == 0) {
                 logW(TAG, "Set Facility Lock: passwd length is zero, bypass it to modem");
-            } else if(strlen(strings[2]) != 4) {
+            } else if (strlen(strings[2]) != 4) {
                 int len = strlen(strings[2]);
                 logE(TAG, "Set Facility Lock: Incorrect passwd length:%d", len);
                 // ret = RIL_E_PASSWORD_INCORRECT;
                 // goto error;
             }
 
-            if ((NULL != strings[3]) && (0 != strcmp (strings[3],"0"))) {
-
+            if ((NULL != strings[3]) && (0 != strcmp(strings[3], "0"))) {
                 p_serviceClass = strings[3];
 
                 /* Network operation. PASSWD is necessary */
-                //asprintf(&cmd, "AT+CLCK=\"%s\",%s,\"%s\",\"%s\"", strings[0], strings[1], strings[2], strings[3]);
-                if ( 0 == strcmp (strings[1],"0")) {
-                    asprintf(&cmd, "AT+ECUSD=1,1,\"#%s*%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]),
-                                                              strings[2],
-                                                              InfoClassToMmiBSCodeString(AtInfoClassE(atoi(p_serviceClass))));
+                // asprintf(&cmd, "AT+CLCK=\"%s\",%s,\"%s\",\"%s\"", strings[0], strings[1],
+                // strings[2], strings[3]);
+                if (0 == strcmp(strings[1], "0")) {
+                    asprintf(&cmd, "AT+ECUSD=1,1,\"#%s*%s*%s#\"",
+                             callBarFacToServiceCodeStrings(strings[0]), strings[2],
+                             InfoClassToMmiBSCodeString(AtInfoClassE(atoi(p_serviceClass))));
                 } else {
-                    asprintf(&cmd, "AT+ECUSD=1,1,\"*%s*%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]),
-                                                              strings[2],
-                                                              InfoClassToMmiBSCodeString(AtInfoClassE(atoi(p_serviceClass))));
+                    asprintf(&cmd, "AT+ECUSD=1,1,\"*%s*%s*%s#\"",
+                             callBarFacToServiceCodeStrings(strings[0]), strings[2],
+                             InfoClassToMmiBSCodeString(AtInfoClassE(atoi(p_serviceClass))));
                 }
             } else {
                 /* For BS_ALL BS==NULL */
                 if (strlen(strings[2]) == 0) {  // User doesn't input password
-                    if ( 0 == strcmp (strings[1],"0")) {
-                        asprintf(&cmd, "AT+ECUSD=1,1,\"#%s#\"", callBarFacToServiceCodeStrings(strings[0]));
+                    if (0 == strcmp(strings[1], "0")) {
+                        asprintf(&cmd, "AT+ECUSD=1,1,\"#%s#\"",
+                                 callBarFacToServiceCodeStrings(strings[0]));
                     } else {
-                        asprintf(&cmd, "AT+ECUSD=1,1,\"*%s#\"", callBarFacToServiceCodeStrings(strings[0]));
+                        asprintf(&cmd, "AT+ECUSD=1,1,\"*%s#\"",
+                                 callBarFacToServiceCodeStrings(strings[0]));
                     }
-                } else {   // User does input password
-                    if ( 0 == strcmp (strings[1],"0")) {
-                        asprintf(&cmd, "AT+ECUSD=1,1,\"#%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]),
-                                                            strings[2]);
+                } else {  // User does input password
+                    if (0 == strcmp(strings[1], "0")) {
+                        asprintf(&cmd, "AT+ECUSD=1,1,\"#%s*%s#\"",
+                                 callBarFacToServiceCodeStrings(strings[0]), strings[2]);
                     } else {
-                        asprintf(&cmd, "AT+ECUSD=1,1,\"*%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]),
-                                                            strings[2]);
+                        asprintf(&cmd, "AT+ECUSD=1,1,\"*%s*%s#\"",
+                                 callBarFacToServiceCodeStrings(strings[0]), strings[2]);
                     }
                 }
             }
@@ -1888,7 +1884,7 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
     }
 
     /* For Query command only */
-    if ( p_response->getIntermediates() != NULL ) {
+    if (p_response->getIntermediates() != NULL) {
         for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
             resLength++;
         }
@@ -1896,7 +1892,7 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
         resLength = 0; /* reset resLength for decoding */
 
         for (p_cur = p_response->getIntermediates(); p_cur != NULL; p_cur = p_cur->getNext()) {
-            char *line  = NULL;
+            char* line = NULL;
             int serviceClass;
             line = p_cur->getLine();
 
@@ -1905,7 +1901,7 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
                 break;
             }
 
-            p_cur->atTokStart(&err);   //m_pCurr will point to the position next to ":"
+            p_cur->atTokStart(&err);  // m_pCurr will point to the position next to ":"
             if (err < 0) {
                 logE(TAG, "CLCK: decode error 1!");
                 goto error;
@@ -1939,14 +1935,15 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
 
             // Default new SS service class feature is supported.
             if ((sendBsCode == serviceClass) ||
-                    ((sendBsCode == CLASS_DATA_SYNC) && (serviceClass == CLASS_MTK_VIDEO))) {
+                ((sendBsCode == CLASS_DATA_SYNC) && (serviceClass == CLASS_MTK_VIDEO))) {
                 break;
             }
 
             /* For solving ALPS01415650.
              * When BsCode is not specified, return all responses for all service classes */
-            logD(TAG, "sendBsCode = %d, response = %d, serviceClass = %d", sendBsCode, response, serviceClass);
-            if ((sendBsCode == 0) && (response != 0)) {       //For voice/video service
+            logD(TAG, "sendBsCode = %d, response = %d, serviceClass = %d", sendBsCode, response,
+                 serviceClass);
+            if ((sendBsCode == 0) && (response != 0)) {  // For voice/video service
                 allResponse = (allResponse == -1) ? 0 : allResponse;
                 if (serviceClass == CLASS_DATA_SYNC) {
                     allResponse |= CLASS_MTK_VIDEO;
@@ -1962,12 +1959,11 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
         }
     }
 
-
     // Default new SS service class feature is supported.
     // The specific call barring is activated(enabled), return service class value
     // (Refer to CallBarringBasePreference.java).
     if (sendBsCode != 0) {
-        if (response != 0)  {
+        if (response != 0) {
             response = atoi(p_serviceClass);
         }
     } else {
@@ -1979,13 +1975,14 @@ void RmcSuppServRequestBaseHandler::requestCallBarring(const sp<RfxMclMessage>& 
     ret = RIL_E_SUCCESS;
 
 error:
-    int msgid = (op == CB_E_QUERY) ? RFX_MSG_REQUEST_QUERY_FACILITY_LOCK : RFX_MSG_REQUEST_SET_FACILITY_LOCK;
+    int msgid = (op == CB_E_QUERY) ? RFX_MSG_REQUEST_QUERY_FACILITY_LOCK
+                                   : RFX_MSG_REQUEST_SET_FACILITY_LOCK;
     logD(TAG, "requestCallBarring response:%d, msg id: %d", response, msgid);
     /* For SET Facility Lock responseVoid will ignore the responses */
-    resp = RfxMclMessage::obtainResponse(msgid, ret,
-            RfxIntsData(&response, sizeof(response) / sizeof(int)), msg, false);
+    resp = RfxMclMessage::obtainResponse(
+            msgid, ret, RfxIntsData(&response, sizeof(response) / sizeof(int)), msg, false);
 
-   // response to TeleCore
+    // response to TeleCore
     responseToTelCore(resp);
 }
 
@@ -1996,8 +1993,7 @@ void RmcSuppServRequestBaseHandler::sleepMsec(long long msec) {
     ts.tv_sec = (msec / 1000);
     ts.tv_nsec = (msec % 1000) * 1000 * 1000;
 
-    do
-        err = nanosleep(&ts, &ts);
+    do err = nanosleep(&ts, &ts);
     while (err < 0 && errno == EINTR);
 }
 
@@ -2009,7 +2005,7 @@ char* RmcSuppServRequestBaseHandler::parseErrorMessageFromXCAP(sp<RfxAtResponse>
         return NULL;
     }
 
-    char *line = p_cur->getLine();
+    char* line = p_cur->getLine();
 
     if (line == NULL) {
         return NULL;
@@ -2029,7 +2025,9 @@ char* RmcSuppServRequestBaseHandler::parseErrorMessageFromXCAP(sp<RfxAtResponse>
 }
 
 bool RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingStatus(char* tbCWStatus,
-        int* responses, const int* inputData, CallWaitingOperationE op) {
+                                                                       int* responses,
+                                                                       const int* inputData,
+                                                                       CallWaitingOperationE op) {
     if (strlen(tbCWStatus) == 0) {
         strncpy(tbCWStatus, TBCW_DISABLED, strlen(TBCW_DISABLED));
         *(tbCWStatus + strlen(TBCW_DISABLED)) = 0;
@@ -2043,7 +2041,7 @@ bool RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingStatus(char* tbC
             if (strcmp(tbCWStatus, TBCW_OFF) == 0) {
                 logD(TAG, "Return terminal base cw disable directly.");
                 responses[0] = 0;
-                responses[1] = inputData[0];   // sendBsCode
+                responses[1] = inputData[0];  // sendBsCode
 
                 return true;
             } else if (strcmp(tbCWStatus, TBCW_ON) == 0) {
@@ -2054,12 +2052,11 @@ bool RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingStatus(char* tbC
                 return true;
             }
         } else if (op == CW_E_SET) {
-            if (strcmp(tbCWStatus, TBCW_OFF) != 0
-                    && strcmp(tbCWStatus, TBCW_ON) != 0) {
+            if (strcmp(tbCWStatus, TBCW_OFF) != 0 && strcmp(tbCWStatus, TBCW_ON) != 0) {
                 return false;
             }
 
-            const char *status = ssStatusToOpCodeString(SsStatusE(inputData[0]));
+            const char* status = ssStatusToOpCodeString(SsStatusE(inputData[0]));
 
             if (strcmp(SS_OP_DEACTIVATION, status) == 0 || strcmp(SS_OP_ERASURE, status) == 0) {
                 if (strcmp(tbCWStatus, TBCW_OFF) == 0) {
@@ -2067,21 +2064,18 @@ bool RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingStatus(char* tbC
                 }
 
                 if (strcmp(tbCWStatus, TBCW_ON) == 0) {
-                    setMSimProperty(m_slot_id,
-                        (char *)PROPERTY_TBCW_MODE,
-                        (char *)TBCW_OFF);
+                    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_OFF);
                 }
 
                 return true;
-            } else if (strcmp(SS_OP_ACTIVATION, status) == 0 || strcmp(SS_OP_REGISTRATION, status) == 0) {
+            } else if (strcmp(SS_OP_ACTIVATION, status) == 0 ||
+                       strcmp(SS_OP_REGISTRATION, status) == 0) {
                 if (strcmp(tbCWStatus, TBCW_ON) == 0) {
                     return true;
                 }
 
                 if (strcmp(tbCWStatus, TBCW_OFF) == 0) {
-                    setMSimProperty(m_slot_id,
-                        (char *)PROPERTY_TBCW_MODE,
-                        (char *)TBCW_ON);
+                    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_ON);
                 }
 
                 return true;
@@ -2100,7 +2094,7 @@ int RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingType(sp<RfxAtResp
         return TBCW_VOLTE_AND_CS;
     }
 
-    char *line = p_cur->getLine();
+    char* line = p_cur->getLine();
 
     if (line == NULL) {
         return TBCW_VOLTE_AND_CS;
@@ -2131,11 +2125,10 @@ int RmcSuppServRequestBaseHandler::checkTerminalBaseCallWaitingType(sp<RfxAtResp
     return TBCW_VOLTE_AND_CS;
 }
 
-void RmcSuppServRequestBaseHandler::handleTerminalBaseCallWaitingResponse(const char* tbCWStatus,
-        int* responses, int sendBsCode, const int* inputData, int &responseForAll,
-        sp<RfxAtResponse> p_response, CallWaitingOperationE op) {
-
-    char tbcwOn[32]  = {0};
+void RmcSuppServRequestBaseHandler::handleTerminalBaseCallWaitingResponse(
+        const char* tbCWStatus, int* responses, int sendBsCode, const int* inputData,
+        int& responseForAll, sp<RfxAtResponse> p_response, CallWaitingOperationE op) {
+    char tbcwOn[32] = {0};
     char tbcwOff[32] = {0};
 
     int tbcwType = checkTerminalBaseCallWaitingType(p_response);
@@ -2166,13 +2159,13 @@ void RmcSuppServRequestBaseHandler::handleTerminalBaseCallWaitingResponse(const 
             logD(TAG, "Return terminal base cw disable");
             responses[0] = 0;
         } else if (strcmp(tbCWStatus, TBCW_ON) == 0 ||
-                strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) == 0) {
+                   strcmp(tbCWStatus, TBCW_ON_VOLTE_ONLY) == 0) {
             logD(TAG, "Return terminal base cw enable");
             responses[0] = 1;
         } else {
             responses[0] = 1;
             logD(TAG, "reset terminal base call waiting mode to enable");
-            setMSimProperty(m_slot_id, (char *)PROPERTY_TBCW_MODE, tbcwOn);
+            setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, tbcwOn);
         }
 
         int bsCode = CLASS_NONE;
@@ -2182,7 +2175,7 @@ void RmcSuppServRequestBaseHandler::handleTerminalBaseCallWaitingResponse(const 
 
             responses[1] = sendBsCode;
 
-            //Check if call waiting is queried via MMI command
+            // Check if call waiting is queried via MMI command
             if (inputData[0] == CLASS_MTK_VIDEO + CLASS_DATA_SYNC) {
                 responses[1] = CLASS_MTK_VIDEO + CLASS_DATA_SYNC;
             }
@@ -2201,15 +2194,15 @@ void RmcSuppServRequestBaseHandler::handleTerminalBaseCallWaitingResponse(const 
             }
         }
     } else if (op == CW_E_SET) {
-        if(inputData[0] == SS_ACTIVATE || inputData[0] == SS_REGISTER) {
+        if (inputData[0] == SS_ACTIVATE || inputData[0] == SS_REGISTER) {
             logD(TAG, "Terminal base call waitng enable");
             if (strcmp(tbCWStatus, tbcwOn) != 0) {
-                setMSimProperty(m_slot_id, (char *)PROPERTY_TBCW_MODE, tbcwOn);
+                setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, tbcwOn);
             }
-        } else if(inputData[0] == SS_DEACTIVATE || inputData[0] == SS_ERASE) {
+        } else if (inputData[0] == SS_DEACTIVATE || inputData[0] == SS_ERASE) {
             logD(TAG, "Terminal base call waitng disable");
             if (strcmp(tbCWStatus, tbcwOff) != 0) {
-                setMSimProperty(m_slot_id, (char *)PROPERTY_TBCW_MODE, tbcwOff);
+                setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, tbcwOff);
             }
         }
     }
@@ -2224,22 +2217,20 @@ void RmcSuppServRequestBaseHandler::requestResetSuppServ(const sp<RfxMclMessage>
     RIL_Errno ret = RIL_E_SUCCESS;
 
     logD(TAG, "requestResetSuppServ: set TBCW mode to disable and set TBCLIR mode to default.");
-    setMSimProperty(m_slot_id,
-            (char *)PROPERTY_TBCW_MODE,
-            (char *)TBCW_DISABLED);
+    setMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, (char*)TBCW_DISABLED);
     resetClirProperty();
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcSuppServRequestBaseHandler::handleErrorMessageFromXcap(sp<RfxAtResponse> p_response,
-        AT_CME_Error errorCode) {
+                                                               AT_CME_Error errorCode) {
     clearErrorMessageFromXcap(m_slot_id);
-    char *errorMsg = parseErrorMessageFromXCAP(p_response);
+    char* errorMsg = parseErrorMessageFromXCAP(p_response);
     if (errorMsg != NULL) {
         setErrorMessageFromXcap(m_slot_id, errorCode, errorMsg);
     }

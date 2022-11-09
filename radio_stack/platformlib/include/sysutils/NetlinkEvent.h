@@ -22,7 +22,7 @@
 #define NL_PARAMS_MAX 32
 
 class NetlinkEvent {
-public:
+  public:
     enum class Action {
         kUnknown = 0,
         kAdd = 1,
@@ -40,36 +40,36 @@ public:
         kNoRA = 108,
     };
 
-private:
-    int  mSeq;
-    char *mPath;
+  private:
+    int mSeq;
+    char* mPath;
     Action mAction;
-    char *mSubsystem;
-    char *mParams[NL_PARAMS_MAX];
+    char* mSubsystem;
+    char* mParams[NL_PARAMS_MAX];
 
-public:
+  public:
     NetlinkEvent();
     virtual ~NetlinkEvent();
 
-    bool decode(char *buffer, int size, int format = NetlinkListener::NETLINK_FORMAT_ASCII);
-    const char *findParam(const char *paramName);
+    bool decode(char* buffer, int size, int format = NetlinkListener::NETLINK_FORMAT_ASCII);
+    const char* findParam(const char* paramName);
 
-    const char *getSubsystem() { return mSubsystem; }
+    const char* getSubsystem() { return mSubsystem; }
     Action getAction() { return mAction; }
 
     void dump();
 
- protected:
-    bool parseBinaryNetlinkMessage(char *buffer, int size);
-    bool parseAsciiNetlinkMessage(char *buffer, int size);
-    bool parseIfInfoMessage(const struct nlmsghdr *nh);
-    bool parseIfAddrMessage(const struct nlmsghdr *nh);
-    bool parseUlogPacketMessage(const struct nlmsghdr *nh);
-    bool parseNfPacketMessage(struct nlmsghdr *nh);
-    bool parseRtMessage(const struct nlmsghdr *nh);
-    bool parseNdUserOptMessage(const struct nlmsghdr *nh);
-    bool parseNewPrefixMessage(const struct nlmsghdr *nh);
-    bool parseNoRAMessage(const struct nlmsghdr *nh);
+  protected:
+    bool parseBinaryNetlinkMessage(char* buffer, int size);
+    bool parseAsciiNetlinkMessage(char* buffer, int size);
+    bool parseIfInfoMessage(const struct nlmsghdr* nh);
+    bool parseIfAddrMessage(const struct nlmsghdr* nh);
+    bool parseUlogPacketMessage(const struct nlmsghdr* nh);
+    bool parseNfPacketMessage(struct nlmsghdr* nh);
+    bool parseRtMessage(const struct nlmsghdr* nh);
+    bool parseNdUserOptMessage(const struct nlmsghdr* nh);
+    bool parseNewPrefixMessage(const struct nlmsghdr* nh);
+    bool parseNoRAMessage(const struct nlmsghdr* nh);
 };
 
 #endif

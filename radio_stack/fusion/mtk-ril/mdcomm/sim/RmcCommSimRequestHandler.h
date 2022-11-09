@@ -23,8 +23,7 @@
 #include "RmcSimBaseHandler.h"
 #include "RmcCommSimDefs.h"
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 #include "pb_decode.h"
@@ -33,21 +32,19 @@ extern "C"
 }
 #endif
 
-
 /*****************************************************************************
  * Class RpSimController
  *****************************************************************************/
 
 class RmcCommSimRequestHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCommSimRequestHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCommSimRequestHandler);
 
-public:
+  public:
     RmcCommSimRequestHandler(int slot_id, int channel_id);
     virtual ~RmcCommSimRequestHandler();
 
     // Check if the handler have to process the Request or not
-    virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(
-            const sp<RfxMclMessage>& msg);
+    virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
     // Process Request here
     virtual void handleRequest(const sp<RfxMclMessage>& msg);
@@ -55,33 +52,31 @@ public:
     virtual void handleEvent(const sp<RfxMclMessage>& msg);
 
     // Return the list which you want to reqister
-    virtual const int* queryTable(int channel_id, int *record_num);
-    virtual const int* queryEventTable(int channel_id, int *record_num);
+    virtual const int* queryTable(int channel_id, int* record_num);
+    virtual const int* queryEventTable(int channel_id, int* record_num);
 
     // BTSAP - START
     void notifyBtSapStatusInd(RIL_SIM_SAP_STATUS_IND_Status message);
     // BTSAP - END
 
-private:
+  private:
     static int mOldTestSimValue[MAX_SIM_COUNT];
     // Utility functions
-    int openChannel(const sp < RfxMclMessage > & msg, RIL_SIM_IO_Response *sr, int *len);
-    int selectAid(RIL_SIM_IO_Response *sr, int *len,
-            int channel, int p2, char* aid);
+    int openChannel(const sp<RfxMclMessage>& msg, RIL_SIM_IO_Response* sr, int* len);
+    int selectAid(RIL_SIM_IO_Response* sr, int* len, int channel, int p2, char* aid);
     int checkRetryFCI(int sw1, int sw2);
     int setChannelToClassByte(int cla, int channelNumber);
-    bool getSimAppInfo(int app_id, RIL_AppStatus *p_app_info, UICC_Status uStatus);
+    bool getSimAppInfo(int app_id, RIL_AppStatus* p_app_info, UICC_Status uStatus);
     void sleepMsec(long long msec);
     unsigned int htoi(char* szHex);
     void setSimInsertedStatus(int slotId, int isInserted);
-    void decodeBtSapPayload(int msgId, void *src, size_t srclen, void *dst);
+    void decodeBtSapPayload(int msgId, void* src, size_t srclen, void* dst);
     void resetBtSapContext();
-    char* convertBtSapIntToHexString(uint8_t *data, size_t datalen);
+    char* convertBtSapIntToHexString(uint8_t* data, size_t datalen);
     int toByte(char c);
-    int hexStringToByteArrayEx(unsigned char* hexString, int hexStringLen,
-            unsigned char ** byte);
-    void sendBtSapResponseComplete(const sp<RfxMclMessage>& msg,
-        RIL_Errno ret, int msgId, void *data);
+    int hexStringToByteArrayEx(unsigned char* hexString, int hexStringLen, unsigned char** byte);
+    void sendBtSapResponseComplete(const sp<RfxMclMessage>& msg, RIL_Errno ret, int msgId,
+                                   void* data);
     bool serviceActivationStatus(int fileId, int appTypeId);
     void querySimOnOffActivation();
     bool isRjioRsuSupport();
@@ -93,22 +88,22 @@ private:
     void handleSimAuthentication(const sp<RfxMclMessage>& msg);
     void handleGeneralSimAuthentication(const sp<RfxMclMessage>& msg);
     void handleQueryIccid(const sp<RfxMclMessage>& msg);
-    void handleSimOpenChannel(const sp < RfxMclMessage > & msg);
-    void handleSimCloseChannel(const sp < RfxMclMessage > & msg);
-    void handleSimTransmitBasic(const sp < RfxMclMessage > & msg);
-    void handleSimTransmitChannel(const sp < RfxMclMessage > & msg);
+    void handleSimOpenChannel(const sp<RfxMclMessage>& msg);
+    void handleSimCloseChannel(const sp<RfxMclMessage>& msg);
+    void handleSimTransmitBasic(const sp<RfxMclMessage>& msg);
+    void handleSimTransmitChannel(const sp<RfxMclMessage>& msg);
     int querySimExtendedFormat();
     int queryEcglaCapability();
-    void handleSimTransmitWithExtendedAPDU(const sp < RfxMclMessage > & msg, bool isBasicChannel);
-    void handleEsimTransmitChannel(const sp < RfxMclMessage > & msg);
-    void handleSimGetAtr(const sp < RfxMclMessage > & msg);
-    void handleSimGetIccid(const sp < RfxMclMessage > & msg);
-    void handleDetectSim(const sp < RfxMclMessage > & msg);
+    void handleSimTransmitWithExtendedAPDU(const sp<RfxMclMessage>& msg, bool isBasicChannel);
+    void handleEsimTransmitChannel(const sp<RfxMclMessage>& msg);
+    void handleSimGetAtr(const sp<RfxMclMessage>& msg);
+    void handleSimGetIccid(const sp<RfxMclMessage>& msg);
+    void handleDetectSim(const sp<RfxMclMessage>& msg);
     void handleSecurityOperation(const sp<RfxMclMessage>& msg, UICC_Security_Operation op);
     void handleEnterNetworkDepersonalization(const sp<RfxMclMessage>& msg);
     void handleEnterDepersonalization(const sp<RfxMclMessage>& msg);
-    void handleLocalRequestSimAuthentication(const sp < RfxMclMessage > & msg);
-    void handleLocalRequestUsimAuthentication(const sp < RfxMclMessage > & msg);
+    void handleLocalRequestSimAuthentication(const sp<RfxMclMessage>& msg);
+    void handleLocalRequestUsimAuthentication(const sp<RfxMclMessage>& msg);
     // BTSAP - START
     void handleLocalBtSapReset(const sp<RfxMclMessage>& msg);
     void handleBtSapConnect(const sp<RfxMclMessage>& msg);
@@ -119,25 +114,25 @@ private:
     void handleBtSapResetSim(const sp<RfxMclMessage>& msg);
     void handleBtSapSetTransferProtocol(const sp<RfxMclMessage>& msg);
     // BTSAP - END
-    bool isOp09Card(const char *iccid);
-    int isApplicationIdExist(const char *aid);
-    void handleSetSimCardPower(const sp < RfxMclMessage > & msg);
-    void handleSetSimPower(const sp < RfxMclMessage > & msg);
+    bool isOp09Card(const char* iccid);
+    int isApplicationIdExist(const char* aid);
+    void handleSetSimCardPower(const sp<RfxMclMessage>& msg);
+    void handleSetSimPower(const sp<RfxMclMessage>& msg);
     void handleEnterDeviceNetworkDepersonalization(const sp<RfxMclMessage>& msg);
     void handleEventGetSlotStatus(const sp<RfxMclMessage>& msg);
     void handleGetSlotStatus(const sp<RfxMclMessage>& msg);
     void handleSetSimSlotsMapping(const sp<RfxMclMessage>& msg);
-    bool getAtr(char *atr);
-    bool getEid(char *eid);
+    bool getAtr(char* atr);
+    bool getEid(char* eid);
     UICC_Status getSIMStatusWithRetry(void);
-    void handleSetAllowedCarriers(const sp < RfxMclMessage > & msg);
-    void handleGetAllowedCarriers(const sp < RfxMclMessage > & msg);
+    void handleSetAllowedCarriers(const sp<RfxMclMessage>& msg);
+    void handleGetAllowedCarriers(const sp<RfxMclMessage>& msg);
     // External SIM [Start]
     bool mEvsimSent;
     // External SIM [End]
     void handleActiveUiccCard(const sp<RfxMclMessage>& msg);
     void handleDeactivateUiccCard(const sp<RfxMclMessage>& msg);
-    //RSU
+    // RSU
     void handleRsuRequest(const sp<RfxMclMessage>& msg);
     void handleVzwRsuRequest(const sp<RfxMclMessage>& msg);
     void handleVzwRsuInitiate(const sp<RfxMclMessage>& msg);

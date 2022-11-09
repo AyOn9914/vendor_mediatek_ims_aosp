@@ -21,12 +21,12 @@
 extern "C" {
 #endif
 
-void mtkLogD(const char *tag, const char *fmt, ...);
-void mtkLogI(const char *tag, const char *fmt, ...);
-void mtkLogV(const char *tag, const char *fmt, ...);
-void mtkLogW(const char *tag, const char *fmt, ...);
-void mtkLogE(const char *tag, const char *fmt, ...);
-void mtkAssert(char *pErrMsg);
+void mtkLogD(const char* tag, const char* fmt, ...);
+void mtkLogI(const char* tag, const char* fmt, ...);
+void mtkLogV(const char* tag, const char* fmt, ...);
+void mtkLogW(const char* tag, const char* fmt, ...);
+void mtkLogE(const char* tag, const char* fmt, ...);
+void mtkAssert(char* pErrMsg);
 
 #undef SLOGD
 #undef SLOGW
@@ -53,14 +53,14 @@ void mtkAssert(char *pErrMsg);
 #define ALOGI(...) (mtkLogI(LOG_TAG, __VA_ARGS__))
 
 #undef LOG_ALWAYS_FATAL_IF
-#define LOG_ALWAYS_FATAL_IF(cond, ...)          \
-    do {                                        \
-        if (cond) {                             \
-            mtkLogE(LOG_TAG, __VA_ARGS__);      \
-            mtkAssert(NULL);                    \
-            exit(0);                            \
-        }                                       \
-    } while(0)
+#define LOG_ALWAYS_FATAL_IF(cond, ...)     \
+    do {                                   \
+        if (cond) {                        \
+            mtkLogE(LOG_TAG, __VA_ARGS__); \
+            mtkAssert(NULL);               \
+            exit(0);                       \
+        }                                  \
+    } while (0)
 
 #ifdef __cplusplus
 }

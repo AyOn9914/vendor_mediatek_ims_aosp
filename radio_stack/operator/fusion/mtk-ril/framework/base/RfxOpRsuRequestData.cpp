@@ -18,10 +18,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxOpRsuRequestData);
 
-RfxOpRsuRequestData::RfxOpRsuRequestData(void *data, int length) : RfxBaseData(data, length)  {
+RfxOpRsuRequestData::RfxOpRsuRequestData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    RIL_RsuRequestInfo *dupData;
-    RIL_RsuRequestInfo *srcData = (RIL_RsuRequestInfo*)data;
+    RIL_RsuRequestInfo* dupData;
+    RIL_RsuRequestInfo* srcData = (RIL_RsuRequestInfo*)data;
     int strLength = -1;
 
     dupData = (RIL_RsuRequestInfo*)calloc(1, sizeof(RIL_RsuRequestInfo));
@@ -29,14 +29,14 @@ RfxOpRsuRequestData::RfxOpRsuRequestData(void *data, int length) : RfxBaseData(d
     memcpy(dupData, srcData, sizeof(RIL_RsuRequestInfo));
     if (srcData->data != NULL) {
         strLength = strlen(srcData->data) + 1;
-        dupData->data = (char *)calloc(strLength, sizeof(char));
+        dupData->data = (char*)calloc(strLength, sizeof(char));
         RFX_ASSERT(dupData->data != NULL);
         memset(dupData->data, 0, strLength);
         memcpy(dupData->data, srcData->data, strLength);
     }
     if (srcData->reserveString1 != NULL) {
         strLength = strlen(srcData->reserveString1) + 1;
-        dupData->reserveString1 = (char *)calloc(strLength, sizeof(char));
+        dupData->reserveString1 = (char*)calloc(strLength, sizeof(char));
         RFX_ASSERT(dupData->reserveString1 != NULL);
         memset(dupData->reserveString1, 0, strLength);
         memcpy(dupData->reserveString1, srcData->reserveString1, strLength);
@@ -46,7 +46,7 @@ RfxOpRsuRequestData::RfxOpRsuRequestData(void *data, int length) : RfxBaseData(d
 }
 
 RfxOpRsuRequestData::~RfxOpRsuRequestData() {
-    RIL_RsuRequestInfo *data = (RIL_RsuRequestInfo*)m_data;
+    RIL_RsuRequestInfo* data = (RIL_RsuRequestInfo*)m_data;
     if (data != NULL) {
         if (data->data != NULL) {
             free(data->data);

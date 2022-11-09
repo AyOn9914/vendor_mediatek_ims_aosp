@@ -49,8 +49,7 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcVtReqHandler, RIL_CMD_PROXY_IMS);
 static int mSimOpIdTable[MAX_SIM_COUNT] = {0};
 
 RmcVtReqHandler::RmcVtReqHandler(int slot_id, int channel_id)
-: RfxBaseHandler(slot_id, channel_id) {
-
+    : RfxBaseHandler(slot_id, channel_id) {
     RFX_LOG_I(RFX_LOG_TAG, "[RMC VT REQ HDLR] RmcVtReqHandler create (slot_id = %d)", slot_id);
 
     if (!RmcVtReqHandler::isImsVideoCallon()) {
@@ -58,22 +57,19 @@ RmcVtReqHandler::RmcVtReqHandler(int slot_id, int channel_id)
     }
 
     const int requestList[] = {
-        RFX_MSG_REQUEST_GET_INFO,
-        RFX_MSG_REQUEST_UPDATE_OPID,
+            RFX_MSG_REQUEST_GET_INFO,
+            RFX_MSG_REQUEST_UPDATE_OPID,
     };
 
-    registerToHandleRequest(requestList, sizeof(requestList)/sizeof(int));
+    registerToHandleRequest(requestList, sizeof(requestList) / sizeof(int));
 
-    const int CommonEventList[] = {
-        RFX_MSG_EVENT_CALL_STATUS_UPDATE,
-        RFX_MSG_EVENT_VT_SEND_MSG,
-        RFX_MSG_EVENT_VT_COMMON_DATA
-    };
+    const int CommonEventList[] = {RFX_MSG_EVENT_CALL_STATUS_UPDATE, RFX_MSG_EVENT_VT_SEND_MSG,
+                                   RFX_MSG_EVENT_VT_COMMON_DATA};
 
     registerToHandleEvent(CommonEventList, sizeof(CommonEventList) / sizeof(int));
 
     const int imsEventList[] = {
-        RFX_MSG_EVENT_IMS_DATA,
+            RFX_MSG_EVENT_IMS_DATA,
     };
 
     registerToHandleEvent(RIL_IMS_Client_VILTE, imsEventList, sizeof(imsEventList) / sizeof(int));
@@ -90,8 +86,7 @@ RmcVtReqHandler::RmcVtReqHandler(int slot_id, int channel_id)
     }
 }
 
-RmcVtReqHandler::~RmcVtReqHandler() {
-}
+RmcVtReqHandler::~RmcVtReqHandler() {}
 
 bool RmcVtReqHandler::isImsVideoCallon(void) {
     bool isViLTESupport = RfxRilUtils::isVilteSupport();
@@ -114,11 +109,10 @@ bool RmcVtReqHandler::isVTLogEnable(void) {
     char vt_log[100] = {0};
 
     rfx_property_get("persist.vendor.rilvt.log_enable", vt_log, "0");
-    return (atoi(vt_log) == 1)? true: false;
+    return (atoi(vt_log) == 1) ? true : false;
 }
 
 void RmcVtReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
-
     int request = msg->getId();
 
     RFX_LOG_I(RFX_LOG_TAG, "[Handle REQ] request = %d", request);
@@ -136,8 +130,7 @@ void RmcVtReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcVtReqHandler::onHandleEvent(const sp<RfxMclMessage> & msg) {
-
+void RmcVtReqHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int event = msg->getId();
 
     RFX_LOG_I(RFX_LOG_TAG, "[Handle EVT] event = %d", event);
@@ -160,8 +153,8 @@ void RmcVtReqHandler::onHandleEvent(const sp<RfxMclMessage> & msg) {
 }
 
 void RmcVtReqHandler::handleRequestGetInfo(const sp<RfxMclMessage>& msg) {
-
-    const RIL_VT_CALL_STATUS_UPDATE *pRspData = (const RIL_VT_CALL_STATUS_UPDATE *)msg->getData()->getData();
+    const RIL_VT_CALL_STATUS_UPDATE* pRspData =
+            (const RIL_VT_CALL_STATUS_UPDATE*)msg->getData()->getData();
     int call_id = pRspData->call_id;
     int call_state = pRspData->call_state;
 
@@ -191,18 +184,17 @@ void RmcVtReqHandler::handleRequestGetInfo(const sp<RfxMclMessage>& msg) {
     responseToTelCore(response);
 
     return;
-/*
-error:
-    RFX_LOG_E(RFX_LOG_TAG, "[GET  INFO ] ERROR cause= %d", cause);
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxIntsData(&cause, 1), msg, true);
-    responseToTelCore(response);
-    return;
-*/
+    /*
+    error:
+        RFX_LOG_E(RFX_LOG_TAG, "[GET  INFO ] ERROR cause= %d", cause);
+        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
+    RfxIntsData(&cause, 1), msg, true); responseToTelCore(response); return;
+    */
 }
 
 void RmcVtReqHandler::handleEventCallStatusUpdate(const sp<RfxMclMessage>& msg) {
-
-    const RIL_VT_CALL_STATUS_UPDATE *pRspData = (const RIL_VT_CALL_STATUS_UPDATE *)msg->getData()->getData();
+    const RIL_VT_CALL_STATUS_UPDATE* pRspData =
+            (const RIL_VT_CALL_STATUS_UPDATE*)msg->getData()->getData();
     int call_id = pRspData->call_id;
     int call_state = pRspData->call_state;
 
@@ -212,51 +204,55 @@ void RmcVtReqHandler::handleEventCallStatusUpdate(const sp<RfxMclMessage>& msg) 
 }
 
 void RmcVtReqHandler::handleEventVtSendMsg(const sp<RfxMclMessage>& msg) {
-    const RIL_VT_SERVICE_MSG *pSendMsg = (const RIL_VT_SERVICE_MSG *)msg->getData()->getData();
+    const RIL_VT_SERVICE_MSG* pSendMsg = (const RIL_VT_SERVICE_MSG*)msg->getData()->getData();
 
-    RFX_LOG_D(RFX_LOG_TAG, "[VTREQ SENT] pSendMsg->size = %d, pSendMsg->data = %lu",
-                pSendMsg->size, (unsigned long) pSendMsg->data);
+    RFX_LOG_D(RFX_LOG_TAG, "[VTREQ SENT] pSendMsg->size = %d, pSendMsg->data = %lu", pSendMsg->size,
+              (unsigned long)pSendMsg->data);
 
     // temp log for get cap
-    int msgId = (* ((int*)pSendMsg->data));
+    int msgId = (*((int*)pSendMsg->data));
     if (msgId == MSG_ID_WRAP_IMSVT_IMCB_GET_CAP_RSP) {
-
-        VT_IMCB_CAP* capRspStruct = (VT_IMCB_CAP* )(pSendMsg->data + 8);
+        VT_IMCB_CAP* capRspStruct = (VT_IMCB_CAP*)(pSendMsg->data + 8);
 
         if (isVTLogEnable()) {
-
             RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] accout_id = %d", capRspStruct->accout_id);
             RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] video_cap_num = %d", capRspStruct->video_cap_num);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] profile_level_id = %d", capRspStruct->video_cap[0].profile_level_id);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] max_recv_level = %d", capRspStruct->video_cap[0].max_recv_level);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] packetization_mode = %d", capRspStruct->video_cap[0].packetization_mode);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] profile_level_id = %d",
+                      capRspStruct->video_cap[0].profile_level_id);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] max_recv_level = %d",
+                      capRspStruct->video_cap[0].max_recv_level);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] packetization_mode = %d",
+                      capRspStruct->video_cap[0].packetization_mode);
 
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info format = %d", capRspStruct->bitrate_info[0].format);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info profile = %d", capRspStruct->bitrate_info[0].profile);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info level = %d", capRspStruct->bitrate_info[0].level);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info minbitrate = %d", capRspStruct->bitrate_info[0].minbitrate);
-            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info bitrate = %d", capRspStruct->bitrate_info[0].bitrate);
-
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info format = %d",
+                      capRspStruct->bitrate_info[0].format);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info profile = %d",
+                      capRspStruct->bitrate_info[0].profile);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info level = %d",
+                      capRspStruct->bitrate_info[0].level);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info minbitrate = %d",
+                      capRspStruct->bitrate_info[0].minbitrate);
+            RFX_LOG_I(RFX_LOG_TAG, "[VTREQ SENT] bitrate_info bitrate = %d",
+                      capRspStruct->bitrate_info[0].bitrate);
         }
     }
 
     // send to RIL FWK
-    sendUserData(RIL_IMS_Client_VILTE, (unsigned char* ) pSendMsg->data, pSendMsg->size);
+    sendUserData(RIL_IMS_Client_VILTE, (unsigned char*)pSendMsg->data, pSendMsg->size);
 
     return;
 }
 
 void RmcVtReqHandler::handleEventVtReceiveMsg(const sp<RfxMclMessage>& msg) {
-    const char *pRecvMsg = (const char *)msg->getData()->getData();
+    const char* pRecvMsg = (const char*)msg->getData()->getData();
     int length = msg->getData()->getDataLength();
 
     RFX_LOG_I(RFX_LOG_TAG, "[VTREQ RECV] data length = %d, slot = %d\n", length, m_slot_id);
 
-    //Add operator id for MSG_ID_WRAP_IMSVT_IMCB_GET_CAP_IND
-    int msgId = (* ((int*)pRecvMsg));
+    // Add operator id for MSG_ID_WRAP_IMSVT_IMCB_GET_CAP_IND
+    int msgId = (*((int*)pRecvMsg));
     if (msgId == MSG_ID_WRAP_IMSVT_IMCB_GET_CAP_IND) {
-
-        VT_IMCB_CAPIND* capIndStruct = (VT_IMCB_CAPIND* )(pRecvMsg + 8);
+        VT_IMCB_CAPIND* capIndStruct = (VT_IMCB_CAPIND*)(pRecvMsg + 8);
         int sim_slot_id = capIndStruct->sim_slot_id;
 
         // Here is only for MD 93, we need to add operator id when receiving cap indication here.
@@ -269,12 +265,15 @@ void RmcVtReqHandler::handleEventVtReceiveMsg(const sp<RfxMclMessage>& msg) {
             // > 0: Correct opid
             if (mSimOpIdTable[sim_slot_id] == 0) {
                 mPendingCapReqBySim[sim_slot_id]++;
-                RFX_LOG_I(RFX_LOG_TAG, "sim card %d opid not ready, pending request: %d\n", sim_slot_id, mPendingCapReqBySim[sim_slot_id]);
+                RFX_LOG_I(RFX_LOG_TAG, "sim card %d opid not ready, pending request: %d\n",
+                          sim_slot_id, mPendingCapReqBySim[sim_slot_id]);
                 return;
 
             } else {
                 if (isVTLogEnable()) {
-                    RFX_LOG_I(RFX_LOG_TAG, "update CAP indication message[%d] as operator_code = %d\n", sim_slot_id, mSimOpIdTable[sim_slot_id]);
+                    RFX_LOG_I(RFX_LOG_TAG,
+                              "update CAP indication message[%d] as operator_code = %d\n",
+                              sim_slot_id, mSimOpIdTable[sim_slot_id]);
                 }
                 capIndStruct->operator_code = mSimOpIdTable[sim_slot_id];
             }
@@ -287,19 +286,18 @@ void RmcVtReqHandler::handleEventVtReceiveMsg(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcVtReqHandler::handleRequestUpdateOpid(const sp<RfxMclMessage>& msg) {
-    int *data = (int *)msg->getData()->getData();
-    int slot_id = ((int *)data)[0];
-    int operator_id = ((int *)data)[1];
+    int* data = (int*)msg->getData()->getData();
+    int slot_id = ((int*)data)[0];
+    int operator_id = ((int*)data)[1];
     mSimOpIdTable[slot_id] = operator_id;
     RFX_LOG_I(RFX_LOG_TAG, "set mSimOpIdTable[%d] = %d\n", slot_id, operator_id);
 
     // Resend cap indication when pending request
     if (mSimOpIdTable[slot_id] != 0) {
-
-        while(mPendingCapReqBySim[slot_id] > 0) {
-
+        while (mPendingCapReqBySim[slot_id] > 0) {
             if (isVTLogEnable()) {
-                RFX_LOG_I(RFX_LOG_TAG, "Handle SIM%d pending request: %d\n", slot_id, mPendingCapReqBySim[slot_id]);
+                RFX_LOG_I(RFX_LOG_TAG, "Handle SIM%d pending request: %d\n", slot_id,
+                          mPendingCapReqBySim[slot_id]);
             }
 
             // Prepare VT_IMCB_CAPIND structure
@@ -308,9 +306,9 @@ void RmcVtReqHandler::handleRequestUpdateOpid(const sp<RfxMclMessage>& msg) {
             int capIndLength = sizeof(VT_IMCB_CAPIND);
             int length = capIndLength + 1 + 8;
 
-            outBuffer = (char* ) calloc(length, sizeof(char));
-            (* ((int*)outBuffer))       = msgType;
-            (* ((int*)outBuffer + 1))   = capIndLength;
+            outBuffer = (char*)calloc(length, sizeof(char));
+            (*((int*)outBuffer)) = msgType;
+            (*((int*)outBuffer + 1)) = capIndLength;
 
             VT_IMCB_CAPIND CapInd;
             memset(&CapInd, 0, capIndLength);
@@ -325,11 +323,10 @@ void RmcVtReqHandler::handleRequestUpdateOpid(const sp<RfxMclMessage>& msg) {
             mPendingCapReqBySim[slot_id]--;
         }
     }
-
 }
 
 void RmcVtReqHandler::sendMsgToVTS(char* outBuffer, int length, const char* user) {
-    sp<RmcVtSharedMemory> Mem  = RmcVtDataThreadController::getSharedMem();
+    sp<RmcVtSharedMemory> Mem = RmcVtDataThreadController::getSharedMem();
 
     while (1) {
         if (!Mem->checkState(VT_RIL_SHARE_DATA_STATUS_RECV_NONE)) {
@@ -351,5 +348,4 @@ void RmcVtReqHandler::sendMsgToVTS(char* outBuffer, int length, const char* user
     Mem->signal(user);
 
     Mem->unlock(user);
-
 }

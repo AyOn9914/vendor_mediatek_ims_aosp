@@ -24,8 +24,8 @@ extern "C" {
 // sync to PROPERTY_VALUE_MAX
 #define MTK_PROPERTY_VALUE_MAX 92
 
-int mtk_property_set(const char *key, const char *value);
-int mtk_property_get(const char *key, char *value, const char *default_value);
+int mtk_property_set(const char* key, const char* value);
+int mtk_property_get(const char* key, char* value, const char* default_value);
 
 #ifdef __cplusplus
 }

@@ -23,9 +23,10 @@
 class RfxEmbmsGetCoverageRespData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsGetCoverageRespData);
 
-    public:
-        RfxEmbmsGetCoverageRespData(RIL_EMBMS_GetCoverageResp* data, int length);
-    private:
-        void copyData(RIL_EMBMS_GetCoverageResp *data, int length);
+  public:
+    RfxEmbmsGetCoverageRespData(RIL_EMBMS_GetCoverageResp* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_GetCoverageResp* data, int length);
 };
 #endif /*RFX_EMBMS_GETCOVERAGE_RESP_DATA__H*/

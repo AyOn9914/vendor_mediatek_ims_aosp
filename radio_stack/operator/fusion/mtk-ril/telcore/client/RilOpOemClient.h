@@ -20,20 +20,18 @@
 #include "client/RilOemClient.h"
 
 class RilOpOemClient : public RilOemClient {
-
-public:
+  public:
     RilOpOemClient(int identity, char* socketName);
     virtual ~RilOpOemClient();
-    virtual void requestComplete(RIL_Token token, RIL_Errno e, void *response,
-            size_t responselen);
+    virtual void requestComplete(RIL_Token token, RIL_Errno e, void* response, size_t responselen);
 
-protected:
+  protected:
     virtual int handleSpecialRequestWithArgs(int argCount, char** args);
 
-private:
-    void executeRemoteSimUnlockCommand(int slotId, char *command, char *data);
+  private:
+    void executeRemoteSimUnlockCommand(int slotId, char* command, char* data);
 
-private:
+  private:
     static int mRsuFd;
 };
 #endif

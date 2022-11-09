@@ -46,12 +46,10 @@ CommandRespondor::CommandRespondor(int socket) : mConnectSocket(socket) {
     }
 }
 
-CommandRespondor::~CommandRespondor() {
-        close(mConnectSocket);
-}
+CommandRespondor::~CommandRespondor() { close(mConnectSocket); }
 
-void CommandRespondor::sendMsg(int code, const char *msg, bool addErrno) {
-    char *buf;
+void CommandRespondor::sendMsg(int code, const char* msg, bool addErrno) {
+    char* buf;
     int ret = 0;
 
     if (addErrno) {
@@ -61,15 +59,13 @@ void CommandRespondor::sendMsg(int code, const char *msg, bool addErrno) {
     }
     // Send the zero-terminated message
     if (ret != -1) {
-        if ((ret = sendMsg(buf)) == -1)
-            ALOGE("Unable to send msg %s\n", msg);
+        if ((ret = sendMsg(buf)) == -1) ALOGE("Unable to send msg %s\n", msg);
         free(buf);
     } else
         ALOGE("memory runs out\n");
 }
 
-int CommandRespondor::sendMsg(const char *msg) {
-
+int CommandRespondor::sendMsg(const char* msg) {
     if (mConnectSocket < 0) {
         errno = EHOSTUNREACH;
         return -1;
@@ -83,7 +79,7 @@ int CommandRespondor::sendMsg(const char *msg) {
 #ifdef MTK_DEBUG
     ALOGI("send msg %s via socket %d\n", msg, mConnectSocket);
 #endif
-    int msgLen = strlen(msg) + 1; // Send null-terminated C strings:
+    int msgLen = strlen(msg) + 1;  // Send null-terminated C strings:
     while (msgLen > 0) {
         ssize_t written = TEMP_FAILURE_RETRY(write(mConnectSocket, msg, msgLen));
         if (written == -1) {

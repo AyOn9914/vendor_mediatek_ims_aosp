@@ -25,8 +25,8 @@
 /*****************************************************************************
  * Name Space
  *****************************************************************************/
-using android::Vector;
 using android::SortedVector;
+using android::Vector;
 
 /*****************************************************************************
  * Typedef
@@ -47,7 +47,7 @@ typedef struct {
  * The max cell broadcast cateogory range number
  * supported by MD
  */
-#define MAX_RANGE    10
+#define MAX_RANGE 10
 
 /*
  * The max character number of a range
@@ -55,21 +55,22 @@ typedef struct {
  * range example: "65534-65535", total 14 character,
  * allow to include some spaces
  */
-#define MAX_RANGE_CHARACTER       20
+#define MAX_RANGE_CHARACTER 20
 
 /* A range include a start endpoint and a end endpoint */
-#define VALID_RANGE_ENDPOINT_NUM  2
+#define VALID_RANGE_ENDPOINT_NUM 2
 
 /*****************************************************************************
  * Class RmcCdmaBcRangeParser
  *****************************************************************************/
 class RmcCdmaBcRangeParser {
-public:
-    static int getRangeFromModem(char *cateogry, Range *r);
-    static void getRange(Vector<Range> &range, SortedVector<int> &input);
-private:
-    static void split(char *src, const char *sep, char dest[][MAX_RANGE_CHARACTER], int* num);
-    static char* trim(char *s);
-    static char* skipQuote(char *s);
+  public:
+    static int getRangeFromModem(char* cateogry, Range* r);
+    static void getRange(Vector<Range>& range, SortedVector<int>& input);
+
+  private:
+    static void split(char* src, const char* sep, char dest[][MAX_RANGE_CHARACTER], int* num);
+    static char* trim(char* s);
+    static char* skipQuote(char* s);
 };
 #endif /* __RMC_CDMA_BC_RANGE_PARSER_H__ */

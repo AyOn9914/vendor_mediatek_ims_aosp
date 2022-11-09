@@ -23,18 +23,18 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsCellInfoNotifyData);
 
 RfxEmbmsCellInfoNotifyData::RfxEmbmsCellInfoNotifyData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_CellInfoNotify*)data, length);
 }
 
 RfxEmbmsCellInfoNotifyData::RfxEmbmsCellInfoNotifyData(RIL_EMBMS_CellInfoNotify* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsCellInfoNotifyData::copyData(RIL_EMBMS_CellInfoNotify *data, int length) {
+void RfxEmbmsCellInfoNotifyData::copyData(RIL_EMBMS_CellInfoNotify* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_CellInfoNotify *) calloc(1, sizeof(RIL_EMBMS_CellInfoNotify));
+    m_data = (RIL_EMBMS_CellInfoNotify*)calloc(1, sizeof(RIL_EMBMS_CellInfoNotify));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

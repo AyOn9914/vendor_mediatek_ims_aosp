@@ -43,8 +43,8 @@ const char* RfxIdToStringUtils::idToString(int id) {
     return entry.mStr.string();
 }
 
-void RfxIdToStringUtils::registerInternal(SortedVector<RfxIdMappingEntry> &list, int id,
-        char* str) {
+void RfxIdToStringUtils::registerInternal(SortedVector<RfxIdMappingEntry>& list, int id,
+                                          char* str) {
     RfxIdMappingEntry entry(id, str);
     size_t old_size = list.size();
     list.add(entry);
@@ -59,8 +59,8 @@ void RfxIdToStringUtils::registerInternal(SortedVector<RfxIdMappingEntry> &list,
     RFX_LOG_D(RFX_LOG_TAG, "id = %d, string = %s", entry.mId, entry.mStr.string());
 }
 
-const RfxIdMappingEntry& RfxIdToStringUtils::findIdEntry(SortedVector<RfxIdMappingEntry> &list,
-        int id) {
+const RfxIdMappingEntry& RfxIdToStringUtils::findIdEntry(SortedVector<RfxIdMappingEntry>& list,
+                                                         int id) {
     RfxIdMappingEntry query_entry(id, String8());
     ssize_t index = list.indexOf(query_entry);
     if (index >= 0) {
@@ -69,8 +69,8 @@ const RfxIdMappingEntry& RfxIdToStringUtils::findIdEntry(SortedVector<RfxIdMappi
 
     // add unknow id to list and query again. SortVector would copy entry.
     // We can avoid to return local object
-    RfxIdMappingEntry unknownEntry = RfxIdMappingEntry(id,
-            String8::format("UNKNOWN ID: %d", id).string());
+    RfxIdMappingEntry unknownEntry =
+            RfxIdMappingEntry(id, String8::format("UNKNOWN ID: %d", id).string());
     list.add(unknownEntry);
     index = list.indexOf(query_entry);
     return list.itemAt(index);

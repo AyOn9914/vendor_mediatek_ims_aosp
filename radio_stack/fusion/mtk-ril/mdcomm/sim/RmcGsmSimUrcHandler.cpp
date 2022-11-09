@@ -27,41 +27,36 @@
 #include "RmcCommSimDefs.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include "usim_fcp_parser.h"
 #ifdef __cplusplus
 }
 #endif
 
-
 using ::android::String8;
 
 static const char* gsmUrcList[] = {
-    "+ESIMAPP:",
-    "+ESIMIND:",
+        "+ESIMAPP:",
+        "+ESIMIND:",
 };
-
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcGsmSimUrcHandler::RmcGsmSimUrcHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id){
+RmcGsmSimUrcHandler::RmcGsmSimUrcHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcGsmSimUrc"));
 }
 
-RmcGsmSimUrcHandler::~RmcGsmSimUrcHandler() {
-}
+RmcGsmSimUrcHandler::~RmcGsmSimUrcHandler() {}
 
-RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimUrcHandler::needHandle(
-        const sp<RfxMclMessage>& msg) {
+RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimUrcHandler::needHandle(const sp<RfxMclMessage>& msg) {
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
     char* ss = msg->getRawUrc()->getLine();
 
     if (strStartsWith(ss, "+ESIMAPP:")) {
-        RfxAtLine *urc = new RfxAtLine(ss, NULL);
+        RfxAtLine* urc = new RfxAtLine(ss, NULL);
         int err = 0;
         int app_id = -1;
 
@@ -72,9 +67,9 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimUrcHandler::needHandle(
             result = RmcSimBaseHandler::RESULT_NEED;
         }
 
-        delete(urc);
+        delete (urc);
     } else if (strStartsWith(ss, "+ESIMIND:")) {
-        RfxAtLine *urc = new RfxAtLine(ss, NULL);
+        RfxAtLine* urc = new RfxAtLine(ss, NULL);
         int err = 0;
         int app_id = -1;
         int event_id = -1;
@@ -87,35 +82,35 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimUrcHandler::needHandle(
             result = RmcSimBaseHandler::RESULT_NEED;
         }
 
-        delete(urc);
+        delete (urc);
     }
     return result;
 }
 
-void RmcGsmSimUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcGsmSimUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     String8 ss(urc->getLine());
 
     if (strStartsWith(ss, "+ESIMAPP:")) {
         handleMccMnc(msg);
-    }  else if (strStartsWith(ss, "+ESIMIND:")) {
+    } else if (strStartsWith(ss, "+ESIMIND:")) {
         handleSimIndication(msg, urc);
     }
 }
 
-const char** RmcGsmSimUrcHandler::queryUrcTable(int *record_num) {
-    const char **p = gsmUrcList;
-    *record_num = sizeof(gsmUrcList)/sizeof(char*);
+const char** RmcGsmSimUrcHandler::queryUrcTable(int* record_num) {
+    const char** p = gsmUrcList;
+    *record_num = sizeof(gsmUrcList) / sizeof(char*);
     return p;
 }
 
 void RmcGsmSimUrcHandler::handleMccMnc(const sp<RfxMclMessage>& msg) {
     int appTypeId = -1, channelId = -1, err = 0;
     char *pMcc = NULL, *pMnc = NULL;
-    RfxAtLine *atLine = msg->getRawUrc();
+    RfxAtLine* atLine = msg->getRawUrc();
     String8 numeric("");
     String8 prop("vendor.gsm.ril.uicc.mccmnc");
 
-    prop.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+    prop.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
 
     do {
         atLine->atTokStart(&err);
@@ -150,18 +145,18 @@ void RmcGsmSimUrcHandler::handleMccMnc(const sp<RfxMclMessage>& msg) {
         rfx_property_set(prop, numeric.string());
 
         getMclStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, numeric);
-    } while(0);
+    } while (0);
 
     int eusim = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE);
     String8 iccid = getMclStatusManager()->getString8Value(RFX_STATUS_KEY_SIM_ICCID);
 
-    if ((!RatConfig_isC2kSupported()) && (strStartsWith(iccid, "898601"))
-            && ((eusim == RFX_CARD_TYPE_USIM) || (eusim == (
-            RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM)))) {
+    if ((!RatConfig_isC2kSupported()) && (strStartsWith(iccid, "898601")) &&
+        ((eusim == RFX_CARD_TYPE_USIM) || (eusim == (RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM)))) {
         int cardType = -1;
 
         if (!numeric.isEmpty()) {
-            if (strStartsWith(numeric.string(), "46011") || strStartsWith(numeric.string(), "20404")) {
+            if (strStartsWith(numeric.string(), "46011") ||
+                strStartsWith(numeric.string(), "20404")) {
                 cardType = CT_4G_UICC_CARD;
             } else {
                 cardType = SIM_CARD;
@@ -184,11 +179,11 @@ void RmcGsmSimUrcHandler::handleMccMnc(const sp<RfxMclMessage>& msg) {
             if (cardType == CT_4G_UICC_CARD) {
                 aospType = DUAL_MODE_TELECOM_LTE_CARD;
             } else if (cardType == SIM_CARD) {
-                if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                        == RFX_CARD_TYPE_SIM) {
+                if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) ==
+                    RFX_CARD_TYPE_SIM) {
                     aospType = SINGLE_MODE_SIM_CARD;
-                } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                        == RFX_CARD_TYPE_USIM) {
+                } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) ==
+                           RFX_CARD_TYPE_USIM) {
                     aospType = SINGLE_MODE_USIM_CARD;
                 }
             }
@@ -205,7 +200,7 @@ void RmcGsmSimUrcHandler::handleMccMnc(const sp<RfxMclMessage>& msg) {
 
 int RmcGsmSimUrcHandler::parseSimIndication(RfxStatusKeyEnum key, RfxAtLine* atLine) {
     int err = 0, len = -1;
-    char *raw = NULL;
+    char* raw = NULL;
 
     raw = atLine->atTokNextstr(&err);
     if (err < 0) {
@@ -217,10 +212,10 @@ int RmcGsmSimUrcHandler::parseSimIndication(RfxStatusKeyEnum key, RfxAtLine* atL
     return len;
 }
 
-void RmcGsmSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcGsmSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     int err = 0, indEvent = -1, appId = -1, len = -1, info_index = 0;
-    char *raw = NULL;
-    RfxAtLine *atLine = urc;
+    char* raw = NULL;
+    RfxAtLine* atLine = urc;
     int applist = 0;
     int fileNum = -1;
     String8 key("");
@@ -322,7 +317,8 @@ void RmcGsmSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, RfxA
 
                 if (strlen(value) > 4) {
                     String8 sw(value);
-                    key.append(String8::format("%s%s", ",", string(sw.string()).substr(0, 4).c_str()));
+                    key.append(
+                            String8::format("%s%s", ",", string(sw.string()).substr(0, 4).c_str()));
 
                     asprintf(&res, "%s", value + 4);
                     if (appId == UICC_APP_USIM && !isCPHS) {

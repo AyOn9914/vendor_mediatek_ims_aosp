@@ -29,13 +29,9 @@
 static int klog_fd = -1;
 static int klog_level = KLOG_DEFAULT_LEVEL;
 
-int klog_get_level(void) {
-    return klog_level;
-}
+int klog_get_level(void) { return klog_level; }
 
-void klog_set_level(int level) {
-    klog_level = level;
-}
+void klog_set_level(int level) { klog_level = level; }
 
 void klog_init(void) {
     if (klog_fd >= 0) return; /* Already initialized */

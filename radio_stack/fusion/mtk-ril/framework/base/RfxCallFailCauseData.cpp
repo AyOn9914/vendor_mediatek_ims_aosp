@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCallFailCauseData);
 
-RfxCallFailCauseData::RfxCallFailCauseData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCallFailCauseData::RfxCallFailCauseData(void* data, int length) : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
@@ -28,30 +28,30 @@ RfxCallFailCauseData::RfxCallFailCauseData(void *data, int length) : RfxBaseData
     RIL_LastCallFailCauseInfo* pData = (RIL_LastCallFailCauseInfo*)data;
     RIL_LastCallFailCauseInfo* dupData;
 
-    //Copy cause code
-    dupData = (RIL_LastCallFailCauseInfo *)calloc(1, sizeof(RIL_LastCallFailCauseInfo));
+    // Copy cause code
+    dupData = (RIL_LastCallFailCauseInfo*)calloc(1, sizeof(RIL_LastCallFailCauseInfo));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_LastCallFailCauseInfo));
     dupData->cause_code = pData->cause_code;
 
-    //Copy vendor cause
+    // Copy vendor cause
     if (pData->vendor_cause != NULL) {
         int strLen = strlen(pData->vendor_cause);
-        //Allocate and zero-initialize array
+        // Allocate and zero-initialize array
         dupData->vendor_cause = (char*)calloc(strLen + 1, sizeof(char));
         RFX_ASSERT(dupData->vendor_cause != NULL);
         strncpy(dupData->vendor_cause, pData->vendor_cause, strLen);
     }
 
     m_data = dupData;
- }
+}
 
 RfxCallFailCauseData::~RfxCallFailCauseData() {
     // free
-    RIL_LastCallFailCauseInfo *tmp = (RIL_LastCallFailCauseInfo *)m_data;
+    RIL_LastCallFailCauseInfo* tmp = (RIL_LastCallFailCauseInfo*)m_data;
     if (tmp != NULL) {
         if (tmp->vendor_cause != NULL) {
-          free(tmp->vendor_cause);
+            free(tmp->vendor_cause);
         }
         free(tmp);
     }

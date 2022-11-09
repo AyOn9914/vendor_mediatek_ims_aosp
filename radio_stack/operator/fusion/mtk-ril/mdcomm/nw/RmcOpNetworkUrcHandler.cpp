@@ -24,20 +24,19 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_MODULATION_INFO);
 // register handler to channel
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpNetworkUrcHandler, RIL_CMD_PROXY_URC);
 
-RmcOpNetworkUrcHandler::RmcOpNetworkUrcHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id) {
+RmcOpNetworkUrcHandler::RmcOpNetworkUrcHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id) {
     logV(LOG_TAG, "[RmcOpNetworkUrcHandler] init");
 }
 
-RmcOpNetworkUrcHandler::~RmcOpNetworkUrcHandler() {
-}
+RmcOpNetworkUrcHandler::~RmcOpNetworkUrcHandler() {}
 
 void RmcOpNetworkUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    ViaBaseHandler *mViaHandler = RfxViaUtils::getViaHandler();
+    ViaBaseHandler* mViaHandler = RfxViaUtils::getViaHandler();
     if (strStartsWith(msg->getRawUrc()->getLine(), "+EMODCFG:")) {
         handleModulationInfoReceived(msg);
     } else if (mViaHandler != NULL) {
-        mViaHandler-> handleViaUrc(msg, this, m_slot_id);
+        mViaHandler->handleViaUrc(msg, this, m_slot_id);
     }
 }
 
@@ -46,7 +45,7 @@ void RmcOpNetworkUrcHandler::handleModulationInfoReceived(const sp<RfxMclMessage
     int err;
     int response = 0;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -58,7 +57,8 @@ void RmcOpNetworkUrcHandler::handleModulationInfoReceived(const sp<RfxMclMessage
     if (response > 0xFF) goto error;
 
     logD(LOG_TAG, "handleModulationInfoReceived: <mode>:%d", response);
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_MODULATION_INFO, m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_MODULATION_INFO, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
     return;
 

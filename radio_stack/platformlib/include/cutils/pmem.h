@@ -28,7 +28,7 @@ extern "C" {
  * @return a void pointer to the allocated space, or NULL if there is insufficient
  *         memory available.
  */
-void* pmem_alloc(size_t size, int *pfd);
+void* pmem_alloc(size_t size, int* pfd);
 
 /**
  * Allocates a sync memory block which is continuous in physical memory.
@@ -37,7 +37,7 @@ void* pmem_alloc(size_t size, int *pfd);
  * @return a void pointer to the allocated space, or NULL if there is insufficient
  *         memory available.
  */
-void* pmem_alloc_sync(size_t size, int *pfd);
+void* pmem_alloc_sync(size_t size, int* pfd);
 
 /**
  * Deallocates or frees a memory block which is continuous in physical memory.
@@ -46,11 +46,12 @@ void* pmem_alloc_sync(size_t size, int *pfd);
  * @param fd   associated file descriptor of the memory block which is allocated by pmem_alloc().
  * @return 0 if success, or nagtive value if there is error
  */
-int  pmem_free(void *ptr, size_t size, int fd);
+int pmem_free(void* ptr, size_t size, int fd);
 
 /**
  * Convert the address of a memory block from virtual address to physical address.
- * @param fd       associated file descriptor of the memory block which is allocated by pmem_alloc().
+ * @param fd       associated file descriptor of the memory block which is allocated by
+ * pmem_alloc().
  * @return a void pointer contains the physical address, or NULL if virPtr is invalid.
  */
 void* pmem_get_phys(int fd);

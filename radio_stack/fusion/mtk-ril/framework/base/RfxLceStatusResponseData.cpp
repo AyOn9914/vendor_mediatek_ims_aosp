@@ -24,11 +24,11 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxLceStatusResponseData);
 
-RfxLceStatusResponseData::RfxLceStatusResponseData(void *data, int length)
-        : RfxBaseData(data, length) {
+RfxLceStatusResponseData::RfxLceStatusResponseData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_LceStatusInfo *tmpPtr = (RIL_LceStatusInfo *)data;
-        RIL_LceStatusInfo *response = (RIL_LceStatusInfo*)calloc(1, sizeof(RIL_LceStatusInfo));
+        RIL_LceStatusInfo* tmpPtr = (RIL_LceStatusInfo*)data;
+        RIL_LceStatusInfo* response = (RIL_LceStatusInfo*)calloc(1, sizeof(RIL_LceStatusInfo));
         RFX_ASSERT(response != NULL);
         response->lce_status = tmpPtr->lce_status;
         response->actual_interval_ms = tmpPtr->actual_interval_ms;

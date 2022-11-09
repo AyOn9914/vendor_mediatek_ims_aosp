@@ -23,18 +23,18 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsGetTimeRespData);
 
 RfxEmbmsGetTimeRespData::RfxEmbmsGetTimeRespData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_GetTimeResp*)data, length);
 }
 
 RfxEmbmsGetTimeRespData::RfxEmbmsGetTimeRespData(RIL_EMBMS_GetTimeResp* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsGetTimeRespData::copyData(RIL_EMBMS_GetTimeResp *data, int length) {
+void RfxEmbmsGetTimeRespData::copyData(RIL_EMBMS_GetTimeResp* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_GetTimeResp *) calloc(1, sizeof(RIL_EMBMS_GetTimeResp));
+    m_data = (RIL_EMBMS_GetTimeResp*)calloc(1, sizeof(RIL_EMBMS_GetTimeResp));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

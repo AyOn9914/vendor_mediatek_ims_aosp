@@ -21,25 +21,25 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCallForwardInfoData);
 
-RfxCallForwardInfoData::RfxCallForwardInfoData(void *data, int length) : RfxBaseData(data, length)  {
-    RIL_CallForwardInfo* pTmp = (RIL_CallForwardInfo*) data;
-    RIL_CallForwardInfo *pData = (RIL_CallForwardInfo *) calloc(1, sizeof(RIL_CallForwardInfo));
+RfxCallForwardInfoData::RfxCallForwardInfoData(void* data, int length) : RfxBaseData(data, length) {
+    RIL_CallForwardInfo* pTmp = (RIL_CallForwardInfo*)data;
+    RIL_CallForwardInfo* pData = (RIL_CallForwardInfo*)calloc(1, sizeof(RIL_CallForwardInfo));
 
     if (pData != NULL) {
-        pData -> status       = pTmp -> status;
-        pData -> reason       = pTmp -> reason;
-        pData -> serviceClass = pTmp -> serviceClass;
-        pData -> toa          = pTmp -> toa;
+        pData->status = pTmp->status;
+        pData->reason = pTmp->reason;
+        pData->serviceClass = pTmp->serviceClass;
+        pData->toa = pTmp->toa;
 
         if (pTmp->number != NULL) {
             int len = strlen(pTmp->number);
-            pData->number = (char *) calloc(len + 1, sizeof(char));
+            pData->number = (char*)calloc(len + 1, sizeof(char));
             if (pData->number != NULL) {
                 strncpy(pData->number, pTmp->number, len);
             }
         }
 
-        pData -> timeSeconds  = pTmp -> timeSeconds;
+        pData->timeSeconds = pTmp->timeSeconds;
 
         m_data = pData;
         m_length = length;
@@ -47,8 +47,8 @@ RfxCallForwardInfoData::RfxCallForwardInfoData(void *data, int length) : RfxBase
 }
 
 RfxCallForwardInfoData::~RfxCallForwardInfoData() {
-    if (m_data != NULL && ((RIL_CallForwardInfo *)m_data) ->number != NULL) {
-        free(((RIL_CallForwardInfo *)m_data) -> number);
+    if (m_data != NULL && ((RIL_CallForwardInfo*)m_data)->number != NULL) {
+        free(((RIL_CallForwardInfo*)m_data)->number);
     }
     free(m_data);
     m_data = NULL;

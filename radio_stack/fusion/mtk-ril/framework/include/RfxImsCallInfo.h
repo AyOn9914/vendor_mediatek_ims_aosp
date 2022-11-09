@@ -33,8 +33,7 @@ using ::android::Vector;
  * Class RfxImsCallInfo
  *****************************************************************************/
 class RfxImsCallInfo {
-public:
-
+  public:
     enum {
         STATE_ESTABLISHING,
         STATE_DIALING,
@@ -48,24 +47,23 @@ public:
     };
 
     enum {
-       IMS_VOICE = 20,
-       IMS_VIDEO = 21,
-       IMS_VOICE_CONF = 22,
-       IMS_VIDEO_CONF = 23,
-       IMS_VOICE_CONF_PARTS = 24,
-       IMS_VIDEO_CONF_PARTS = 25,
+        IMS_VOICE = 20,
+        IMS_VIDEO = 21,
+        IMS_VOICE_CONF = 22,
+        IMS_VIDEO_CONF = 23,
+        IMS_VOICE_CONF_PARTS = 24,
+        IMS_VIDEO_CONF_PARTS = 25,
     };
 
     RfxImsCallInfo();
 
-    RfxImsCallInfo(int callId, int callState,
-            String8 number, bool isConference, bool isConferenceHost, bool isEcc, bool isVideo, bool isMT);
+    RfxImsCallInfo(int callId, int callState, String8 number, bool isConference,
+                   bool isConferenceHost, bool isEcc, bool isVideo, bool isMT);
     explicit RfxImsCallInfo(RfxImsCallInfo* call);
 
     ~RfxImsCallInfo();
 
-public:
-
+  public:
     int getCallId();
     int getCallState();
     String8 getNumber();
@@ -93,8 +91,7 @@ public:
     void removeParticipant(RfxImsCallInfo* call);
     int getCallMode();
 
-private:
-
+  private:
     int mCallId;
     int mCallState;
     String8 mNumber;
@@ -106,21 +103,15 @@ private:
     String8 mName;
     Vector<RfxImsCallInfo*> mConferenceParticipant;
 
-public:
-
-    bool equalTo(const RfxImsCallInfo &other) const {
-        return (mCallId == other.mCallId)
-                && (mCallState == other.mCallState)
-                && (mNumber == other.mNumber)
-                && (mIsConference == other.mIsConference)
-                && (mIsConferenceHost == other.mIsConferenceHost)
-                && (mIsEcc == other.mIsEcc)
-                && (mIsVideo == other.mIsVideo)
-                && (mIsMT == other.mIsMT)
-                && (mName == other.mName);
+  public:
+    bool equalTo(const RfxImsCallInfo& other) const {
+        return (mCallId == other.mCallId) && (mCallState == other.mCallState) &&
+               (mNumber == other.mNumber) && (mIsConference == other.mIsConference) &&
+               (mIsConferenceHost == other.mIsConferenceHost) && (mIsEcc == other.mIsEcc) &&
+               (mIsVideo == other.mIsVideo) && (mIsMT == other.mIsMT) && (mName == other.mName);
     }
 
-    RfxImsCallInfo &operator = (const RfxImsCallInfo &other) {
+    RfxImsCallInfo& operator=(const RfxImsCallInfo& other) {
         mCallId = other.mCallId;
         mCallState = other.mCallState;
         mNumber = other.mNumber;
@@ -133,13 +124,9 @@ public:
         return *this;
     }
 
-    bool operator == (const RfxImsCallInfo &other) {
-        return equalTo(other);
-    }
+    bool operator==(const RfxImsCallInfo& other) { return equalTo(other); }
 
-    bool operator != (const RfxImsCallInfo &other) {
-        return !equalTo(other);
-    }
+    bool operator!=(const RfxImsCallInfo& other) { return !equalTo(other); }
 };
 
 #endif /* __RFX_IMS_CALL_INFO_H */

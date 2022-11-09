@@ -32,16 +32,13 @@
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RfxStatusManager", RfxStatusManager, RfxObject);
 
-
-RfxStatusManager::RfxStatusManager(int slot_id) :
-    m_slot_id(slot_id) {
+RfxStatusManager::RfxStatusManager(int slot_id) : m_slot_id(slot_id) {
     for (int i = 0; i < RFX_STATUS_KEY_END_OF_ENUM; i++) {
         m_status_list[i] = NULL;
     }
 }
 
-const RfxVariant &RfxStatusManager::getDefaultValue(const RfxStatusKeyEnum key) {
-
+const RfxVariant& RfxStatusManager::getDefaultValue(const RfxStatusKeyEnum key) {
     for (int i = 0; s_default_value_table[i].key != RFX_STATUS_KEY_END_OF_ENUM; i++) {
         if (s_default_value_table[i].key == key) {
             return s_default_value_table[i].value;
@@ -53,8 +50,7 @@ const RfxVariant &RfxStatusManager::getDefaultValue(const RfxStatusKeyEnum key) 
     return s_dummy_value;
 }
 
-const char *RfxStatusManager::getKeyString(const RfxStatusKeyEnum key) {
-
+const char* RfxStatusManager::getKeyString(const RfxStatusKeyEnum key) {
     for (int i = 0; s_default_value_table[i].key != RFX_STATUS_KEY_END_OF_ENUM; i++) {
         if (s_default_value_table[i].key == key) {
             return s_default_value_table[i].key_string;
@@ -64,26 +60,23 @@ const char *RfxStatusManager::getKeyString(const RfxStatusKeyEnum key) {
     return "defaultValue";
 }
 
-
-const RfxVariant &RfxStatusManager::getValue(const RfxStatusKeyEnum key,
-    const RfxVariant &default_value) const {
-
+const RfxVariant& RfxStatusManager::getValue(const RfxStatusKeyEnum key,
+                                             const RfxVariant& default_value) const {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
 
     if (m_status_list[key] == NULL ||
-            m_status_list[key]->value.get_type() == RfxVariant::DATA_TYPE_NULL) {
+        m_status_list[key]->value.get_type() == RfxVariant::DATA_TYPE_NULL) {
         return default_value;
     } else {
         return m_status_list[key]->value;
     }
 }
 
-const RfxVariant &RfxStatusManager::getValue(const RfxStatusKeyEnum key) const {
-
+const RfxVariant& RfxStatusManager::getValue(const RfxStatusKeyEnum key) const {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
 
     if (m_status_list[key] == NULL ||
-            m_status_list[key]->value.get_type() == RfxVariant::DATA_TYPE_NULL) {
+        m_status_list[key]->value.get_type() == RfxVariant::DATA_TYPE_NULL) {
         return getDefaultValue(key);
     } else {
         return m_status_list[key]->value;
@@ -91,31 +84,32 @@ const RfxVariant &RfxStatusManager::getValue(const RfxStatusKeyEnum key) const {
 }
 
 // module uses
-void RfxStatusManager::setValue(const RfxStatusKeyEnum key, const RfxVariant &value,
-        bool force_notify, bool is_default) {
+void RfxStatusManager::setValue(const RfxStatusKeyEnum key, const RfxVariant& value,
+                                bool force_notify, bool is_default) {
     setValueInternal(key, value, force_notify, is_default, false, false);
 }
 
 // framework uses
-void RfxStatusManager::setValueByRfx(const RfxStatusKeyEnum key, const RfxVariant &value,
-        bool force_notify, bool is_default, bool is_status_sync, bool update_for_mock) {
+void RfxStatusManager::setValueByRfx(const RfxStatusKeyEnum key, const RfxVariant& value,
+                                     bool force_notify, bool is_default, bool is_status_sync,
+                                     bool update_for_mock) {
     setValueInternal(key, value, force_notify, is_default, is_status_sync, update_for_mock);
 }
 
-void RfxStatusManager::setValueInternal(const RfxStatusKeyEnum key, const RfxVariant &value,
-        bool force_notify, bool is_default, bool is_status_sync, bool update_for_mock) {
-
+void RfxStatusManager::setValueInternal(const RfxStatusKeyEnum key, const RfxVariant& value,
+                                        bool force_notify, bool is_default, bool is_status_sync,
+                                        bool update_for_mock) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
 
     if (m_status_list[key] == NULL) {
         m_status_list[key] = new StatusListEntry();
         m_status_list[key]->value = value;
         if (RfxRilUtils::hideStatusLog(key)) {
-            RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, value = [XXX]",
-                                   m_slot_id, getKeyString(key));
+            RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, value = [XXX]", m_slot_id,
+                      getKeyString(key));
         } else {
-            RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, value = [%s]",
-                                   m_slot_id, getKeyString(key), value.toString().string());
+            RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, value = [%s]", m_slot_id,
+                      getKeyString(key), value.toString().string());
         }
     } else {
         RfxVariant old = m_status_list[key]->value;
@@ -124,18 +118,18 @@ void RfxStatusManager::setValueInternal(const RfxStatusKeyEnum key, const RfxVar
 
         if (is_dif) {
             if (RfxRilUtils::hideStatusLog(key)) {
-                RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, old = [XXX], new = [XXX],\
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "setValue() slot(%d) key = %s, old = [XXX], new = [XXX],\
 is_force = %s, is_default = %s",
-                        m_slot_id, getKeyString(key),
-                        force_notify ? "true" : "false",
-                        is_default ? "true" : "false");
+                          m_slot_id, getKeyString(key), force_notify ? "true" : "false",
+                          is_default ? "true" : "false");
             } else {
-                RFX_LOG_D(RFX_LOG_TAG, "setValue() slot(%d) key = %s, old = [%s], new = [%s],\
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "setValue() slot(%d) key = %s, old = [%s], new = [%s],\
 is_force = %s, is_default = %s",
-                        m_slot_id, getKeyString(key), old.toString().string(),
-                        value.toString().string(),
-                        force_notify ? "true" : "false",
-                        is_default ? "true" : "false");
+                          m_slot_id, getKeyString(key), old.toString().string(),
+                          value.toString().string(), force_notify ? "true" : "false",
+                          is_default ? "true" : "false");
             }
         }
 
@@ -172,16 +166,15 @@ is_force = %s, is_default = %s",
 }
 
 void RfxStatusManager::updateValueMdComm(int slot_id, const RfxStatusKeyEnum key,
-        const RfxVariant value, bool force_notify, bool is_default) {
-    sp<RfxMessage> msg = RfxMessage::obtainStatusSync(slot_id, key, value, force_notify,
-            is_default);
+                                         const RfxVariant value, bool force_notify,
+                                         bool is_default) {
+    sp<RfxMessage> msg =
+            RfxMessage::obtainStatusSync(slot_id, key, value, force_notify, is_default);
     RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->requestToMcl(msg);
 }
 
-
 void RfxStatusManager::registerStatusChanged(const RfxStatusKeyEnum key,
-    const RfxStatusChangeCallback &callback) {
-
+                                             const RfxStatusChangeCallback& callback) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
     if (m_status_list[key] == NULL) {
         m_status_list[key] = new StatusListEntry();
@@ -191,8 +184,7 @@ void RfxStatusManager::registerStatusChanged(const RfxStatusKeyEnum key,
 }
 
 void RfxStatusManager::unRegisterStatusChanged(const RfxStatusKeyEnum key,
-    const RfxStatusChangeCallback &callback) {
-
+                                               const RfxStatusChangeCallback& callback) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
 
     if (m_status_list[key] != NULL) {
@@ -201,8 +193,7 @@ void RfxStatusManager::unRegisterStatusChanged(const RfxStatusKeyEnum key,
 }
 
 void RfxStatusManager::registerStatusChangedEx(const RfxStatusKeyEnum key,
-    const RfxStatusChangeCallbackEx &callback) {
-
+                                               const RfxStatusChangeCallbackEx& callback) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
     if (m_status_list[key] == NULL) {
         m_status_list[key] = new StatusListEntry();
@@ -212,8 +203,7 @@ void RfxStatusManager::registerStatusChangedEx(const RfxStatusKeyEnum key,
 }
 
 void RfxStatusManager::unRegisterStatusChangedEx(const RfxStatusKeyEnum key,
-    const RfxStatusChangeCallbackEx &callback) {
-
+                                                 const RfxStatusChangeCallbackEx& callback) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
 
     if (m_status_list[key] != NULL) {
@@ -221,9 +211,8 @@ void RfxStatusManager::unRegisterStatusChangedEx(const RfxStatusKeyEnum key,
     }
 }
 
-
-void RfxStatusManager::emitStatus(
-    RfxObject *object, RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue) {
+void RfxStatusManager::emitStatus(RfxObject* object, RfxStatusKeyEnum key, RfxVariant oldValue,
+                                  RfxVariant newValue) {
     RFX_ASSERT(key > RFX_STATUS_KEY_START && key < RFX_STATUS_KEY_END_OF_ENUM);
     if (m_status_list[key] != NULL) {
         m_status_list[key]->signal.emit(key, oldValue, newValue, object);

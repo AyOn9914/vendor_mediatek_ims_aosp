@@ -15,18 +15,18 @@
  */
 
 typedef enum {
-  ARES_DATATYPE_UNKNOWN = 1,  /* unknown data type     - introduced in 1.7.0 */
-  ARES_DATATYPE_SRV_REPLY,    /* struct ares_srv_reply - introduced in 1.7.0 */
-  ARES_DATATYPE_TXT_REPLY,    /* struct ares_txt_reply - introduced in 1.7.0 */
-  ARES_DATATYPE_ADDR_NODE,    /* struct ares_addr_node - introduced in 1.7.1 */
-  ARES_DATATYPE_MX_REPLY,    /* struct ares_mx_reply   - introduced in 1.7.2 */
+    ARES_DATATYPE_UNKNOWN = 1, /* unknown data type     - introduced in 1.7.0 */
+    ARES_DATATYPE_SRV_REPLY,   /* struct ares_srv_reply - introduced in 1.7.0 */
+    ARES_DATATYPE_TXT_REPLY,   /* struct ares_txt_reply - introduced in 1.7.0 */
+    ARES_DATATYPE_ADDR_NODE,   /* struct ares_addr_node - introduced in 1.7.1 */
+    ARES_DATATYPE_MX_REPLY,    /* struct ares_mx_reply   - introduced in 1.7.2 */
 #if 0
   ARES_DATATYPE_ADDR6TTL,     /* struct ares_addrttl   */
   ARES_DATATYPE_ADDRTTL,      /* struct ares_addr6ttl  */
   ARES_DATATYPE_HOSTENT,      /* struct hostent        */
   ARES_DATATYPE_OPTIONS,      /* struct ares_options   */
 #endif
-  ARES_DATATYPE_LAST          /* not used              - introduced in 1.7.0 */
+    ARES_DATATYPE_LAST /* not used              - introduced in 1.7.0 */
 } ares_datatype;
 
 #define ARES_DATATYPE_MARK 0xbead
@@ -50,16 +50,16 @@ typedef enum {
  */
 
 struct ares_data {
-  ares_datatype type;  /* Actual data type identifier. */
-  unsigned int  mark;  /* Private ares_data signature. */
-  union {
-    struct ares_txt_reply txt_reply;
-    struct ares_srv_reply srv_reply;
-    struct ares_addr_node addr_node;
-    struct ares_mx_reply mx_reply;
-  } data;
+    ares_datatype type; /* Actual data type identifier. */
+    unsigned int mark;  /* Private ares_data signature. */
+    union {
+        struct ares_txt_reply txt_reply;
+        struct ares_srv_reply srv_reply;
+        struct ares_addr_node addr_node;
+        struct ares_mx_reply mx_reply;
+    } data;
 };
 
-void *ares_malloc_data(ares_datatype type);
+void* ares_malloc_data(ares_datatype type);
 
-ares_datatype ares_get_datatype(void * dataptr);
+ares_datatype ares_get_datatype(void* dataptr);

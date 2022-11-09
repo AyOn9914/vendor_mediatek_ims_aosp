@@ -26,8 +26,7 @@
 
 // for the feature Bluetooth Sim Access Profile
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 #ifdef __cplusplus
@@ -37,7 +36,7 @@ extern "C"
 #define RFX_LOG_TAG "RfxIdToMsgId"
 
 int RfxIdToMsgIdUtils::idToMsgId(int id) {
-    switch(id) {
+    switch (id) {
         // SIM -- Start
         case RIL_REQUEST_GET_SIM_STATUS:
             return RFX_MSG_REQUEST_GET_SIM_STATUS;
@@ -131,7 +130,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
         case RIL_REQUEST_VSIM_OPERATION:
             return RFX_MSG_REQUEST_SIM_VSIM_OPERATION;
         // External SIM [End]
-        //ESIM Start
+        // ESIM Start
         case RIL_REQUEST_GET_SLOT_STATUS:
             return RFX_MSG_REQUEST_GET_SLOT_STATUS;
         case RIL_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING:
@@ -148,8 +147,8 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_GET_IMEI;
         case RIL_REQUEST_GET_IMEISV:
             return RFX_MSG_REQUEST_GET_IMEISV;
-        //SIM switch part -- End
-        // eMBMS
+        // SIM switch part -- End
+        //  eMBMS
         case RIL_REQUEST_EMBMS_AT_CMD:
             return RFX_MSG_REQUEST_EMBMS_AT_CMD;
         // eMBMS -- End
@@ -368,15 +367,15 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_HANGUP_WITH_REASON;
         // CC part -- End
         // common start
-        case  RIL_REQUEST_BASEBAND_VERSION:
+        case RIL_REQUEST_BASEBAND_VERSION:
             return RFX_MSG_REQUEST_BASEBAND_VERSION;
         case RIL_REQUEST_OEM_HOOK_RAW:
             return RFX_MSG_REQUEST_OEM_HOOK_RAW;
         case RIL_REQUEST_OEM_HOOK_STRINGS:
             return RFX_MSG_REQUEST_OEM_HOOK_STRINGS;
-        case  RIL_REQUEST_DEVICE_IDENTITY:
+        case RIL_REQUEST_DEVICE_IDENTITY:
             return RFX_MSG_REQUEST_DEVICE_IDENTITY;
-        case  RIL_REQUEST_GET_HARDWARE_CONFIG:
+        case RIL_REQUEST_GET_HARDWARE_CONFIG:
             return RFX_MSG_REQUEST_GET_HARDWARE_CONFIG;
         case RIL_REQUEST_GET_ACTIVITY_INFO:
             return RFX_MSG_REQUEST_GET_ACTIVITY_INFO;
@@ -395,7 +394,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_RESET_RADIO;
         case RIL_REQUEST_RESTART_RILD:
             return RFX_MSG_REQUEST_RESTART_RILD;
-        case  RIL_REQUEST_SHUTDOWN:
+        case RIL_REQUEST_SHUTDOWN:
             return RFX_MSG_REQUEST_SHUTDOWN;
         case RIL_REQUEST_MODEM_POWEROFF:
             return RFX_MSG_REQUEST_MODEM_POWEROFF;
@@ -613,7 +612,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_SET_IMS_RTP_REPORT;
         case RIL_UNSOL_IMS_RTP_INFO:
             return RFX_MSG_UNSOL_IMS_RTP_INFO;
-        case RIL_UNSOL_VOPS_INDICATION: // Voice over PS
+        case RIL_UNSOL_VOPS_INDICATION:  // Voice over PS
             return RFX_MSG_UNSOL_VOPS_INDICATION;
         case RIL_REQUEST_QUERY_VOPS_STATUS:
             return RFX_MSG_REQUEST_QUERY_VOPS_STATUS;
@@ -807,7 +806,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_SET_WIFI_PING_RESULT;
         case RIL_REQUEST_QUERY_SSAC_STATUS:
             return RFX_MSG_REQUEST_QUERY_SSAC_STATUS;
-        ///M: Notify ePDG screen state
+        /// M: Notify ePDG screen state
         case RIL_REQUEST_NOTIFY_EPDG_SCREEN_STATE:
             return RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE;
         case RIL_UNSOL_MOBILE_WIFI_ROVEOUT:
@@ -853,7 +852,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS;
         case RIL_REQUEST_UPDATE_SUBLOCK_SETTINGS:
             return RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS;
-        // SUBSIDYLOCK Part -- End
+            // SUBSIDYLOCK Part -- End
 
         case RIL_UNSOL_OEM_HOOK_RAW:
             return RFX_MSG_UNSOL_OEM_HOOK_RAW;
@@ -952,13 +951,14 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
             return RFX_MSG_REQUEST_DEACTIVATE_UICC_CARD;
         case RIL_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS:
             return RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS;
-        case RIL_UNSOL_IWLAN_CELLULAR_QUALITY_CHANGED_IND: // MUSE WFC requirement
+        case RIL_UNSOL_IWLAN_CELLULAR_QUALITY_CHANGED_IND:  // MUSE WFC requirement
             return RFX_MSG_URC_CELLULAR_QUALITY_CHANGED_IND;
-        case RIL_REQUEST_IWLAN_REGISTER_CELLULAR_QUALITY_REPORT: // MUSE WFC requirement
+        case RIL_REQUEST_IWLAN_REGISTER_CELLULAR_QUALITY_REPORT:  // MUSE WFC requirement
             return RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT;
         case RIL_REQUEST_ROUTE_CERTIFICATE:
             return RFX_MSG_REQUEST_ROUTE_CERTIFICATE;
-        case RIL_REQUEST_ROUTE_AUTH:Pattern:
+        case RIL_REQUEST_ROUTE_AUTH:
+        Pattern:
             return RFX_MSG_REQUEST_ROUTE_AUTH;
         case RIL_REQUEST_ENABLE_CAPABILITY:
             return RFX_MSG_REQUEST_ENABLE_CAPABILITY;
@@ -978,7 +978,7 @@ int RfxIdToMsgIdUtils::idToMsgId(int id) {
 }
 
 int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
-    switch(msgId) {
+    switch (msgId) {
         // SIM -- Start
         case RFX_MSG_REQUEST_GET_SIM_STATUS:
             return RIL_REQUEST_GET_SIM_STATUS;
@@ -1344,9 +1344,9 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
             return RIL_REQUEST_OEM_HOOK_STRINGS;
         case RFX_MSG_REQUEST_SCREEN_STATE:
             return RIL_REQUEST_SCREEN_STATE;
-        case  RFX_MSG_REQUEST_DEVICE_IDENTITY:
+        case RFX_MSG_REQUEST_DEVICE_IDENTITY:
             return RIL_REQUEST_DEVICE_IDENTITY;
-        case  RFX_MSG_REQUEST_GET_HARDWARE_CONFIG:
+        case RFX_MSG_REQUEST_GET_HARDWARE_CONFIG:
             return RIL_REQUEST_GET_HARDWARE_CONFIG;
         case RFX_MSG_REQUEST_GET_ACTIVITY_INFO:
             return RIL_REQUEST_GET_ACTIVITY_INFO;
@@ -1879,10 +1879,10 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
         case RFX_MSG_REQUEST_SET_NATT_KEEP_ALIVE_STATUS:
             return RIL_REQUEST_SET_NATT_KEEP_ALIVE_STATUS;
         case RFX_MSG_REQUEST_SET_WIFI_PING_RESULT:
-             return RIL_REQUEST_SET_WIFI_PING_RESULT;
+            return RIL_REQUEST_SET_WIFI_PING_RESULT;
         case RFX_MSG_REQUEST_QUERY_SSAC_STATUS:
             return RIL_REQUEST_QUERY_SSAC_STATUS;
-        ///M: Notify ePDG screen state
+        /// M: Notify ePDG screen state
         case RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE:
             return RIL_REQUEST_NOTIFY_EPDG_SCREEN_STATE;
         case RFX_MSG_UNSOL_MOBILE_WIFI_ROVEOUT:
@@ -1936,7 +1936,7 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
             return RIL_REQUEST_GET_SUBLOCK_MODEM_STATUS;
         case RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS:
             return RIL_REQUEST_UPDATE_SUBLOCK_SETTINGS;
-        // SUBSIDYLOCK Part -- end
+            // SUBSIDYLOCK Part -- end
 
         case RFX_MSG_UNSOL_OEM_HOOK_RAW:
             return RIL_UNSOL_OEM_HOOK_RAW;
@@ -1944,7 +1944,7 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
             return RIL_REQUEST_SWITCH_MODE_FOR_ECC;
         case RFX_MSG_REQUEST_FORCE_RELEASE_CALL:
             return RIL_REQUEST_FORCE_RELEASE_CALL;
-         // IMS Event part -- start
+            // IMS Event part -- start
         case RFX_MSG_UNSOL_IMS_CONFERENCE_INFO_INDICATION:
             return RIL_UNSOL_IMS_CONFERENCE_INFO_INDICATION;
         case RFX_MSG_UNSOL_LTE_MESSAGE_WAITING_INDICATION:
@@ -2045,9 +2045,9 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
         case RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS:
             return RIL_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS;
         case RFX_MSG_URC_CELLULAR_QUALITY_CHANGED_IND:
-            return RIL_UNSOL_IWLAN_CELLULAR_QUALITY_CHANGED_IND; // MUSE WFC requirement
+            return RIL_UNSOL_IWLAN_CELLULAR_QUALITY_CHANGED_IND;  // MUSE WFC requirement
         case RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT:
-            return RIL_REQUEST_IWLAN_REGISTER_CELLULAR_QUALITY_REPORT; // MUSE WFC requirement
+            return RIL_REQUEST_IWLAN_REGISTER_CELLULAR_QUALITY_REPORT;  // MUSE WFC requirement
         case RFX_MSG_REQUEST_ROUTE_CERTIFICATE:
             return RIL_REQUEST_ROUTE_CERTIFICATE;
         case RFX_MSG_REQUEST_ROUTE_AUTH:
@@ -2070,7 +2070,7 @@ int RfxIdToMsgIdUtils::msgIdToId(int msgId) {
 }
 
 int RfxIdToMsgIdUtils::sapIdToMsgId(int id) {
-    switch(id) {
+    switch (id) {
         case MsgId_RIL_SIM_SAP_CONNECT:
             return RFX_MSG_REQUEST_SIM_SAP_CONNECT;
         case MsgId_RIL_SIM_SAP_DISCONNECT:
@@ -2096,7 +2096,7 @@ int RfxIdToMsgIdUtils::sapIdToMsgId(int id) {
 }
 
 int RfxIdToMsgIdUtils::sapMsgIdToId(int msgId) {
-    switch(msgId) {
+    switch (msgId) {
         case RFX_MSG_REQUEST_SIM_SAP_CONNECT:
             return MsgId_RIL_SIM_SAP_CONNECT;
         case RFX_MSG_REQUEST_SIM_SAP_DISCONNECT:

@@ -29,7 +29,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-typedef int  socklen_t;
+typedef int socklen_t;
 typedef SOCKET cutils_socket_t;
 
 #else
@@ -42,8 +42,8 @@ typedef int cutils_socket_t;
 
 #endif
 
-#define ANDROID_SOCKET_ENV_PREFIX    "ANDROID_SOCKET_"
-#define ANDROID_SOCKET_DIR           "/dev/socket"
+#define ANDROID_SOCKET_ENV_PREFIX "ANDROID_SOCKET_"
+#define ANDROID_SOCKET_DIR "/dev/socket"
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,12 +86,11 @@ int android_get_control_socket(const char* name);
  * These functions return INVALID_SOCKET (-1) on failure for all platforms.
  */
 cutils_socket_t socket_network_client(const char* host, int port, int type);
-int socket_network_client_timeout(const char* host, int port, int type,
-                                  int timeout, int* getaddrinfo_error);
+int socket_network_client_timeout(const char* host, int port, int type, int timeout,
+                                  int* getaddrinfo_error);
 int socket_local_server(const char* name, int namespaceId, int type);
 int socket_local_server_bind(int s, const char* name, int namespaceId);
-int socket_local_client_connect(int fd, const char *name, int namespaceId,
-                                int type);
+int socket_local_client_connect(int fd, const char* name, int namespaceId, int type);
 int socket_local_client(const char* name, int namespaceId, int type);
 cutils_socket_t socket_inaddr_any_server(int port, int type);
 
@@ -131,14 +130,13 @@ int socket_get_local_port(cutils_socket_t sock);
  * Returns the number of bytes written or -1 on error.
  */
 typedef struct {
-  const void* data;
-  size_t length;
+    const void* data;
+    size_t length;
 } cutils_socket_buffer_t;
 
 #define SOCKET_SEND_BUFFERS_MAX_BUFFERS 16
 
-ssize_t socket_send_buffers(cutils_socket_t sock,
-                            const cutils_socket_buffer_t* buffers,
+ssize_t socket_send_buffers(cutils_socket_t sock, const cutils_socket_buffer_t* buffers,
                             size_t num_buffers);
 
 /*

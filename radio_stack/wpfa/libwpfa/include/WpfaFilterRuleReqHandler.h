@@ -33,35 +33,32 @@
 #include <mtk_log.h>
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 class WpfaFilterRuleReqHandler : public Thread {
-
-private:
+  private:
     class RuleReqMsgHandler : public MessageHandler {
-        public:
-            RuleReqMsgHandler(WpfaFilterRuleReqHandler* _dispatcher,
-                    const sp<WpfaDriverMessage>& _msg) :
-                msg(_msg) , sender(_dispatcher){}
+      public:
+        RuleReqMsgHandler(WpfaFilterRuleReqHandler* _dispatcher, const sp<WpfaDriverMessage>& _msg)
+            : msg(_msg), sender(_dispatcher) {}
 
-            virtual ~RuleReqMsgHandler() {}
+        virtual ~RuleReqMsgHandler() {}
 
-            virtual void handleMessage(const Message& message);
+        virtual void handleMessage(const Message& message);
 
-        private:
-            sp<WpfaDriverMessage> msg;
-            WpfaFilterRuleReqHandler* sender;
+      private:
+        sp<WpfaDriverMessage> msg;
+        WpfaFilterRuleReqHandler* sender;
     };
 
-
-private:
+  private:
     WpfaFilterRuleReqHandler();
     virtual ~WpfaFilterRuleReqHandler() {}
 
-public:
+  public:
     static void init();
     static void enqueueFilterRuleReqMessage(const sp<WpfaDriverMessage>& message);
     static void enqueueFilterRuleReqMessageFront(const sp<WpfaDriverMessage>& message);
@@ -69,7 +66,7 @@ public:
     static sp<Looper> waitLooper();
     virtual bool threadLoop();
 
-private:
+  private:
     void processMessage(const sp<WpfaDriverMessage>& msg);
     int sendRegAcceptResponse(uint16_t tId, uint32_t fId, int32_t errCause);
     int sendDeregAcceptResponse(uint16_t tId, uint32_t fId, int32_t errCause);
@@ -77,12 +74,12 @@ private:
     int checkDriverAdapterState();
     int DriverMsgIdToEventId(uint16_t msgId);
 
-    static WpfaFilterRuleReqHandler *s_self;
+    static WpfaFilterRuleReqHandler* s_self;
     sp<Looper> mLooper;
     Message mDummyMsg;
 
-    WpfaDriver *mWpfaDriver;
-    WpfaDriverAdapter *mDriverAdapter;
+    WpfaDriver* mWpfaDriver;
+    WpfaDriverAdapter* mDriverAdapter;
 };
 
 #endif

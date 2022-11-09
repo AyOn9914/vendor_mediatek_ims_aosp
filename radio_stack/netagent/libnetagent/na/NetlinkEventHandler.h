@@ -36,9 +36,9 @@ using ::android::Vector;
  * Class NetlinkEventHandler
  *****************************************************************************/
 typedef enum {
-    ACTION_UNKNOWN            = 0,
-    ACTION_ADDR_UPDATED       = 1,
-    ACTION_ADDR_REMOVED       = 2,
+    ACTION_UNKNOWN = 0,
+    ACTION_ADDR_UPDATED = 1,
+    ACTION_ADDR_REMOVED = 2,
 } ACTION;
 
 typedef struct {
@@ -58,33 +58,34 @@ typedef enum {
 } NETLINK_RET_STATUS;
 
 class NetlinkEventHandler : public NetlinkListener {
-    public:
-        NetlinkEventHandler(NetAgentService *na, int listenerSocket, int format);
-        virtual ~NetlinkEventHandler();
+  public:
+    NetlinkEventHandler(NetAgentService* na, int listenerSocket, int format);
+    virtual ~NetlinkEventHandler();
 
-        int start(void);
-        int stop(void);
-        int getCommandType(void *obj, NA_CMD *cmd);
-        int getAddress(void *obj, char *address);
-        int getInterfaceId(void *obj, unsigned int *interfaceId);
-        int getIpv6PrefixLength(void *obj, int *ipv6PrefixLength);
-        int getAction(void *obj, ACTION *action);
-        void removeLastReqInfo(int interfaceId);
-        int setLastReqInfo(void *obj);
-        int hasLastReqInfoChanged(void *obj);
-        void freeNetlinkEventObj(void *obj);
-        void freeNetlinkEventObj(NetlinkEventReqInfo *pReqInfo);
-        static int stringToBinaryBase(char *str, int base, int *err);
-        static const char *actionToString(ACTION action);
-        static String8 reqInfoToString(NetlinkEventReqInfo *pReqInfo);
-        int getTransIntfId(int interfaceId);
+    int start(void);
+    int stop(void);
+    int getCommandType(void* obj, NA_CMD* cmd);
+    int getAddress(void* obj, char* address);
+    int getInterfaceId(void* obj, unsigned int* interfaceId);
+    int getIpv6PrefixLength(void* obj, int* ipv6PrefixLength);
+    int getAction(void* obj, ACTION* action);
+    void removeLastReqInfo(int interfaceId);
+    int setLastReqInfo(void* obj);
+    int hasLastReqInfoChanged(void* obj);
+    void freeNetlinkEventObj(void* obj);
+    void freeNetlinkEventObj(NetlinkEventReqInfo* pReqInfo);
+    static int stringToBinaryBase(char* str, int base, int* err);
+    static const char* actionToString(ACTION action);
+    static String8 reqInfoToString(NetlinkEventReqInfo* pReqInfo);
+    int getTransIntfId(int interfaceId);
 
-    protected:
-        void onEvent(NetlinkEvent *evt);
-        void enqueueReqInfo(NA_CMD cmd, char *address, int ipv6PrefixLength, int interfaceId, ACTION action);
+  protected:
+    void onEvent(NetlinkEvent* evt);
+    void enqueueReqInfo(NA_CMD cmd, char* address, int ipv6PrefixLength, int interfaceId,
+                        ACTION action);
 
-    private:
-        NetAgentService *m_pNetAgent;
-        Vector<NetlinkEventReqInfo*> *m_pLastNetlinkEventReqInfo;
+  private:
+    NetAgentService* m_pNetAgent;
+    Vector<NetlinkEventReqInfo*>* m_pLastNetlinkEventReqInfo;
 };
 #endif /* __NETLINK_EVENT_HANDLER_H__ */

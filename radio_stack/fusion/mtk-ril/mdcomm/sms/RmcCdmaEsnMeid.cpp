@@ -22,20 +22,19 @@
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_URC_ID(
-        RmcStringUrsp, RFX_MSG_URC_CDMA_CARD_INITIAL_ESN_OR_MEID);
+RFX_REGISTER_DATA_TO_URC_ID(RmcStringUrsp, RFX_MSG_URC_CDMA_CARD_INITIAL_ESN_OR_MEID);
 
 /*****************************************************************************
  * Class RmcCdmaCardEsnMeidHdlr
  *****************************************************************************/
 
-bool RmcCdmaCardEsnMeidHdlr::onHandleRawUrc(RfxAtLine * line) {
+bool RmcCdmaCardEsnMeidHdlr::onHandleRawUrc(RfxAtLine* line) {
     int err;
-    char *oldEsnMe = line->atTokNextstr(&err);
+    char* oldEsnMe = line->atTokNextstr(&err);
     if (err < 0 || oldEsnMe == NULL) {
         return false;
     }
-    char *newEsnMe = line->atTokNextstr(&err);
+    char* newEsnMe = line->atTokNextstr(&err);
     if (err < 0 || oldEsnMe == NULL) {
         return false;
     }
@@ -44,8 +43,7 @@ bool RmcCdmaCardEsnMeidHdlr::onHandleRawUrc(RfxAtLine * line) {
     return true;
 }
 
-RmcBaseUrspData *RmcCdmaCardEsnMeidHdlr::onGetUrcData(int slotId) {
-    return new RmcStringUrsp(
-            RFX_MSG_URC_CDMA_CARD_INITIAL_ESN_OR_MEID, slotId,
-            m_oldEsnMe+ String8(",") + m_newEsnMe);
+RmcBaseUrspData* RmcCdmaCardEsnMeidHdlr::onGetUrcData(int slotId) {
+    return new RmcStringUrsp(RFX_MSG_URC_CDMA_CARD_INITIAL_ESN_OR_MEID, slotId,
+                             m_oldEsnMe + String8(",") + m_newEsnMe);
 }

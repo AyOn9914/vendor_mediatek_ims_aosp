@@ -36,16 +36,15 @@ const string RtcImsConferenceHandler::TAG_NEXT_LINE("<ascii_10>");
 const string RtcImsConferenceHandler::TAG_RETURN("<ascii_13>");
 const string RtcImsConferenceHandler::TAG_DOUBLE_QUOTE("<ascii_34>");
 
-#define ANONYMOUS_URI  "sip:anonymous@anonymous.invalid"
+#define ANONYMOUS_URI "sip:anonymous@anonymous.invalid"
 
-RtcImsConferenceHandler::RtcImsConferenceHandler(int slot) :
-        mIsCepNotified(false),
-        mConfCallId(-1),
-        mCepVersion(-1),
-        mHostAddr(""),
-        mAddingParticipant("null"),
-        mRemovingParticipant("null")
-{
+RtcImsConferenceHandler::RtcImsConferenceHandler(int slot)
+    : mIsCepNotified(false),
+      mConfCallId(-1),
+      mCepVersion(-1),
+      mHostAddr(""),
+      mAddingParticipant("null"),
+      mRemovingParticipant("null") {
     m_slot_id = slot;
     RFX_LOG_D(RFX_LOG_TAG, "RtcImsConferenceHandler()");
 }
@@ -82,16 +81,18 @@ void RtcImsConferenceHandler::closeConference() {
     mConnectedCount = 0;
 }
 
-void RtcImsConferenceHandler::firstMerge(string callId_1, string callId_2, string num_1, string num_2) {
-    RFX_LOG_D(RFX_LOG_TAG,
-            "firstMerge, callId_1: %s, callId_2: %s, num_1: %s, num_2: %s",
-            RfxRilUtils::pii(RFX_LOG_TAG, callId_1.data()), RfxRilUtils::pii(RFX_LOG_TAG, callId_2.data()),
-            RfxRilUtils::pii(RFX_LOG_TAG, num_1.data()), RfxRilUtils::pii(RFX_LOG_TAG, num_2.data()));
+void RtcImsConferenceHandler::firstMerge(string callId_1, string callId_2, string num_1,
+                                         string num_2) {
+    RFX_LOG_D(RFX_LOG_TAG, "firstMerge, callId_1: %s, callId_2: %s, num_1: %s, num_2: %s",
+              RfxRilUtils::pii(RFX_LOG_TAG, callId_1.data()),
+              RfxRilUtils::pii(RFX_LOG_TAG, callId_2.data()),
+              RfxRilUtils::pii(RFX_LOG_TAG, num_1.data()),
+              RfxRilUtils::pii(RFX_LOG_TAG, num_2.data()));
     mFirstMergeParticipants.clear();
-    mFirstMergeParticipants.insert(pair<string, string>(callId_1,
-            encodeSpecialChars(normalizeNumberFromCLIR(num_1))));
-    mFirstMergeParticipants.insert(pair<string, string>(callId_2,
-            encodeSpecialChars(normalizeNumberFromCLIR(num_2))));
+    mFirstMergeParticipants.insert(
+            pair<string, string>(callId_1, encodeSpecialChars(normalizeNumberFromCLIR(num_1))));
+    mFirstMergeParticipants.insert(
+            pair<string, string>(callId_2, encodeSpecialChars(normalizeNumberFromCLIR(num_2))));
 }
 
 void RtcImsConferenceHandler::tryAddParticipant(string addr) {
@@ -124,8 +125,10 @@ bool RtcImsConferenceHandler::modifyParticipantComplete() {
     }
 
     for (int i = 0; i < (int)mLocalParticipants.size(); i++) {
-        RFX_LOG_D(RFX_LOG_TAG, "modifyParticipantComplete: "
-                "mLocalParticipants:%s", RfxRilUtils::pii(RFX_LOG_TAG, mLocalParticipants[i].data()));
+        RFX_LOG_D(RFX_LOG_TAG,
+                  "modifyParticipantComplete: "
+                  "mLocalParticipants:%s",
+                  RfxRilUtils::pii(RFX_LOG_TAG, mLocalParticipants[i].data()));
     }
     return mIsCepNotified && isFirstMerge;
 }
@@ -140,24 +143,24 @@ void RtcImsConferenceHandler::modifyParticipantFailed() {
 }
 
 string RtcImsConferenceHandler::getUserNameFromSipTelUriString(string uriString) {
-    RFX_LOG_D(RFX_LOG_TAG,
-        "getUserNameFromSipTelUriString uriString: %s", RfxRilUtils::pii(RFX_LOG_TAG, uriString.data()));
+    RFX_LOG_D(RFX_LOG_TAG, "getUserNameFromSipTelUriString uriString: %s",
+              RfxRilUtils::pii(RFX_LOG_TAG, uriString.data()));
     if (uriString.empty()) {
         return "";
     }
-    //Uri uri = Uri.parse(uriString);
-    // Get the address part, i.e. everything between 'sip:' and the fragment separator '#'.
-    // ex: '+8618407404132@10.185.184.137:5087;transport=UDP'
-    // or '1234;phone-context=munich.example.com;isub=@1234'
+    // Uri uri = Uri.parse(uriString);
+    //  Get the address part, i.e. everything between 'sip:' and the fragment separator '#'.
+    //  ex: '+8618407404132@10.185.184.137:5087;transport=UDP'
+    //  or '1234;phone-context=munich.example.com;isub=@1234'
     vector<string> hostParts = splitString(uriString, ";");
     string headParts = hostParts[0];
     vector<string> addressParts = splitString(headParts, ":");
     string addressPart = addressParts[0];
-    if(addressParts.size() > 1) {
+    if (addressParts.size() > 1) {
         addressPart = addressParts[1];
     }
     vector<string> umberParts = splitString(addressPart, "@");
-    string address = umberParts[0];//uri.getSchemeSpecificPart();
+    string address = umberParts[0];  // uri.getSchemeSpecificPart();
     if (address.empty()) {
         return "";
     }
@@ -169,10 +172,10 @@ string RtcImsConferenceHandler::getUserNameFromSipTelUriString(string uriString)
     int pIndex = userName.find(";");
     int wIndex = userName.find(",");
     if (pIndex >= 0 && wIndex >= 0) {
-        userName = userName.substr(0, std::min(pIndex,wIndex));
-    } else if (pIndex >=0) {
+        userName = userName.substr(0, std::min(pIndex, wIndex));
+    } else if (pIndex >= 0) {
         userName = userName.substr(0, pIndex);
-    } else if (wIndex >=0) {
+    } else if (wIndex >= 0) {
         userName = userName.substr(0, wIndex);
     }
     return userName;
@@ -183,7 +186,7 @@ RtcImsConferenceCallMessageHandler* RtcImsConferenceHandler::parseXmlPackage(str
     sp<RfxXmlParser> parser = new RfxXmlParser();
     // RFX_LOG_V(RFX_LOG_TAG, "parseXmlPackage data: %s", data.data());
     parser->parse(parsedData, data);
-    //Read conference data and parse it
+    // Read conference data and parse it
     return parsedData;
 }
 
@@ -209,33 +212,35 @@ void RtcImsConferenceHandler::updateConferenceStateWithLocalCache() {
         user->mStatus = RtcImsConferenceCallMessageHandler::STATUS_CONNECTED;
         user->mEntity = addr;
         mParticipants.push_back(user);
-        RFX_LOG_D(RFX_LOG_TAG, "updateConferenceStateWithLocalCache: "
-                "mLocalParticipants %d:%s", i, RfxRilUtils::pii(RFX_LOG_TAG, addr.data()));
+        RFX_LOG_D(RFX_LOG_TAG,
+                  "updateConferenceStateWithLocalCache: "
+                  "mLocalParticipants %d:%s",
+                  i, RfxRilUtils::pii(RFX_LOG_TAG, addr.data()));
     }
 
     // Terminate the empty conference.
     bool autoTerminate = false;
     if (count == 0 && mHaveUpdatedConferenceWithMember) {
         RFX_LOG_D(RFX_LOG_TAG,
-                "updateConferenceStateWithLocalCache, no participants, terminate the conference");
+                  "updateConferenceStateWithLocalCache, no participants, terminate the conference");
         autoTerminate = true;
     } else if (count != 0 && !mHaveUpdatedConferenceWithMember) {
-        RFX_LOG_D(RFX_LOG_TAG,
+        RFX_LOG_D(
+                RFX_LOG_TAG,
                 "updateConferenceStateWithLocalCache, set mHaveUpdatedConferenceWithMember = true");
         mHaveUpdatedConferenceWithMember = true;
     }
 
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    RtcImsConferenceController *ctrl =
-            (RtcImsConferenceController *)root->findController(m_slot_id,
-                    RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RtcImsConferenceController* ctrl = (RtcImsConferenceController*)root->findController(
+            m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
     if (ctrl != NULL) {
         ctrl->onParticipantsUpdate(autoTerminate);
     }
 }
 
-void RtcImsConferenceHandler::setupHost(RtcImsConferenceCallMessageHandler* xmlData){
-    //get host address from the optional xml element <host-info>
+void RtcImsConferenceHandler::setupHost(RtcImsConferenceCallMessageHandler* xmlData) {
+    // get host address from the optional xml element <host-info>
     RFX_LOG_D(RFX_LOG_TAG, "setupHost");
     string hostAddr = getUserNameFromSipTelUriString(xmlData->getHostInfo());
 
@@ -250,17 +255,18 @@ void RtcImsConferenceHandler::setupHost(RtcImsConferenceCallMessageHandler* xmlD
 
 bool RtcImsConferenceHandler::isSelfAddress(string address) {
     if (address.empty()) return false;
-    RFX_LOG_D(RFX_LOG_TAG,
-        "isSelfAddress(): address: %s, mHostAddr: %s", RfxRilUtils::pii(RFX_LOG_TAG, address.data()),
-        RfxRilUtils::pii(RFX_LOG_TAG, mHostAddr.data()));
-    if (mHostAddr.compare(address) == 0 || MtkPhoneNumberUtils::compareLoosely(mHostAddr, address)) {
+    RFX_LOG_D(RFX_LOG_TAG, "isSelfAddress(): address: %s, mHostAddr: %s",
+              RfxRilUtils::pii(RFX_LOG_TAG, address.data()),
+              RfxRilUtils::pii(RFX_LOG_TAG, mHostAddr.data()));
+    if (mHostAddr.compare(address) == 0 ||
+        MtkPhoneNumberUtils::compareLoosely(mHostAddr, address)) {
         RFX_LOG_D(RFX_LOG_TAG, "isSelfAddress(): true, meet host info in xml");
         return true;
     }
 
     RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    Vector<String8> xuis = root->getStatusManager(m_slot_id)->getString8VectorValue(
-            RFX_STATUS_KEY_XUI_INFO);
+    Vector<String8> xuis =
+            root->getStatusManager(m_slot_id)->getString8VectorValue(RFX_STATUS_KEY_XUI_INFO);
     for (int i = 0; i < (int)xuis.size(); ++i) {
         string xui = getUserNameFromSipTelUriString(xuis[i].string());
         if (xui.empty()) continue;
@@ -277,7 +283,7 @@ bool RtcImsConferenceHandler::updateParticipants(sp<ConferenceCallUser> oldParti
     string from = oldParticipant->mUserAddr;
 
     RFX_LOG_D(RFX_LOG_TAG, "updateParticipants() : from %s to %s",
-            RfxRilUtils::pii(RFX_LOG_TAG, from.data()), RfxRilUtils::pii(RFX_LOG_TAG, to.data()));
+              RfxRilUtils::pii(RFX_LOG_TAG, from.data()), RfxRilUtils::pii(RFX_LOG_TAG, to.data()));
 
     for (int i = 0; i < (int)mConfParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = mConfParticipants[i];
@@ -285,7 +291,7 @@ bool RtcImsConferenceHandler::updateParticipants(sp<ConferenceCallUser> oldParti
         if (participant->mUserAddr == from && participant->mEndPoint == oldParticipant->mEndPoint) {
             if (from != to) {
                 participant->mUserAddr = to;
-                insertParticipantsAddrMap(to , from);
+                insertParticipantsAddrMap(to, from);
             }
             updated = true;
             break;
@@ -296,7 +302,7 @@ bool RtcImsConferenceHandler::updateParticipants(sp<ConferenceCallUser> oldParti
         RFX_LOG_D(RFX_LOG_TAG, "updateParticipants() : add new item");
 
         oldParticipant->mUserAddr = to;
-        insertParticipantsAddrMap(to , from);
+        insertParticipantsAddrMap(to, from);
         mConfParticipants.push_back(oldParticipant);
     }
 
@@ -308,7 +314,7 @@ void RtcImsConferenceHandler::insertParticipantsAddrMap(string key, string value
     if (iter != mParticipantsAddrMap.end()) {
         iter->second = value;
     } else {
-        mParticipantsAddrMap.insert(pair<string, string>(key , value));
+        mParticipantsAddrMap.insert(pair<string, string>(key, value));
     }
 }
 
@@ -318,44 +324,41 @@ void RtcImsConferenceHandler::showCacheAndXmlData(string callerName) {
     RFX_LOG_D(RFX_LOG_TAG, " - mLocalParticipants =>");
     for (int i = 0; i < (int)mLocalParticipants.size(); i++) {
         RFX_LOG_D(RFX_LOG_TAG, "    + element : %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, mLocalParticipants[i].data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, mLocalParticipants[i].data()));
     }
 
     RFX_LOG_D(RFX_LOG_TAG, " - mConfParticipants =>");
     for (int i = 0; i < (int)mConfParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = mConfParticipants[i];
         RFX_LOG_D(RFX_LOG_TAG, "    + element : %s %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, participant->mUserAddr.data()),
-                participant->mStatus.data());
+                  RfxRilUtils::pii(RFX_LOG_TAG, participant->mUserAddr.data()),
+                  participant->mStatus.data());
     }
 
     RFX_LOG_D(RFX_LOG_TAG, " - mUnknownParticipants =>");
     for (int i = 0; i < (int)mUnknownParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = mUnknownParticipants[i];
         RFX_LOG_D(RFX_LOG_TAG, "    + element : %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, participant->mUserAddr.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, participant->mUserAddr.data()));
     }
 }
 
 void RtcImsConferenceHandler::restoreParticipantsAddressByLocalCache() {
-    RFX_LOG_D(
-            RFX_LOG_TAG,
-            "restoreParticipantsAddressByLocalCache() :  Local() = %d , Xml.C = %d, , Xml.U = %d",
-            (int)mLocalParticipants.size(),
-            (int)mConfParticipants.size(),
-            (int)mUnknownParticipants.size());
+    RFX_LOG_D(RFX_LOG_TAG,
+              "restoreParticipantsAddressByLocalCache() :  Local() = %d , Xml.C = %d, , Xml.U = %d",
+              (int)mLocalParticipants.size(), (int)mConfParticipants.size(),
+              (int)mUnknownParticipants.size());
 
     showCacheAndXmlData("restoreParticipantsAddressByLocalCache (before)");
 
-    //copy mLocalParticipants
+    // copy mLocalParticipants
     vector<string> LocalUnMatchParticipants(mLocalParticipants);
-    //copy mConfParticipants
+    // copy mConfParticipants
     vector<sp<ConferenceCallUser>> XmlParticipants(mConfParticipants);
 
     vector<sp<ConferenceCallUser>> XmlUnMatchParticipants;
 
-    for(int i = 0; i < (int)XmlParticipants.size(); i++) {
-
+    for (int i = 0; i < (int)XmlParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = XmlParticipants[i];
         string userHandle = getPairedAddress(participant->mUserAddr);
 
@@ -366,9 +369,9 @@ void RtcImsConferenceHandler::restoreParticipantsAddressByLocalCache() {
         }
 
         if ((checkCarrierConfig(RFX_STATUS_KEY_IMS_CONFERENCE_FIRST_PARTICIPANT_AS_HOST) ||
-                isSelfAddress(userHandle) == false) &&
-                isContainParticipant(LocalUnMatchParticipants, userHandle) == false) {
-           // Not self and match failed, keep addr and wait for restore.
+             isSelfAddress(userHandle) == false) &&
+            isContainParticipant(LocalUnMatchParticipants, userHandle) == false) {
+            // Not self and match failed, keep addr and wait for restore.
             // but if RFX_STATUS_KEY_IMS_CONFERENCE_FIRST_PARTICIPANT_AS_HOST is true,
             // don't check isSelf because host should not be here
             XmlUnMatchParticipants.push_back(participant);
@@ -383,8 +386,7 @@ void RtcImsConferenceHandler::restoreParticipantsAddressByLocalCache() {
     }
 
     // use the "not paired" local address to restored the special user entity
-    for(int i = 0; i < (int)XmlUnMatchParticipants.size(); i++) {
-
+    for (int i = 0; i < (int)XmlUnMatchParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = XmlUnMatchParticipants[i];
         string userHandle = participant->mUserAddr;
 
@@ -397,15 +399,13 @@ void RtcImsConferenceHandler::restoreParticipantsAddressByLocalCache() {
         string restoreHandle = LocalUnMatchParticipants[0];
         LocalUnMatchParticipants.erase(LocalUnMatchParticipants.begin());
 
-        RFX_LOG_D(
-            RFX_LOG_TAG,
-            "restoreParticipantsAddressByLocalCache() : restore participants %s to: %s",
-            RfxRilUtils::pii(RFX_LOG_TAG, userHandle.data()),
-            RfxRilUtils::pii(RFX_LOG_TAG, restoreHandle.data()));
+        RFX_LOG_D(RFX_LOG_TAG,
+                  "restoreParticipantsAddressByLocalCache() : restore participants %s to: %s",
+                  RfxRilUtils::pii(RFX_LOG_TAG, userHandle.data()),
+                  RfxRilUtils::pii(RFX_LOG_TAG, restoreHandle.data()));
 
         // update restore data
         updateParticipants(participant, restoreHandle);
-
     }
 
     restoreUnknowParticipants(LocalUnMatchParticipants);
@@ -413,17 +413,15 @@ void RtcImsConferenceHandler::restoreParticipantsAddressByLocalCache() {
     // show restore result
     //
     showCacheAndXmlData("restoreParticipantsAddressByLocalCache (after)");
-
 }
 
 void RtcImsConferenceHandler::restoreUnknowParticipants(vector<string> LocalUnMatchParticipants) {
-    //copy mConfParticipants
+    // copy mConfParticipants
     vector<sp<ConferenceCallUser>> unkownXmlParticipants(mUnknownParticipants);
 
     int restoreIndex = 0;
 
-    for(int i = 0; i < (int)mUnknownParticipants.size(); i++) {
-
+    for (int i = 0; i < (int)mUnknownParticipants.size(); i++) {
         sp<ConferenceCallUser> participant = mUnknownParticipants[i];
 
         if ((int)LocalUnMatchParticipants.size() <= restoreIndex) {
@@ -436,21 +434,18 @@ void RtcImsConferenceHandler::restoreUnknowParticipants(vector<string> LocalUnMa
         // update data
         updateParticipants(participant, userHandle);
 
-        if(unkownXmlParticipants.size() > 0) {
+        if (unkownXmlParticipants.size() > 0) {
             unkownXmlParticipants.erase(unkownXmlParticipants.begin());
         }
 
-        RFX_LOG_D(
-            RFX_LOG_TAG,
-            "restoreUnknowParticipants() : restore unknown participants( %d ) to: %s",
-            restoreIndex,
-            RfxRilUtils::pii(RFX_LOG_TAG, userHandle.data()));
+        RFX_LOG_D(RFX_LOG_TAG,
+                  "restoreUnknowParticipants() : restore unknown participants( %d ) to: %s",
+                  restoreIndex, RfxRilUtils::pii(RFX_LOG_TAG, userHandle.data()));
 
         restoreIndex++;
     }
 
     mUnknownParticipants = unkownXmlParticipants;
-
 }
 
 void RtcImsConferenceHandler::fullUpdateParticipants(vector<sp<ConferenceCallUser>> users) {
@@ -463,7 +458,7 @@ void RtcImsConferenceHandler::fullUpdateParticipants(vector<sp<ConferenceCallUse
         string userAddr = getUserNameFromSipTelUriString(user->mEntity);
 
         if (i == 0 && checkCarrierConfig(RFX_STATUS_KEY_IMS_CONFERENCE_FIRST_PARTICIPANT_AS_HOST) &&
-                (int)users.size() > (int)mLocalParticipants.size()) {
+            (int)users.size() > (int)mLocalParticipants.size()) {
             /*
              * For the operation don't provide host-info in CEP and set the host entity as anonymous
              * don't update the host as conference participant because it could not matched
@@ -516,8 +511,8 @@ void RtcImsConferenceHandler::partialUpdateParticipants(vector<sp<ConferenceCall
 
         // Carefully, for "" user-enity case, the userAddr may get wrong.
         RFX_LOG_D(RFX_LOG_TAG, "partialUpdateParticipants original: %s, userAddr: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, originalUserAddr.data()),
-                RfxRilUtils::pii(RFX_LOG_TAG, user->mUserAddr.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, originalUserAddr.data()),
+                  RfxRilUtils::pii(RFX_LOG_TAG, user->mUserAddr.data()));
 
         // Handle special case. We assume normally partial update only update the change.
         if (originalUserAddr.empty()) {
@@ -530,10 +525,10 @@ void RtcImsConferenceHandler::partialUpdateParticipants(vector<sp<ConferenceCall
                 RFX_LOG_D(RFX_LOG_TAG, "add unknown participants");
                 continue;
 
-            // Case 2: "" and Disconnected with not enable restore.
-            //         Remove an unknown participant.
-            } else if (!mRestoreImsConferenceParticipant && status ==
-                    RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED) {
+                // Case 2: "" and Disconnected with not enable restore.
+                //         Remove an unknown participant.
+            } else if (!mRestoreImsConferenceParticipant &&
+                       status == RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED) {
                 // remove last unknown participants
                 if (mUnknownParticipants.size() > 0) {
                     mUnknownParticipants.pop_back();
@@ -547,9 +542,9 @@ void RtcImsConferenceHandler::partialUpdateParticipants(vector<sp<ConferenceCall
         if (!(status == RtcImsConferenceCallMessageHandler::STATUS_DIALING_OUT)) {
             for (int j = 0; j < (int)mConfParticipants.size(); j++) {
                 if ((mConfParticipants[j]->mEntity.compare(user->mEntity) == 0
-                        // For Vodafone ES.
-                        || mConfParticipants[j]->mEntity.empty()) &&
-                        mConfParticipants[j]->mEndPoint.compare(user->mEndPoint) == 0) {
+                     // For Vodafone ES.
+                     || mConfParticipants[j]->mEntity.empty()) &&
+                    mConfParticipants[j]->mEndPoint.compare(user->mEndPoint) == 0) {
                     user->mUserAddr = mConfParticipants[j]->mUserAddr;
                     mConfParticipants.erase(mConfParticipants.begin() + j);
                     RFX_LOG_D(RFX_LOG_TAG, "Find participant, update it.");
@@ -572,8 +567,8 @@ void RtcImsConferenceHandler::updateLocalCache(int cepState) {
     int connectedCount = 0;
     for (int i = 0; i < (int)mConfParticipants.size(); i++) {
         if (RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED.compare(
-                mConfParticipants[i]->mStatus) == 0) {
-            disconnectedCount++ ;
+                    mConfParticipants[i]->mStatus) == 0) {
+            disconnectedCount++;
         } else {
             if (!isSelfAddress(mConfParticipants[i]->mUserAddr)) {
                 connectedCount++;
@@ -587,21 +582,22 @@ void RtcImsConferenceHandler::updateLocalCache(int cepState) {
     int localParticipantsSize = (int)mLocalParticipants.size();
     int oneKeyAddingParticipantsSize = (int)mOneKeyAddingParticipants.size();
     if (disconnectedCount && localParticipantsSize > connectedCount) {
-        //copy mLastConfParticipants
+        // copy mLastConfParticipants
         vector<sp<ConferenceCallUser>> unMatchedLastParticipants(mLastConfParticipants);
         for (int i = 0; i < (int)mConfParticipants.size(); i++) {
             if (RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED.compare(
-                    mConfParticipants[i]->mStatus) == 0) {
+                        mConfParticipants[i]->mStatus) == 0) {
                 // ALPS04948668: Removed participant from local list only when its
                 // new disconnected.
                 if (cepState == RtcImsConferenceCallMessageHandler::CEP_STATE_FULL) {
-                    vector<sp<ConferenceCallUser>>::iterator iter = unMatchedLastParticipants.begin();
+                    vector<sp<ConferenceCallUser>>::iterator iter =
+                            unMatchedLastParticipants.begin();
                     bool isNewDisconnected = true;
                     while (iter != unMatchedLastParticipants.end()) {
                         sp<ConferenceCallUser> lastParticipant = (sp<ConferenceCallUser>)*iter;
                         if (RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED.compare(
-                                lastParticipant->mStatus) == 0 &&
-                                lastParticipant->mUserAddr == mConfParticipants[i]->mUserAddr) {
+                                    lastParticipant->mStatus) == 0 &&
+                            lastParticipant->mUserAddr == mConfParticipants[i]->mUserAddr) {
                             iter = unMatchedLastParticipants.erase(iter);
                             isNewDisconnected = false;
                             break;
@@ -616,8 +612,8 @@ void RtcImsConferenceHandler::updateLocalCache(int cepState) {
 
                 string restoredAddress = getPairedRestoredAddress(mConfParticipants[i]->mUserAddr);
                 if (mRemovingParticipant != "null") {
-                    // ALPS04297642, User want to remove A but B disconnected, we assume the mapping was wrong,
-                    // So we remove the both mapping.
+                    // ALPS04297642, User want to remove A but B disconnected, we assume the mapping
+                    // was wrong, So we remove the both mapping.
                     if (cepState == RtcImsConferenceCallMessageHandler::CEP_STATE_FULL) {
                         if (disconnectedCount == 1 && restoredAddress != mRemovingParticipant) {
                             restoredAddress = mRemovingParticipant;
@@ -626,45 +622,44 @@ void RtcImsConferenceHandler::updateLocalCache(int cepState) {
                     mRemovingParticipant = "null";
                 }
                 RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: remove %s",
-                        RfxRilUtils::pii(RFX_LOG_TAG, restoredAddress.data()));
+                          RfxRilUtils::pii(RFX_LOG_TAG, restoredAddress.data()));
                 // ALPS04672817, Only remove number from local list when exactly match.
                 removeParticipant(mLocalParticipants, restoredAddress, false);
                 mParticipantsAddrMap.erase(restoredAddress);
             }
         }
-    // Hanle one key invite case.
-    } else if (oneKeyAddingParticipantsSize > 0 &&
-            connectedCount > mConnectedCount && connectedCount > localParticipantsSize) {
+        // Hanle one key invite case.
+    } else if (oneKeyAddingParticipantsSize > 0 && connectedCount > mConnectedCount &&
+               connectedCount > localParticipantsSize) {
         int newJoinedCount = connectedCount - mConnectedCount;
 
         RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: newJoinedCount %d, oneKeyAdding %d",
-                newJoinedCount, oneKeyAddingParticipantsSize);
+                  newJoinedCount, oneKeyAddingParticipantsSize);
         for (int j = 0; j < oneKeyAddingParticipantsSize; j++) {
             RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: mOneKeyAddingParticipants:%s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, mOneKeyAddingParticipants[j].data()));
+                      RfxRilUtils::pii(RFX_LOG_TAG, mOneKeyAddingParticipants[j].data()));
         }
         // All joined conference.
-        if (newJoinedCount == oneKeyAddingParticipantsSize
-                || connectedCount - localParticipantsSize == oneKeyAddingParticipantsSize) {
+        if (newJoinedCount == oneKeyAddingParticipantsSize ||
+            connectedCount - localParticipantsSize == oneKeyAddingParticipantsSize) {
             for (int j = 0; j < oneKeyAddingParticipantsSize; j++) {
                 RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: add %s",
-                        RfxRilUtils::pii(RFX_LOG_TAG, mOneKeyAddingParticipants[j].data()));
+                          RfxRilUtils::pii(RFX_LOG_TAG, mOneKeyAddingParticipants[j].data()));
                 mLocalParticipants.push_back(mOneKeyAddingParticipants[j]);
             }
             mOneKeyAddingParticipants.clear();
-        // Only some joined conference.
+            // Only some joined conference.
         } else if (newJoinedCount < oneKeyAddingParticipantsSize) {
             vector<string>::iterator iter = mOneKeyAddingParticipants.begin();
             while (iter != mOneKeyAddingParticipants.end()) {
                 bool matched = false;
                 for (int i = 0; i < (int)mConfParticipants.size(); i++) {
                     if (RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED.compare(
-                        mConfParticipants[i]->mStatus) != 0) {
+                                mConfParticipants[i]->mStatus) != 0) {
                         if (MtkPhoneNumberUtils::compareLoosely(mConfParticipants[i]->mUserAddr,
-                                (string)*iter)) {
+                                                                (string)*iter)) {
                             RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: add %s",
-                                    RfxRilUtils::pii(RFX_LOG_TAG,
-                                    ((string)*iter).data()));
+                                      RfxRilUtils::pii(RFX_LOG_TAG, ((string)*iter).data()));
                             mLocalParticipants.push_back((string)*iter);
                             iter = mOneKeyAddingParticipants.erase(iter);
                             matched = true;
@@ -678,10 +673,10 @@ void RtcImsConferenceHandler::updateLocalCache(int cepState) {
         }
     }
 
-    if (mAddingParticipant != "null" && connectedCount > mConnectedCount
-            && connectedCount > localParticipantsSize) {
+    if (mAddingParticipant != "null" && connectedCount > mConnectedCount &&
+        connectedCount > localParticipantsSize) {
         RFX_LOG_D(RFX_LOG_TAG, "updateLocalCache: add %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, mAddingParticipant.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, mAddingParticipant.data()));
         mLocalParticipants.push_back(mAddingParticipant);
         mAddingParticipant = "null";
     }
@@ -706,10 +701,9 @@ void RtcImsConferenceHandler::notifyConfStateUpdate() {
         autoTerminate = true;
     }
 
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    RtcImsConferenceController *ctrl =
-            (RtcImsConferenceController *)root->findController(m_slot_id,
-                    RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RtcImsConferenceController* ctrl = (RtcImsConferenceController*)root->findController(
+            m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
     if (ctrl != NULL) {
         ctrl->onParticipantsUpdate(autoTerminate);
     }
@@ -720,7 +714,8 @@ vector<sp<ConferenceCallUser>> RtcImsConferenceHandler::getConfParticipantsInfo(
 }
 
 string RtcImsConferenceHandler::getConfParticipantUri(string addr, bool isRetry) {
-    bool byUserEntity = checkCarrierConfig(RFX_STATUS_KEY_OPERATE_IMS_CONFERENCE_PARTICIPANTS_BY_USER_ENTITY);
+    bool byUserEntity =
+            checkCarrierConfig(RFX_STATUS_KEY_OPERATE_IMS_CONFERENCE_PARTICIPANTS_BY_USER_ENTITY);
     // byUserEntity: true, try user entity from CEP first, then try restored number.
     // byUserEntity: false, try restored number first, then try user entity from CEP.
     if (byUserEntity != isRetry) {
@@ -783,10 +778,9 @@ void RtcImsConferenceHandler::handleImsConfCallMessage(const sp<RfxMessage>& mes
     /*
      * +EIMSEVTPKG: <call_id>,<type>,<urc_index>,<total_urc_count>,<data>
      * <call_id>:  0~255
-     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event Package
-     * <urc_index>: 1~255, the index of URC part
-     * <total_urc_count>: 1~255
-     * <data>: xml raw data, max length = 1950
+     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event
+     * Package <urc_index>: 1~255, the index of URC part <total_urc_count>: 1~255 <data>: xml raw
+     * data, max length = 1950
      */
 
     RfxStringsData* data = (RfxStringsData*)message->getData();
@@ -813,9 +807,8 @@ void RtcImsConferenceHandler::handleImsConfCallMessage(const sp<RfxMessage>& mes
     bool isFirstPkt = (index == 1);
     mCepData = concatData(isFirstPkt, mCepData, rawData);
     if (index != count) {
-        //do nothing
+        // do nothing
         return;
-
     }
     mCepData = recoverDataFromAsciiTag(mCepData);
     if (mCepData.empty()) {
@@ -830,44 +823,43 @@ void RtcImsConferenceHandler::handleImsConfCallMessage(const sp<RfxMessage>& mes
         return;
     }
 
-
-    //get user data from xml and fill them into ImsConferenceState data structure.
+    // get user data from xml and fill them into ImsConferenceState data structure.
     vector<sp<ConferenceCallUser>> users = xmlData->getUsers();
     if (users.size() == 0 && mConfCallId == -1) {
         goto back;
     }
-    //get CPE state
+    // get CPE state
     cepState = xmlData->getCEPState();
     RFX_LOG_D(RFX_LOG_TAG, "cepState: %d", cepState);
     isPartialCEP = (cepState == RtcImsConferenceCallMessageHandler::CEP_STATE_PARTIAL);
 
     version = xmlData->getVersion();
-    //Full CEP should process by the serial number.
-    //Partial CEP is independent, no need to process sequentially.
+    // Full CEP should process by the serial number.
+    // Partial CEP is independent, no need to process sequentially.
     if (isPartialCEP == false) {
         if (mCepVersion >= version && mCepVersion != -1) {
             RFX_LOG_W(RFX_LOG_TAG, "version is equal or less than local version: %d, version: %d",
-                    mCepVersion, version);
+                      mCepVersion, version);
             goto back;
         }
     }
     mIsCepNotified = true;
     mCepVersion = version;
-    //setup host
+    // setup host
     if (mHostAddr.empty()) {
         setupHost(xmlData);
         RFX_LOG_D(RFX_LOG_TAG, "setupHost: mHostAddr: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, mHostAddr.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, mHostAddr.data()));
     }
     mConfCallId = callId;
 
-    //get optional xml element:user count
+    // get optional xml element:user count
     userCount = xmlData->getUserCount();
 
     mLastConfParticipants.clear();
     mLastConfParticipants = mConfParticipants;
-    //no optional user count element,
-    //remove the participants who is not included in the xml.
+    // no optional user count element,
+    // remove the participants who is not included in the xml.
     switch (cepState) {
         case RtcImsConferenceCallMessageHandler::CEP_STATE_FULL:
             fullUpdateParticipants(users);
@@ -909,7 +901,8 @@ bool RtcImsConferenceHandler::checkCarrierConfig(const RfxStatusKeyEnum key) {
     return false;
 }
 
-bool RtcImsConferenceHandler::isContainParticipant(vector<string> participants, string participant) {
+bool RtcImsConferenceHandler::isContainParticipant(vector<string> participants,
+                                                   string participant) {
     for (int i = 0; i < (int)participants.size(); i++) {
         if (MtkPhoneNumberUtils::compareLoosely(participants[i], participant)) {
             RFX_LOG_D(RFX_LOG_TAG, "isContainParticipant: true");
@@ -920,21 +913,21 @@ bool RtcImsConferenceHandler::isContainParticipant(vector<string> participants, 
 }
 
 void RtcImsConferenceHandler::removeParticipant(vector<string>& participants, string participant,
-        bool compareLoosely) {
+                                                bool compareLoosely) {
     for (int i = 0; i < (int)participants.size(); i++) {
         if ((compareLoosely && MtkPhoneNumberUtils::compareLoosely(participants[i], participant)) ||
-                (!compareLoosely && participants[i].compare(participant) == 0)) {
+            (!compareLoosely && participants[i].compare(participant) == 0)) {
             participants.erase(participants.begin() + i);
             break;
         }
     }
 }
 
-string RtcImsConferenceHandler::getPairedAddress(const string &addr) {
+string RtcImsConferenceHandler::getPairedAddress(const string& addr) {
     string restoredAddress = getPairedRestoredAddress(addr);
     if (restoredAddress != addr) {
         RFX_LOG_D(RFX_LOG_TAG, "getPairedAddress: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, restoredAddress.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, restoredAddress.data()));
         return restoredAddress;
     }
     for (int i = 0; i < (int)mLocalParticipants.size(); i++) {
@@ -958,12 +951,12 @@ vector<string> RtcImsConferenceHandler::splitString(string str, string c) {
     vector<string> result;
     str += c;
     string::size_type len = str.size();
-    for (string::size_type i = 0; i < len; i ++) {
+    for (string::size_type i = 0; i < len; i++) {
         pos = str.find(c, i);
         if (pos < len) {
-            string temp = str.substr(i, pos-i);
+            string temp = str.substr(i, pos - i);
             result.push_back(temp);
-            i = pos + c.size() -1;
+            i = pos + c.size() - 1;
         }
     }
     return result;
@@ -982,11 +975,11 @@ string RtcImsConferenceHandler::normalizeNumberFromCLIR(string number) {
     return number;
 }
 
-string RtcImsConferenceHandler::replaceAll(string &str,
-        const string &old_value, const string &new_value) {
-    while(true) {
+string RtcImsConferenceHandler::replaceAll(string& str, const string& old_value,
+                                           const string& new_value) {
+    while (true) {
         string::size_type pos(0);
-        if((pos=str.find(old_value)) != string::npos) {
+        if ((pos = str.find(old_value)) != string::npos) {
             str.replace(pos, old_value.length(), new_value);
         } else {
             break;
@@ -997,12 +990,12 @@ string RtcImsConferenceHandler::replaceAll(string &str,
 
 string RtcImsConferenceHandler::getPairedRestoredAddress(string userAddr) {
     map<string, string>::reverse_iterator it;
-    for (it = mParticipantsAddrMap.rbegin(); it != mParticipantsAddrMap.rend(); ++it ) {
+    for (it = mParticipantsAddrMap.rbegin(); it != mParticipantsAddrMap.rend(); ++it) {
         if (it->second == userAddr) {
             return it->first;
         }
     }
-    for (it = mParticipantsAddrMap.rbegin(); it != mParticipantsAddrMap.rend(); ++it ) {
+    for (it = mParticipantsAddrMap.rbegin(); it != mParticipantsAddrMap.rend(); ++it) {
         if (MtkPhoneNumberUtils::compareLoosely(it->first, userAddr)) {
             return it->first;
         }
@@ -1012,10 +1005,10 @@ string RtcImsConferenceHandler::getPairedRestoredAddress(string userAddr) {
 
 void RtcImsConferenceHandler::dumpParticipantsAddrMap() {
     map<string, string>::iterator it;
-    for (it = mParticipantsAddrMap.begin(); it != mParticipantsAddrMap.end(); ++it ) {
+    for (it = mParticipantsAddrMap.begin(); it != mParticipantsAddrMap.end(); ++it) {
         RFX_LOG_D(RFX_LOG_TAG, "dumpParticipantsAddrMap Restored: %s, User address: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, it->first.data()),
-                RfxRilUtils::pii(RFX_LOG_TAG, it->second.data()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, it->first.data()),
+                  RfxRilUtils::pii(RFX_LOG_TAG, it->second.data()));
     }
 }
 

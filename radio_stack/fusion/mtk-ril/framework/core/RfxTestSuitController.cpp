@@ -37,47 +37,44 @@ RFX_OBJ_IMPLEMENT_SINGLETON_CLASS(RfxTestSuitController);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RIL_REQUEST_LOCAL_TEST);
 
 const RfxCreateControllerFuncPtr RfxTestSuitController::s_test_controllers[] = {
-//    RFX_TEST_CONTROLLER_ENTRY(RfxTestHelloController)
+        //    RFX_TEST_CONTROLLER_ENTRY(RfxTestHelloController)
 };
 
 void RfxTestSuitController::onInit() {
     RfxController::onInit();
-    if(isEnableTest()) {
+    if (isEnableTest()) {
         RFX_LOG_D(RFX_TEST_SUIT_LOG_TAG, "onInit");
         const int request_id_list[] = {RIL_REQUEST_LOCAL_TEST};
         registerToHandleRequest(request_id_list, 1);
         // Assume we have array to send
         RfxMainThread::enqueueMessage(
-            RfxMessage::obtainRequest(0, RIL_REQUEST_LOCAL_TEST, RfxVoidData()));
+                RfxMessage::obtainRequest(0, RIL_REQUEST_LOCAL_TEST, RfxVoidData()));
     }
 }
 
 bool RfxTestSuitController::onHandleRequest(const sp<RfxMessage>& message) {
     RFX_UNUSED(message);
-    uint32_t test_controller_size =
-        sizeof(s_test_controllers) / sizeof(RfxCreateControllerFuncPtr);
+    uint32_t test_controller_size = sizeof(s_test_controllers) / sizeof(RfxCreateControllerFuncPtr);
     RFX_LOG_D(RFX_TEST_SUIT_LOG_TAG, "onHandleRequest, size: %d", test_controller_size);
-    if(m_index < test_controller_size) {
-        m_testObj = (RfxTestBasicController *)s_test_controllers[m_index](this);
+    if (m_index < test_controller_size) {
+        m_testObj = (RfxTestBasicController*)s_test_controllers[m_index](this);
         m_testObj->run();
     }
     return true;
 }
 
-bool RfxTestSuitController::isEnableTest() {
-    return mTestSwitcher;
-}
+bool RfxTestSuitController::isEnableTest() { return mTestSwitcher; }
 
 void RfxTestSuitController::checkSuccessAndEnqueueNext() {
     uint32_t test_controller_size = sizeof(s_test_controllers) / sizeof(RfxCreateControllerFuncPtr);
     RFX_LOG_D(RFX_TEST_SUIT_LOG_TAG, "checkSuccessAndEnqueueNext, size: %d", test_controller_size);
-    if(m_index < test_controller_size) {
+    if (m_index < test_controller_size) {
         m_testObj->checkSuccess();
         m_index++;
         RFX_OBJ_CLOSE(m_testObj);
     }
     if (m_index < test_controller_size) {
-        RfxMainThread::enqueueMessage(RfxMessage::obtainRequest(0, RIL_REQUEST_LOCAL_TEST,
-                RfxVoidData()));
+        RfxMainThread::enqueueMessage(
+                RfxMessage::obtainRequest(0, RIL_REQUEST_LOCAL_TEST, RfxVoidData()));
     }
 }

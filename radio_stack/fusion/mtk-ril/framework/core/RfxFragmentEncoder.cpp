@@ -20,52 +20,51 @@
 #define RFX_LOG_TAG "RfxFragEnc"
 
 String8 RfxFragmentData::toString() const {
-    return String8::format("mVersion: %d, mClientId: %d, mConfig: %d, \
-            mLength: %zu", mVersion, mClientId, mConfig, mLength);
+    return String8::format(
+            "mVersion: %d, mClientId: %d, mConfig: %d, \
+            mLength: %zu",
+            mVersion, mClientId, mConfig, mLength);
 }
 
-RfxFragmentEncoder *RfxFragmentEncoder::sSelf = NULL;
+RfxFragmentEncoder* RfxFragmentEncoder::sSelf = NULL;
 
-RfxFragmentEncoder::RfxFragmentEncoder() {
-}
+RfxFragmentEncoder::RfxFragmentEncoder() {}
 
-void RfxFragmentEncoder::init() {
-    sSelf = new RfxFragmentEncoder();
-}
+void RfxFragmentEncoder::init() { sSelf = new RfxFragmentEncoder(); }
 
 unsigned char* RfxFragmentEncoder::encodeHeader(RfxFragmentData data) {
     unsigned char* header;
-    header = (unsigned char*)calloc(HEADER_SIZE+1, sizeof(char));
+    header = (unsigned char*)calloc(HEADER_SIZE + 1, sizeof(char));
     if (header == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return NULL;
     }
     char log[100] = {0};
-    char *tmpLog = NULL;
+    char* tmpLog = NULL;
 
     int tmpClientId;
     // start flag
-    header[0] =  FRAME_START_FLAG;
-    header[1] =  FRAME_START_FLAG;
+    header[0] = FRAME_START_FLAG;
+    header[1] = FRAME_START_FLAG;
 
     // version
-    header[2] =  VERSION;
+    header[2] = VERSION;
 
     // config
-    header[3] =  (char)data.getClientId();
-    header[4] =  (char)data.getConfig();
+    header[3] = (char)data.getClientId();
+    header[4] = (char)data.getConfig();
 
     // data length
     RFX_LOG_D(RFX_LOG_TAG, " encodeHeader len: %zu", data.getDataLength());
-    header[5] =  data.getDataLength() & 0x00FF;
+    header[5] = data.getDataLength() & 0x00FF;
     header[6] = (char)((data.getDataLength() & 0xFF00) >> 8);
 
     // end flag
-    header[7] =  FRAME_END_FLAG;
-    header[8] =  '\0';
+    header[7] = FRAME_END_FLAG;
+    header[8] = '\0';
 
     strncpy(log, "header:", 7);
-    for (size_t i=0; i<HEADER_SIZE; i++) {
+    for (size_t i = 0; i < HEADER_SIZE; i++) {
         asprintf(&tmpLog, "%02X", header[i]);
         strncat(log, tmpLog, strlen(tmpLog));
         free(tmpLog);
@@ -76,9 +75,8 @@ unsigned char* RfxFragmentEncoder::encodeHeader(RfxFragmentData data) {
     return header;
 }
 
-RfxFragmentData RfxFragmentEncoder::decodeHeader(unsigned char *header)
-{
-    unsigned char *local_readp = header;
+RfxFragmentData RfxFragmentEncoder::decodeHeader(unsigned char* header) {
+    unsigned char* local_readp = header;
 
     size_t startCount = 0;
     while (startCount < FRAME_START_FLAG_SIZE) {
@@ -88,7 +86,7 @@ RfxFragmentData RfxFragmentEncoder::decodeHeader(unsigned char *header)
             startCount++;
         } else {
             RFX_LOG_D(RFX_LOG_TAG, "ERROR: can not find start flag");
-            //RFX_ASSERT(0);
+            // RFX_ASSERT(0);
             return RfxFragmentData();
         }
     }
@@ -104,12 +102,12 @@ RfxFragmentData RfxFragmentEncoder::decodeHeader(unsigned char *header)
         RFX_LOG_D(RFX_LOG_TAG, "find end flag");
     } else {
         RFX_LOG_E(RFX_LOG_TAG, "ERROR: can not find end flag");
-        //RFX_ASSERT(0);
+        // RFX_ASSERT(0);
         return RfxFragmentData();
     }
 
     RFX_LOG_D(RFX_LOG_TAG, " decodeHeader version: %d, clientId:%d, config:%d, length: %zu",
-            version, clientId, config, dataLength);
+              version, clientId, config, dataLength);
     RfxFragmentData data((int)version, clientId, config, dataLength);
     return data;
 }

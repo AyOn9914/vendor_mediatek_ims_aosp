@@ -78,8 +78,7 @@ int tx = -1;
 
 #define UNUSED(x) ((void)(x))
 
-in_addr_t prefixLengthToIpv4Netmask(int prefix_length)
-{
+in_addr_t prefixLengthToIpv4Netmask(int prefix_length) {
     in_addr_t mask = 0;
 
     // C99 (6.5.7): shifts of 32 bits have undefined results
@@ -93,8 +92,7 @@ in_addr_t prefixLengthToIpv4Netmask(int prefix_length)
     return mask;
 }
 
-int ipv4NetmaskToPrefixLength(in_addr_t mask)
-{
+int ipv4NetmaskToPrefixLength(in_addr_t mask) {
     int prefixLength = 0;
     uint32_t m = (uint32_t)ntohl(mask);
     while (m & 0x80000000) {
@@ -104,15 +102,14 @@ int ipv4NetmaskToPrefixLength(in_addr_t mask)
     return prefixLength;
 }
 
-static const char *ipaddr_to_string(in_addr_t addr)
-{
+static const char* ipaddr_to_string(in_addr_t addr) {
     struct in_addr in_addr;
 
     in_addr.s_addr = addr;
     return inet_ntoa(in_addr);
 }
 
-int string_to_ip(const char *string, struct sockaddr_storage *ss) {
+int string_to_ip(const char* string, struct sockaddr_storage* ss) {
     struct addrinfo hints, *ai;
     int ret;
 
@@ -134,8 +131,7 @@ int string_to_ip(const char *string, struct sockaddr_storage *ss) {
     return ret;
 }
 
-int ifc_init(void)
-{
+int ifc_init(void) {
     int ret;
     if (ifc_ctl_sock == -1) {
         ifc_ctl_sock = socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
@@ -149,8 +145,7 @@ int ifc_init(void)
     return ret;
 }
 
-int ifc_init6(void)
-{
+int ifc_init6(void) {
     if (ifc_ctl_sock6 == -1) {
         ifc_ctl_sock6 = socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0);
         if (ifc_ctl_sock6 < 0) {
@@ -160,8 +155,7 @@ int ifc_init6(void)
     return ifc_ctl_sock6 < 0 ? -1 : 0;
 }
 
-void ifc_close(void)
-{
+void ifc_close(void) {
     if (DBG) ALOGE("ifc_close");
     if (ifc_ctl_sock != -1) {
         (void)close(ifc_ctl_sock);
@@ -169,81 +163,72 @@ void ifc_close(void)
     }
 }
 
-void ifc_close6(void)
-{
+void ifc_close6(void) {
     if (ifc_ctl_sock6 != -1) {
         (void)close(ifc_ctl_sock6);
         ifc_ctl_sock6 = -1;
     }
 }
 
-static void ifc_init_ifr(const char *name, struct ifreq *ifr)
-{
+static void ifc_init_ifr(const char* name, struct ifreq* ifr) {
     memset(ifr, 0, sizeof(struct ifreq));
     strncpy(ifr->ifr_name, name, IFNAMSIZ);
     ifr->ifr_name[IFNAMSIZ - 1] = 0;
 }
 
-int ifc_get_hwaddr(const char *name, void *ptr)
-{
+int ifc_get_hwaddr(const char* name, void* ptr) {
     int r;
     struct ifreq ifr;
     ifc_init_ifr(name, &ifr);
 
     r = ioctl(ifc_ctl_sock, SIOCGIFHWADDR, &ifr);
-    if(r < 0) return -1;
+    if (r < 0) return -1;
 
     memcpy(ptr, &ifr.ifr_hwaddr.sa_data, ETH_ALEN);
     return 0;
 }
 
-int ifc_get_ifindex(const char *name, int *if_indexp)
-{
+int ifc_get_ifindex(const char* name, int* if_indexp) {
     int r;
     struct ifreq ifr;
     ifc_init_ifr(name, &ifr);
 
     r = ioctl(ifc_ctl_sock, SIOCGIFINDEX, &ifr);
-    if(r < 0) return -1;
+    if (r < 0) return -1;
 
     *if_indexp = ifr.ifr_ifindex;
     return 0;
 }
 
-static int ifc_set_flags(const char *name, unsigned set, unsigned clr)
-{
+static int ifc_set_flags(const char* name, unsigned set, unsigned clr) {
     struct ifreq ifr;
     ifc_init_ifr(name, &ifr);
 
-    if(ioctl(ifc_ctl_sock, SIOCGIFFLAGS, &ifr) < 0) return -1;
+    if (ioctl(ifc_ctl_sock, SIOCGIFFLAGS, &ifr) < 0) return -1;
     ifr.ifr_flags = (ifr.ifr_flags & (~clr)) | set;
     return ioctl(ifc_ctl_sock, SIOCSIFFLAGS, &ifr);
 }
 
-int ifc_up(const char *name)
-{
+int ifc_up(const char* name) {
     int ret = ifc_set_flags(name, IFF_UP, 0);
     if (DBG) ALOGE("ifc_up(%s) = %d", name, ret);
     return ret;
 }
 
-int ifc_down(const char *name)
-{
+int ifc_down(const char* name) {
     int ret = ifc_set_flags(name, 0, IFF_UP);
     if (DBG) ALOGE("ifc_down(%s) = %d", name, ret);
     return ret;
 }
 
-static void init_sockaddr_in(struct sockaddr *sa, in_addr_t addr)
-{
-    struct sockaddr_in *sin = (struct sockaddr_in *) sa;
+static void init_sockaddr_in(struct sockaddr* sa, in_addr_t addr) {
+    struct sockaddr_in* sin = (struct sockaddr_in*)sa;
     sin->sin_family = AF_INET;
     sin->sin_port = 0;
     sin->sin_addr.s_addr = addr;
 }
 
-int ifc_set_addr(const char *name, in_addr_t addr)
-{
+int ifc_set_addr(const char* name, in_addr_t addr) {
     struct ifreq ifr;
     int ret;
 
@@ -264,28 +249,24 @@ int ifc_set_addr(const char *name, in_addr_t addr)
  *
  * Returns zero on success and negative errno on failure.
  */
-int ifc_act_on_address(int action, const char *name, const char *address,
-                       int prefixlen) {
+int ifc_act_on_address(int action, const char* name, const char* address, int prefixlen) {
     int ifindex, s, len, ret;
     struct sockaddr_storage ss;
     int saved_errno;
-    void *addr;
+    void* addr;
     size_t addrlen;
     struct {
         struct nlmsghdr n;
         struct ifaddrmsg r;
         // Allow for IPv6 address, headers, IPv4 broadcast addr and padding.
-        char attrbuf[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-                     NLMSG_ALIGN(sizeof(struct rtattr)) +
-                     NLMSG_ALIGN(INET6_ADDRLEN) +
-                     NLMSG_ALIGN(sizeof(struct rtattr)) +
+        char attrbuf[NLMSG_ALIGN(sizeof(struct nlmsghdr)) + NLMSG_ALIGN(sizeof(struct rtattr)) +
+                     NLMSG_ALIGN(INET6_ADDRLEN) + NLMSG_ALIGN(sizeof(struct rtattr)) +
                      NLMSG_ALIGN(INET_ADDRLEN)];
     } req;
-    struct rtattr *rta;
-    struct nlmsghdr *nh;
-    struct nlmsgerr *err;
-    char buf[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-             NLMSG_ALIGN(sizeof(struct nlmsgerr)) +
+    struct rtattr* rta;
+    struct nlmsghdr* nh;
+    struct nlmsgerr* err;
+    char buf[NLMSG_ALIGN(sizeof(struct nlmsghdr)) + NLMSG_ALIGN(sizeof(struct nlmsgerr)) +
              NLMSG_ALIGN(sizeof(struct nlmsghdr))];
 
     // Get interface ID.
@@ -302,11 +283,11 @@ int ifc_act_on_address(int action, const char *name, const char *address,
 
     // Determine address type and length.
     if (ss.ss_family == AF_INET) {
-        struct sockaddr_in *sin = (struct sockaddr_in *) &ss;
+        struct sockaddr_in* sin = (struct sockaddr_in*)&ss;
         addr = &sin->sin_addr;
         addrlen = INET_ADDRLEN;
     } else if (ss.ss_family == AF_INET6) {
-        struct sockaddr_in6 *sin6 = (struct sockaddr_in6 *) &ss;
+        struct sockaddr_in6* sin6 = (struct sockaddr_in6*)&ss;
         addr = &sin6->sin6_addr;
         addrlen = INET6_ADDRLEN;
     } else {
@@ -328,7 +309,7 @@ int ifc_act_on_address(int action, const char *name, const char *address,
     req.r.ifa_index = ifindex;
 
     // Routing attribute. Contains the actual IP address.
-    rta = (struct rtattr *) (((char *) &req) + NLMSG_ALIGN(req.n.nlmsg_len));
+    rta = (struct rtattr*)(((char*)&req) + NLMSG_ALIGN(req.n.nlmsg_len));
     rta->rta_type = IFA_LOCAL;
     rta->rta_len = RTA_LENGTH(addrlen);
     req.n.nlmsg_len = NLMSG_ALIGN(req.n.nlmsg_len) + RTA_LENGTH(addrlen);
@@ -336,11 +317,11 @@ int ifc_act_on_address(int action, const char *name, const char *address,
 
     // Add an explicit IFA_BROADCAST for IPv4 RTM_NEWADDRs.
     if (ss.ss_family == AF_INET && action == RTM_NEWADDR) {
-        rta = (struct rtattr *) (((char *) &req) + NLMSG_ALIGN(req.n.nlmsg_len));
+        rta = (struct rtattr*)(((char*)&req) + NLMSG_ALIGN(req.n.nlmsg_len));
         rta->rta_type = IFA_BROADCAST;
         rta->rta_len = RTA_LENGTH(addrlen);
         req.n.nlmsg_len = NLMSG_ALIGN(req.n.nlmsg_len) + RTA_LENGTH(addrlen);
-        ((struct in_addr *)addr)->s_addr |= htonl((1<<(32-prefixlen))-1);
+        ((struct in_addr*)addr)->s_addr |= htonl((1 << (32 - prefixlen)) - 1);
         memcpy(RTA_DATA(rta), addr, addrlen);
     }
 
@@ -363,8 +344,8 @@ int ifc_act_on_address(int action, const char *name, const char *address,
     }
 
     // Parse the acknowledgement to find the return code.
-    nh = (struct nlmsghdr *) buf;
-    if (!NLMSG_OK(nh, (unsigned) len) || nh->nlmsg_type != NLMSG_ERROR) {
+    nh = (struct nlmsghdr*)buf;
+    if (!NLMSG_OK(nh, (unsigned)len) || nh->nlmsg_type != NLMSG_ERROR) {
         return -EINVAL;
     }
     err = NLMSG_DATA(nh);
@@ -373,31 +354,30 @@ int ifc_act_on_address(int action, const char *name, const char *address,
     return err->error;
 }
 
-int ifc_add_address(const char *name, const char *address, int prefixlen) {
+int ifc_add_address(const char* name, const char* address, int prefixlen) {
     return ifc_act_on_address(RTM_NEWADDR, name, address, prefixlen);
 }
 
-int ifc_del_address(const char *name, const char * address, int prefixlen) {
+int ifc_del_address(const char* name, const char* address, int prefixlen) {
     return ifc_act_on_address(RTM_DELADDR, name, address, prefixlen);
 }
 
 /*
  * Clears IPv6 addresses on the specified interface.
  */
-int ifc_clear_ipv6_addresses(const char *name) {
+int ifc_clear_ipv6_addresses(const char* name) {
     char rawaddrstr[INET6_ADDRSTRLEN], addrstr[INET6_ADDRSTRLEN];
     unsigned int prefixlen;
     int lasterror = 0, i, j, ret;
     char ifname[64];  // Currently, IFNAMSIZ = 16.
-    FILE *f = fopen("/proc/net/if_inet6", "r");
+    FILE* f = fopen("/proc/net/if_inet6", "r");
     if (!f) {
         return -errno;
     }
 
     // Format:
     // 20010db8000a0001fc446aa4b5b347ed 03 40 00 01    wlan0
-    while (fscanf(f, "%32s %*02x %02x %*02x %*02x %63s\n",
-                  rawaddrstr, &prefixlen, ifname) == 3) {
+    while (fscanf(f, "%32s %*02x %02x %*02x %*02x %63s\n", rawaddrstr, &prefixlen, ifname) == 3) {
         // Is this the interface we're looking for?
         if (strcmp(name, ifname)) {
             continue;
@@ -420,8 +400,7 @@ int ifc_clear_ipv6_addresses(const char *name) {
 
         ret = ifc_del_address(ifname, addrstr, prefixlen);
         if (ret) {
-            ALOGE("Deleting address %s/%d on %s: %s", addrstr, prefixlen, ifname,
-                 strerror(-ret));
+            ALOGE("Deleting address %s/%d on %s: %s", addrstr, prefixlen, ifname, strerror(-ret));
             lasterror = ret;
         }
     }
@@ -433,14 +412,12 @@ int ifc_clear_ipv6_addresses(const char *name) {
 /*
  * Clears IPv4 addresses on the specified interface.
  */
-void ifc_clear_ipv4_addresses(const char *name) {
+void ifc_clear_ipv4_addresses(const char* name) {
     unsigned count, addr;
     ifc_init();
-    for (count=0, addr=1;((addr != 0) && (count < 255)); count++) {
-        if (ifc_get_addr(name, &addr) < 0)
-            break;
-        if (addr)
-            ifc_set_addr(name, 0);
+    for (count = 0, addr = 1; ((addr != 0) && (count < 255)); count++) {
+        if (ifc_get_addr(name, &addr) < 0) break;
+        if (addr) ifc_set_addr(name, 0);
     }
     ifc_close();
 }
@@ -448,13 +425,12 @@ void ifc_clear_ipv4_addresses(const char *name) {
 /*
  * Clears all IP addresses on the specified interface.
  */
-int ifc_clear_addresses(const char *name) {
+int ifc_clear_addresses(const char* name) {
     ifc_clear_ipv4_addresses(name);
     return ifc_clear_ipv6_addresses(name);
 }
 
-int ifc_set_hwaddr(const char *name, const void *ptr)
-{
+int ifc_set_hwaddr(const char* name, const void* ptr) {
     struct ifreq ifr;
     ifc_init_ifr(name, &ifr);
 
@@ -463,8 +439,7 @@ int ifc_set_hwaddr(const char *name, const void *ptr)
     return ioctl(ifc_ctl_sock, SIOCSIFHWADDR, &ifr);
 }
 
-int ifc_set_mask(const char *name, in_addr_t mask)
-{
+int ifc_set_mask(const char* name, in_addr_t mask) {
     struct ifreq ifr;
     int ret;
 
@@ -476,8 +451,7 @@ int ifc_set_mask(const char *name, in_addr_t mask)
     return ret;
 }
 
-int ifc_set_prefixLength(const char *name, int prefixLength)
-{
+int ifc_set_prefixLength(const char* name, int prefixLength) {
     struct ifreq ifr;
     // TODO - support ipv6
     if (prefixLength > 32 || prefixLength < 0) return -1;
@@ -489,8 +463,7 @@ int ifc_set_prefixLength(const char *name, int prefixLength)
     return ioctl(ifc_ctl_sock, SIOCSIFNETMASK, &ifr);
 }
 
-int ifc_get_addr(const char *name, in_addr_t *addr)
-{
+int ifc_get_addr(const char* name, in_addr_t* addr) {
     struct ifreq ifr;
     int ret = 0;
 
@@ -500,36 +473,35 @@ int ifc_get_addr(const char *name, in_addr_t *addr)
         if (ret < 0) {
             *addr = 0;
         } else {
-            *addr = ((struct sockaddr_in*) &ifr.ifr_addr)->sin_addr.s_addr;
+            *addr = ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr;
         }
     }
     return ret;
 }
 
-int ifc_get_info(const char *name, in_addr_t *addr, int *prefixLength, unsigned *flags)
-{
+int ifc_get_info(const char* name, in_addr_t* addr, int* prefixLength, unsigned* flags) {
     struct ifreq ifr;
     ifc_init_ifr(name, &ifr);
 
     if (addr != NULL) {
-        if(ioctl(ifc_ctl_sock, SIOCGIFADDR, &ifr) < 0) {
+        if (ioctl(ifc_ctl_sock, SIOCGIFADDR, &ifr) < 0) {
             *addr = 0;
         } else {
-            *addr = ((struct sockaddr_in*) &ifr.ifr_addr)->sin_addr.s_addr;
+            *addr = ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr;
         }
     }
 
     if (prefixLength != NULL) {
-        if(ioctl(ifc_ctl_sock, SIOCGIFNETMASK, &ifr) < 0) {
+        if (ioctl(ifc_ctl_sock, SIOCGIFNETMASK, &ifr) < 0) {
             *prefixLength = 0;
         } else {
             *prefixLength = ipv4NetmaskToPrefixLength(
-                    ((struct sockaddr_in*) &ifr.ifr_addr)->sin_addr.s_addr);
+                    ((struct sockaddr_in*)&ifr.ifr_addr)->sin_addr.s_addr);
         }
     }
 
     if (flags != NULL) {
-        if(ioctl(ifc_ctl_sock, SIOCGIFFLAGS, &ifr) < 0) {
+        if (ioctl(ifc_ctl_sock, SIOCGIFFLAGS, &ifr) < 0) {
             *flags = 0;
         } else {
             *flags = ifr.ifr_flags;
@@ -539,9 +511,8 @@ int ifc_get_info(const char *name, in_addr_t *addr, int *prefixLength, unsigned 
     return 0;
 }
 
-int ifc_act_on_ipv4_route(int action, const char *ifname, struct in_addr dst, int prefix_length,
-      struct in_addr gw)
-{
+int ifc_act_on_ipv4_route(int action, const char* ifname, struct in_addr dst, int prefix_length,
+                          struct in_addr gw) {
     struct rtentry rt;
     int result;
     in_addr_t netmask;
@@ -549,7 +520,7 @@ int ifc_act_on_ipv4_route(int action, const char *ifname, struct in_addr dst, in
     memset(&rt, 0, sizeof(rt));
 
     rt.rt_dst.sa_family = AF_INET;
-    rt.rt_dev = (void*) ifname;
+    rt.rt_dev = (void*)ifname;
 
     netmask = prefixLengthToIpv4Netmask(prefix_length);
     init_sockaddr_in(&rt.rt_genmask, netmask);
@@ -584,8 +555,7 @@ int ifc_act_on_ipv4_route(int action, const char *ifname, struct in_addr dst, in
 }
 
 /* deprecated - v4 only */
-int ifc_create_default_route(const char *name, in_addr_t gw)
-{
+int ifc_create_default_route(const char* name, in_addr_t gw) {
     struct in_addr in_dst, in_gw;
 
     in_dst.s_addr = 0;
@@ -597,8 +567,7 @@ int ifc_create_default_route(const char *name, in_addr_t gw)
 }
 
 // Needed by code in hidden partner repositories / branches, so don't delete.
-int ifc_enable(const char *ifname)
-{
+int ifc_enable(const char* ifname) {
     int result;
 
     ifc_init();
@@ -608,8 +577,7 @@ int ifc_enable(const char *ifname)
 }
 
 // Needed by code in hidden partner repositories / branches, so don't delete.
-int ifc_disable(const char *ifname)
-{
+int ifc_disable(const char* ifname) {
     unsigned addr, count;
     int result;
 
@@ -617,19 +585,16 @@ int ifc_disable(const char *ifname)
     result = ifc_down(ifname);
 
     ifc_set_addr(ifname, 0);
-    for (count=0, addr=1;((addr != 0) && (count < 255)); count++) {
-       if (ifc_get_addr(ifname, &addr) < 0)
-            break;
-       if (addr)
-          ifc_set_addr(ifname, 0);
+    for (count = 0, addr = 1; ((addr != 0) && (count < 255)); count++) {
+        if (ifc_get_addr(ifname, &addr) < 0) break;
+        if (addr) ifc_set_addr(ifname, 0);
     }
 
     ifc_close();
     return result;
 }
 
-int ifc_reset_connections(const char *ifname, const int reset_mask)
-{
+int ifc_reset_connections(const char* ifname, const int reset_mask) {
 #if defined(__MTK_ANDROID__)
     int result, success;
     in_addr_t myaddr = 0;
@@ -644,7 +609,7 @@ int ifc_reset_connections(const char *ifname, const int reset_mask)
         }
         ifc_init_ifr(ifname, &ifr);
         init_sockaddr_in(&ifr.ifr_addr, myaddr);
-        result = ioctl(ifc_ctl_sock, SIOCKILLADDR,  &ifr);
+        result = ioctl(ifc_ctl_sock, SIOCKILLADDR, &ifr);
         ifc_close();
     } else {
         result = 0;
@@ -660,7 +625,7 @@ int ifc_reset_connections(const char *ifname, const int reset_mask)
         ifc_init6();
         // This implicitly specifies an address of ::, i.e., kill all IPv6 sockets.
         memset(&ifr6, 0, sizeof(ifr6));
-        success = ioctl(ifc_ctl_sock6, SIOCKILLADDR,  &ifr6);
+        success = ioctl(ifc_ctl_sock6, SIOCKILLADDR, &ifr6);
         if (result == 0) {
             result = success;
         }
@@ -678,15 +643,14 @@ int ifc_reset_connections(const char *ifname, const int reset_mask)
 /*
  * Removes the default route for the named interface.
  */
-int ifc_remove_default_route(const char *ifname)
-{
+int ifc_remove_default_route(const char* ifname) {
     struct rtentry rt;
     int result;
 
     ifc_init();
     memset(&rt, 0, sizeof(rt));
-    rt.rt_dev = (void *)ifname;
-    rt.rt_flags = RTF_UP|RTF_GATEWAY;
+    rt.rt_dev = (void*)ifname;
+    rt.rt_flags = RTF_UP | RTF_GATEWAY;
     init_sockaddr_in(&rt.rt_dst, 0);
     if ((result = ioctl(ifc_ctl_sock, SIOCDELRT, &rt)) < 0) {
         ALOGD("failed to remove default route for %s: %s", ifname, strerror(errno));
@@ -696,14 +660,8 @@ int ifc_remove_default_route(const char *ifname)
 }
 
 #ifdef ANDROID
-int
-ifc_configure(const char *ifname,
-        in_addr_t address,
-        uint32_t prefixLength,
-        in_addr_t gateway,
-        in_addr_t dns1,
-        in_addr_t dns2) {
-
+int ifc_configure(const char* ifname, in_addr_t address, uint32_t prefixLength, in_addr_t gateway,
+                  in_addr_t dns1, in_addr_t dns2) {
     char dns_prop_name[MTK_PROPERTY_VALUE_MAX];
 
     ifc_init();
@@ -741,11 +699,10 @@ ifc_configure(const char *ifname,
 #endif
 
 /// M: [2635 telematics] using by rild @{
-#define SIOCSTXQSTATE (SIOCDEVPRIVATE + 0)  //start/stop ccmni tx queue
-#define SIOCSCCMNICFG (SIOCDEVPRIVATE + 1)  //configure ccmni/md remapping
+#define SIOCSTXQSTATE (SIOCDEVPRIVATE + 0)  // start/stop ccmni tx queue
+#define SIOCSCCMNICFG (SIOCDEVPRIVATE + 1)  // configure ccmni/md remapping
 
-int ifc_set_txq_state(const char *ifname, int state)
-{
+int ifc_set_txq_state(const char* ifname, int state) {
     struct ifreq ifr;
     int ret, ctl_sock;
 
@@ -755,12 +712,12 @@ int ifc_set_txq_state(const char *ifname, int state)
     ifr.ifr_ifru.ifru_ivalue = state;
 
     ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ctl_sock < 0){
+    if (ctl_sock < 0) {
         ALOGE("create ctl socket failed\n");
         return -1;
     }
     ret = ioctl(ctl_sock, SIOCSTXQSTATE, &ifr);
-    if(ret < 0)
+    if (ret < 0)
         ALOGE("ifc_set_txq_state failed, err:%d(%s)\n", errno, strerror(errno));
     else
         ALOGD("ifc_set_txq_state as %d, ret: %d\n", state, ret);
@@ -770,8 +727,7 @@ int ifc_set_txq_state(const char *ifname, int state)
     return ret;
 }
 
-int ifc_ccmni_md_cfg(const char *ifname, int md_id)
-{
+int ifc_ccmni_md_cfg(const char* ifname, int md_id) {
     struct ifreq ifr;
     int ret = 0;
     int ctl_sock = 0;
@@ -780,14 +736,14 @@ int ifc_ccmni_md_cfg(const char *ifname, int md_id)
     ifr.ifr_ifru.ifru_ivalue = md_id;
 
     ctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ctl_sock < 0){
+    if (ctl_sock < 0) {
         ALOGE("ifc_ccmni_md_cfg: create ctl socket failed\n");
         return -1;
     }
 
-    if(ioctl(ctl_sock, SIOCSCCMNICFG, &ifr) < 0) {
-        ALOGE("ifc_ccmni_md_configure(ifname=%s, md_id=%d) error:%d(%s)", \
-            ifname, md_id, errno, strerror(errno));
+    if (ioctl(ctl_sock, SIOCSCCMNICFG, &ifr) < 0) {
+        ALOGE("ifc_ccmni_md_configure(ifname=%s, md_id=%d) error:%d(%s)", ifname, md_id, errno,
+              strerror(errno));
         ret = -1;
     } else {
         ALOGE("ifc_ccmni_md_configure(ifname=%s, md_id=%d) OK", ifname, md_id);
@@ -798,12 +754,12 @@ int ifc_ccmni_md_cfg(const char *ifname, int md_id)
 }
 
 static int setEnableIPv6(char* ifname, int on) {
-    char *path = NULL;
-    const char *value = on ? "0" : "1";
+    char* path = NULL;
+    const char* value = on ? "0" : "1";
     unsigned int size = strlen(value);
     int ret = 0;
 
-    //full path: proc/sys/net/ipv6/conf/ifname/disalbe_ipv6
+    // full path: proc/sys/net/ipv6/conf/ifname/disalbe_ipv6
     asprintf(&path, "%s/%s/%s", ipv6_proc_path, ifname, "disable_ipv6");
     ALOGE("setEnableIPv6: set path %s to %s", path, value);
     int fd = open(path, O_WRONLY);
@@ -823,12 +779,12 @@ static int setEnableIPv6(char* ifname, int on) {
 }
 
 static int setIPv6DefaultRoute(char* ifname, int on) {
-    char *path = NULL;
-    const char *value = on ? "1" : "0";
+    char* path = NULL;
+    const char* value = on ? "1" : "0";
     unsigned int size = strlen(value);
     int ret = 0;
 
-    //full path: /proc/sys/net/ipv6/conf/ccmni0/accept_ra_defrtr
+    // full path: /proc/sys/net/ipv6/conf/ccmni0/accept_ra_defrtr
     asprintf(&path, "%s/%s/%s", ipv6_proc_path, ifname, "accept_ra_defrtr");
     ALOGE("setIPv6DefaultRoute: set path %s to %s", path, value);
     int fd = open(path, O_WRONLY);
@@ -847,30 +803,31 @@ static int setIPv6DefaultRoute(char* ifname, int on) {
     return 0;
 }
 
-int ifc_ipv6_trigger_rs(char *ifname){
+int ifc_ipv6_trigger_rs(char* ifname) {
     int errNo = setEnableIPv6(ifname, 0);
     if (errNo < 0) {
-         ALOGE("ifc_ipv6_irat_triger_rs disable interface %s IPv6 fail %d",ifname, errNo);
-     }
-     errNo = setEnableIPv6(ifname, 1);
-     if (errNo < 0) {
-         ALOGE("ifc_ipv6_irat_triger_rs enalbe interface %s IPv6 fail %d",ifname, errNo);
-     }
-
-    //set accept_ra_defrtr 1
-    errNo = setIPv6DefaultRoute(ifname,1);
+        ALOGE("ifc_ipv6_irat_triger_rs disable interface %s IPv6 fail %d", ifname, errNo);
+    }
+    errNo = setEnableIPv6(ifname, 1);
     if (errNo < 0) {
-         ALOGE("ifc_ipv6_irat_triger_rs enalbe interface %s accept_ra_defrtr fail %d",ifname, errNo);
-     }
+        ALOGE("ifc_ipv6_irat_triger_rs enalbe interface %s IPv6 fail %d", ifname, errNo);
+    }
+
+    // set accept_ra_defrtr 1
+    errNo = setIPv6DefaultRoute(ifname, 1);
+    if (errNo < 0) {
+        ALOGE("ifc_ipv6_irat_triger_rs enalbe interface %s accept_ra_defrtr fail %d", ifname,
+              errNo);
+    }
 
     return 0;
 }
 
 /* MTK start */
-int ifc_runTcCmd(const char *cmd) {
-    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__ ,  __LINE__);
+int ifc_runTcCmd(const char* cmd) {
+    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__, __LINE__);
 
-    char *buffer;
+    char* buffer;
     size_t len = strnlen(cmd, 255);
     int res;
 
@@ -886,8 +843,8 @@ int ifc_runTcCmd(const char *cmd) {
     return res;
 }
 
-void ifc_reset(const char *iface) {
-    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__ ,  __LINE__);
+void ifc_reset(const char* iface) {
+    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__, __LINE__);
     char cmd[128];
 
     ALOGE("ifc_reset %s qdisc\n", iface);
@@ -901,8 +858,8 @@ void ifc_reset(const char *iface) {
     ifc_runTcCmd("qdisc del dev ifb0 root");
 }
 
-int ifc_setInterfaceThrottle(const char *iface, int rxKbps, int txKbps) {
-    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__ ,  __LINE__);
+int ifc_setInterfaceThrottle(const char* iface, int rxKbps, int txKbps) {
+    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__, __LINE__);
     ALOGE("ifc_setInterfaceThrottle iface is %s \n", iface);
     ALOGE("ifc_setInterfaceThrottle rxKbps is %d \n", rxKbps);
     ALOGE("ifc_setInterfaceThrottle txKbps is %d \n", txKbps);
@@ -914,7 +871,7 @@ int ifc_setInterfaceThrottle(const char *iface, int rxKbps, int txKbps) {
     tx = txKbps;
 
     memset(ifn, 0, sizeof(ifn));
-    strncpy(ifn, iface, sizeof(ifn)-1);
+    strncpy(ifn, iface, sizeof(ifn) - 1);
 
     if (txKbps == -1) {
         ifc_reset(ifn);
@@ -950,7 +907,7 @@ int ifc_setInterfaceThrottle(const char *iface, int rxKbps, int txKbps) {
         goto fail;
     }
 
-    if(rxKbps == -1){
+    if (rxKbps == -1) {
         ALOGE("ifc_setInterfaceThrottle success but NO RX, ifn = %s", ifn);
         return 0;
     }
@@ -994,8 +951,10 @@ int ifc_setInterfaceThrottle(const char *iface, int rxKbps, int txKbps) {
     /*
      * Add filter to link <ifn> -> ifb0
      */
-    sprintf(cmd, "filter add dev %s parent ffff: protocol ip prio 10 u32 match "
-            "u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0", ifn);
+    sprintf(cmd,
+            "filter add dev %s parent ffff: protocol ip prio 10 u32 match "
+            "u32 0 0 flowid 1:1 action mirred egress redirect dev ifb0",
+            ifn);
     if (ifc_runTcCmd(cmd)) {
         ALOGE("Failed to add ifb filter (%s)", strerror(errno));
         goto fail;
@@ -1009,16 +968,15 @@ fail:
     return -1;
 }
 
-
-int ifc_getInterfaceRxThrottle(const char *iface, int *rxKbps) {
-    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__ ,  __LINE__);
+int ifc_getInterfaceRxThrottle(const char* iface, int* rxKbps) {
+    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__, __LINE__);
     ALOGE("ifc_getInterfaceRxThrottle iface %s\n", iface);
     *rxKbps = rx;
     return 0;
 }
 
-int ifc_getInterfaceTxThrottle(const char *iface, int *txKbps) {
-    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__ ,  __LINE__);
+int ifc_getInterfaceTxThrottle(const char* iface, int* txKbps) {
+    ALOGE("filename:%s   function name: %s   line number: %d\n", __FILE__, __FUNCTION__, __LINE__);
     ALOGE("ifc_getInterfaceRxThrottle iface %s\n", iface);
     *txKbps = tx;
     return 0;

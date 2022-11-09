@@ -20,36 +20,37 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCallForwardInfoExData);
 
-RfxCallForwardInfoExData::RfxCallForwardInfoExData(void *data, int length) : RfxBaseData(data, length)  {
-    RIL_CallForwardInfoEx* pTmp = (RIL_CallForwardInfoEx*) data;
-    RIL_CallForwardInfoEx *pData = (RIL_CallForwardInfoEx *) calloc(1, sizeof(RIL_CallForwardInfoEx));
+RfxCallForwardInfoExData::RfxCallForwardInfoExData(void* data, int length)
+    : RfxBaseData(data, length) {
+    RIL_CallForwardInfoEx* pTmp = (RIL_CallForwardInfoEx*)data;
+    RIL_CallForwardInfoEx* pData = (RIL_CallForwardInfoEx*)calloc(1, sizeof(RIL_CallForwardInfoEx));
 
     if (pData != NULL) {
-        pData -> status       = pTmp -> status;
-        pData -> reason       = pTmp -> reason;
-        pData -> serviceClass = pTmp -> serviceClass;
-        pData -> toa          = pTmp -> toa;
+        pData->status = pTmp->status;
+        pData->reason = pTmp->reason;
+        pData->serviceClass = pTmp->serviceClass;
+        pData->toa = pTmp->toa;
 
         if (pTmp->number != NULL) {
             int len = strlen(pTmp->number);
-            pData->number = (char *) calloc(len + 1, sizeof(char));
+            pData->number = (char*)calloc(len + 1, sizeof(char));
             if (pData->number != NULL) {
                 strncpy(pData->number, pTmp->number, len);
             }
         }
 
-        pData -> timeSeconds  = pTmp -> timeSeconds;
+        pData->timeSeconds = pTmp->timeSeconds;
 
         if (pTmp->timeSlotBegin != NULL) {
             int len = strlen(pTmp->timeSlotBegin);
-            pData->timeSlotBegin = (char *) calloc(len + 1, sizeof(char));
+            pData->timeSlotBegin = (char*)calloc(len + 1, sizeof(char));
             if (pData->timeSlotBegin != NULL) {
                 strncpy(pData->timeSlotBegin, pTmp->timeSlotBegin, len);
             }
         }
         if (pTmp->timeSlotEnd != NULL) {
             int len = strlen(pTmp->timeSlotEnd);
-            pData->timeSlotEnd = (char *) calloc(len + 1, sizeof(char));
+            pData->timeSlotEnd = (char*)calloc(len + 1, sizeof(char));
             if (pData->timeSlotEnd != NULL) {
                 strncpy(pData->timeSlotEnd, pTmp->timeSlotEnd, len);
             }
@@ -61,14 +62,14 @@ RfxCallForwardInfoExData::RfxCallForwardInfoExData(void *data, int length) : Rfx
 }
 
 RfxCallForwardInfoExData::~RfxCallForwardInfoExData() {
-    if (m_data != NULL && ((RIL_CallForwardInfoEx *)m_data) ->number != NULL) {
-        free(((RIL_CallForwardInfoEx *)m_data) -> number);
+    if (m_data != NULL && ((RIL_CallForwardInfoEx*)m_data)->number != NULL) {
+        free(((RIL_CallForwardInfoEx*)m_data)->number);
     }
-    if (m_data != NULL && ((RIL_CallForwardInfoEx *)m_data) ->timeSlotBegin != NULL) {
-        free(((RIL_CallForwardInfoEx *)m_data) -> timeSlotBegin);
+    if (m_data != NULL && ((RIL_CallForwardInfoEx*)m_data)->timeSlotBegin != NULL) {
+        free(((RIL_CallForwardInfoEx*)m_data)->timeSlotBegin);
     }
-    if (m_data != NULL && ((RIL_CallForwardInfoEx *)m_data) ->timeSlotEnd != NULL) {
-        free(((RIL_CallForwardInfoEx *)m_data) -> timeSlotEnd);
+    if (m_data != NULL && ((RIL_CallForwardInfoEx*)m_data)->timeSlotEnd != NULL) {
+        free(((RIL_CallForwardInfoEx*)m_data)->timeSlotEnd);
     }
     free(m_data);
     m_data = NULL;

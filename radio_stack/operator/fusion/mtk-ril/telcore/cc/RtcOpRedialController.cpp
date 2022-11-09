@@ -21,7 +21,6 @@
 #include "nw/RtcRatSwitchController.h"
 #include "rfx_properties.h"
 
-
 /*****************************************************************************
  * Class RtcOpRedialController
  *****************************************************************************/
@@ -29,12 +28,9 @@ RFX_IMPLEMENT_CLASS("RtcOpRedialController", RtcOpRedialController, RtcRedialCon
 
 #define RFX_LOG_TAG "RtcOpRedial"
 
-RtcOpRedialController::RtcOpRedialController() {
-}
+RtcOpRedialController::RtcOpRedialController() {}
 
-RtcOpRedialController::~RtcOpRedialController() {
-    logD(RFX_LOG_TAG, "RtcOpRedialController");
-}
+RtcOpRedialController::~RtcOpRedialController() { logD(RFX_LOG_TAG, "RtcOpRedialController"); }
 
 void RtcOpRedialController::onInit() {
     RtcRedialController::onInit();
@@ -51,7 +47,7 @@ bool RtcOpRedialController::isEmergencyModeSupported(int slotId) {
         return true;
     }
 
-    char optr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char optr[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.operator.optr", optr, "0");
     // Vzw CDMA-less , AT&T supports ECM
     if (strcmp(optr, "OP12") == 0 || strcmp(optr, "OP07") == 0) {
@@ -59,10 +55,9 @@ bool RtcOpRedialController::isEmergencyModeSupported(int slotId) {
     }
 
     RtcModeSwitchController* modeSwitchController =
-            (RtcModeSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+            (RtcModeSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
     // non-TMO, 5M
-    if (strcmp(optr, "OP08") != 0 &&
-            modeSwitchController->getCCapabilitySlotId() == slotId) {
+    if (strcmp(optr, "OP08") != 0 && modeSwitchController->getCCapabilitySlotId() == slotId) {
         return true;
     }
 

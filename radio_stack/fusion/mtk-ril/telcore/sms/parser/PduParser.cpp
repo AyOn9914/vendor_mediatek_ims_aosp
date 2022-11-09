@@ -23,25 +23,22 @@
 #include "SmsHeader.h"
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "PduParser"
+#define RFX_LOG_TAG "PduParser"
 
 typedef wchar_t WCHAR;
 /*****************************************************************************
  * Class PduParser
  *****************************************************************************/
-PduParser::PduParser(BYTE *pdu, int length) :
-        mPdu(pdu),
-        mCur(0),
-        mUserDataSeptetPadding(0),
-        mUserDataHeader(NULL),
-        mUserData(NULL),
-        mUserDataLength(0),
-        mPduLength(length) {
-}
+PduParser::PduParser(BYTE* pdu, int length)
+    : mPdu(pdu),
+      mCur(0),
+      mUserDataSeptetPadding(0),
+      mUserDataHeader(NULL),
+      mUserData(NULL),
+      mUserDataLength(0),
+      mPduLength(length) {}
 
-PduParser::~PduParser() {
-
-}
+PduParser::~PduParser() {}
 
 string PduParser::getSCAddress() {
     int len = 0;
@@ -61,17 +58,15 @@ string PduParser::getSCAddress() {
     return ret;
 }
 
-int PduParser::getByte() {
-    return mPdu[mCur++] & 0xff;
-}
+int PduParser::getByte() { return mPdu[mCur++] & 0xff; }
 
 long PduParser::getSCTimestampMillis() {
     mCur += 7;
     return 0;
 }
 
-GsmSmsAddress *PduParser::getAddress(/*SmsMessage *parent*/) {
-    GsmSmsAddress *address = NULL;
+GsmSmsAddress* PduParser::getAddress(/*SmsMessage *parent*/) {
+    GsmSmsAddress* address = NULL;
 
     // "The Address-Length field is an integer representation of
     // the number field, i.e. excludes any semi-octet containing only
@@ -93,9 +88,9 @@ int PduParser::constructUserData(bool hasUserDataHeader, bool dataInSeptets) {
 
     if (hasUserDataHeader) {
         userDataHeaderLength = mPdu[offset++] & 0xff;
-        BYTE *udh = new BYTE[userDataHeaderLength];
+        BYTE* udh = new BYTE[userDataHeaderLength];
         memcpy(udh, mPdu + offset, userDataHeaderLength);
-        mUserDataHeader = SmsHeader::fromByteArray(udh, userDataHeaderLength/*, this*/);
+        mUserDataHeader = SmsHeader::fromByteArray(udh, userDataHeaderLength /*, this*/);
         delete[] udh;
         offset += userDataHeaderLength;
         int headerBits = (userDataHeaderLength + 1) * 8;
@@ -109,13 +104,13 @@ int PduParser::constructUserData(bool hasUserDataHeader, bool dataInSeptets) {
          * Here we just create the user data length to be the remainder of
          * the pdu minus the user data header, since userDataLength means
          * the number of uncompressed septets.
-        */
+         */
         bufferLen = mPduLength - offset;
     } else {
         /*
          * userDataLength is the count of octets, so just subtract the
          * user data header.
-        */
+         */
         bufferLen = userDataLength - (hasUserDataHeader ? (userDataHeaderLength + 1) : 0);
         if (bufferLen < 0) {
             bufferLen = 0;
@@ -137,16 +132,10 @@ int PduParser::constructUserData(bool hasUserDataHeader, bool dataInSeptets) {
     }
 }
 
-int PduParser::getUserDataLength() {
-    return mUserDataLength;
-}
-BYTE* PduParser::getUserData() {
-    return mUserData;
-}
+int PduParser::getUserDataLength() { return mUserDataLength; }
+BYTE* PduParser::getUserData() { return mUserData; }
 
-SmsHeader* PduParser::getUserDataHeader() {
-    return mUserDataHeader;
-}
+SmsHeader* PduParser::getUserDataHeader() { return mUserDataHeader; }
 
 const int WappushPduParser::WAP_PDU_LENGTH_QUOTE = 31;
 const int WappushPduParser::WAP_PDU_SHORT_LENGTH_MAX = 30;
@@ -184,8 +173,10 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x15, "application/vnd.wap.wmlscriptc"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x16, "application/vnd.wap.wta-eventc"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x17, "application/vnd.wap.uaprof"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x18, "application/vnd.wap.wtls-ca-certificate"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x19, "application/vnd.wap.wtls-user-certificate"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x18, "application/vnd.wap.wtls-ca-certificate"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x19, "application/vnd.wap.wtls-user-certificate"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x1A, "application/x-x509-ca-cert"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x1B, "application/x-x509-user-cert"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x1C, "image/*"));
@@ -196,9 +187,12 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x21, "image/vnd.wap.wbmp"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x22, "application/vnd.wap.multipart.*"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x23, "application/vnd.wap.multipart.mixed"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x24, "application/vnd.wap.multipart.form-data"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x25, "application/vnd.wap.multipart.byteranges"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x26, "application/vnd.wap.multipart.alternative"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x24, "application/vnd.wap.multipart.form-data"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x25, "application/vnd.wap.multipart.byteranges"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x26, "application/vnd.wap.multipart.alternative"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x27, "application/xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x28, "text/xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x29, "application/vnd.wap.wbxml"));
@@ -223,7 +217,8 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x3C, "application/wml+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x3D, "text/css"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x3E, "application/vnd.wap.mms-message"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x3F, "application/vnd.wap.rollover-certificate"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x3F, "application/vnd.wap.rollover-certificate"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x40, "application/vnd.wap.locc+wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x41, "application/vnd.wap.loc+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x42, "application/vnd.syncml.dm+wbxml"));
@@ -245,15 +240,21 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x52, "application/mikey"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x53, "application/vnd.oma.dcd"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x54, "application/vnd.oma.dcdc"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0201, "application/vnd.uplanet.cacheop-wbxml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0201, "application/vnd.uplanet.cacheop-wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0202, "application/vnd.uplanet.signal"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0203, "application/vnd.uplanet.alert-wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0204, "application/vnd.uplanet.list-wbxml"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0205, "application/vnd.uplanet.listcmd-wbxml"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0206, "application/vnd.uplanet.channel-wbxml"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0207, "application/vnd.uplanet.provisioning-status-uri"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0208, "x-wap.multipart/vnd.uplanet.header-set"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0209, "application/vnd.uplanet.bearer-choice-wbxml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0205, "application/vnd.uplanet.listcmd-wbxml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0206, "application/vnd.uplanet.channel-wbxml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0207, "application/vnd.uplanet.provisioning-status-uri"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0208, "x-wap.multipart/vnd.uplanet.header-set"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0209, "application/vnd.uplanet.bearer-choice-wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x020A, "application/vnd.phonecom.mmc-wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x020B, "application/vnd.nokia.syncset+wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x020C, "image/x-up-wpng"));
@@ -268,23 +269,28 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0308, "application/vnd.omads-folder+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0309, "text/directory;profile=vCard"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030A, "application/vnd.wap.emn+wbxml"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030B, "application/vnd.nokia.ipdc-purchase-response"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x030B, "application/vnd.nokia.ipdc-purchase-response"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030C, "application/vnd.motorola.screen3+xml"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030D, "application/vnd.motorola.screen3+gzip"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x030D, "application/vnd.motorola.screen3+gzip"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030E, "application/vnd.cmcc.setting+wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x030F, "application/vnd.cmcc.bombing+wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0310, "application/vnd.docomo.pf"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0311, "application/vnd.docomo.ub"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0312, "application/vnd.omaloc-supl-init"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0313, "application/vnd.oma.group-usage-list+xml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0313, "application/vnd.oma.group-usage-list+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0314, "application/oma-directory+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0315, "application/vnd.docomo.pf2"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0316, "application/vnd.oma.drm.roap-trigger+wbxml"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x0316, "application/vnd.oma.drm.roap-trigger+wbxml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0317, "application/vnd.sbm.mid2"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0318, "application/vnd.wmf.bootstrap"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x0319, "application/vnc.cmcc.dcd+xml"));
     WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x031A, "application/vnd.sbm.cid"));
-    WELL_KNOWN_MIME_TYPES.insert(pair<int, string>(0x031B, "application/vnd.oma.bcast.provisioningtrigger"));
+    WELL_KNOWN_MIME_TYPES.insert(
+            pair<int, string>(0x031B, "application/vnd.oma.bcast.provisioningtrigger"));
 
     WELL_KNOWN_PARAMETERS.insert(pair<int, string>(0x00, "Q"));
     WELL_KNOWN_PARAMETERS.insert(pair<int, string>(0x01, "Charset"));
@@ -388,13 +394,8 @@ void WappushPduParser::initWapParaMap() {
     WELL_KNOWN_HEADERS.insert(pair<int, string>(0x4A, "X-Wap-Loc-Delivery"));
 }
 
-WappushPduParser::WappushPduParser(BYTE* pdu, int length) :
-        mWspData(pdu),
-        mDataLength(-1),
-        mPduLength(length),
-        mUnsigned32bit(-1),
-        mStringValue("") {
-}
+WappushPduParser::WappushPduParser(BYTE* pdu, int length)
+    : mWspData(pdu), mDataLength(-1), mPduLength(length), mUnsigned32bit(-1), mStringValue("") {}
 
 bool WappushPduParser::decodeUintvarInteger(int startIndex) {
     int index = startIndex;
@@ -412,13 +413,9 @@ bool WappushPduParser::decodeUintvarInteger(int startIndex) {
     return true;
 }
 
-long WappushPduParser::getValue32() {
-    return mUnsigned32bit;
-}
+long WappushPduParser::getValue32() { return mUnsigned32bit; }
 
-int WappushPduParser::getDecodedDataLength() {
-    return mDataLength;
-}
+int WappushPduParser::getDecodedDataLength() { return mDataLength; }
 
 bool WappushPduParser::decodeContentType(int startIndex) {
     int mediaPrefixLength;
@@ -430,7 +427,7 @@ bool WappushPduParser::decodeContentType(int startIndex) {
         }
         return found;
     }
-    int headersLength = (int) mUnsigned32bit;
+    int headersLength = (int)mUnsigned32bit;
     mediaPrefixLength = getDecodedDataLength();
     if (decodeIntegerValue(startIndex + mediaPrefixLength) == true) {
         mDataLength += mediaPrefixLength;
@@ -440,7 +437,7 @@ bool WappushPduParser::decodeContentType(int startIndex) {
         long wellKnownValue = mUnsigned32bit;
         string mimeType = mStringValue;
         if (readContentParameters(startIndex + mDataLength,
-                (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
+                                  (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
             mDataLength += readLength;
             mUnsigned32bit = wellKnownValue;
             mStringValue = mimeType;
@@ -455,7 +452,7 @@ bool WappushPduParser::decodeContentType(int startIndex) {
         long wellKnownValue = mUnsigned32bit;
         string mimeType = mStringValue;
         if (readContentParameters(startIndex + mDataLength,
-                (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
+                                  (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
             mDataLength += readLength;
             mUnsigned32bit = wellKnownValue;
             mStringValue = mimeType;
@@ -507,7 +504,7 @@ bool WappushPduParser::decodeExtensionMedia(int startIndex) {
 
 void WappushPduParser::expandWellKnownMimeType() {
     if (mStringValue.empty()) {
-        int binaryContentType = (int) mUnsigned32bit;
+        int binaryContentType = (int)mUnsigned32bit;
         mStringValue = WELL_KNOWN_MIME_TYPES[binaryContentType];
     } else {
         mUnsigned32bit = -1;
@@ -555,55 +552,55 @@ bool WappushPduParser::readContentParameters(int startIndex, int leftToRead, int
             param = mStringValue;
             totalRead += mDataLength;
         } else {  // typed
-                if (decodeIntegerValue(startIndex)) {
-                    totalRead += mDataLength;
-                    int wellKnownParameterValue = (int) mUnsigned32bit;
-                    param = WELL_KNOWN_PARAMETERS[wellKnownParameterValue];
-                    string hexStr = "";
-                    if (param.empty()) {
-                        param = "unassigned/0x" + numToHexString(wellKnownParameterValue);
-                    }
-                    // special case for the "Q" parameter, value is a uintvar
-                    if (wellKnownParameterValue == Q_VALUE) {
-                        if (decodeUintvarInteger(startIndex + totalRead)) {
-                            totalRead += mDataLength;
-                            value = numToString(mUnsigned32bit);
-                            mContentParameters.insert(pair<string, string>(param, value));
-                            return readContentParameters(startIndex + totalRead,
-                                    leftToRead - totalRead, accumulator + totalRead);
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
-                    return false;
+            if (decodeIntegerValue(startIndex)) {
+                totalRead += mDataLength;
+                int wellKnownParameterValue = (int)mUnsigned32bit;
+                param = WELL_KNOWN_PARAMETERS[wellKnownParameterValue];
+                string hexStr = "";
+                if (param.empty()) {
+                    param = "unassigned/0x" + numToHexString(wellKnownParameterValue);
                 }
-            }
-
-            if (decodeNoValue(startIndex + totalRead)) {
-                totalRead += mDataLength;
-                value = "";
-            } else if (decodeIntegerValue(startIndex + totalRead)) {
-                totalRead += mDataLength;
-                int intValue = (int) mUnsigned32bit;
-                value = numToString(intValue);
+                // special case for the "Q" parameter, value is a uintvar
+                if (wellKnownParameterValue == Q_VALUE) {
+                    if (decodeUintvarInteger(startIndex + totalRead)) {
+                        totalRead += mDataLength;
+                        value = numToString(mUnsigned32bit);
+                        mContentParameters.insert(pair<string, string>(param, value));
+                        return readContentParameters(startIndex + totalRead, leftToRead - totalRead,
+                                                     accumulator + totalRead);
+                    } else {
+                        return false;
+                    }
+                }
             } else {
-                decodeTokenText(startIndex + totalRead);
-                totalRead += mDataLength;
-                value = mStringValue;
-                if (value.at(0) == '\"') {
-                    // quoted string, so remove the quote
-                    value = value.substr(1, value.length() - 1);
-                }
+                return false;
             }
-            mContentParameters.insert(pair<string, string>(param, value));
-            return readContentParameters(startIndex + totalRead, leftToRead - totalRead,
-                    accumulator + totalRead);
-        } else {
-            mDataLength = accumulator;
-            return true;
         }
+
+        if (decodeNoValue(startIndex + totalRead)) {
+            totalRead += mDataLength;
+            value = "";
+        } else if (decodeIntegerValue(startIndex + totalRead)) {
+            totalRead += mDataLength;
+            int intValue = (int)mUnsigned32bit;
+            value = numToString(intValue);
+        } else {
+            decodeTokenText(startIndex + totalRead);
+            totalRead += mDataLength;
+            value = mStringValue;
+            if (value.at(0) == '\"') {
+                // quoted string, so remove the quote
+                value = value.substr(1, value.length() - 1);
+            }
+        }
+        mContentParameters.insert(pair<string, string>(param, value));
+        return readContentParameters(startIndex + totalRead, leftToRead - totalRead,
+                                     accumulator + totalRead);
+    } else {
+        mDataLength = accumulator;
+        return true;
     }
+}
 
 bool WappushPduParser::decodeTokenText(int startIndex) {
     int index = startIndex;
@@ -638,9 +635,7 @@ bool WappushPduParser::decodeNoValue(int startIndex) {
     }
 }
 
-string WappushPduParser::getValueString() {
-    return mStringValue;
-}
+string WappushPduParser::getValueString() { return mStringValue; }
 
 void WappushPduParser::decodeHeaders(int startIndex, int headerLength) {
     string headerName = "";
@@ -652,7 +647,7 @@ void WappushPduParser::decodeHeaders(int startIndex, int headerLength) {
         decodeHeaderFieldName(index);
         index += getDecodedDataLength();
         expandWellKnownHeadersName();
-        intValues = (int) mUnsigned32bit;
+        intValues = (int)mUnsigned32bit;
         if (!mStringValue.empty()) {
             headerName = mStringValue;
         } else if (intValues >= 0) {
@@ -663,7 +658,7 @@ void WappushPduParser::decodeHeaders(int startIndex, int headerLength) {
 
         decodeHeaderFieldValues(index);
         index += getDecodedDataLength();
-        intValues = (int) mUnsigned32bit;
+        intValues = (int)mUnsigned32bit;
         if (!mStringValue.empty()) {
             headerValue = mStringValue;
         } else if (intValues >= 0) {
@@ -701,7 +696,7 @@ bool WappushPduParser::decodeTextString(int startIndex) {
 
 void WappushPduParser::expandWellKnownHeadersName() {
     if (mStringValue.empty()) {
-        int binaryHeadersName = (int) mUnsigned32bit;
+        int binaryHeadersName = (int)mUnsigned32bit;
         mStringValue = WELL_KNOWN_HEADERS[binaryHeadersName];
     } else {
         mUnsigned32bit = -1;
@@ -710,8 +705,7 @@ void WappushPduParser::expandWellKnownHeadersName() {
 
 bool WappushPduParser::decodeHeaderFieldValues(int startIndex) {
     BYTE first = mWspData[startIndex];
-    if ((first == WappushPduParser::WAP_PDU_LENGTH_QUOTE) &&
-            decodeUintvarInteger(startIndex + 1)) {
+    if ((first == WappushPduParser::WAP_PDU_LENGTH_QUOTE) && decodeUintvarInteger(startIndex + 1)) {
         mStringValue = "";
         mDataLength++;
         return true;
@@ -726,13 +720,13 @@ bool WappushPduParser::decodeHeaderFieldValues(int startIndex) {
 
 bool WappushPduParser::seekXWapApplicationId(int startIndex, int endIndex) {
     int index = startIndex;
-    for (index = startIndex; index <= endIndex; ) {
+    for (index = startIndex; index <= endIndex;) {
         /**
          * 8.4.1.1  Field name
          * Field name is integer or text.
          */
         if (decodeIntegerValue(index)) {
-            int fieldValue = (int) getValue32();
+            int fieldValue = (int)getValue32();
 
             if (fieldValue == PARAMETER_ID_X_WAP_APPLICATION_ID) {
                 mUnsigned32bit = index + 1;

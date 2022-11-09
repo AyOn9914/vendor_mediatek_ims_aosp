@@ -32,26 +32,20 @@ RFX_IMPLEMENT_CLASS("RtcOpRatSwitchController", RtcOpRatSwitchController, RfxCon
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_DISABLE_2G);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_DISABLE_2G);
 
-RtcOpRatSwitchController::RtcOpRatSwitchController() :
-    mMessage(NULL),
-    mError(RIL_E_SUCCESS),
-    radioCount(0) {
-}
+RtcOpRatSwitchController::RtcOpRatSwitchController()
+    : mMessage(NULL), mError(RIL_E_SUCCESS), radioCount(0) {}
 
-RtcOpRatSwitchController::~RtcOpRatSwitchController() {
-}
+RtcOpRatSwitchController::~RtcOpRatSwitchController() {}
 
 void RtcOpRatSwitchController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
     logV(RAT_CTRL_TAG, "[onInit]");
-    const int request_id_list[] = {
-        RFX_MSG_REQUEST_SET_DISABLE_2G
-    };
+    const int request_id_list[] = {RFX_MSG_REQUEST_SET_DISABLE_2G};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int), DEFAULT);
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int), DEFAULT);
 }
 
 bool RtcOpRatSwitchController::onHandleRequest(const sp<RfxMessage>& message) {
@@ -96,14 +90,17 @@ void RtcOpRatSwitchController::requestRadioPower(bool state) {
     for (int slotId = RFX_SLOT_ID_0; slotId < RfxRilUtils::rfxGetSimCount(); slotId++) {
         sp<RfxAction> action0;
         bool power = state;
-        RtcRadioController* radioController = (RtcRadioController *)findController(
-                slotId, RFX_OBJ_CLASS_INFO(RtcRadioController));
+        RtcRadioController* radioController =
+                (RtcRadioController*)findController(slotId, RFX_OBJ_CLASS_INFO(RtcRadioController));
         if (false == state) {
-            action0 = new RfxAction1<int>(this, &RtcOpRatSwitchController::onRequestRadioOffDone, slotId);
-            backupRadioPower[slotId] = getStatusManager(slotId)->getBoolValue(RFX_STATUS_KEY_REQUEST_RADIO_POWER, false);
+            action0 = new RfxAction1<int>(this, &RtcOpRatSwitchController::onRequestRadioOffDone,
+                                          slotId);
+            backupRadioPower[slotId] = getStatusManager(slotId)->getBoolValue(
+                    RFX_STATUS_KEY_REQUEST_RADIO_POWER, false);
             logD(RAT_CTRL_TAG, "backupRadioPower slotid=%d %d", slotId, backupRadioPower[slotId]);
         } else {
-            action0 = new RfxAction1<int>(this, &RtcOpRatSwitchController::onRequestRadioOnDone, slotId);
+            action0 = new RfxAction1<int>(this, &RtcOpRatSwitchController::onRequestRadioOnDone,
+                                          slotId);
             power = backupRadioPower[slotId];
             logD(RAT_CTRL_TAG, "restoreRadioPower slotid=%d %d", slotId, backupRadioPower[slotId]);
         }
@@ -135,11 +132,10 @@ void RtcOpRatSwitchController::onRequestRadioOnDone(int slotId) {
 }
 
 bool RtcOpRatSwitchController::onPreviewMessage(const sp<RfxMessage>& message) {
-    if (message->getType() == REQUEST &&
-            mMessage != NULL &&
-            message->getId() == RFX_MSG_REQUEST_SET_DISABLE_2G) {
+    if (message->getType() == REQUEST && mMessage != NULL &&
+        message->getId() == RFX_MSG_REQUEST_SET_DISABLE_2G) {
         logD(RAT_CTRL_TAG, "onPreviewMessage, put %s into pending list",
-                RFX_ID_TO_STR(message->getId()));
+             RFX_ID_TO_STR(message->getId()));
         return false;
     } else {
         return true;
@@ -148,8 +144,7 @@ bool RtcOpRatSwitchController::onPreviewMessage(const sp<RfxMessage>& message) {
 
 bool RtcOpRatSwitchController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
     if (mMessage == NULL) {
-        logD(RAT_CTRL_TAG, "resume the request %s",
-                RFX_ID_TO_STR(message->getId()));
+        logD(RAT_CTRL_TAG, "resume the request %s", RFX_ID_TO_STR(message->getId()));
         return true;
     } else {
         return false;
@@ -157,12 +152,11 @@ bool RtcOpRatSwitchController::onCheckIfResumeMessage(const sp<RfxMessage>& mess
 }
 
 bool RtcOpRatSwitchController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState) {
+                                                      bool isModemPowerOff, int radioState) {
     /* Reject the request in radio unavailable or modem off */
-    if (radioState == (int)RADIO_STATE_UNAVAILABLE ||
-            isModemPowerOff == true) {
+    if (radioState == (int)RADIO_STATE_UNAVAILABLE || isModemPowerOff == true) {
         logD(RAT_CTRL_TAG, "onCheckIfRejectMessage, id = %d, isModemPowerOff = %d, rdioState = %d",
-                message->getId(), isModemPowerOff, radioState);
+             message->getId(), isModemPowerOff, radioState);
         return true;
     }
     return false;

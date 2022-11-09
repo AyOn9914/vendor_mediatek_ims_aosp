@@ -27,17 +27,17 @@
  *****************************************************************************/
 RFX_IMPLEMENT_HANDLER_CLASS(RmcSimUrcEntryHandler, RIL_CMD_PROXY_URC);
 
-RmcSimUrcEntryHandler::RmcSimUrcEntryHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id) {
+RmcSimUrcEntryHandler::RmcSimUrcEntryHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcSimUrcEntry"));
     // Create Gsm SIM Controller and C2K SIM Controller
     if (RfxOpUtils::getOpHandler() != NULL) {
         mGsmUrcHandler = (RmcGsmSimUrcHandler*)RfxOpUtils::getSimOpHandler(MTK_RIL_SIM_GSM_URC,
-                slot_id, channel_id);
+                                                                           slot_id, channel_id);
         mCdmaUrcHandler = (RmcCdmaSimUrcHandler*)RfxOpUtils::getSimOpHandler(MTK_RIL_SIM_CDMA_URC,
-                slot_id, channel_id);
+                                                                             slot_id, channel_id);
         mCommUrcHandler = (RmcCommSimUrcHandler*)RfxOpUtils::getSimOpHandler(MTK_RIL_SIM_COMM_URC,
-                slot_id, channel_id);
+                                                                             slot_id, channel_id);
     } else {
         RFX_HANDLER_CREATE(mGsmUrcHandler, RmcGsmSimUrcHandler, (slot_id, channel_id));
         RFX_HANDLER_CREATE(mCdmaUrcHandler, RmcCdmaSimUrcHandler, (slot_id, channel_id));
@@ -105,12 +105,11 @@ RmcSimUrcEntryHandler::RmcSimUrcEntryHandler(int slot_id, int channel_id) :
     // register request, urc
 }
 
-RmcSimUrcEntryHandler::~RmcSimUrcEntryHandler() {
-}
+RmcSimUrcEntryHandler::~RmcSimUrcEntryHandler() {}
 
 void RmcSimUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     bool isHandled = false;
-    RfxAtLine *urc = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
+    RfxAtLine* urc = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
 
     if (mCommUrcHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         isHandled = true;
@@ -118,7 +117,7 @@ void RmcSimUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     }
 
     if (urc != NULL) {
-        delete(urc);
+        delete (urc);
     }
 
     urc = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
@@ -128,17 +127,17 @@ void RmcSimUrcEntryHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     } else if (mCdmaUrcHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         isHandled = true;
         mCdmaUrcHandler->handleUrc(msg, urc);
-    // External SIM [Start]
+        // External SIM [Start]
 #ifdef MTK_EXTERNAL_SIM_SUPPORT
     } else if (mVsimUrcHandler != NULL &&
                mVsimUrcHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         isHandled = true;
         mVsimUrcHandler->handleUrc(msg, urc);
 #endif
-    // External SIM [End]
+        // External SIM [End]
     }
     if (urc != NULL) {
-        delete(urc);
+        delete (urc);
     }
 
     if (!isHandled) {

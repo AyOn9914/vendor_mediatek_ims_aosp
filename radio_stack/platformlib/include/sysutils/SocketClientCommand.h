@@ -20,9 +20,9 @@
 #include <sysutils/SocketClient.h>
 
 class SocketClientCommand {
-public:
-    virtual ~SocketClientCommand() { }
-    virtual void runSocketCommand(SocketClient *client) = 0;
+  public:
+    virtual ~SocketClientCommand() {}
+    virtual void runSocketCommand(SocketClient* client) = 0;
 };
 
 #endif

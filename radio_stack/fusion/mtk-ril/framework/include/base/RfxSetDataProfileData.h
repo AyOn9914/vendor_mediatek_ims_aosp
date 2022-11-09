@@ -23,10 +23,10 @@
 #include "RfxLog.h"
 
 #define FREEIF(data)    \
-if (data != NULL) {     \
-    free(data);         \
-    data = NULL;        \
-}
+    if (data != NULL) { \
+        free(data);     \
+        data = NULL;    \
+    }
 
 class RfxSetDataProfileData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxSetDataProfileData);

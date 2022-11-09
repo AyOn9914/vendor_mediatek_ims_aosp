@@ -25,40 +25,38 @@
 #include <binder/IPCThreadState.h>
 
 namespace VTService {
-class IVTService:public IInterface, public IVTInterface {
- public:
-  enum{
-      SETUP_SERVICE  = IBinder::FIRST_CALL_TRANSACTION,
-      RELEASE_SERVICE,
-      INITIALIZATION,
-      FINALIZATION,
-      SET_CAMERA,
-      SET_LOCAL_SURFACE,
-      SET_PEER_SURFACE,
-      SET_CAMERA_PARAM,
-      SET_CAMERA_PARAM_ONLY,
-      SET_CAMERA_PARAM_WITH_SIM,
-      SET_ROTATION,
-      SET_UI_MODE,
-      REQ_SESSION_MODIFY,
-      RES_SESSION_MODIFY,
-      SNAPSHOT,
-      START_RECORD,
-      STOP_RECORD,
-      SWITCH_FEATURE,
-      UPDATE_NETWORK_TABLE
-  };
-  DECLARE_META_INTERFACE(VTService);
-  virtual status_t setupVTService(const sp<IVTClient> & client)=0;
-  virtual void releaseVTService()= 0;
+class IVTService : public IInterface, public IVTInterface {
+  public:
+    enum {
+        SETUP_SERVICE = IBinder::FIRST_CALL_TRANSACTION,
+        RELEASE_SERVICE,
+        INITIALIZATION,
+        FINALIZATION,
+        SET_CAMERA,
+        SET_LOCAL_SURFACE,
+        SET_PEER_SURFACE,
+        SET_CAMERA_PARAM,
+        SET_CAMERA_PARAM_ONLY,
+        SET_CAMERA_PARAM_WITH_SIM,
+        SET_ROTATION,
+        SET_UI_MODE,
+        REQ_SESSION_MODIFY,
+        RES_SESSION_MODIFY,
+        SNAPSHOT,
+        START_RECORD,
+        STOP_RECORD,
+        SWITCH_FEATURE,
+        UPDATE_NETWORK_TABLE
+    };
+    DECLARE_META_INTERFACE(VTService);
+    virtual status_t setupVTService(const sp<IVTClient>& client) = 0;
+    virtual void releaseVTService() = 0;
 };
 
-class BnVTService: public BnInterface<IVTService> {
- public:
-  virtual status_t onTransact(uint32_t code,
-          const Parcel& data,
-          Parcel * reply,
-          uint32_t flags = 0);
+class BnVTService : public BnInterface<IVTService> {
+  public:
+    virtual status_t onTransact(uint32_t code, const Parcel& data, Parcel* reply,
+                                uint32_t flags = 0);
 };
 
 }  // namespace VTService

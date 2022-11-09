@@ -34,32 +34,28 @@
 #include <OMX_Video.h>
 #include <media/mediarecorder.h>
 
-
 #include "Recorder.h"
 #include "EncoderContext.h"
 #include "MediaMuxer.h"
 #include "comutils.h"
-namespace android
-{
+namespace android {
 
-Recorder::Recorder(record_mode_t mode,const sp<AMessage> &notify)
-    :mRecordMode(mode),
-     mOutputFd(-1),
-     mPath(NULL),
-     mState(UNDEFINED),
-     mNotify(notify),
-     mNumFrames(0),
-     mReplyID(NULL),
-     mRotationDegree(0),
-     mVideoLastTimeStamp(-1),
-     mHasWriteCsdBuffer(false)
-{
-
+Recorder::Recorder(record_mode_t mode, const sp<AMessage>& notify)
+    : mRecordMode(mode),
+      mOutputFd(-1),
+      mPath(NULL),
+      mState(UNDEFINED),
+      mNotify(notify),
+      mNumFrames(0),
+      mReplyID(NULL),
+      mRotationDegree(0),
+      mVideoLastTimeStamp(-1),
+      mHasWriteCsdBuffer(false) {
     VT_LOGI("new Recorder");
-    setAVTimeStampMap(0,0);
+    setAVTimeStampMap(0, 0);
 
-    //for initialized
-    mOutputFormat =  static_cast<output_format>(0);
+    // for initialized
+    mOutputFormat = static_cast<output_format>(0);
     mUse64BitFileOffset = false;
     mVideoWidth = 640;
     mVideoHeight = 480;
@@ -68,17 +64,13 @@ Recorder::Recorder(record_mode_t mode,const sp<AMessage> &notify)
     mAudioTrackIndex = 0;
     mNeedVideoEcoder = false;
     mNeedAudioEcoder = false;
-
 }
-Recorder::~Recorder()
-{
-}
+Recorder::~Recorder() {}
 
-status_t Recorder::setAudioSource(int32_t as,sp<AMessage> & asFomart)
-{
+status_t Recorder::setAudioSource(int32_t as, sp<AMessage>& asFomart) {
     VT_LOGI("as is %d", as);
 
-    if(asFomart.get() == NULL) {
+    if (asFomart.get() == NULL) {
         mAudioSourceFmt = new AMessage();
     } else {
         mAudioSourceFmt = asFomart;
@@ -97,20 +89,18 @@ status_t Recorder::setAudioSource(int32_t as,sp<AMessage> & asFomart)
     return OK;
 }
 
-status_t Recorder::setVideoSource(int32_t vs ,sp<AMessage> & vsFomart)
-{
-
+status_t Recorder::setVideoSource(int32_t vs, sp<AMessage>& vsFomart) {
     VT_LOGI("vs is %d", vs);
 
-    if(vsFomart.get() == NULL) {
+    if (vsFomart.get() == NULL) {
         mVideoSourceFmt = new AMessage();
     } else {
         mVideoSourceFmt = vsFomart;
     }
 
-    if(vs == VIDEO_ENCODER_H264) {
+    if (vs == VIDEO_ENCODER_H264) {
         mVideoSourceFmt->setString("mime", MEDIA_MIMETYPE_VIDEO_AVC);
-        //addVideoSource(true);
+        // addVideoSource(true);
     } else {
         CHECK(0);
         addVideoSource(false);
@@ -119,74 +109,68 @@ status_t Recorder::setVideoSource(int32_t vs ,sp<AMessage> & vsFomart)
     return OK;
 }
 
-
-status_t Recorder::setOutputFormat(int32_t of)
-{
+status_t Recorder::setOutputFormat(int32_t of) {
     mOutputFormat = static_cast<output_format>(of);
-    VT_LOGI("mOutputFormat is %d",  of);
+    VT_LOGI("mOutputFormat is %d", of);
     return OK;
 }
 
-status_t Recorder::setAudioEncoder(int32_t ae)
-{
+status_t Recorder::setAudioEncoder(int32_t ae) {
     VT_LOGI("ae is %d", ae);
     mAudioEncoderFmt = new AMessage();
 
-    if(ae == AUDIO_ENCODER_AMR_NB) {
+    if (ae == AUDIO_ENCODER_AMR_NB) {
         mAudioEncoderFmt->setString("mime", MEDIA_MIMETYPE_AUDIO_AMR_NB);
-    } else if(ae == AUDIO_ENCODER_AMR_WB) {
+    } else if (ae == AUDIO_ENCODER_AMR_WB) {
         mAudioEncoderFmt->setString("mime", MEDIA_MIMETYPE_AUDIO_AMR_WB);
     } else {
         CHECK(0);
     }
 
-    mAudioEncoderFmt->setInt32("bitrate",128000);
-    mAudioEncoderFmt->setInt32("channel-count",2);
-    mAudioEncoderFmt->setInt32("sample-rate",48000);
+    mAudioEncoderFmt->setInt32("bitrate", 128000);
+    mAudioEncoderFmt->setInt32("channel-count", 2);
+    mAudioEncoderFmt->setInt32("sample-rate", 48000);
     return OK;
 }
 
-status_t Recorder::setVideoEncoder(int32_t ve)
-{
+status_t Recorder::setVideoEncoder(int32_t ve) {
     VT_LOGI("ve is %d", ve);
     mVideoEncoderFmt = new AMessage();
 
-    if(ve == VIDEO_ENCODER_H264) {
+    if (ve == VIDEO_ENCODER_H264) {
         mVideoEncoderFmt->setString("mime", MEDIA_MIMETYPE_VIDEO_AVC);
     } else {
         CHECK(0);
     }
 
-    AString  mime_s;
+    AString mime_s;
     CHECK(mVideoSourceFmt->findString("mime", &mime_s));
-    AString  mime_e;
+    AString mime_e;
     CHECK(mVideoEncoderFmt->findString("mime", &mime_e));
 
-    if(!strcasecmp(mime_s.c_str(),mime_e.c_str())) {
-
+    if (!strcasecmp(mime_s.c_str(), mime_e.c_str())) {
         mVideoEncoderFmt = mVideoSourceFmt;
     }
 
     return OK;
 }
-status_t Recorder::setOutputFile(const char *path)
-{
-    mPath =path;
-    VT_LOGI("setOutputFile path is %s",mPath);
+status_t Recorder::setOutputFile(const char* path) {
+    mPath = path;
+    VT_LOGI("setOutputFile path is %s", mPath);
 
-    if(mPath ==NULL) {
+    if (mPath == NULL) {
         VT_LOGE("setOutputFile path is NULL");
         char buff[256];
-        srand((int) time(0));
+        srand((int)time(0));
         struct timeval tv;
         gettimeofday(&tv, NULL);
-        int32_t time  = tv.tv_sec;
-        int32_t rnd = rand() %1000;
+        int32_t time = tv.tv_sec;
+        int32_t rnd = rand() % 1000;
 
-        if(mRecordMode  == RECORD_DLVIDEO_MIXADUIO) {
-            sprintf(buff,"/data/PeerVideo_%d_%d.3gp",time,rnd);
-        } else if(mRecordMode  == RECORD_MIXAUDIO_ONLY) {
-            sprintf(buff,"/data/PeerVideoMixAudio_%d_%d.3gp",time,rnd);
+        if (mRecordMode == RECORD_DLVIDEO_MIXADUIO) {
+            sprintf(buff, "/data/PeerVideo_%d_%d.3gp", time, rnd);
+        } else if (mRecordMode == RECORD_MIXAUDIO_ONLY) {
+            sprintf(buff, "/data/PeerVideoMixAudio_%d_%d.3gp", time, rnd);
         }
 
         mPath = buff;
@@ -195,19 +179,18 @@ status_t Recorder::setOutputFile(const char *path)
     return OK;
 }
 
-status_t Recorder::setOutputFile(int fd, int64_t offset, int64_t length)
-{
-    VT_LOGI("setOutputFile: %d, %lld, %lld", fd, (long long) offset, (long long) length);
+status_t Recorder::setOutputFile(int fd, int64_t offset, int64_t length) {
+    VT_LOGI("setOutputFile: %d, %lld, %lld", fd, (long long)offset, (long long)length);
     // These don't make any sense, do they?
     CHECK_EQ(offset, 0ll);
     CHECK_EQ(length, 0ll);
 
-    if(fd < 0) {
+    if (fd < 0) {
         VT_LOGE("Invalid file descriptor: %d", fd);
         return -EBADF;
     }
 
-    if(mOutputFd >= 0) {
+    if (mOutputFd >= 0) {
         ::close(mOutputFd);
     }
 
@@ -215,12 +198,10 @@ status_t Recorder::setOutputFile(int fd, int64_t offset, int64_t length)
 
     return OK;
 }
-status_t Recorder::setParameters(const sp<AMessage> &parameters)
-{
-
+status_t Recorder::setParameters(const sp<AMessage>& parameters) {
     mParams = parameters;
     VT_LOGI("mParams is '%s'", mParams->debugString(0).c_str());
-    CHECK(parameters->findInt32("rotation-degrees",&mRotationDegree));
+    CHECK(parameters->findInt32("rotation-degrees", &mRotationDegree));
     /*
          AString  mime_s;
          CHECK(mVideoSourceFmt->findString("mime", &mime_s));
@@ -240,25 +221,20 @@ status_t Recorder::setParameters(const sp<AMessage> &parameters)
     return OK;
 }
 
-status_t Recorder::addAudioSource(bool usePCMAudio)
-{
-    usePCMAudio = true; // for build error
+status_t Recorder::addAudioSource(bool usePCMAudio) {
+    usePCMAudio = true;  // for build error
     audio_attributes_t attr = AUDIO_ATTRIBUTES_INITIALIZER;
     attr.source = AUDIO_SOURCE_MIC;
 
-    sp<AudioSource> mAudioSource = new AudioSource(
-        &attr,
-        String16("TODO"),
-        48000 /* sampleRate */,
-        2 /* channelCount */);
+    sp<AudioSource> mAudioSource =
+            new AudioSource(&attr, String16("TODO"), 48000 /* sampleRate */, 2 /* channelCount */);
 
     CHECK(mAudioSource->initCheck() == OK);
     return OK;
 }
 
-status_t Recorder::addVideoSource(bool useBitStream)
-{
-    if(useBitStream) {
+status_t Recorder::addVideoSource(bool useBitStream) {
+    if (useBitStream) {
         VT_LOGE("addVideoSource:video source is bitstream, not need encoder !");
     } else {
         VT_LOGE("addVideoSource not support !");
@@ -268,137 +244,117 @@ status_t Recorder::addVideoSource(bool useBitStream)
     return OK;
 }
 
-
-status_t Recorder::prepare()
-{
+status_t Recorder::prepare() {
     //
-    status_t err ;
+    status_t err;
     VT_LOGI("record prepare start");
-    //new muxter
+    // new muxter
 
-    CHECK(mOutputFormat == OUTPUT_FORMAT_MPEG_4) ;
+    CHECK(mOutputFormat == OUTPUT_FORMAT_MPEG_4);
 
-    if(mPath !=NULL) {
+    if (mPath != NULL) {
         VT_LOGI("will not support path ");
-    } else if(mOutputFd>=0) {
-        mMediaMuxer= new MediaMuxer(mOutputFd,
-                                    MediaMuxer::OUTPUT_FORMAT_MPEG_4);
-        VT_LOGI("new muxter by fd %d",mOutputFd);
+    } else if (mOutputFd >= 0) {
+        mMediaMuxer = new MediaMuxer(mOutputFd, MediaMuxer::OUTPUT_FORMAT_MPEG_4);
+        VT_LOGI("new muxter by fd %d", mOutputFd);
     } else {
         VT_LOGE("neither mPath nor the fd is valid");
         return -1;
     }
 
-    //set listener
+    // set listener
     mRecordListner = new MediaRecordListner(this);
     mMediaMuxer->setListener(mRecordListner);
 
     mMediaMuxer->setOrientationHint(mRotationDegree);
 
-    bool hasVideoTrack=true ;
-    bool hasAudioTrack =true;
+    bool hasVideoTrack = true;
+    bool hasAudioTrack = true;
 
-    //new encoder
+    // new encoder
 
-    if(mRecordMode  == RECORD_DLVIDEO_MIXADUIO) {
-        hasVideoTrack =true;
-        hasAudioTrack =true;
-    } else if(mRecordMode  == RECORD_MIXAUDIO_ONLY) {
-        hasVideoTrack =false;
-        hasAudioTrack =true;
+    if (mRecordMode == RECORD_DLVIDEO_MIXADUIO) {
+        hasVideoTrack = true;
+        hasAudioTrack = true;
+    } else if (mRecordMode == RECORD_MIXAUDIO_ONLY) {
+        hasVideoTrack = false;
+        hasAudioTrack = true;
     }
 
-    if(hasVideoTrack) {
-
-        err= mMediaMuxer->addTrack(mVideoEncoderFmt);
+    if (hasVideoTrack) {
+        err = mMediaMuxer->addTrack(mVideoEncoderFmt);
         CHECK_GE(err, 0);
         mVideoTrackIndex = 0;
         VT_LOGI("mVideoTrackIndex=%d", mVideoTrackIndex);
 
         sp<AMessage> notify = new AMessage(kWhatEncoderNotify, this);
-        notify->setInt32("trackIndex",  mVideoTrackIndex);
+        notify->setInt32("trackIndex", mVideoTrackIndex);
 
-
-        sp<ALooper>  codecLooper = new ALooper;
+        sp<ALooper> codecLooper = new ALooper;
         codecLooper->setName("recorder_video_codec_looper");
 
-        codecLooper->start(
-            false /* runOnCallingThread */,
-            false /* canCallJava */,
-            PRIORITY_AUDIO);
+        codecLooper->start(false /* runOnCallingThread */, false /* canCallJava */, PRIORITY_AUDIO);
 
         sp<EncoderContext> context =
-            new EncoderContext(notify, codecLooper, mVideoSourceFmt,mVideoEncoderFmt);
+                new EncoderContext(notify, codecLooper, mVideoSourceFmt, mVideoEncoderFmt);
 
-        mEncoderContexts.add(mVideoTrackIndex,context);
+        mEncoderContexts.add(mVideoTrackIndex, context);
 
         looper()->registerHandler(mEncoderContexts.valueFor(mVideoTrackIndex));
     }
 
-    if(hasAudioTrack) {
+    if (hasAudioTrack) {
         err = mMediaMuxer->addTrack(mAudioEncoderFmt);
         CHECK_GE(err, 0);
-        mAudioTrackIndex =1;
-        VT_LOGI("mAudioTrackIndex=%d",mAudioTrackIndex);
+        mAudioTrackIndex = 1;
+        VT_LOGI("mAudioTrackIndex=%d", mAudioTrackIndex);
 
         sp<AMessage> notify = new AMessage(kWhatEncoderNotify, this);
-        notify->setInt32("trackIndex",  mAudioTrackIndex);
+        notify->setInt32("trackIndex", mAudioTrackIndex);
 
-
-        sp<ALooper>  codecLooper = new ALooper;
+        sp<ALooper> codecLooper = new ALooper;
         codecLooper->setName("recorder_audio_codec_looper");
 
-        codecLooper->start(
-            false /* runOnCallingThread */,
-            false /* canCallJava */,
-            PRIORITY_AUDIO);
+        codecLooper->start(false /* runOnCallingThread */, false /* canCallJava */, PRIORITY_AUDIO);
         sp<EncoderContext> context =
-            new EncoderContext(notify, codecLooper, mAudioSourceFmt,mAudioEncoderFmt);
+                new EncoderContext(notify, codecLooper, mAudioSourceFmt, mAudioEncoderFmt);
 
-        mEncoderContexts.add(mAudioTrackIndex,context);
+        mEncoderContexts.add(mAudioTrackIndex, context);
 
         looper()->registerHandler(mEncoderContexts.valueFor(mAudioTrackIndex));
-
     }
 
     VT_LOGI("record prepare done");
 
-
     return OK;
 }
 
-
-
-status_t Recorder::postAsynAndWaitReturnError(
-    const sp<AMessage> &msg)
-{
+status_t Recorder::postAsynAndWaitReturnError(const sp<AMessage>& msg) {
     sp<AMessage> response;
     status_t err = msg->postAndAwaitResponse(&response);
 
-    if(err != OK) {
+    if (err != OK) {
         return err;
     }
 
-    if(!response->findInt32("err", &err)) {
+    if (!response->findInt32("err", &err)) {
         err = OK;
     }
 
     return err;
 }
 
-status_t Recorder::start()
-{
+status_t Recorder::start() {
     status_t err = postAsynAndWaitReturnError(new AMessage(kWhatStart, this));
     CHECK(err == OK);
     return err;
 }
 
-status_t Recorder::stop()
-{
+status_t Recorder::stop() {
     status_t err = postAsynAndWaitReturnError(new AMessage(kWhatStop, this));
     CHECK(err == OK);
 
-    if(mOutputFd >= 0) {
+    if (mOutputFd >= 0) {
         ::close(mOutputFd);
         mOutputFd = -1;
     }
@@ -406,24 +362,18 @@ status_t Recorder::stop()
     return err;
 }
 
-void Recorder::setAVTimeStampMap(int64_t audioTimeUs , int64_t videoTimeUs)
-{
-    mAudioBaseTimeUs = audioTimeUs ;
-    mVideoBaseTimeUs = videoTimeUs ;
-
-
+void Recorder::setAVTimeStampMap(int64_t audioTimeUs, int64_t videoTimeUs) {
+    mAudioBaseTimeUs = audioTimeUs;
+    mVideoBaseTimeUs = videoTimeUs;
 }
-void Recorder::queueAccessUnit(int32_t isVideo, const sp<ABuffer> &accessUnit)
-{
+void Recorder::queueAccessUnit(int32_t isVideo, const sp<ABuffer>& accessUnit) {
     sp<AMessage> msg = new AMessage(kWhatAccessUnit, this);
     msg->setBuffer("accessUnit", accessUnit);
     msg->setInt32("isVideo", isVideo);
     msg->post();
-
 }
 
-void Recorder::preWriteCsdBuffer()
-{
+void Recorder::preWriteCsdBuffer() {
     /*
         sp<ABuffer> csd = NULL;
         if(mVideoEncoderFmt->findBuffer("csd-0",&csd)){
@@ -440,162 +390,154 @@ void Recorder::preWriteCsdBuffer()
         }
         */
 }
-void Recorder::onMessageReceived(const sp<AMessage> &msg)
-{
-    switch(msg->what()) {
-    case  kWhatStart: {
-        status_t err;
-        sp<AMessage> response = new AMessage;
+void Recorder::onMessageReceived(const sp<AMessage>& msg) {
+    switch (msg->what()) {
+        case kWhatStart: {
+            status_t err;
+            sp<AMessage> response = new AMessage;
 
-        err = mMediaMuxer->start();
+            err = mMediaMuxer->start();
 
-        preWriteCsdBuffer();
+            preWriteCsdBuffer();
 
-        if(err != OK) {
-            VT_LOGE("start  mMediaMuxer error %d", err);
+            if (err != OK) {
+                VT_LOGE("start  mMediaMuxer error %d", err);
 
-            response->setInt32("err", err);
-            response->postReply(mReplyID);
-            break ;
+                response->setInt32("err", err);
+                response->postReply(mReplyID);
+                break;
+            }
+
+            sp<AReplyToken> replyID;
+            CHECK(msg->senderAwaitsResponse(&replyID));
+            response->postReply(replyID);
+            break;
         }
 
-        sp<AReplyToken> replyID;
-        CHECK(msg->senderAwaitsResponse(&replyID));
-        response->postReply(replyID);
-        break ;
-    }
+        case kWhatStop: {
+            status_t err;
+            sp<AMessage> response = new AMessage;
 
-    case  kWhatStop: {
-        status_t err;
-        sp<AMessage> response = new AMessage;
+            for (size_t i = 0; i < mEncoderContexts.size(); i++) {
+                mEncoderContexts.valueAt(i)->stopAsync();
+            }
 
-        for(size_t i=0; i< mEncoderContexts.size(); i++) {
-            mEncoderContexts.valueAt(i)->stopAsync();
+            err = mMediaMuxer->stop();
+            sp<AReplyToken> replyID;
+            CHECK(msg->senderAwaitsResponse(&replyID));
+
+            if (err != OK) {
+                response->setInt32("err", err);
+                VT_LOGE("stop muxter err =%d", err);
+            }
+
+            response->postReply(replyID);
+
+            break;
         }
-
-        err = mMediaMuxer->stop();
-        sp<AReplyToken> replyID;
-        CHECK(msg->senderAwaitsResponse(&replyID));
-
-        if(err !=OK) {
-            response->setInt32("err", err);
-            VT_LOGE("stop muxter err =%d",err);
-        }
-
-        response->postReply(replyID);
-
-        break ;
-
-    }
-    case  kWhatAccessUnit : {
-        int32_t isVideo;
-        int32_t trackIndex;
-        CHECK(msg->findInt32("isVideo",&isVideo));
-        sp<ABuffer> accessUnit;
-        CHECK(msg->findBuffer("accessUnit", &accessUnit));
-
-        trackIndex = isVideo?mVideoTrackIndex:mAudioTrackIndex;
-        mEncoderContexts.valueFor(trackIndex)->queueAccessUnit(accessUnit);
-        break ;
-    }
-    case  kWhatEncoderNotify: {
-        int32_t what;
-        CHECK(msg->findInt32("what", &what));
-
-        int32_t trackIndex;
-        CHECK(msg->findInt32("trackIndex", &trackIndex));
-
-        if(what == EncoderContext::kWhatAccessUnitOut) {
+        case kWhatAccessUnit: {
+            int32_t isVideo;
+            int32_t trackIndex;
+            CHECK(msg->findInt32("isVideo", &isVideo));
             sp<ABuffer> accessUnit;
             CHECK(msg->findBuffer("accessUnit", &accessUnit));
 
-            status_t err =writeSamplesToMuxter(trackIndex,accessUnit);
-            CHECK(err ==OK);
-
-        } else if(what == EncoderContext::kWhatEOS) {
-            CHECK_EQ(what, EncoderContext::kWhatEOS);
-
-            VT_LOGI("output EOS on track %d", trackIndex);
-
-            looper()->unregisterHandler(mEncoderContexts.valueFor(trackIndex)->id());
-            notifyError();
-        } else {
-            CHECK_EQ(what, EncoderContext::kWhatError);
-
-            status_t err;
-            CHECK(msg->findInt32("err", &err));
-
-            VT_LOGE("mEncoderContext [%d] signaled error %d", trackIndex,err);
-
-            notifyError();
+            trackIndex = isVideo ? mVideoTrackIndex : mAudioTrackIndex;
+            mEncoderContexts.valueFor(trackIndex)->queueAccessUnit(accessUnit);
+            break;
         }
+        case kWhatEncoderNotify: {
+            int32_t what;
+            CHECK(msg->findInt32("what", &what));
 
-        break ;
-    }
-    case  kWhatWriteSample: {
-        //status_t err =writeSamplesToMuxter();
-        //if(err !=OK)
-        //  notifyError();
-        break ;
-    }
-    default:
-        TRESPASS();
+            int32_t trackIndex;
+            CHECK(msg->findInt32("trackIndex", &trackIndex));
+
+            if (what == EncoderContext::kWhatAccessUnitOut) {
+                sp<ABuffer> accessUnit;
+                CHECK(msg->findBuffer("accessUnit", &accessUnit));
+
+                status_t err = writeSamplesToMuxter(trackIndex, accessUnit);
+                CHECK(err == OK);
+
+            } else if (what == EncoderContext::kWhatEOS) {
+                CHECK_EQ(what, EncoderContext::kWhatEOS);
+
+                VT_LOGI("output EOS on track %d", trackIndex);
+
+                looper()->unregisterHandler(mEncoderContexts.valueFor(trackIndex)->id());
+                notifyError();
+            } else {
+                CHECK_EQ(what, EncoderContext::kWhatError);
+
+                status_t err;
+                CHECK(msg->findInt32("err", &err));
+
+                VT_LOGE("mEncoderContext [%d] signaled error %d", trackIndex, err);
+
+                notifyError();
+            }
+
+            break;
+        }
+        case kWhatWriteSample: {
+            // status_t err =writeSamplesToMuxter();
+            // if(err !=OK)
+            //   notifyError();
+            break;
+        }
+        default:
+            TRESPASS();
     }
 }
 
-
-
-void Recorder::notifyError()
-{
+void Recorder::notifyError() {
     sp<AMessage> notify = mNotify->dup();
     notify->setInt32("what", kWhatError);
     notify->post();
 }
-status_t Recorder::writeSamplesToMuxter(int32_t trackIndex,sp<ABuffer> &buffer)
-{
+status_t Recorder::writeSamplesToMuxter(int32_t trackIndex, sp<ABuffer>& buffer) {
     int64_t timeUs = 0ll;
     uint32_t flags = 0;
-    int32_t syncFrame=0;
-    int32_t csdFrame=0;
+    int32_t syncFrame = 0;
+    int32_t csdFrame = 0;
     status_t err;
 
-
-    if(buffer.get() != NULL) {
+    if (buffer.get() != NULL) {
         CHECK(buffer->meta()->findInt64("timeUs", &timeUs));
-        VT_LOGD("writeSamplesToMuxter:trackIndex %d timeUs %lld ",trackIndex, (long long) timeUs);
+        VT_LOGD("writeSamplesToMuxter:trackIndex %d timeUs %lld ", trackIndex, (long long)timeUs);
 
-        if(trackIndex == mVideoTrackIndex) {
-            if(mVideoLastTimeStamp < 0) {
+        if (trackIndex == mVideoTrackIndex) {
+            if (mVideoLastTimeStamp < 0) {
                 mVideoLastTimeStamp = timeUs;
-                VT_LOGD("mVideoLastTimeStamp = %lld", (long long) mVideoLastTimeStamp);
-            } else if(timeUs <= mVideoLastTimeStamp) {
-                VT_LOGD("drop trackIndex %d timestamp %lld as < last time %lld ",
-                        trackIndex, (long long) timeUs, (long long) mVideoLastTimeStamp);
+                VT_LOGD("mVideoLastTimeStamp = %lld", (long long)mVideoLastTimeStamp);
+            } else if (timeUs <= mVideoLastTimeStamp) {
+                VT_LOGD("drop trackIndex %d timestamp %lld as < last time %lld ", trackIndex,
+                        (long long)timeUs, (long long)mVideoLastTimeStamp);
                 return OK;
             }
         }
 
-        if(buffer->meta()->findInt32("is-sync-frame", &syncFrame) && syncFrame==1) {
-
+        if (buffer->meta()->findInt32("is-sync-frame", &syncFrame) && syncFrame == 1) {
             VT_LOGV("is I Frame");
             flags |= MediaMuxer::SAMPLE_FLAG_SYNC;
-        } else if(buffer->meta()->findInt32("csd-0", &csdFrame) && csdFrame==1) {
-            VT_LOGD("csd-0 trackIndex %d timeUs %lld ",trackIndex, (long long) timeUs);
+        } else if (buffer->meta()->findInt32("csd-0", &csdFrame) && csdFrame == 1) {
+            VT_LOGD("csd-0 trackIndex %d timeUs %lld ", trackIndex, (long long)timeUs);
             flags |= MediaMuxer::SAMPLE_FLAG_CODEC_CONFIG;
         } else {
-            //VT_LOGE("writeSamplesToMuxter: error buffer flags=%d",flags);
-            //CHECK_NE(err,(status_t)OK);
+            // VT_LOGE("writeSamplesToMuxter: error buffer flags=%d",flags);
+            // CHECK_NE(err,(status_t)OK);
         }
 
-        err = mMediaMuxer->writeSampleData(buffer, trackIndex, timeUs,  flags);
+        err = mMediaMuxer->writeSampleData(buffer, trackIndex, timeUs, flags);
 
-        if(err !=OK) {
-            VT_LOGE("writeSampleData err=%d",err);
-            CHECK_NE(err, (status_t) OK);
+        if (err != OK) {
+            VT_LOGE("writeSampleData err=%d", err);
+            CHECK_NE(err, (status_t)OK);
             return err;
         }
 
-        if(trackIndex == mVideoTrackIndex) {
+        if (trackIndex == mVideoTrackIndex) {
             mVideoLastTimeStamp = timeUs;
         }
     }
@@ -603,81 +545,66 @@ status_t Recorder::writeSamplesToMuxter(int32_t trackIndex,sp<ABuffer> &buffer)
     return OK;
 }
 
-
-
-void Recorder::HandleEventNotify(int msg, int params1,int params2)
-{
-    VT_LOGD("HandleEventNotify: msg %d,ext1 %d,ext2 %d",msg, params1,  params2);
-
+void Recorder::HandleEventNotify(int msg, int params1, int params2) {
+    VT_LOGD("HandleEventNotify: msg %d,ext1 %d,ext2 %d", msg, params1, params2);
 
     sp<AMessage> notify = mNotify->dup();
     bool post = false;
 
-    switch(msg) {
-    case MEDIA_RECORDER_TRACK_EVENT_INFO: {
-        int32_t trackNum,info;
-        trackNum = (params1 >> 28) & 0x0F;
-        info= params1 & 0x0FFFFFFF;
+    switch (msg) {
+        case MEDIA_RECORDER_TRACK_EVENT_INFO: {
+            int32_t trackNum, info;
+            trackNum = (params1 >> 28) & 0x0F;
+            info = params1 & 0x0FFFFFFF;
 
-        if(info ==MEDIA_RECORDER_TRACK_INTER_CHUNK_TIME_MS) {
+            if (info == MEDIA_RECORDER_TRACK_INTER_CHUNK_TIME_MS) {
+            } else if (info == MEDIA_RECORDER_TRACK_INFO_COMPLETION_STATUS) {
+                notify->setInt32("what", kWhatREC_WriteComplete);
+                notify->setInt32("track", trackNum);
+                post = true;
 
-        } else if(info == MEDIA_RECORDER_TRACK_INFO_COMPLETION_STATUS) {
-            notify->setInt32("what", kWhatREC_WriteComplete);
-            notify->setInt32("track", trackNum);
-            post =true;
+            } else if (info == MEDIA_RECORDER_TRACK_INFO_PROGRESS_IN_TIME) {
+            }
 
-        } else if(info == MEDIA_RECORDER_TRACK_INFO_PROGRESS_IN_TIME) {
-
+            break;
         }
+        case MEDIA_RECORDER_TRACK_EVENT_ERROR: {
+            int32_t trackNum, info;
+            trackNum = (params1 >> 28) & 0x0F;
+            info = params1 & 0x0FFFFFFF;
 
-        break;
-    }
-    case MEDIA_RECORDER_TRACK_EVENT_ERROR: {
-        int32_t trackNum,info;
-        trackNum = (params1 >> 28) & 0x0F;
-        info= params1 & 0x0FFFFFFF;
+            if (info == MEDIA_RECORDER_TRACK_ERROR_GENERAL) {
+            }
 
-        if(info ==MEDIA_RECORDER_TRACK_ERROR_GENERAL) {
-
-
+            break;
         }
-
-        break;
-    }
-    case MEDIA_RECORDER_EVENT_INFO: {
-        /*if(params1 == MEDIA_RECORDER_INFO_WRITE_SLOW){
+        case MEDIA_RECORDER_EVENT_INFO: {
+            /*if(params1 == MEDIA_RECORDER_INFO_WRITE_SLOW){
 
 
-        }else if(params1 == MEDIA_RECORDER_INFO_RECORDING_SIZE){
+            }else if(params1 == MEDIA_RECORDER_INFO_RECORDING_SIZE){
 
-        }else*/ if(params1 == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-            notify->setInt32("what", kWhatREC_ReachMaxDuration);
-            post =true;
-        } else if(params1 == MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
-            notify->setInt32("what", kWhatREC_ReachMaxFileSize);
-            post =true;
+            }else*/
+            if (params1 == MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                notify->setInt32("what", kWhatREC_ReachMaxDuration);
+                post = true;
+            } else if (params1 == MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED) {
+                notify->setInt32("what", kWhatREC_ReachMaxFileSize);
+                post = true;
+            }
+
+            break;
         }
+        case MEDIA_RECORDER_EVENT_ERROR: {
+            if (params1 == MEDIA_RECORDER_ERROR_UNKNOWN) {
+                notify->setInt32("what", kWhatError);
+            }
 
-        break;
-    }
-    case MEDIA_RECORDER_EVENT_ERROR: {
-        if(params1 == MEDIA_RECORDER_ERROR_UNKNOWN) {
-            notify->setInt32("what", kWhatError);
-
+            break;
         }
-
-        break;
-    }
     }
 
-    if(post) notify->post();
+    if (post) notify->post();
 }
 
-
-
-
-
-
-
-
-}
+}  // namespace android

@@ -44,12 +44,12 @@ static unsigned char hexCharToInt(unsigned char c) {
 /*****************************************************************************
  * External functions
  *****************************************************************************/
-unsigned char * convertHexStringToBytes(unsigned char *hexString, size_t dataLen) {
+unsigned char* convertHexStringToBytes(unsigned char* hexString, size_t dataLen) {
     if (dataLen % 2 != 0) {
         return NULL;
     }
 
-    unsigned char *bytes = (unsigned char *)calloc(dataLen/2, sizeof(unsigned char));
+    unsigned char* bytes = (unsigned char*)calloc(dataLen / 2, sizeof(unsigned char));
     if (bytes == NULL) {
         return NULL;
     }
@@ -62,7 +62,7 @@ unsigned char * convertHexStringToBytes(unsigned char *hexString, size_t dataLen
             free(bytes);
             return NULL;
         }
-        bytes[i/2] = ((hexChar1 << 4) | hexChar2);
+        bytes[i / 2] = ((hexChar1 << 4) | hexChar2);
     }
 
     return bytes;
@@ -71,13 +71,12 @@ unsigned char * convertHexStringToBytes(unsigned char *hexString, size_t dataLen
 /*****************************************************************************
  * RtcSmsMessage
  *****************************************************************************/
-RtcSmsMessage::RtcSmsMessage() :
-    mSmsAddress(NULL),
-    mUserDataHeader(NULL),
-    mEncodingType(ENCODING_UNKNOWN),
-    mNumField(0),
-    mError(false) {
-}
+RtcSmsMessage::RtcSmsMessage()
+    : mSmsAddress(NULL),
+      mUserDataHeader(NULL),
+      mEncodingType(ENCODING_UNKNOWN),
+      mNumField(0),
+      mError(false) {}
 
 RtcSmsMessage::~RtcSmsMessage() {
     if (mUserDataHeader != NULL) {
@@ -90,33 +89,27 @@ RtcSmsMessage::~RtcSmsMessage() {
     }
 }
 
-void RtcSmsMessage::createSmsUserDataHeader(unsigned char * header,int len,bool is3Gpp2) {
+void RtcSmsMessage::createSmsUserDataHeader(unsigned char* header, int len, bool is3Gpp2) {
     mUserDataHeader = new RtcSmsUserDataHeader(header, len, is3Gpp2);
 }
 
 /*****************************************************************************
  * RtcGsmSmsMessage
  *****************************************************************************/
-RtcGsmSmsMessage::RtcGsmSmsMessage(unsigned char *hexString, size_t dataLen) :
-    mPdu(NULL),
-    mHexPdu((const char*)hexString),
-    mCur(0),
-    mLenExceptUserData(0),
-    mDataLen(dataLen/2) {
+RtcGsmSmsMessage::RtcGsmSmsMessage(unsigned char* hexString, size_t dataLen)
+    : mPdu(NULL),
+      mHexPdu((const char*)hexString),
+      mCur(0),
+      mLenExceptUserData(0),
+      mDataLen(dataLen / 2) {
     if ((mPdu = convertHexStringToBytes(hexString, dataLen)) != NULL) {
         parse();
     }
 }
 
-RtcGsmSmsMessage::RtcGsmSmsMessage(
-    const RtcGsmSmsMessage &message,
-    int encodingType,
-    int numFields,
-    const Vector<unsigned char> &userDataPayload) :
-        mPdu(NULL),
-        mCur(0),
-        mLenExceptUserData(0),
-        mDataLen(0)    {
+RtcGsmSmsMessage::RtcGsmSmsMessage(const RtcGsmSmsMessage& message, int encodingType, int numFields,
+                                   const Vector<unsigned char>& userDataPayload)
+    : mPdu(NULL), mCur(0), mLenExceptUserData(0), mDataLen(0) {
     if (encodingType != message.getEncodingType()) {
         setError();
         return;
@@ -125,7 +118,7 @@ RtcGsmSmsMessage::RtcGsmSmsMessage(
         mHexPdu.append(message.getHexPdu().string(), (message.getLengthExceptUserData() - 1) * 2);
         int udl = numFields;
         if (encodingType == ENCODING_16BIT) {
-             udl = 2 * numFields;
+            udl = 2 * numFields;
         }
         mHexPdu.appendFormat("%02X", udl);
         Vector<unsigned char>::const_iterator it;
@@ -134,7 +127,6 @@ RtcGsmSmsMessage::RtcGsmSmsMessage(
         }
     }
 }
-
 
 RtcGsmSmsMessage::~RtcGsmSmsMessage() {
     if (mPdu != NULL) {
@@ -146,22 +138,22 @@ RtcGsmSmsMessage::~RtcGsmSmsMessage() {
 void RtcGsmSmsMessage::parse() {
     // SC address
     int scLen = getByte();
-    mCur +=scLen;
+    mCur += scLen;
 
     // TP-Message-Type-Indicator
     int firstByte = getByte();
     int mti = firstByte & 0x3;
     switch (mti) {
-    // TP-Message-Type-Indicator
-    // 9.2.3
-    case 0:
-    case 3:
-        parseSmsDeliver(firstByte);
-        break;
-    case 1:
-    case 2:
-    default:
-        break;
+        // TP-Message-Type-Indicator
+        // 9.2.3
+        case 0:
+        case 3:
+            parseSmsDeliver(firstByte);
+            break;
+        case 1:
+        case 2:
+        default:
+            break;
     }
 }
 
@@ -182,15 +174,15 @@ void RtcGsmSmsMessage::parseSmsDeliver(int firstByte) {
     setEncodingType(parseDataCodingScheme(dataCodingScheme));
 
     // SCTimestamp
-    mCur +=7;
+    mCur += 7;
     mLenExceptUserData = mCur + 1;
     int numField = getByte();
-    if (getEncodingType()== ENCODING_16BIT) {
-         numField /=2;
+    if (getEncodingType() == ENCODING_16BIT) {
+        numField /= 2;
     }
     setNumberField(numField);
     if (mDataLen - mCur <= 0) {
-        RFX_LOG_D(RFX_LOG_TAG , "parseSmsDeliver len: %d, %d, %d", mDataLen, mCur, mDataLen - mCur);
+        RFX_LOG_D(RFX_LOG_TAG, "parseSmsDeliver len: %d, %d, %d", mDataLen, mCur, mDataLen - mCur);
         setError();
         return;
     }
@@ -198,10 +190,7 @@ void RtcGsmSmsMessage::parseSmsDeliver(int firstByte) {
 
     if (hasUserDataHeader) {
         int userDataHeaderLength = getByte();
-        createSmsUserDataHeader(
-                &mPdu[mCur],
-                userDataHeaderLength,
-                false);
+        createSmsUserDataHeader(&mPdu[mCur], userDataHeaderLength, false);
     }
 }
 
@@ -218,36 +207,31 @@ int RtcGsmSmsMessage::parseDataCodingScheme(int dataCodingScheme) {
             // Unsupported
         } else {
             switch ((dataCodingScheme >> 2) & 0x3) {
-                case 0: // GSM 7 bit default alphabet
+                case 0:  // GSM 7 bit default alphabet
                     encodingType = ENCODING_7BIT;
                     break;
-                case 2: // UCS 2 (16bit)
+                case 2:  // UCS 2 (16bit)
                     encodingType = ENCODING_16BIT;
                     break;
                 default:
-                    //Unsupported
+                    // Unsupported
                     break;
             }
         }
     } else {
-        //Unsupported
+        // Unsupported
     }
     return encodingType;
 }
 
-
-
-int RtcGsmSmsMessage::getByte() {
-    return mPdu[mCur++] & 0xff;
-}
+int RtcGsmSmsMessage::getByte() { return mPdu[mCur++] & 0xff; }
 
 /*****************************************************************************
  * RtcCdmaSmsMessage
  *****************************************************************************/
-RtcCdmaSmsMessage::RtcCdmaSmsMessage(RIL_CDMA_SMS_Message *pMessage) {
-    if ((pMessage->bIsServicePresent != 1) &&
-            (pMessage->uTeleserviceID == TELESERVICE_WMT ||
-            pMessage->uTeleserviceID == TELESERVICE_WEMT)) {
+RtcCdmaSmsMessage::RtcCdmaSmsMessage(RIL_CDMA_SMS_Message* pMessage) {
+    if ((pMessage->bIsServicePresent != 1) && (pMessage->uTeleserviceID == TELESERVICE_WMT ||
+                                               pMessage->uTeleserviceID == TELESERVICE_WEMT)) {
         InboundSmsInfo info;
         RmcCdmaSmsConverter::getInboundSmsInfo(pMessage, &info);
         setUDP(info.userDataPayload);
@@ -268,21 +252,16 @@ RtcCdmaSmsMessage::RtcCdmaSmsMessage(RIL_CDMA_SMS_Message *pMessage) {
         setNumberField(info.numFields);
         if (info.hasUserDataHeader) {
             int userDataHeaderLength = info.userDataPayload[0];
-            createSmsUserDataHeader(
-                    (unsigned char *)info.userDataPayload.array() + 1,
-                    userDataHeaderLength,
-                    true);
+            createSmsUserDataHeader((unsigned char*)info.userDataPayload.array() + 1,
+                                    userDataHeaderLength, true);
         }
         setSmsAddress(new RtcCdmaSmsAddress(pMessage->sAddress));
     }
     mMsg = *pMessage;
 }
 
-RtcCdmaSmsMessage::RtcCdmaSmsMessage(
-        const RtcCdmaSmsMessage &message,
-        int encodingType,
-        int numFields,
-        const Vector<unsigned char> &userDataPayload) {
+RtcCdmaSmsMessage::RtcCdmaSmsMessage(const RtcCdmaSmsMessage& message, int encodingType,
+                                     int numFields, const Vector<unsigned char>& userDataPayload) {
     if (encodingType != message.getEncodingType()) {
         setError();
         memset(&mMsg, 0, sizeof(mMsg));

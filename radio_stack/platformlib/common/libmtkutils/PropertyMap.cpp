@@ -28,32 +28,24 @@
 // Enables debug output for parser performance.
 #define DEBUG_PARSER_PERFORMANCE 0
 
-
 namespace android {
 
 static const char* WHITESPACE = " \t\r";
 static const char* WHITESPACE_OR_PROPERTY_DELIMITER = " \t\r=";
 
-
 // --- PropertyMap ---
 
-PropertyMap::PropertyMap() {
-}
+PropertyMap::PropertyMap() {}
 
-PropertyMap::~PropertyMap() {
-}
+PropertyMap::~PropertyMap() {}
 
-void PropertyMap::clear() {
-    mProperties.clear();
-}
+void PropertyMap::clear() { mProperties.clear(); }
 
 void PropertyMap::addProperty(const String8& key, const String8& value) {
     mProperties.add(key, value);
 }
 
-bool PropertyMap::hasProperty(const String8& key) const {
-    return mProperties.indexOfKey(key) >= 0;
-}
+bool PropertyMap::hasProperty(const String8& key) const { return mProperties.indexOfKey(key) >= 0; }
 
 bool PropertyMap::tryGetProperty(const String8& key, String8& outValue) const {
     ssize_t index = mProperties.indexOfKey(key);
@@ -77,15 +69,15 @@ bool PropertyMap::tryGetProperty(const String8& key, bool& outValue) const {
 
 bool PropertyMap::tryGetProperty(const String8& key, int32_t& outValue) const {
     String8 stringValue;
-    if (! tryGetProperty(key, stringValue) || stringValue.length() == 0) {
+    if (!tryGetProperty(key, stringValue) || stringValue.length() == 0) {
         return false;
     }
 
     char* end;
-    int value = strtol(stringValue.string(), & end, 10);
+    int value = strtol(stringValue.string(), &end, 10);
     if (*end != '\0') {
-        ALOGW("Property key '%s' has invalid value '%s'.  Expected an integer.",
-                key.string(), stringValue.string());
+        ALOGW("Property key '%s' has invalid value '%s'.  Expected an integer.", key.string(),
+              stringValue.string());
         return false;
     }
     outValue = value;
@@ -94,15 +86,15 @@ bool PropertyMap::tryGetProperty(const String8& key, int32_t& outValue) const {
 
 bool PropertyMap::tryGetProperty(const String8& key, float& outValue) const {
     String8 stringValue;
-    if (! tryGetProperty(key, stringValue) || stringValue.length() == 0) {
+    if (!tryGetProperty(key, stringValue) || stringValue.length() == 0) {
         return false;
     }
 
     char* end;
-    float value = strtof(stringValue.string(), & end);
+    float value = strtof(stringValue.string(), &end);
     if (*end != '\0') {
-        ALOGW("Property key '%s' has invalid value '%s'.  Expected a float.",
-                key.string(), stringValue.string());
+        ALOGW("Property key '%s' has invalid value '%s'.  Expected a float.", key.string(),
+              stringValue.string());
         return false;
     }
     outValue = value;
@@ -136,8 +128,8 @@ status_t PropertyMap::load(const String8& filename, PropertyMap** outMap) {
 #if DEBUG_PARSER_PERFORMANCE
             nsecs_t elapsedTime = systemTime(SYSTEM_TIME_MONOTONIC) - startTime;
             ALOGD("Parsed property file '%s' %d lines in %0.3fms.",
-                    tokenizer->getFilename().string(), tokenizer->getLineNumber(),
-                    elapsedTime / 1000000.0);
+                  tokenizer->getFilename().string(), tokenizer->getLineNumber(),
+                  elapsedTime / 1000000.0);
 #endif
             if (status) {
                 delete map;
@@ -150,21 +142,18 @@ status_t PropertyMap::load(const String8& filename, PropertyMap** outMap) {
     return status;
 }
 
-
 // --- PropertyMap::Parser ---
 
-PropertyMap::Parser::Parser(PropertyMap* map, Tokenizer* tokenizer) :
-        mMap(map), mTokenizer(tokenizer) {
-}
+PropertyMap::Parser::Parser(PropertyMap* map, Tokenizer* tokenizer)
+    : mMap(map), mTokenizer(tokenizer) {}
 
-PropertyMap::Parser::~Parser() {
-}
+PropertyMap::Parser::~Parser() {}
 
 status_t PropertyMap::Parser::parse() {
     while (!mTokenizer->isEof()) {
 #if DEBUG_PARSER
         ALOGD("Parsing %s: '%s'.", mTokenizer->getLocation().string(),
-                mTokenizer->peekRemainderOfLine().string());
+              mTokenizer->peekRemainderOfLine().string());
 #endif
 
         mTokenizer->skipDelimiters(WHITESPACE);
@@ -180,7 +169,7 @@ status_t PropertyMap::Parser::parse() {
 
             if (mTokenizer->nextChar() != '=') {
                 ALOGE("%s: Expected '=' between property key and value.",
-                        mTokenizer->getLocation().string());
+                      mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
 
@@ -189,21 +178,20 @@ status_t PropertyMap::Parser::parse() {
             String8 valueToken = mTokenizer->nextToken(WHITESPACE);
             if (valueToken.find("\\", 0) >= 0 || valueToken.find("\"", 0) >= 0) {
                 ALOGE("%s: Found reserved character '\\' or '\"' in property value.",
-                        mTokenizer->getLocation().string());
+                      mTokenizer->getLocation().string());
                 return BAD_VALUE;
             }
 
             mTokenizer->skipDelimiters(WHITESPACE);
             if (!mTokenizer->isEol()) {
-                ALOGE("%s: Expected end of line, got '%s'.",
-                        mTokenizer->getLocation().string(),
-                        mTokenizer->peekRemainderOfLine().string());
+                ALOGE("%s: Expected end of line, got '%s'.", mTokenizer->getLocation().string(),
+                      mTokenizer->peekRemainderOfLine().string());
                 return BAD_VALUE;
             }
 
             if (mMap->hasProperty(keyToken)) {
                 ALOGE("%s: Duplicate property value for key '%s'.",
-                        mTokenizer->getLocation().string(), keyToken.string());
+                      mTokenizer->getLocation().string(), keyToken.string());
                 return BAD_VALUE;
             }
 
@@ -215,4 +203,4 @@ status_t PropertyMap::Parser::parse() {
     return NO_ERROR;
 }
 
-} // namespace android
+}  // namespace android

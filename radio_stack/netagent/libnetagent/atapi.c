@@ -14,78 +14,72 @@
 #include "atch.h"
 #include "atapi.h"
 
-#define TrcMsg(f, a...)   printf("[ATAPI-TRC] %s:%d: " f "\n", &__FILE__[0], __LINE__,  ## a)
+#define TrcMsg(f, a...) printf("[ATAPI-TRC] %s:%d: " f "\n", &__FILE__[0], __LINE__, ##a)
 
 #define NA_LOG_TAG "Atapi"
 #define DbgMsg(...) ((void)mtkLogD(NA_LOG_TAG, __VA_ARGS__))
 #define ErrMsg(...) ((void)mtkLogE(NA_LOG_TAG, __VA_ARGS__))
 
-#define MAX_AT_CMD_BUFFER           (1024)
-#define MAX_AT_LINE_BUFFER          (1024)
-#define MAX_AT_RESPONSE_BUFFER      (4096)
+#define MAX_AT_CMD_BUFFER (1024)
+#define MAX_AT_LINE_BUFFER (1024)
+#define MAX_AT_RESPONSE_BUFFER (4096)
 
-#define TIMEOUT_REALTIME_CMD        (5)
-#define TIMEOUT_SHORT_QUERY         (30)
-#define TIMEOUT_LONG_QUERY          (300)
-#define TIMEOUT_SHORT_EXECUTE       (30)
-#define TIMEOUT_NORMAL_EXECUTE     (120)
-#define TIMEOUT_LONG_EXECUTE        (300)
+#define TIMEOUT_REALTIME_CMD (5)
+#define TIMEOUT_SHORT_QUERY (30)
+#define TIMEOUT_LONG_QUERY (300)
+#define TIMEOUT_SHORT_EXECUTE (30)
+#define TIMEOUT_NORMAL_EXECUTE (120)
+#define TIMEOUT_LONG_EXECUTE (300)
 
 typedef struct _atapi_info {
-    void                           *channel;
-    int                             channel_type;
-    void                           *data;
-    pthread_mutex_t                 mutex;
+    void* channel;
+    int channel_type;
+    void* data;
+    pthread_mutex_t mutex;
 
-    int                             urc_mode;
-    ATAPI_urc_notify_cb             urc_cb;
+    int urc_mode;
+    ATAPI_urc_notify_cb urc_cb;
 } atapi_info_t;
-
 
 /* ---------------------------------------------------- */
 /*  ATAPI - Internal function                           */
 /* ---------------------------------------------------- */
 
 enum AT_AT_FINALCODE_e {
-    AT_FINAL_CODE_OK            = 0,
-    AT_FINAL_CODE_CONNECT       = 1,
-    AT_FINAL_CODE_ERROR         = 2,
-    AT_FINAL_CODE_NO_CARRIER    = 3,
-    AT_FINAL_CODE_NO_ANSWER     = 4,
-    AT_FINAL_CODE_NO_DIALTONE   = 5,
-    AT_FINAL_CODE_URC           = 6,
-    AT_FINAL_CODE_TIMEOUT       = 7,
-    AT_FINAL_CODE_CME           = 8,
-    AT_FINAL_CODE_CMS           = 9,
-    AT_FINAL_CODE_DROP          = 10,
-    AT_FINAL_CODE_BUFFER_FULL   = 11,
+    AT_FINAL_CODE_OK = 0,
+    AT_FINAL_CODE_CONNECT = 1,
+    AT_FINAL_CODE_ERROR = 2,
+    AT_FINAL_CODE_NO_CARRIER = 3,
+    AT_FINAL_CODE_NO_ANSWER = 4,
+    AT_FINAL_CODE_NO_DIALTONE = 5,
+    AT_FINAL_CODE_URC = 6,
+    AT_FINAL_CODE_TIMEOUT = 7,
+    AT_FINAL_CODE_CME = 8,
+    AT_FINAL_CODE_CMS = 9,
+    AT_FINAL_CODE_DROP = 10,
+    AT_FINAL_CODE_BUFFER_FULL = 11,
     AT_FINAL_CODE_CHANNEL_ERROR = 12,
     AT_FINAL_CODE_UNKNOWN
 };
 
-
 struct _final_code {
-    char   *key;
-    int     value;
-} final_code_list[10] = {
-    {"OK\r\n",          AT_FINAL_CODE_OK},
-    {"ERROR\r\n",       AT_FINAL_CODE_ERROR},
-    {"CONNECT\r\n",     AT_FINAL_CODE_CONNECT},
-    {"NO CARRIER\r\n",  AT_FINAL_CODE_NO_CARRIER},
-    {"NO ANSWER\r\n",   AT_FINAL_CODE_NO_ANSWER},
-    {"NO DIALTONE\r\n", AT_FINAL_CODE_NO_DIALTONE},
-    {"+CME ERROR:",      AT_FINAL_CODE_CME},
-    {"+CMS ERROR:",      AT_FINAL_CODE_CMS},
-    {NULL, 0}
-};
+    char* key;
+    int value;
+} final_code_list[10] = {{"OK\r\n", AT_FINAL_CODE_OK},
+                         {"ERROR\r\n", AT_FINAL_CODE_ERROR},
+                         {"CONNECT\r\n", AT_FINAL_CODE_CONNECT},
+                         {"NO CARRIER\r\n", AT_FINAL_CODE_NO_CARRIER},
+                         {"NO ANSWER\r\n", AT_FINAL_CODE_NO_ANSWER},
+                         {"NO DIALTONE\r\n", AT_FINAL_CODE_NO_DIALTONE},
+                         {"+CME ERROR:", AT_FINAL_CODE_CME},
+                         {"+CMS ERROR:", AT_FINAL_CODE_CMS},
+                         {NULL, 0}};
 
-
-static int
-_atapi_check_final_code(char *line, int *final_code) {
+static int _atapi_check_final_code(char* line, int* final_code) {
     int i = 0;
 
-    for (i=0 ; final_code_list[i].key ; i++) {
-        char *ptr = line;
+    for (i = 0; final_code_list[i].key; i++) {
+        char* ptr = line;
 
         while (*ptr && (*ptr == '\r' || *ptr == ' ')) ptr++;
         if (strncasecmp(ptr, final_code_list[i].key, strlen(final_code_list[i].key)) == 0) {
@@ -97,9 +91,14 @@ _atapi_check_final_code(char *line, int *final_code) {
     return -1;
 }
 
-
-#define IGNORE_CHAR(s,c) {while ((*(s)) == (c) && *(s)) (s)++;}
-#define FIND_CHAR(s,c) {while ((*(s)) != (c) && *(s)) (s)++;}
+#define IGNORE_CHAR(s, c)                    \
+    {                                        \
+        while ((*(s)) == (c) && *(s)) (s)++; \
+    }
+#define FIND_CHAR(s, c)                      \
+    {                                        \
+        while ((*(s)) != (c) && *(s)) (s)++; \
+    }
 
 #if 0
 static int
@@ -152,10 +151,8 @@ _atapi_get_argvs(char *line, int argc, char **argv) {
 }
 #endif
 
-
-static int
-_atapi_verify(void *obj, int type) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+static int _atapi_verify(void* obj, int type) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (!atapi_info) {
         ErrMsg("obj is NULL");
@@ -167,7 +164,7 @@ _atapi_verify(void *obj, int type) {
         return ATAPI_RET_ERROR;
     }
 
-    if (type == 1) {    // send at command
+    if (type == 1) {  // send at command
         if (atapi_info->urc_mode == 1) {
             ErrMsg("Current is URC mode, can't execute the at command");
             return ATAPI_RET_ERROR;
@@ -177,9 +174,8 @@ _atapi_verify(void *obj, int type) {
     return ATAPI_RET_SUCCESS;
 }
 
-
-static int
-_atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char *prefix, int timeout) {
+static int _atapi_execute_cmd(void* channel, char* cmd, char* buffer, int buffer_len, char* prefix,
+                              int timeout) {
     int fd = atch_getfd(channel);
     int buffer_offset = 0;
     char tmp_buffer[MAX_AT_RESPONSE_BUFFER] = {0};
@@ -202,7 +198,7 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
 
     while (1) {
         struct timeval timeval;
-        fd_set  iofds;
+        fd_set iofds;
         int ret = 0;
 
         sysinfo(&curr_info);
@@ -213,7 +209,7 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
         FD_ZERO(&iofds);
         FD_SET(fd, &iofds);
 
-        timeval.tv_sec  = 1;
+        timeval.tv_sec = 1;
         timeval.tv_usec = 0;
 
         ret = select(fd + 1, &iofds, 0, 0, &timeval);
@@ -228,10 +224,11 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
         }
 
         if (FD_ISSET(fd, &iofds)) {
-            char *ptr = 0;
+            char* ptr = 0;
             int prefix_len = (prefix) ? strlen(prefix) : 0;
 
-            ret = atch_recv(channel, tmp_buffer+tmp_buffer_offset, sizeof(tmp_buffer)-tmp_buffer_offset-1);
+            ret = atch_recv(channel, tmp_buffer + tmp_buffer_offset,
+                            sizeof(tmp_buffer) - tmp_buffer_offset - 1);
             if (ret < 0) {
                 ErrMsg("Can't read the data, errno = %d (%s)", errno, strerror(errno));
                 return AT_FINAL_CODE_CHANNEL_ERROR;
@@ -246,14 +243,15 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
             while ((ptr = strchr(tmp_buffer, '\n'))) {
                 int update = 1;
                 int final_code = -1;
-                int last_char = *(ptr+1);
+                int last_char = *(ptr + 1);
 
-                *(ptr+1) = 0;
+                *(ptr + 1) = 0;
 
                 if (prefix) {
                     if (strncasecmp(tmp_buffer, prefix, prefix_len) != 0) {
                         update = 0;
-                        if((strncasecmp(tmp_buffer,"+CME ERROR:",11)==0)||(strncasecmp(tmp_buffer,"+CMS ERROR:",11)==0)) {
+                        if ((strncasecmp(tmp_buffer, "+CME ERROR:", 11) == 0) ||
+                            (strncasecmp(tmp_buffer, "+CMS ERROR:", 11) == 0)) {
                             is_get_response = 1;
                         }
                     }
@@ -266,7 +264,8 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
                 }
 
                 if (update || final_code >= 0) {
-                    ret = snprintf(buffer+buffer_offset, buffer_len-buffer_offset, "%s", tmp_buffer);
+                    ret = snprintf(buffer + buffer_offset, buffer_len - buffer_offset, "%s",
+                                   tmp_buffer);
                     if (ret <= 0) {
                         ErrMsg("Buffer full");
                         return AT_FINAL_CODE_BUFFER_FULL;
@@ -276,9 +275,9 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
                     is_get_response = 1;
                 }
 
-                *(ptr+1) = last_char;
-                tmp_buffer_offset = tmp_buffer_offset - (ptr+1-tmp_buffer);
-                memmove(tmp_buffer, ptr+1, tmp_buffer_offset);
+                *(ptr + 1) = last_char;
+                tmp_buffer_offset = tmp_buffer_offset - (ptr + 1 - tmp_buffer);
+                memmove(tmp_buffer, ptr + 1, tmp_buffer_offset);
                 tmp_buffer[tmp_buffer_offset] = 0;
 
                 if (final_code >= 0) {
@@ -290,7 +289,6 @@ _atapi_execute_cmd(void *channel, char *cmd, char *buffer, int buffer_len, char 
 
     return AT_FINAL_CODE_TIMEOUT;
 }
-
 
 #if 0
 static int
@@ -374,9 +372,8 @@ _atapi_execute_cmd_get_strings(void *obj, char *at_cmd, char *prefix, int timeou
 }
 #endif
 
-static int
-_atapi_urc_filter_enable(void *obj, int mode) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+static int _atapi_urc_filter_enable(void* obj, int mode) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
@@ -385,22 +382,20 @@ _atapi_urc_filter_enable(void *obj, int mode) {
     if (atapi_info->channel_type != ATCH_Type_UART) {
         char at_response[MAX_AT_RESPONSE_BUFFER] = {0};
         char at_cmd[32] = {0};
-        snprintf(at_cmd, sizeof(at_cmd)-1, "AT@URCFILTER=%d", mode);
-        _atapi_execute_cmd(atapi_info->channel, at_cmd, at_response, sizeof(at_response)-1, 0, 3);
+        snprintf(at_cmd, sizeof(at_cmd) - 1, "AT@URCFILTER=%d", mode);
+        _atapi_execute_cmd(atapi_info->channel, at_cmd, at_response, sizeof(at_response) - 1, 0, 3);
         return 1;
     }
 
     return 0;
 }
 
-
 /* ---------------------------------------------------- */
 /*  ATAPI - Core                                        */
 /* ---------------------------------------------------- */
 
-void *
-atapi_init(int type, char *name) {
-    atapi_info_t   *atapi_info = 0;
+void* atapi_init(int type, char* name) {
+    atapi_info_t* atapi_info = 0;
 
     atapi_info = malloc(sizeof(atapi_info_t));
     if (!atapi_info) {
@@ -420,17 +415,15 @@ atapi_init(int type, char *name) {
     pthread_mutex_init(&(atapi_info->mutex), 0);
 
     atapi_info->channel_type = type;
-    atapi_info->urc_mode     = 0;
+    atapi_info->urc_mode = 0;
 
     //_atapi_urc_filter_enable(atapi_info, 3);
 
     return atapi_info;
 }
 
-
-int
-atapi_deinit(void *obj) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_deinit(void* obj) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
@@ -443,19 +436,18 @@ atapi_deinit(void *obj) {
     return ATAPI_RET_SUCCESS;
 }
 
-
-int
-atapi_execute_command(void *obj, char *at_cmd, char *result_buffer, int result_buffer_len, char *result_prefix, int cmd_timeout) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_execute_command(void* obj, char* at_cmd, char* result_buffer, int result_buffer_len,
+                          char* result_prefix, int cmd_timeout) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
     int ret = 0;
-
 
     if (_atapi_verify(atapi_info, 1) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
     }
 
     pthread_mutex_lock(&(atapi_info->mutex));
-    ret = _atapi_execute_cmd(atapi_info->channel, at_cmd, result_buffer, result_buffer_len, result_prefix, cmd_timeout);
+    ret = _atapi_execute_cmd(atapi_info->channel, at_cmd, result_buffer, result_buffer_len,
+                             result_prefix, cmd_timeout);
     pthread_mutex_unlock(&(atapi_info->mutex));
     if (ret != AT_FINAL_CODE_OK) {
         ErrMsg("Can't execute the at command, ret = %d, cmd = (%s)", ret, at_cmd);
@@ -465,10 +457,8 @@ atapi_execute_command(void *obj, char *at_cmd, char *result_buffer, int result_b
     return ATAPI_RET_SUCCESS;
 }
 
-
-int
-atapi_execute_command_no_response(void *obj, char *at_cmd, int cmd_timeout) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_execute_command_no_response(void* obj, char* at_cmd, int cmd_timeout) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
     char at_response[MAX_AT_RESPONSE_BUFFER] = {0};
     int ret = 0;
 
@@ -477,24 +467,24 @@ atapi_execute_command_no_response(void *obj, char *at_cmd, int cmd_timeout) {
     }
 
     pthread_mutex_lock(&(atapi_info->mutex));
-    ret = _atapi_execute_cmd(atapi_info->channel, at_cmd, at_response, sizeof(at_response)-1, 0, cmd_timeout);
+    ret = _atapi_execute_cmd(atapi_info->channel, at_cmd, at_response, sizeof(at_response) - 1, 0,
+                             cmd_timeout);
     pthread_mutex_unlock(&(atapi_info->mutex));
     if (ret != AT_FINAL_CODE_OK) {
-        ErrMsg("Can't execute the at command, ret = %d, cmd = (%s), response = (%s)", ret, at_cmd, at_response);
+        ErrMsg("Can't execute the at command, ret = %d, cmd = (%s), response = (%s)", ret, at_cmd,
+               at_response);
         return (ret == AT_FINAL_CODE_TIMEOUT) ? ATAPI_RET_TIMEOUT : ATAPI_RET_ERROR;
     }
 
     return ATAPI_RET_SUCCESS;
 }
 
-
 /* ---------------------------------------------------- */
 /*  ATAPI - Callback                                    */
 /* ---------------------------------------------------- */
 
-int
-atapi_urc_init(void *obj) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_urc_init(void* obj) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
@@ -507,13 +497,11 @@ atapi_urc_init(void *obj) {
     return ATAPI_RET_SUCCESS;
 }
 
-
-char *
-atapi_urc_get(void *obj) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+char* atapi_urc_get(void* obj) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
     int fd_urc = 0;
     int ret = 0;
-    char *line = 0;
+    char* line = 0;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return 0;
@@ -526,17 +514,17 @@ atapi_urc_get(void *obj) {
 
     fd_urc = atch_getfd(atapi_info->channel);
     while (1) {
-        //struct timeval timeval;
-        fd_set fdr,fdw;
+        // struct timeval timeval;
+        fd_set fdr, fdw;
 
         FD_ZERO(&fdw);
         FD_ZERO(&fdr);
         FD_SET(fd_urc, &fdr);
 
-        //timeval.tv_sec  = 30;
-        //timeval.tv_usec = 0;
+        // timeval.tv_sec  = 30;
+        // timeval.tv_usec = 0;
 
-        //ret = select(fd_urc + 1, &fdr, &fdw, 0, &timeval);
+        // ret = select(fd_urc + 1, &fdr, &fdw, 0, &timeval);
         ret = select(fd_urc + 1, &fdr, &fdw, 0, 0);
         if (ret < 0) {
             if (errno == EINTR) {
@@ -563,10 +551,8 @@ atapi_urc_get(void *obj) {
     return 0;
 }
 
-
-int
-atapi_cb_enter_urc_mode(void *obj) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_cb_enter_urc_mode(void* obj) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
     int fd_urc = 0;
     int ret = 0;
 
@@ -585,13 +571,13 @@ atapi_cb_enter_urc_mode(void *obj) {
     fd_urc = atch_getfd(atapi_info->channel);
     while (1) {
         struct timeval timeval;
-        fd_set fdr,fdw;
+        fd_set fdr, fdw;
 
         FD_ZERO(&fdw);
         FD_ZERO(&fdr);
         FD_SET(fd_urc, &fdr);
 
-        timeval.tv_sec  = 30;
+        timeval.tv_sec = 30;
         timeval.tv_usec = 0;
 
         ret = select(fd_urc + 1, &fdr, &fdw, 0, &timeval);
@@ -612,7 +598,7 @@ atapi_cb_enter_urc_mode(void *obj) {
             }
 
             do {
-                char *line = 0;
+                char* line = 0;
 
                 line = atch_getline(atapi_info->channel);
                 if (!line) {
@@ -621,7 +607,7 @@ atapi_cb_enter_urc_mode(void *obj) {
 
                 do {
                     {
-                        char *ptr = 0;
+                        char* ptr = 0;
                         ptr = strchr(line, '\n');
                         if (ptr) *ptr = 0;
                         ptr = strchr(line, '\r');
@@ -641,10 +627,8 @@ atapi_cb_enter_urc_mode(void *obj) {
     return ATAPI_RET_ERROR;
 }
 
-
-int
-atapi_cb_set_user_data(void *obj, void *data) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_cb_set_user_data(void* obj, void* data) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
@@ -655,10 +639,8 @@ atapi_cb_set_user_data(void *obj, void *data) {
     return ATAPI_RET_SUCCESS;
 }
 
-
-int
-atapi_cb_get_user_data(void *obj, void **data) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_cb_get_user_data(void* obj, void** data) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;
@@ -673,10 +655,8 @@ atapi_cb_get_user_data(void *obj, void **data) {
     return ATAPI_RET_SUCCESS;
 }
 
-
-int
-atapi_cb_set_urc_notify(void *obj, ATAPI_urc_notify_cb fn) {
-    atapi_info_t *atapi_info = (atapi_info_t *)obj;
+int atapi_cb_set_urc_notify(void* obj, ATAPI_urc_notify_cb fn) {
+    atapi_info_t* atapi_info = (atapi_info_t*)obj;
 
     if (_atapi_verify(atapi_info, 0) != ATAPI_RET_SUCCESS) {
         return ATAPI_RET_ERROR;

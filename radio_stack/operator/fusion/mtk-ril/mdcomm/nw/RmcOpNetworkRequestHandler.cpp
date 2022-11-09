@@ -16,10 +16,7 @@
 
 #include "RmcOpNetworkRequestHandler.h"
 
-static const int request[] = {
-    RFX_MSG_REQUEST_VSS_ANTENNA_CONF,
-    RFX_MSG_REQUEST_VSS_ANTENNA_INFO
-};
+static const int request[] = {RFX_MSG_REQUEST_VSS_ANTENNA_CONF, RFX_MSG_REQUEST_VSS_ANTENNA_INFO};
 
 // register data
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_VSS_ANTENNA_CONF);
@@ -28,19 +25,18 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_VSS_AN
 // register handler to channel
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpNetworkRequestHandler, RIL_CMD_PROXY_3);
 
-RmcOpNetworkRequestHandler::RmcOpNetworkRequestHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id) {
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+RmcOpNetworkRequestHandler::RmcOpNetworkRequestHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id) {
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     logV(LOG_TAG, "[RmcOpNetworkRequestHandler] init");
 }
 
-RmcOpNetworkRequestHandler::~RmcOpNetworkRequestHandler() {
-}
+RmcOpNetworkRequestHandler::~RmcOpNetworkRequestHandler() {}
 
 void RmcOpNetworkRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(LOG_TAG, "[onHandleRequest] %s", RFX_ID_TO_STR(msg->getId()));
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_VSS_ANTENNA_CONF:
             requestAntennaConf(msg);
             break;
@@ -55,34 +51,35 @@ void RmcOpNetworkRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcOpNetworkRequestHandler::requestAntennaConf(const sp<RfxMclMessage>& msg) {
     int antennaType, err;
-    int response[2] = { 0 };
+    int response[2] = {0};
     RIL_Errno ril_errno = RIL_E_MODE_NOT_SUPPORTED;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
 
     antennaType = pInt[0];
     response[0] = antennaType;
-    response[1] = 0; // failed
+    response[1] = 0;  // failed
 
     logD(LOG_TAG, "Enter requestAntennaConf(), antennaType = %d ", antennaType);
     // AT command format as below : (for VZ_REQ_LTEB13NAC_6290)
     // AT+ERFTX=8, <type>[,<param1>,<param2>]
     // <param1> is decoded as below:
     //    1 - Normal dual receiver operation(default UE behaviour)
-    //    2 - Single receiver operation 'enable primary receiver only'(disable secondary/MIMO receiver)
-    //    3 - Single receiver operation 'enable secondary/MIMO receiver only (disable primary receiver)
-    switch(antennaType){
-        case 0:    // 0: signal information is not available on all Rx chains
+    //    2 - Single receiver operation 'enable primary receiver only'(disable secondary/MIMO
+    //    receiver) 3 - Single receiver operation 'enable secondary/MIMO receiver only (disable
+    //    primary receiver)
+    switch (antennaType) {
+        case 0:  // 0: signal information is not available on all Rx chains
             antennaType = 0;
             break;
-        case 1:    // 1: Rx diversity bitmask for chain 0
+        case 1:  // 1: Rx diversity bitmask for chain 0
             antennaType = 2;
             break;
-        case 2:    // 2: Rx diversity bitmask for chain 1 is available
+        case 2:  // 2: Rx diversity bitmask for chain 1 is available
             antennaType = 3;
             break;
-        case 3:    // 3: Signal information on both Rx chains is available.
+        case 3:  // 3: Signal information on both Rx chains is available.
             antennaType = 1;
             break;
         default:
@@ -100,12 +97,12 @@ void RmcOpNetworkRequestHandler::requestAntennaConf(const sp<RfxMclMessage>& msg
         }
     } else {
         ril_errno = RIL_E_SUCCESS;
-        response[1] = 1; // success
+        response[1] = 1;  // success
         // Keep this settings for query antenna info.
         antennaTestingType = antennaType;
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxIntsData(response, 2), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 2), msg,
+                                         false);
     responseToTelCore(resp);
 }
 void RmcOpNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg) {
@@ -115,53 +112,55 @@ void RmcOpNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg
     RfxAtLine* line;
 
     int param1, param2, err, skip;
-    int response[6] = { 0 };
+    int response[6] = {0};
     memset(response, 0, sizeof(response));
-    int *primary_antenna_rssi   = &response[0];
-    int *relative_phase         = &response[1];
-    int *secondary_antenna_rssi = &response[2];
-    int *phase1                 = &response[3];
-    int *rxState_0              = &response[4];
-    int *rxState_1              = &response[5];
-    *primary_antenna_rssi   = 0;  // <primary_antenna_RSSI>
-    *relative_phase         = 0;  // <relative_phase>
+    int* primary_antenna_rssi = &response[0];
+    int* relative_phase = &response[1];
+    int* secondary_antenna_rssi = &response[2];
+    int* phase1 = &response[3];
+    int* rxState_0 = &response[4];
+    int* rxState_1 = &response[5];
+    *primary_antenna_rssi = 0;    // <primary_antenna_RSSI>
+    *relative_phase = 0;          // <relative_phase>
     *secondary_antenna_rssi = 0;  // <secondary_antenna_RSSI>
-    *phase1                 = 0;  // N/A
-    *rxState_0              = 0;  // rx0 status(0: not vaild; 1:valid)
-    *rxState_1              = 0;  // rx1 status(0: not vaild; 1:valid)
+    *phase1 = 0;                  // N/A
+    *rxState_0 = 0;               // rx0 status(0: not vaild; 1:valid)
+    *rxState_1 = 0;               // rx1 status(0: not vaild; 1:valid)
     // AT+ERFTX=8, <type> [,<param1>,<param2>]
     // <type>=0 is used for VZ_REQ_LTEB13NAC_6290
     // <param1> represents the A0 bit in ANTENNA INFORMATION REQUEST message
     // <param2> represents the A1 bit in ANTENNA INFORMATION REQUEST message
-    switch(antennaTestingType) {
-        case 0:    // signal information is not available on all Rx chains
+    switch (antennaTestingType) {
+        case 0:  // signal information is not available on all Rx chains
             param1 = 0;
             param2 = 0;
             break;
-        case 1:    // Normal dual receiver operation (default UE behaviour)
+        case 1:  // Normal dual receiver operation (default UE behaviour)
             param1 = 1;
             param2 = 1;
             break;
-        case 2:    // enable primary receiver only
+        case 2:  // enable primary receiver only
             param1 = 1;
             param2 = 0;
             break;
-        case 3:    // enable secondary/MIMO receiver only
+        case 3:  // enable secondary/MIMO receiver only
             param1 = 0;
             param2 = 1;
             break;
         default:
-            logE(LOG_TAG, "requestAntennaInfo: configuration is an invalid, antennaTestingType: %d", antennaTestingType);
+            logE(LOG_TAG, "requestAntennaInfo: configuration is an invalid, antennaTestingType: %d",
+                 antennaTestingType);
             goto error;
     }
-    logD(LOG_TAG, "requestAntennaInfo: antennaType=%d, param1=%d, param2=%d", antennaTestingType, param1, param2);
+    logD(LOG_TAG, "requestAntennaInfo: antennaType=%d, param1=%d, param2=%d", antennaTestingType,
+         param1, param2);
     if (antennaTestingType == 0) {
         p_response = atSendCommand(String8::format("AT+ERFTX=8,0,%d,%d", param1, param2));
         if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
             ril_errno = RIL_E_SUCCESS;
         }
-        resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-                RfxIntsData(response, 6), msg, false);
+        resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 6), msg,
+                                             false);
         responseToTelCore(resp);
         return;
     }
@@ -169,7 +168,7 @@ void RmcOpNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg
     p_response = atSendCommand(String8::format("AT+ERFTX=8,1,%d", antennaTestingType));
     if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
         p_response = atSendCommandSingleline(String8::format("AT+ERFTX=8,0,%d,%d", param1, param2),
-                "+ERFTX:");
+                                             "+ERFTX:");
         if (p_response->getError() >= 0 || p_response->getSuccess() != 0) {
             // handle intermediate
             line = p_response->getIntermediates();
@@ -194,7 +193,8 @@ void RmcOpNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg
             if (line->atTokHasmore()) {
                 (*secondary_antenna_rssi) = line->atTokNextint(&err);
                 if (err < 0) {
-                    logE(LOG_TAG, "ERROR occurs <secondary_antenna_rssi> form antenna info request");
+                    logE(LOG_TAG,
+                         "ERROR occurs <secondary_antenna_rssi> form antenna info request");
                     goto error;
                 } else {
                     // response for AT+ERFTX=8,0,1,0
@@ -218,7 +218,7 @@ void RmcOpNetworkRequestHandler::requestAntennaInfo(const sp<RfxMclMessage>& msg
         goto error;
     }
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxIntsData(response, 6), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(response, 6), msg,
+                                         false);
     responseToTelCore(resp);
 }

@@ -33,43 +33,33 @@
  * Class RtcCdmaSmsController
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcCdmaSmsController", RtcCdmaSmsController, RfxController);
-RtcCdmaSmsController::RtcCdmaSmsController() :m_timer(NULL), m_needStatusReport(false) {
-}
+RtcCdmaSmsController::RtcCdmaSmsController() : m_timer(NULL), m_needStatusReport(false) {}
 
-
-RtcCdmaSmsController::~RtcCdmaSmsController() {
-}
-
+RtcCdmaSmsController::~RtcCdmaSmsController() {}
 
 void RtcCdmaSmsController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
 
-    const int request[] = {
-        RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS,
-        RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX,
-        RFX_MSG_REQUEST_CDMA_SEND_SMS,
-        RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
-        RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM,
-        RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM,
-        RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS,
-        RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG,
-        RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG,
-        RFX_MSG_REQUEST_GET_SMSC_ADDRESS,
-        RFX_MSG_REQUEST_SET_SMSC_ADDRESS,
-        RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_EX,
-        RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE,
-        RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_INTERNAL
-    };
-    const int urc[] = {
-        RFX_MSG_URC_CDMA_NEW_SMS,
-        RFX_MSG_URC_CDMA_RUIM_SMS_STORAGE_FULL
-    };
+    const int request[] = {RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS,
+                           RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX,
+                           RFX_MSG_REQUEST_CDMA_SEND_SMS,
+                           RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
+                           RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM,
+                           RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM,
+                           RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS,
+                           RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG,
+                           RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG,
+                           RFX_MSG_REQUEST_GET_SMSC_ADDRESS,
+                           RFX_MSG_REQUEST_SET_SMSC_ADDRESS,
+                           RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_EX,
+                           RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE,
+                           RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_INTERNAL};
+    const int urc[] = {RFX_MSG_URC_CDMA_NEW_SMS, RFX_MSG_URC_CDMA_RUIM_SMS_STORAGE_FULL};
 
-    registerToHandleRequest(request, sizeof(request)/sizeof(const int));
-    registerToHandleUrc(urc, sizeof(urc)/sizeof(const int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(const int));
+    registerToHandleUrc(urc, sizeof(urc) / sizeof(const int));
 }
-
 
 bool RtcCdmaSmsController::onHandleRequest(const sp<RfxMessage>& message) {
     handleRequest(message);
@@ -80,15 +70,15 @@ bool RtcCdmaSmsController::onHandleUrc(const sp<RfxMessage>& message) {
     if (message->getId() == RFX_MSG_URC_CDMA_NEW_SMS) {
         logD(TAG, "Start MT SMS ack timer");
         m_timer = RfxTimer::start(RfxCallback0(this, &RtcCdmaSmsController::onTimer),
-                s2ns(MT_SMS_ACK_TIME));
+                                  s2ns(MT_SMS_ACK_TIME));
         int messageId = -1;
         bool statusReport = RmcCdmaSmsConverter::isStatusReport(
-                (RIL_CDMA_SMS_Message *)message->getData()->getData(), &messageId);;
+                (RIL_CDMA_SMS_Message*)message->getData()->getData(), &messageId);
+        ;
         logD(TAG, "status report = %d, cache size = %d", statusReport,
-                ((RtcImsSmsController *)getParent())->getCacheSize());
+             ((RtcImsSmsController*)getParent())->getCacheSize());
         if (statusReport &&
-                ((RtcImsSmsController *)getParent())->removeReferenceIdCached(
-                        messageId)) {
+            ((RtcImsSmsController*)getParent())->removeReferenceIdCached(messageId)) {
             sp<RfxMessage> urc;
             urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_URC_CDMA_NEW_SMS_EX, message);
             return RfxController::onHandleUrc(urc);
@@ -100,7 +90,7 @@ bool RtcCdmaSmsController::onHandleUrc(const sp<RfxMessage>& message) {
         int c2k_volte_state = -1;
         c2k_volte_state = getStatusManager()->getIntValue(RFX_STATUS_KEY_VOLTE_STATE, -1);
         if (RfxRilUtils::isCtVolteSupport() && (c2k_volte_state == 1) &&
-                (isCdmaPhoneMode() == false)) {
+            (isCdmaPhoneMode() == false)) {
             logD(TAG, "CT Volter is On and CS_RAT register to GSM, not notify CDMA SMS FULL");
             return true;
         }
@@ -110,52 +100,45 @@ bool RtcCdmaSmsController::onHandleUrc(const sp<RfxMessage>& message) {
 
 void RtcCdmaSmsController::onTimer() {
     logD(TAG, "MT SMS ack timeout");
-    getStatusManager()->setIntValue(
-            RFX_STATUS_KEY_CDMA_INBOUND_SMS_TYPE,
-            CDMA_SMS_INBOUND_NONE);
-    getStatusManager()->setBoolValue(
-            RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, false);
+    getStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA_INBOUND_SMS_TYPE, CDMA_SMS_INBOUND_NONE);
+    getStatusManager()->setBoolValue(RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, false);
     m_timer = NULL;
 }
 
-
 void RtcCdmaSmsController::handleMoSmsRequests(const sp<RfxMessage>& message) {
     if (message->getId() == RFX_MSG_REQUEST_IMS_SEND_SMS ||
-            message->getId() == RFX_MSG_REQUEST_IMS_SEND_SMS_EX) {
-        RIL_IMS_SMS_Message *pIms = (RIL_IMS_SMS_Message*)message->getData()->getData();
+        message->getId() == RFX_MSG_REQUEST_IMS_SEND_SMS_EX) {
+        RIL_IMS_SMS_Message* pIms = (RIL_IMS_SMS_Message*)message->getData()->getData();
         sp<RfxMessage> req;
-        int newId = (message->getId() == RFX_MSG_REQUEST_IMS_SEND_SMS) ?
-                RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS : RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX;
-        req = RfxMessage::obtainRequest(newId,
-                RmcCdmaMoSmsMessage(pIms->message.cdmaMessage), message, false);
+        int newId = (message->getId() == RFX_MSG_REQUEST_IMS_SEND_SMS)
+                            ? RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS
+                            : RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX;
+        req = RfxMessage::obtainRequest(newId, RmcCdmaMoSmsMessage(pIms->message.cdmaMessage),
+                                        message, false);
         if (newId == RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX) {
-            m_needStatusReport = RmcCdmaSmsConverter::isNeedStatusReport(
-                    pIms->message.cdmaMessage);
+            m_needStatusReport = RmcCdmaSmsConverter::isNeedStatusReport(pIms->message.cdmaMessage);
         }
         requestToMcl(req);
     } else {
         RFX_ASSERT(message->getId() == RFX_MSG_REQUEST_CDMA_SEND_SMS);
         requestToMcl(message);
     }
-    getStatusManager()->setIntValue(
-        RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENDING);
+    getStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENDING);
 }
-
 
 void RtcCdmaSmsController::handleSmscAdressResponses(const sp<RfxMessage>& message) {
     int type = getStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA_CARD_TYPE);
     if (message->getError() != RIL_E_SUCCESS) {
-        if (type == CT_3G_UIM_CARD || type == UIM_CARD ||
-                type == CT_UIM_SIM_CARD || type == UIM_SIM_CARD) {
+        if (type == CT_3G_UIM_CARD || type == UIM_CARD || type == CT_UIM_SIM_CARD ||
+            type == UIM_SIM_CARD) {
             sp<RfxMessage> newMsg =
-                RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, message);
+                    RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, message);
             RfxController::onHandleResponse(newMsg);
             return;
         }
     }
     RfxController::onHandleResponse(message);
 }
-
 
 void RtcCdmaSmsController::handleRequest(const sp<RfxMessage>& message) {
     int msgId = message->getId();
@@ -200,26 +183,24 @@ void RtcCdmaSmsController::handleMoSmsResponses(const sp<RfxMessage>& msg) {
     int msg_id = msg->getId();
     switch (msg_id) {
         case RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS:
-        case RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX:
-            {
-                sp<RfxMessage> rsp;
-                int newId = (msg_id == RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS) ?
-                        RFX_MSG_REQUEST_IMS_SEND_SMS : RFX_MSG_REQUEST_IMS_SEND_SMS_EX;
-                if (newId  == RFX_MSG_REQUEST_IMS_SEND_SMS_EX) {
-                    RIL_SMS_Response *moRsp = (RIL_SMS_Response*)msg->getData()->getData();
-                    logD(TAG, "Need status report %d, messageId = %d", m_needStatusReport,
-                            moRsp->messageRef);
-                    if (m_needStatusReport && (msg->getError() == RIL_E_SUCCESS) &&
-                            moRsp->messageRef > 0) {
-                        ((RtcImsSmsController *)getParent())->addReferenceId(
-                                moRsp->messageRef);
-                        m_needStatusReport = false;
-                    }
+        case RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS_EX: {
+            sp<RfxMessage> rsp;
+            int newId = (msg_id == RFX_MSG_REQUEST_IMS_SEND_CDMA_SMS)
+                                ? RFX_MSG_REQUEST_IMS_SEND_SMS
+                                : RFX_MSG_REQUEST_IMS_SEND_SMS_EX;
+            if (newId == RFX_MSG_REQUEST_IMS_SEND_SMS_EX) {
+                RIL_SMS_Response* moRsp = (RIL_SMS_Response*)msg->getData()->getData();
+                logD(TAG, "Need status report %d, messageId = %d", m_needStatusReport,
+                     moRsp->messageRef);
+                if (m_needStatusReport && (msg->getError() == RIL_E_SUCCESS) &&
+                    moRsp->messageRef > 0) {
+                    ((RtcImsSmsController*)getParent())->addReferenceId(moRsp->messageRef);
+                    m_needStatusReport = false;
                 }
-                rsp = RfxMessage::obtainResponse(newId, msg);
-                responseToRilj(rsp);
             }
-            break;
+            rsp = RfxMessage::obtainResponse(newId, msg);
+            responseToRilj(rsp);
+        } break;
         case RFX_MSG_REQUEST_CDMA_SEND_SMS:
             RfxController::onHandleResponse(msg);
             break;
@@ -227,8 +208,7 @@ void RtcCdmaSmsController::handleMoSmsResponses(const sp<RfxMessage>& msg) {
             RFX_ASSERT(0);
             break;
     }
-    getStatusManager()->setIntValue(
-        RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENT);
+    getStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENT);
 }
 
 bool RtcCdmaSmsController::onCheckCdmaSupported(const sp<RfxMessage>& msg) {
@@ -236,8 +216,7 @@ bool RtcCdmaSmsController::onCheckCdmaSupported(const sp<RfxMessage>& msg) {
         int msgId = msg->getId();
         switch (msgId) {
             case RFX_MSG_REQUEST_CDMA_SEND_SMS: {
-                getStatusManager()->setIntValue(
-                        RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENT);
+                getStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA_MO_SMS_STATE, CDMA_MO_SMS_SENT);
                 /* falls through */
                 TELEPHONYWARE_FALLTHROUGH;
             }
@@ -247,8 +226,7 @@ bool RtcCdmaSmsController::onCheckCdmaSupported(const sp<RfxMessage>& msg) {
             case RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS:
             case RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG:
             case RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG: {
-                sp<RfxMessage> rsp =
-                        RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, msg);
+                sp<RfxMessage> rsp = RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, msg);
                 responseToRilj(rsp);
                 return true;
             }
@@ -307,11 +285,9 @@ bool RtcCdmaSmsController::onHandleResponse(const sp<RfxMessage>& msg) {
         case RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_EX:
             return RfxController::onHandleResponse(msg);
         case RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_INTERNAL: {
-                sp<RfxMessage> rsp = RfxMessage::obtainResponse(
-                        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE, msg);
-                responseToRilj(rsp);
-            }
-            break;
+            sp<RfxMessage> rsp = RfxMessage::obtainResponse(RFX_MSG_REQUEST_SMS_ACKNOWLEDGE, msg);
+            responseToRilj(rsp);
+        } break;
         default:
             RFX_ASSERT(0);
             break;
@@ -319,15 +295,13 @@ bool RtcCdmaSmsController::onHandleResponse(const sp<RfxMessage>& msg) {
     return true;
 }
 
-
 bool RtcCdmaSmsController::onPreviewMessage(const sp<RfxMessage>& message) {
-
     switch (message->getId()) {
         case RFX_MSG_REQUEST_IMS_SEND_SMS:
         case RFX_MSG_REQUEST_IMS_SEND_SMS_EX:
         case RFX_MSG_REQUEST_CDMA_SEND_SMS: {
-            int value = getStatusManager()->getIntValue(
-                RFX_STATUS_KEY_CDMA_MO_SMS_STATE,CDMA_MO_SMS_SENT);
+            int value = getStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA_MO_SMS_STATE,
+                                                        CDMA_MO_SMS_SENT);
             if (value == CDMA_MO_SMS_SENDING && (message->getType() == REQUEST)) {
                 return false;
             }
@@ -342,9 +316,9 @@ bool RtcCdmaSmsController::onCheckIfResumeMessage(const sp<RfxMessage>& message)
         case RFX_MSG_REQUEST_IMS_SEND_SMS:
         case RFX_MSG_REQUEST_IMS_SEND_SMS_EX:
         case RFX_MSG_REQUEST_CDMA_SEND_SMS: {
-            int value = getStatusManager()->getIntValue(
-                RFX_STATUS_KEY_CDMA_MO_SMS_STATE,CDMA_MO_SMS_SENT);
-            if ( (value == CDMA_MO_SMS_SENT) && (message->getType() == REQUEST)) {
+            int value = getStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA_MO_SMS_STATE,
+                                                        CDMA_MO_SMS_SENT);
+            if ((value == CDMA_MO_SMS_SENT) && (message->getType() == REQUEST)) {
                 return true;
             }
             break;
@@ -353,18 +327,18 @@ bool RtcCdmaSmsController::onCheckIfResumeMessage(const sp<RfxMessage>& message)
     return false;
 }
 
-bool RtcCdmaSmsController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
+bool RtcCdmaSmsController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
+                                                  bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
     if (!isModemPowerOff && (radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_GET_SMSC_ADDRESS ||
-             msgId == RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION ||
-             msgId == RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM ||
-             msgId == RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM ||
-             msgId == RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS ||
-             msgId == RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG ||
-             msgId == RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG ||
-             msgId == RFX_MSG_REQUEST_SET_SMSC_ADDRESS )) {
+        (msgId == RFX_MSG_REQUEST_GET_SMSC_ADDRESS ||
+         msgId == RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION ||
+         msgId == RFX_MSG_REQUEST_CDMA_DELETE_SMS_ON_RUIM ||
+         msgId == RFX_MSG_REQUEST_CDMA_WRITE_SMS_TO_RUIM ||
+         msgId == RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS ||
+         msgId == RFX_MSG_REQUEST_CDMA_GET_BROADCAST_SMS_CONFIG ||
+         msgId == RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG ||
+         msgId == RFX_MSG_REQUEST_SET_SMSC_ADDRESS)) {
         return false;
     }
     // Always send this request to MCL to reset the status value
@@ -384,30 +358,28 @@ bool RtcCdmaSmsController::checkIfResumeMessage(const sp<RfxMessage>& message) {
     return onCheckIfResumeMessage(message);
 }
 #include "RfxStringData.h"
-bool RtcCdmaSmsController::onHandleNewSms(const sp<RfxMessage> & msg) {
-    RIL_CDMA_SMS_Message *message = (RIL_CDMA_SMS_Message*)msg->getData()->getData();
-    RtcCdmaSmsMessage *cdmaMessage = new RtcCdmaSmsMessage(message);
-    RtcSmsMessage *convertedMessage = NULL;
-    RtcImsSmsController *parentCtrl = (RtcImsSmsController *)getParent();
-    RtcConCatSmsSender *sender = NULL;
-    RtcConCatSmsGroup *group = NULL;
+bool RtcCdmaSmsController::onHandleNewSms(const sp<RfxMessage>& msg) {
+    RIL_CDMA_SMS_Message* message = (RIL_CDMA_SMS_Message*)msg->getData()->getData();
+    RtcCdmaSmsMessage* cdmaMessage = new RtcCdmaSmsMessage(message);
+    RtcSmsMessage* convertedMessage = NULL;
+    RtcImsSmsController* parentCtrl = (RtcImsSmsController*)getParent();
+    RtcConCatSmsSender* sender = NULL;
+    RtcConCatSmsGroup* group = NULL;
     bool ret = false;
-    RtcConCatSmsRoot *root = NULL;
+    RtcConCatSmsRoot* root = NULL;
     bool needFree = true;
     if (parentCtrl != NULL) {
         root = parentCtrl->getConCatSmsRoot();
     }
     if (cdmaMessage != NULL && cdmaMessage->isConcatSms() && parentCtrl != NULL) {
         if (root != NULL) {
-            sender = root->getSmsSender(
-                    cdmaMessage->getSmsAddress()->getAddressString());
+            sender = root->getSmsSender(cdmaMessage->getSmsAddress()->getAddressString());
             if (sender != NULL) {
-                group = sender->getSmsGroup(
-                        cdmaMessage->getUserDataHeader()->getRefNumber(),
-                        cdmaMessage->getUserDataHeader()->getMsgCount());
+                group = sender->getSmsGroup(cdmaMessage->getUserDataHeader()->getRefNumber(),
+                                            cdmaMessage->getUserDataHeader()->getMsgCount());
                 if (group != NULL) {
-                    RtcConCatSmsPart *part = group->getSmsPart(
-                            cdmaMessage->getUserDataHeader()->getSeqNumber());
+                    RtcConCatSmsPart* part =
+                            group->getSmsPart(cdmaMessage->getUserDataHeader()->getSeqNumber());
                     if (part != NULL) {
                         part->setFormat3Gpp(false);
                         part->setMessage(cdmaMessage);
@@ -424,7 +396,7 @@ bool RtcCdmaSmsController::onHandleNewSms(const sp<RfxMessage> & msg) {
     } else {
         if (parentCtrl != NULL) {
             // send the converted Message
-            parentCtrl->sendGsmSms((RtcGsmSmsMessage *)convertedMessage);
+            parentCtrl->sendGsmSms((RtcGsmSmsMessage*)convertedMessage);
             ret = true;
         }
     }
@@ -438,12 +410,10 @@ bool RtcCdmaSmsController::onHandleNewSms(const sp<RfxMessage> & msg) {
 }
 
 void RtcCdmaSmsController::handleCdmaSmsAck(const sp<RfxMessage>& message) {
-    bool onGoing = getStatusManager()->getBoolValue(
-            RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING);
+    bool onGoing = getStatusManager()->getBoolValue(RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING);
     if (onGoing) {
-        getStatusManager()->setBoolValue(
-                RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, false);
-        RIL_CDMA_SMS_Ack *ack = (RIL_CDMA_SMS_Ack*)message->getData()->getData();
+        getStatusManager()->setBoolValue(RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, false);
+        RIL_CDMA_SMS_Ack* ack = (RIL_CDMA_SMS_Ack*)message->getData()->getData();
         int success;
         int cause;
         if (ack->uErrorClass == RIL_CDMA_SMS_NO_ERROR) {
@@ -453,7 +423,7 @@ void RtcCdmaSmsController::handleCdmaSmsAck(const sp<RfxMessage>& message) {
             success = 0;
             cause = 0xFF;
         }
-        RtcImsSmsController *parentCtrl = (RtcImsSmsController *)getParent();
+        RtcImsSmsController* parentCtrl = (RtcImsSmsController*)getParent();
         if (parentCtrl != NULL) {
             parentCtrl->sendGsmSmsAck(success, cause, message);
         }
@@ -462,12 +432,12 @@ void RtcCdmaSmsController::handleCdmaSmsAck(const sp<RfxMessage>& message) {
     }
 }
 
-void RtcCdmaSmsController::sendCdmaSms(RtcCdmaSmsMessage * msg) {
-    sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_URC_CDMA_NEW_SMS,
-        RmcCdmaMtSmsMessage((void *)&msg->getMessage(), sizeof(RIL_CDMA_SMS_Message)));
+void RtcCdmaSmsController::sendCdmaSms(RtcCdmaSmsMessage* msg) {
+    sp<RfxMessage> urc = RfxMessage::obtainUrc(
+            getSlotId(), RFX_MSG_URC_CDMA_NEW_SMS,
+            RmcCdmaMtSmsMessage((void*)&msg->getMessage(), sizeof(RIL_CDMA_SMS_Message)));
     responseToRilj(urc);
-    getStatusManager()->setBoolValue(
-            RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, true);
+    getStatusManager()->setBoolValue(RFX_STATUS_KEY_SMS_FORMAT_CHANGE_ONGOING, true);
 }
 
 void RtcCdmaSmsController::sendCdmaSmsAck(const sp<RfxMessage>& message) {
@@ -478,7 +448,7 @@ void RtcCdmaSmsController::sendCdmaSmsAck(const sp<RfxMessage>& message) {
     }
 
     RIL_CDMA_SMS_Ack ackCdma;
-    int *ackGsm = (int *)message->getData()->getData();
+    int* ackGsm = (int*)message->getData()->getData();
     if ((ackGsm != NULL) && (ackGsm[0] == 1)) {
         ackCdma.uErrorClass = RIL_CDMA_SMS_NO_ERROR;
         ackCdma.uSMSCauseCode = 0;
@@ -488,12 +458,12 @@ void RtcCdmaSmsController::sendCdmaSmsAck(const sp<RfxMessage>& message) {
     }
     sp<RfxMessage> newMsg = RfxMessage::obtainRequest(
             RFX_MSG_REQUEST_CDMA_SMS_ACKNOWLEDGE_INTERNAL,
-            RmcCdmaSmsAck((void *)&ackCdma, sizeof(ackCdma)), message, false);
+            RmcCdmaSmsAck((void*)&ackCdma, sizeof(ackCdma)), message, false);
     requestToMcl(newMsg);
 }
 
 bool RtcCdmaSmsController::isSupportSmsFormatConvert() {
-    RtcImsSmsController *parentCtrl = (RtcImsSmsController *)getParent();
+    RtcImsSmsController* parentCtrl = (RtcImsSmsController*)getParent();
     if (parentCtrl != NULL) {
         return parentCtrl->isSupportSmsFormatConvert();
     }

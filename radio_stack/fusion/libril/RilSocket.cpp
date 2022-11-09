@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-extern "C"
-void *ril_socket_process_requests_loop(void *arg);
+extern "C" void* ril_socket_process_requests_loop(void* arg);
 
 #include "RilSocket.h"
 #include <cutils/sockets.h>
@@ -31,22 +30,22 @@ int RilSocket::socketInit(void) {
     commandCb = &RilSocket::sSocketRequestsHandler;
     listenFd = android_get_control_socket(name);
 
-    //Start listening
+    // Start listening
     ret = listen(listenFd, SOCKET_LISTEN_BACKLOG);
 
     if (ret < 0) {
-        RFX_LOG_E(LOG_TAG, "Failed to listen on %s socket '%d': %s",
-        name, listenFd, strerror(errno));
+        RFX_LOG_E(LOG_TAG, "Failed to listen on %s socket '%d': %s", name, listenFd,
+                  strerror(errno));
         return ret;
     }
-    //Add listen event to the event loop
+    // Add listen event to the event loop
     ril_event_set(&listenEvent, listenFd, false, listenCb, this);
     rilEventAddWakeup_helper(&listenEvent);
     return ret;
 }
 
-void RilSocket::sSocketListener(int fd, short flags, void *param) {
-    RilSocket *theSocket = (RilSocket *) param;
+void RilSocket::sSocketListener(int fd, short flags, void* param) {
+    RilSocket* theSocket = (RilSocket*)param;
     MySocketListenParam listenParam;
     listenParam.socket = theSocket;
     listenParam.sListenParam.type = RIL_SAP_SOCKET;
@@ -60,27 +59,27 @@ void RilSocket::onNewCommandConnect() {
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-    //Start socket request processing loop thread
+    // Start socket request processing loop thread
     result = pthread_create(&socketThreadId, &attr, pptr, this);
-    if(result < 0) {
-        RFX_LOG_E(LOG_TAG, "pthread_create failed with result:%d",result);
+    if (result < 0) {
+        RFX_LOG_E(LOG_TAG, "pthread_create failed with result:%d", result);
     }
 
     RFX_LOG_E(LOG_TAG, "New socket command connected and socket request thread started");
 }
 
-void RilSocket::sSocketRequestsHandler(int fd, short flags, void *param) {
-    socketClient *sc = (socketClient *) param;
-    RilSocket *theSocket = sc->socketPtr;
-    RecordStream *rs = sc->rs;
+void RilSocket::sSocketRequestsHandler(int fd, short flags, void* param) {
+    socketClient* sc = (socketClient*)param;
+    RilSocket* theSocket = sc->socketPtr;
+    RecordStream* rs = sc->rs;
 
     theSocket->socketRequestsHandler(fd, flags, rs);
 }
 
-void RilSocket::socketRequestsHandler(int fd, short flags, RecordStream *p_rs) {
+void RilSocket::socketRequestsHandler(int fd, short flags, RecordStream* p_rs) {
     int ret;
     assert(fd == commandFd);
-    void *p_record;
+    void* p_record;
     size_t recordlen;
 
     for (;;) {
@@ -120,61 +119,34 @@ void RilSocket::socketRequestsHandler(int fd, short flags, RecordStream *p_rs) {
     }
 }
 
-void RilSocket::setListenFd(int fd) {
-    listenFd = fd;
-}
+void RilSocket::setListenFd(int fd) { listenFd = fd; }
 
-void RilSocket::setCommandFd(int fd) {
-    commandFd = fd;
-}
+void RilSocket::setCommandFd(int fd) { commandFd = fd; }
 
-int RilSocket::getListenFd(void) {
-    return listenFd;
-}
+int RilSocket::getListenFd(void) { return listenFd; }
 
-int RilSocket::getCommandFd(void) {
-    return commandFd;
-}
+int RilSocket::getCommandFd(void) { return commandFd; }
 
-void RilSocket::setListenCb(ril_event_cb cb) {
-    listenCb = cb;
-}
+void RilSocket::setListenCb(ril_event_cb cb) { listenCb = cb; }
 
-void RilSocket::setCommandCb(ril_event_cb cb) {
-    commandCb = cb;
-}
+void RilSocket::setCommandCb(ril_event_cb cb) { commandCb = cb; }
 
-ril_event_cb RilSocket::getListenCb(void) {
-    return listenCb;
-}
+ril_event_cb RilSocket::getListenCb(void) { return listenCb; }
 
-ril_event_cb RilSocket::getCommandCb(void) {
-    return commandCb;
-}
+ril_event_cb RilSocket::getCommandCb(void) { return commandCb; }
 
-void RilSocket::setListenEvent(ril_event event) {
-    listenEvent = event;
-}
+void RilSocket::setListenEvent(ril_event event) { listenEvent = event; }
 
-void RilSocket::setCallbackEvent(ril_event event) {
-    callbackEvent = event;
-}
+void RilSocket::setCallbackEvent(ril_event event) { callbackEvent = event; }
 
-ril_event* RilSocket::getListenEvent(void)  {
-    return &listenEvent;
-}
+ril_event* RilSocket::getListenEvent(void) { return &listenEvent; }
 
-ril_event* RilSocket::getCallbackEvent(void) {
-    return &callbackEvent;
-}
+ril_event* RilSocket::getCallbackEvent(void) { return &callbackEvent; }
 
-RIL_SOCKET_ID RilSocket::getSocketId(void) {
-    return id;
-}
+RIL_SOCKET_ID RilSocket::getSocketId(void) { return id; }
 
-extern "C"
-void *ril_socket_process_requests_loop(void *arg) {
-    RilSocket *socket = (RilSocket *)arg;
+extern "C" void* ril_socket_process_requests_loop(void* arg) {
+    RilSocket* socket = (RilSocket*)arg;
     socket->processRequestsLoop();
     return NULL;
 }

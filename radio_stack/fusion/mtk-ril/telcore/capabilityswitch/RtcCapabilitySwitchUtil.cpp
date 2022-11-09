@@ -33,35 +33,23 @@
 #define RFX_LOG_TAG "RtcCapa"
 
 // OP01 SIMs
-static const char* PLMN_TABLE_OP01[] = {
-    "46000", "46002", "46007", "46008", "45412", "45413",
-    // Lab test IMSI
-    "00101", "00211", "00321", "00431", "00541", "00651",
-    "00761", "00871", "00902", "01012", "01122", "01232",
-    "46004", "46602", "50270"
-};
+static const char* PLMN_TABLE_OP01[] = {"46000", "46002", "46007", "46008", "45412", "45413",
+                                        // Lab test IMSI
+                                        "00101", "00211", "00321", "00431", "00541", "00651",
+                                        "00761", "00871", "00902", "01012", "01122", "01232",
+                                        "46004", "46602", "50270"};
 
 // OP02 SIMs
-static const char* PLMN_TABLE_OP02[] = {
-    "46001", "46006", "46009", "45407"
-};
+static const char* PLMN_TABLE_OP02[] = {"46001", "46006", "46009", "45407"};
 
 // OP09 SIMs
-static const char* PLMN_TABLE_OP09[] = {
-    "46005", "45502", "46003", "46011"
-};
+static const char* PLMN_TABLE_OP09[] = {"46005", "45502", "46003", "46011"};
 
 // OP18 SIMs
 static const char* PLMN_TABLE_OP18[] = {
-    "405840", "405854", "405855", "405856",
-    "405857", "405858", "405855", "405856",
-    "405857", "405858", "405859", "405860",
-    "405861", "405862", "405863", "405864",
-    "405865", "405866", "405867", "405868",
-    "405869", "405870", "405871", "405872",
-    "405873", "405874"
-};
-
+        "405840", "405854", "405855", "405856", "405857", "405858", "405855", "405856", "405857",
+        "405858", "405859", "405860", "405861", "405862", "405863", "405864", "405865", "405866",
+        "405867", "405868", "405869", "405870", "405871", "405872", "405873", "405874"};
 
 /*****************************************************************************
  * Class RtcCapabilitySwitchUtil
@@ -137,7 +125,8 @@ int RtcCapabilitySwitchUtil::getRafFromNetworkType(int type) {
             raf = RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA:
-            raf = RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
+            raf = RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP |
+                  RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_NR_ONLY:
             raf = RAF_NR;
@@ -152,7 +141,8 @@ int RtcCapabilitySwitchUtil::getRafFromNetworkType(int type) {
             raf = RAF_NR | RAF_LTE_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_NR_LTE_CDMA_EVDO_GSM_WCDMA:
-            raf = RAF_NR | RAF_LTE_GROUP | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
+            raf = RAF_NR | RAF_LTE_GROUP | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP |
+                  RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_NR_LTE_WCDMA:
             raf = RAF_NR | RAF_LTE_GROUP | RAF_WCDMA_GROUP;
@@ -170,7 +160,8 @@ int RtcCapabilitySwitchUtil::getRafFromNetworkType(int type) {
             raf = RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA:
-            raf = RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP;
+            raf = RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP |
+                  RAF_GSM_GROUP | RAF_WCDMA_GROUP;
             break;
         case PREF_NET_TYPE_LTE_GSM:
             raf = RAF_LTE_GROUP | RAF_GSM_GROUP;
@@ -207,7 +198,7 @@ int RtcCapabilitySwitchUtil::getAdjustedRaf(int raf) {
 int RtcCapabilitySwitchUtil::getNetworkTypeFromRaf(int raf) {
     int type;
     int adj_raf;
-    if(RatConfig_isGsmSupported() == 0) {
+    if (RatConfig_isGsmSupported() == 0) {
         raf &= ~RAF_GSM_GROUP;
     }
     adj_raf = getAdjustedRaf(raf);
@@ -281,25 +272,25 @@ int RtcCapabilitySwitchUtil::getNetworkTypeFromRaf(int raf) {
         case (RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_GSM_GROUP | RAF_WCDMA_GROUP):
             type = PREF_NET_TYPE_NR_LTE_TDSCDMA_GSM_WCDMA;
             break;
-        case (RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP | RAF_GSM_GROUP | RAF_WCDMA_GROUP):
+        case (RAF_NR | RAF_LTE_GROUP | RAF_TD_SCDMA | RAF_CDMA_GROUP | RAF_EVDO_GROUP |
+              RAF_GSM_GROUP | RAF_WCDMA_GROUP):
             type = PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA;
             break;
         default:
             int c2k_support = RatConfig_isC2kSupported();
             int lte_support = RatConfig_isLteFddSupported() | RatConfig_isLteTddSupported();
-            type = c2k_support == 1 ?
-                   (PREF_NET_TYPE_CDMA_EVDO_AUTO) :
-                   (lte_support == 1 ?
-                    PREF_NET_TYPE_LTE_GSM_WCDMA : PREF_NET_TYPE_GSM_WCDMA);
+            type = c2k_support == 1 ? (PREF_NET_TYPE_CDMA_EVDO_AUTO)
+                                    : (lte_support == 1 ? PREF_NET_TYPE_LTE_GSM_WCDMA
+                                                        : PREF_NET_TYPE_GSM_WCDMA);
             RFX_LOG_I(RFX_LOG_TAG, "getNetworkTypeFromRaf, raf=%d, adj_raf=%d, type=%d", raf,
-                    adj_raf, type);
+                      adj_raf, type);
             break;
     }
     return type;
 }
 
 bool RtcCapabilitySwitchUtil::isDisableC2kCapability() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.radio.disable_c2k_cap", tmp, "0");
     if (strcmp(tmp, "1") == 0) {
         RFX_LOG_I(RFX_LOG_TAG, "isDisableC2kCapability == true");
@@ -309,7 +300,7 @@ bool RtcCapabilitySwitchUtil::isDisableC2kCapability() {
 }
 
 bool RtcCapabilitySwitchUtil::isDssNoResetSupport() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.simswitch.no_reset_support", tmp, "0");
     if (strcmp(tmp, "1") == 0) {
         return true;
@@ -361,22 +352,22 @@ bool RtcCapabilitySwitchUtil::isHvolteSupport() {
 }
 
 bool RtcCapabilitySwitchUtil::isSimSwitchEnabled() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
-    //check if disabled from project config
+    // check if disabled from project config
     rfx_property_get("ro.vendor.mtk_disable_cap_switch", property_value, "-1");
     if (strcmp(property_value, "1") == 0) {
         RFX_LOG_I(RFX_LOG_TAG, "mtk_disable_cap_switch == 1");
         return false;
     }
-    //check if FTA mode
+    // check if FTA mode
     memset(property_value, 0, sizeof(property_value));
     rfx_property_get("vendor.gsm.gcf.testmode", property_value, "-1");
     if (strcmp(property_value, "2") == 0) {
         RFX_LOG_I(RFX_LOG_TAG, "testmode == 2");
         return false;
     }
-    //check if disabled from engineer mode
+    // check if disabled from engineer mode
     memset(property_value, 0, sizeof(property_value));
     rfx_property_get("persist.vendor.radio.simswitch.emmode", property_value, "-1");
     if (strcmp(property_value, "1") == 0) {

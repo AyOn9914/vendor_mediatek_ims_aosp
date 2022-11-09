@@ -40,19 +40,19 @@ class RtcCapabilitySwitchController : public RfxController {
     virtual ~RtcCapabilitySwitchController();
     void notifySetRatDone();
 
-// Override
+    // Override
   protected:
-    virtual bool onHandleRequest(const sp<RfxMessage> &message);
+    virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual void onInit();
-    virtual bool onHandleResponse(const sp<RfxMessage> &message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff,int radioState);
+    virtual bool onHandleResponse(const sp<RfxMessage>& message);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
   private:
     void calculateNewMainSlot(int capability, int slot, char* modemId);
-    void processSetMajorSimResponse(const sp<RfxMessage> &message);
+    void processSetMajorSimResponse(const sp<RfxMessage>& message);
     bool isReadyForMessage(const sp<RfxMessage>& message, bool log);
     void powerOffRadio();
     void onRequestRadioOffDone(int slotId);

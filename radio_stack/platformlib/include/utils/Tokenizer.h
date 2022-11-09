@@ -28,10 +28,10 @@ namespace android {
  * A simple tokenizer for loading and parsing ASCII text files line by line.
  */
 class Tokenizer {
-    Tokenizer(const String8& filename, FileMap* fileMap, char* buffer,
-            bool ownBuffer, size_t length);
+    Tokenizer(const String8& filename, FileMap* fileMap, char* buffer, bool ownBuffer,
+              size_t length);
 
-public:
+  public:
     ~Tokenizer();
 
     /**
@@ -48,8 +48,8 @@ public:
      * Returns NO_ERROR and a tokenizer for the string, if successful.
      * Otherwise returns an error and sets outTokenizer to NULL.
      */
-    static status_t fromContents(const String8& filename,
-            const char* contents, Tokenizer** outTokenizer);
+    static status_t fromContents(const String8& filename, const char* contents,
+                                 Tokenizer** outTokenizer);
 
     /**
      * Returns true if at the end of the file.
@@ -115,8 +115,8 @@ public:
      */
     void skipDelimiters(const char* delimiters);
 
-private:
-    Tokenizer(const Tokenizer& other); // not copyable
+  private:
+    Tokenizer(const Tokenizer& other);  // not copyable
 
     String8 mFilename;
     FileMap* mFileMap;
@@ -128,9 +128,8 @@ private:
     int32_t mLineNumber;
 
     inline const char* getEnd() const { return mBuffer + mLength; }
-
 };
 
-} // namespace android
+}  // namespace android
 
-#endif // _UTILS_TOKENIZER_H
+#endif  // _UTILS_TOKENIZER_H

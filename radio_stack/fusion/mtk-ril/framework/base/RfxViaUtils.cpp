@@ -44,19 +44,19 @@ void RfxViaUtils::initViaHandler() {
 
     m_dlHandler = dlopen(VIA_RIL_PATH, RTLD_NOW);
     if (m_dlHandler == NULL) {
-        RFX_LOG_I(RFX_LOG_TAG, "[%s] dlopen failed in %s: %s",
-                __FUNCTION__, VIA_RIL_PATH, dlerror());
+        RFX_LOG_I(RFX_LOG_TAG, "[%s] dlopen failed in %s: %s", __FUNCTION__, VIA_RIL_PATH,
+                  dlerror());
         return;
     }
 
     // reset errors
     dlerror();
 
-    create_t* createViaHandler = (create_t*) dlsym(m_dlHandler, "create");
+    create_t* createViaHandler = (create_t*)dlsym(m_dlHandler, "create");
     const char* dlsym_error = dlerror();
     if (createViaHandler == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%s] create not defined or exported in %s: %s",
-                __FUNCTION__, VIA_RIL_PATH, dlsym_error);
+        RFX_LOG_E(RFX_LOG_TAG, "[%s] create not defined or exported in %s: %s", __FUNCTION__,
+                  VIA_RIL_PATH, dlsym_error);
         return;
     }
 
@@ -65,9 +65,7 @@ void RfxViaUtils::initViaHandler() {
     RFX_LOG_D(RFX_LOG_TAG, "[%s] completed", __FUNCTION__);
 }
 
-ViaBaseHandler* RfxViaUtils::getViaHandler() {
-    return m_viaHandler;
-}
+ViaBaseHandler* RfxViaUtils::getViaHandler() { return m_viaHandler; }
 
 void RfxViaUtils::deInitViaHandler() {
     if (m_dlHandler == NULL) {
@@ -75,11 +73,11 @@ void RfxViaUtils::deInitViaHandler() {
         return;
     }
 
-    destroy_t* destroyViaHandler = (destroy_t*) dlsym(m_dlHandler, "destroy");
+    destroy_t* destroyViaHandler = (destroy_t*)dlsym(m_dlHandler, "destroy");
     const char* dlsym_error = dlerror();
     if (destroyViaHandler == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG, "[%s] destroy not defined or exported in %s: %s",
-                __FUNCTION__, VIA_RIL_PATH, dlsym_error);
+        RFX_LOG_E(RFX_LOG_TAG, "[%s] destroy not defined or exported in %s: %s", __FUNCTION__,
+                  VIA_RIL_PATH, dlsym_error);
         return;
     }
 

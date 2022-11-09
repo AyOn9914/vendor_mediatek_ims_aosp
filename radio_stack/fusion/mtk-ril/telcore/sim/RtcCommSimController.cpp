@@ -39,19 +39,15 @@ using namespace std;
 
 RFX_IMPLEMENT_CLASS("RtcCommSimController", RtcCommSimController, RfxController);
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, \
-        RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS);
 
 /*****************************************************************************
  * Class RtcCommSimController
  *****************************************************************************/
-RtcCommSimController::RtcCommSimController() {
-        setTag(String8("RtcCommSimCtrl"));
-}
+RtcCommSimController::RtcCommSimController() { setTag(String8("RtcCommSimCtrl")); }
 
-
-RtcCommSimController::~RtcCommSimController() {
-}
+RtcCommSimController::~RtcCommSimController() {}
 
 void RtcCommSimController::onInit() {
     // Required: invoke super class implementation
@@ -59,57 +55,57 @@ void RtcCommSimController::onInit() {
 
     // register request & URC id list for radio state check
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_GET_SIM_STATUS,
-        RFX_MSG_REQUEST_ENTER_SIM_PIN,
-        RFX_MSG_REQUEST_ENTER_SIM_PUK,
-        RFX_MSG_REQUEST_ENTER_SIM_PIN2,
-        RFX_MSG_REQUEST_ENTER_SIM_PUK2,
-        RFX_MSG_REQUEST_CHANGE_SIM_PIN,
-        RFX_MSG_REQUEST_CHANGE_SIM_PIN2,
-        RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION,
-        RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION,
-        RFX_MSG_REQUEST_SIM_IO,
-        RFX_MSG_REQUEST_SIM_AUTHENTICATION,
-        RFX_MSG_REQUEST_ISIM_AUTHENTICATION,
-        RFX_MSG_REQUEST_GENERAL_SIM_AUTH,
-        RFX_MSG_REQUEST_SIM_OPEN_CHANNEL,
-        RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL,
-        RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC,
-        RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL,
-        RFX_MSG_REQUEST_SIM_GET_ATR,
-        RFX_MSG_REQUEST_SIM_GET_ICCID,
-        RFX_MSG_REQUEST_SIM_SAP_CONNECT,
-        RFX_MSG_REQUEST_SIM_SAP_DISCONNECT,
-        RFX_MSG_REQUEST_SIM_SAP_APDU,
-        RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR,
-        RFX_MSG_REQUEST_SIM_SAP_POWER,
-        RFX_MSG_REQUEST_SIM_SAP_RESET_SIM,
-        RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL,
-        RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP,
-        RFX_MSG_REQUEST_GET_IMSI,
-        RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
-        RFX_MSG_REQUEST_SET_FACILITY_LOCK,
-        RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK,
-        RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK,
-        RFX_MSG_REQUEST_SIM_VSIM_NOTIFICATION,
-        RFX_MSG_REQUEST_SIM_VSIM_OPERATION,
-        RFX_MSG_REQUEST_CDMA_SUBSCRIPTION,
-        RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE,
-        RFX_MSG_REQUEST_SET_SIM_CARD_POWER,
-        RFX_MSG_REQUEST_SET_SIM_POWER,
-        RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS,
-        RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS,
-        RFX_MSG_REQUEST_SIM_ENTER_DEVICE_NETWORK_DEPERSONALIZATION,
-        RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS,
-        RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS,
-        RFX_MSG_REQUEST_ACTIVATE_UICC_CARD,
-        RFX_MSG_REQUEST_DEACTIVATE_UICC_CARD,
-        RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS,
-        RFX_MSG_REQUEST_SML_RSU_REQUEST,
+            RFX_MSG_REQUEST_GET_SIM_STATUS,
+            RFX_MSG_REQUEST_ENTER_SIM_PIN,
+            RFX_MSG_REQUEST_ENTER_SIM_PUK,
+            RFX_MSG_REQUEST_ENTER_SIM_PIN2,
+            RFX_MSG_REQUEST_ENTER_SIM_PUK2,
+            RFX_MSG_REQUEST_CHANGE_SIM_PIN,
+            RFX_MSG_REQUEST_CHANGE_SIM_PIN2,
+            RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION,
+            RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION,
+            RFX_MSG_REQUEST_SIM_IO,
+            RFX_MSG_REQUEST_SIM_AUTHENTICATION,
+            RFX_MSG_REQUEST_ISIM_AUTHENTICATION,
+            RFX_MSG_REQUEST_GENERAL_SIM_AUTH,
+            RFX_MSG_REQUEST_SIM_OPEN_CHANNEL,
+            RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL,
+            RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC,
+            RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL,
+            RFX_MSG_REQUEST_SIM_GET_ATR,
+            RFX_MSG_REQUEST_SIM_GET_ICCID,
+            RFX_MSG_REQUEST_SIM_SAP_CONNECT,
+            RFX_MSG_REQUEST_SIM_SAP_DISCONNECT,
+            RFX_MSG_REQUEST_SIM_SAP_APDU,
+            RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR,
+            RFX_MSG_REQUEST_SIM_SAP_POWER,
+            RFX_MSG_REQUEST_SIM_SAP_RESET_SIM,
+            RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL,
+            RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP,
+            RFX_MSG_REQUEST_GET_IMSI,
+            RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
+            RFX_MSG_REQUEST_SET_FACILITY_LOCK,
+            RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK,
+            RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK,
+            RFX_MSG_REQUEST_SIM_VSIM_NOTIFICATION,
+            RFX_MSG_REQUEST_SIM_VSIM_OPERATION,
+            RFX_MSG_REQUEST_CDMA_SUBSCRIPTION,
+            RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE,
+            RFX_MSG_REQUEST_SET_SIM_CARD_POWER,
+            RFX_MSG_REQUEST_SET_SIM_POWER,
+            RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS,
+            RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS,
+            RFX_MSG_REQUEST_SIM_ENTER_DEVICE_NETWORK_DEPERSONALIZATION,
+            RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS,
+            RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS,
+            RFX_MSG_REQUEST_ACTIVATE_UICC_CARD,
+            RFX_MSG_REQUEST_DEACTIVATE_UICC_CARD,
+            RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS,
+            RFX_MSG_REQUEST_SML_RSU_REQUEST,
     };
 
     const int urc_id_list[] = {
-        RFX_MSG_URC_SIM_SLOT_LOCK_POLICY_NOTIFY,
+            RFX_MSG_URC_SIM_SLOT_LOCK_POLICY_NOTIFY,
     };
 
     for (int i = 0; i < SIM_APP_COUNT; i++) {
@@ -119,33 +115,39 @@ void RtcCommSimController::onInit() {
     }
 
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 
     // register callbacks to get required information
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_RADIO_STATE,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_RADIO_STATE,
             RfxStatusChangeCallback(this, &RtcCommSimController::onRadioStateChanged));
 
     // register callbacks to re-report
-    getStatusManager()->registerStatusChanged(RFX_STATUS_CONNECTION_STATE,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_CONNECTION_STATE,
             RfxStatusChangeCallback(this, &RtcCommSimController::onConnectionStateChanged));
 
     // register callbacks to mode switch status
-    getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_MODESWITCH_FINISHED,
+    getNonSlotScopeStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_MODESWITCH_FINISHED,
             RfxStatusChangeCallback(this, &RtcCommSimController::onModeSwitchFinished));
 
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_GSM_CACHE_FCP,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_GSM_CACHE_FCP,
             RfxStatusChangeCallback(this, &RtcCommSimController::onSimFileChanged));
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_GSM_CACHE_BINARY,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_GSM_CACHE_BINARY,
             RfxStatusChangeCallback(this, &RtcCommSimController::onSimFileChanged));
 
     // register callbacks when SIM reset happens.
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_UICC_RESET_APPLICATION,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_UICC_RESET_APPLICATION,
             RfxStatusChangeCallback(this, &RtcCommSimController::onSimResetChanged));
 }
 
-void RtcCommSimController::onRadioStateChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcCommSimController::onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                               RfxVariant value) {
     int oldState = -1, newState = -1;
 
     RFX_UNUSED(key);
@@ -161,8 +163,8 @@ void RtcCommSimController::onRadioStateChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcCommSimController::onConnectionStateChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcCommSimController::onConnectionStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                    RfxVariant value) {
     int oldState = -1, newState = -1;
 
     RFX_UNUSED(key);
@@ -177,8 +179,8 @@ void RtcCommSimController::onConnectionStateChanged(RfxStatusKeyEnum key,
             int* smlData = (int*)(mCacheSmlMsg->getData()->getData());
             int smlDataLength = mCacheSmlMsg->getData()->getDataLength();
             logD(mTag, "onConnectionStateChanged %s %d %d %d %d %d (slot %d)",
-                    mCacheSmlMsg->toString().string(), smlDataLength, smlData[0], smlData[1],
-                    smlData[2], smlData[3], getSlotId());
+                 mCacheSmlMsg->toString().string(), smlDataLength, smlData[0], smlData[1],
+                 smlData[2], smlData[3], getSlotId());
             // Here don't remove cache to avoid the timing issue
             responseToRilj(mCacheSmlMsg);
         } else {
@@ -187,22 +189,21 @@ void RtcCommSimController::onConnectionStateChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcCommSimController::onModeSwitchFinished(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
-
+void RtcCommSimController::onModeSwitchFinished(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                RfxVariant value) {
     RFX_UNUSED(key);
 
     logD(mTag, "onModeSwitchFinished (%d, %d) (slot %d)", old_value.asInt(), value.asInt(),
-            getSlotId());
+         getSlotId());
 
-    sp<RfxMessage> message = RfxMessage::obtainUrc(getSlotId(),
-            RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED, RfxVoidData());
+    sp<RfxMessage> message = RfxMessage::obtainUrc(
+            getSlotId(), RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED, RfxVoidData());
     responseToRilj(message);
 }
 
 void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value) {
-    char* response = (char *)strdup(value.asString8().string());
+                                            RfxVariant value) {
+    char* response = (char*)strdup(value.asString8().string());
     char* tok = NULL;
     int app = -1;
     int fileNum = -1;
@@ -262,7 +263,7 @@ void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old
 
                     int len = strlen(RIL_SIM_CACHE_FILES[app][id].path);
                     if (mIoResponse[app][id].path == NULL) {
-                        mIoResponse[app][id].path = (char*) malloc(len * sizeof(char) + 1);
+                        mIoResponse[app][id].path = (char*)malloc(len * sizeof(char) + 1);
                     }
                     strncpy(mIoResponse[app][id].path, RIL_SIM_CACHE_FILES[app][id].path, len);
                     mIoResponse[app][id].path[len] = '\0';
@@ -271,15 +272,15 @@ void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old
                         if (key == RFX_STATUS_KEY_GSM_CACHE_FCP) {
                             String8 swFcp(tok);
 
-                            mIoResponse[app][id].get_rsp.sw1 = strtol(string(swFcp.string())
-                                    .substr(0, 2).c_str(), NULL, 16);
-                            mIoResponse[app][id].get_rsp.sw2 = strtol(string(swFcp.string())
-                                    .substr(2, 2).c_str(), NULL, 16);
+                            mIoResponse[app][id].get_rsp.sw1 =
+                                    strtol(string(swFcp.string()).substr(0, 2).c_str(), NULL, 16);
+                            mIoResponse[app][id].get_rsp.sw2 =
+                                    strtol(string(swFcp.string()).substr(2, 2).c_str(), NULL, 16);
 
                             if (strlen(tok) > 4) {
                                 if (mIoResponse[app][id].get_rsp.simResponse == NULL) {
-                                    mIoResponse[app][id].get_rsp.simResponse = (char*) malloc(
-                                            (strlen(tok) - 4) * sizeof(char) + 1);
+                                    mIoResponse[app][id].get_rsp.simResponse =
+                                            (char*)malloc((strlen(tok) - 4) * sizeof(char) + 1);
                                 }
                                 strncpy(mIoResponse[app][id].get_rsp.simResponse, tok + 4,
                                         strlen(tok) - 4);
@@ -291,19 +292,19 @@ void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old
                             mIoResponse[app][id].get_rsp.valid = true;
                         } else if (key == RFX_STATUS_KEY_GSM_CACHE_BINARY) {
                             String8 swBinary(tok);
-                            mIoResponse[app][id].read_binary.sw1 = strtol(string(swBinary.string())
-                                    .substr(0, 2).c_str(), NULL, 16);
-                            mIoResponse[app][id].read_binary.sw2 = strtol(string(swBinary.string())
-                                    .substr(2, 2).c_str(), NULL, 16);
+                            mIoResponse[app][id].read_binary.sw1 = strtol(
+                                    string(swBinary.string()).substr(0, 2).c_str(), NULL, 16);
+                            mIoResponse[app][id].read_binary.sw2 = strtol(
+                                    string(swBinary.string()).substr(2, 2).c_str(), NULL, 16);
                             if (strlen(tok) > 4) {
                                 if (mIoResponse[app][id].read_binary.simResponse == NULL) {
-                                    mIoResponse[app][id].read_binary.simResponse = (char*) malloc(
-                                           (strlen(tok) - 4) * sizeof(char) + 1);
+                                    mIoResponse[app][id].read_binary.simResponse =
+                                            (char*)malloc((strlen(tok) - 4) * sizeof(char) + 1);
                                 }
                                 strncpy(mIoResponse[app][id].read_binary.simResponse, tok + 4,
-                                       strlen(tok) - 4);
+                                        strlen(tok) - 4);
                                 mIoResponse[app][id].read_binary.simResponse[strlen(tok) - 4] =
-                                       '\0';
+                                        '\0';
                             } else {
                                 mIoResponse[app][id].read_binary.simResponse = NULL;
                             }
@@ -311,15 +312,15 @@ void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old
                             mIoResponse[app][id].read_binary.valid = true;
                         } else {
                             logE(mTag, "onSimFileChanged key error key: %d (slot %d)", key,
-                                   getSlotId());
+                                 getSlotId());
                         }
                     } else {
-                        logE(mTag, "onSimFileChanged sw error len: %zu (slot %d)",
-                               strlen(tok), getSlotId());
+                        logE(mTag, "onSimFileChanged sw error len: %zu (slot %d)", strlen(tok),
+                             getSlotId());
                     }
                 } else {
-                    logE(mTag, "onSimFileChanged the file is not requested : %s (slot %d)",
-                            tok, getSlotId());
+                    logE(mTag, "onSimFileChanged the file is not requested : %s (slot %d)", tok,
+                         getSlotId());
                 }
 
                 tok = strtok(NULL, ",");
@@ -332,11 +333,11 @@ void RtcCommSimController::onSimFileChanged(RfxStatusKeyEnum key, RfxVariant old
     }
 }
 
-void RtcCommSimController::onSimResetChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcCommSimController::onSimResetChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                             RfxVariant value) {
     RFX_UNUSED(key);
-    logD(mTag, "onSimResetChanged (%s, %s) (slot %d)", (const char *)(old_value.asString8()),
-            (const char *)(value.asString8()), getSlotId());
+    logD(mTag, "onSimResetChanged (%s, %s) (slot %d)", (const char*)(old_value.asString8()),
+         (const char*)(value.asString8()), getSlotId());
 
     String8 aid = value.asString8();
 
@@ -345,10 +346,9 @@ void RtcCommSimController::onSimResetChanged(RfxStatusKeyEnum key,
         // Clear GSM systemProperty and statusKey.
         if (aid.isEmpty() || (strncmp(aid.string(), "A0000000871002", 14) == 0)) {
             String8 gsmMccMnc("vendor.gsm.ril.uicc.mccmnc");
-            gsmMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+            gsmMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
             rfx_property_set(gsmMccMnc.string(), "");
-            getStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC,
-                    String8(""));
+            getStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8(""));
             getStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_IMSI, String8(""));
             getStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_SPN, String8(""));
             getStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_GID1, String8(""));
@@ -358,7 +358,7 @@ void RtcCommSimController::onSimResetChanged(RfxStatusKeyEnum key,
         // reset CDMA systemProperty and statusKey
         if (aid.isEmpty() || (strncmp(aid.string(), "A0000003431002", 14) == 0)) {
             String8 cdmaMccMnc("vendor.cdma.ril.uicc.mccmnc");
-            cdmaMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+            cdmaMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
             rfx_property_set(cdmaMccMnc.string(), "");
             getStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_CDMA_NUMERIC, String8(""));
 
@@ -384,10 +384,10 @@ void RtcCommSimController::resetSimParameters() {
     String8 puk1("vendor.gsm.sim.retry.puk1");
     String8 puk2("vendor.gsm.sim.retry.puk2");
 
-    pin1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    pin2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    puk1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    puk2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
+    pin1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    pin2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
 
     rfx_property_set(pin1.string(), "");
     rfx_property_set(pin2.string(), "");
@@ -395,59 +395,47 @@ void RtcCommSimController::resetSimParameters() {
     rfx_property_set(puk2.string(), "");
 }
 
-bool RtcCommSimController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
+bool RtcCommSimController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
+                                                  bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
 
     if (!isModemPowerOff && (radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_GET_SIM_STATUS ||
-             msgId == RFX_MSG_REQUEST_ENTER_SIM_PIN ||
-             msgId == RFX_MSG_REQUEST_ENTER_SIM_PUK ||
-             msgId == RFX_MSG_REQUEST_ENTER_SIM_PIN2 ||
-             msgId == RFX_MSG_REQUEST_ENTER_SIM_PUK2 ||
-             msgId == RFX_MSG_REQUEST_CHANGE_SIM_PIN ||
-             msgId == RFX_MSG_REQUEST_CHANGE_SIM_PIN2 ||
-             msgId == RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION ||
-             msgId == RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION ||
-             msgId == RFX_MSG_REQUEST_SIM_IO ||
-             msgId == RFX_MSG_REQUEST_ISIM_AUTHENTICATION ||
-             msgId == RFX_MSG_REQUEST_GENERAL_SIM_AUTH ||
-             msgId == RFX_MSG_REQUEST_SIM_AUTHENTICATION ||
-             msgId == RFX_MSG_REQUEST_SIM_OPEN_CHANNEL ||
-             msgId == RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL ||
-             msgId == RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC ||
-             msgId == RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL ||
-             msgId == RFX_MSG_REQUEST_SIM_GET_ATR ||
-             msgId == RFX_MSG_REQUEST_SIM_GET_ICCID ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_CONNECT ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_DISCONNECT ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_APDU ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_POWER ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_RESET_SIM ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL ||
-             msgId == RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP ||
-             msgId == RFX_MSG_REQUEST_GET_IMSI ||
-             msgId == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK ||
-             msgId == RFX_MSG_REQUEST_SET_FACILITY_LOCK ||
-             msgId == RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK ||
-             msgId == RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK ||
-             msgId == RFX_MSG_REQUEST_CDMA_SUBSCRIPTION ||
-             msgId == RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE ||
-             msgId == RFX_MSG_REQUEST_SET_SIM_CARD_POWER ||
-             msgId == RFX_MSG_REQUEST_SET_SIM_POWER ||
-             msgId == RFX_MSG_REQUEST_ACTIVATE_UICC_CARD ||
-             msgId == RFX_MSG_REQUEST_DEACTIVATE_UICC_CARD ||
-             msgId == RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS ||
-             msgId == RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS ||
-             msgId == RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS ||
-             msgId == RFX_MSG_REQUEST_SIM_ENTER_DEVICE_NETWORK_DEPERSONALIZATION ||
-             msgId == RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS ||
-             msgId == RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS ||
-             msgId == RFX_MSG_REQUEST_SML_RSU_REQUEST)) {
+        (msgId == RFX_MSG_REQUEST_GET_SIM_STATUS || msgId == RFX_MSG_REQUEST_ENTER_SIM_PIN ||
+         msgId == RFX_MSG_REQUEST_ENTER_SIM_PUK || msgId == RFX_MSG_REQUEST_ENTER_SIM_PIN2 ||
+         msgId == RFX_MSG_REQUEST_ENTER_SIM_PUK2 || msgId == RFX_MSG_REQUEST_CHANGE_SIM_PIN ||
+         msgId == RFX_MSG_REQUEST_CHANGE_SIM_PIN2 ||
+         msgId == RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION ||
+         msgId == RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION || msgId == RFX_MSG_REQUEST_SIM_IO ||
+         msgId == RFX_MSG_REQUEST_ISIM_AUTHENTICATION ||
+         msgId == RFX_MSG_REQUEST_GENERAL_SIM_AUTH || msgId == RFX_MSG_REQUEST_SIM_AUTHENTICATION ||
+         msgId == RFX_MSG_REQUEST_SIM_OPEN_CHANNEL || msgId == RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL ||
+         msgId == RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC ||
+         msgId == RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL ||
+         msgId == RFX_MSG_REQUEST_SIM_GET_ATR || msgId == RFX_MSG_REQUEST_SIM_GET_ICCID ||
+         msgId == RFX_MSG_REQUEST_SIM_SAP_CONNECT || msgId == RFX_MSG_REQUEST_SIM_SAP_DISCONNECT ||
+         msgId == RFX_MSG_REQUEST_SIM_SAP_APDU || msgId == RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR ||
+         msgId == RFX_MSG_REQUEST_SIM_SAP_POWER || msgId == RFX_MSG_REQUEST_SIM_SAP_RESET_SIM ||
+         msgId == RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL ||
+         msgId == RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP || msgId == RFX_MSG_REQUEST_GET_IMSI ||
+         msgId == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK ||
+         msgId == RFX_MSG_REQUEST_SET_FACILITY_LOCK ||
+         msgId == RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK ||
+         msgId == RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK ||
+         msgId == RFX_MSG_REQUEST_CDMA_SUBSCRIPTION ||
+         msgId == RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE ||
+         msgId == RFX_MSG_REQUEST_SET_SIM_CARD_POWER || msgId == RFX_MSG_REQUEST_SET_SIM_POWER ||
+         msgId == RFX_MSG_REQUEST_ACTIVATE_UICC_CARD ||
+         msgId == RFX_MSG_REQUEST_DEACTIVATE_UICC_CARD ||
+         msgId == RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS ||
+         msgId == RFX_MSG_REQUEST_UPDATE_SUBLOCK_SETTINGS ||
+         msgId == RFX_MSG_REQUEST_GET_SUBLOCK_MODEM_STATUS ||
+         msgId == RFX_MSG_REQUEST_SIM_ENTER_DEVICE_NETWORK_DEPERSONALIZATION ||
+         msgId == RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS ||
+         msgId == RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS ||
+         msgId == RFX_MSG_REQUEST_SML_RSU_REQUEST)) {
         return false;
     } else if (msgId == RFX_MSG_REQUEST_SIM_VSIM_NOTIFICATION ||
-            msgId == RFX_MSG_REQUEST_SIM_VSIM_OPERATION) {
+               msgId == RFX_MSG_REQUEST_SIM_VSIM_OPERATION) {
         return false;
     }
 
@@ -456,58 +444,55 @@ bool RtcCommSimController::onCheckIfRejectMessage(
 
 bool RtcCommSimController::onHandleSimIoRequest(const sp<RfxMessage>& msg) {
     int fileId = 0;
-    char *path = NULL;
-    RIL_SIM_IO_v6 *pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
+    char* path = NULL;
+    RIL_SIM_IO_v6* pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
     fileId = pData->fileid;
     path = pData->path;
-    switch(fileId) {
-        case 0x6F3A: // ADN
-        case 0x6F3B: // FDN
-        case 0x6F49: // SDN
-        case 0x6F4A: // EXT1
-        case 0x6F4B: // EXT2
-        case 0x6F4C: { // EXT3
-                if (path != NULL) {
-                    logD(mTag, "SIM IO fileId 2GSIM %s %s", idToString(fileId), path);
-                    // if path include 7F10, 0x6F3A is ADN
-                    if ((fileId != 0x6F3A) ||
-                            (strstr(path, "7F10") != NULL || strstr(path, "7f10") != NULL)) {
-                        sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(msg->getSlotId(),
-                                RFX_MSG_REQUEST_PHB_SIM_IO, msg, true);
-                        phbMsg->setPriority(MTK_RIL_REQUEST_PRIORITY_LOW);
-                        requestToMcl(phbMsg);
-                    } else {
-                        requestToMcl(msg);
-                    }
-                } else {
-                    logD(mTag, "SIM IO fileId 2GSIM %s path is null", idToString(fileId));
-                    requestToMcl(msg);
-                }
-            }
-            break;
-        case 0x4F30: { // EFPBR
-                logD(mTag, "SIM IO fileId PBR %s", idToString(fileId));
-                sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(msg->getSlotId(),
-                        RFX_MSG_REQUEST_PHB_PBR_SIM_IO, msg, true);
-                phbMsg->setPriority(MTK_RIL_REQUEST_PRIORITY_LOW);
-                requestToMcl(phbMsg);
-            }
-            break;
-        default: {
-                RtcPhbSimIoController* phbSimIoController = (RtcPhbSimIoController *)findController(
-                        m_slot_id, RFX_OBJ_CLASS_INFO(RtcPhbSimIoController));
-                if (phbSimIoController->onCheckIfPhbRequest(fileId) == true) {
-                    sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(msg->getSlotId(),
-                            RFX_MSG_REQUEST_PHB_SIM_IO, msg, true);
+    switch (fileId) {
+        case 0x6F3A:    // ADN
+        case 0x6F3B:    // FDN
+        case 0x6F49:    // SDN
+        case 0x6F4A:    // EXT1
+        case 0x6F4B:    // EXT2
+        case 0x6F4C: {  // EXT3
+            if (path != NULL) {
+                logD(mTag, "SIM IO fileId 2GSIM %s %s", idToString(fileId), path);
+                // if path include 7F10, 0x6F3A is ADN
+                if ((fileId != 0x6F3A) ||
+                    (strstr(path, "7F10") != NULL || strstr(path, "7f10") != NULL)) {
+                    sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(
+                            msg->getSlotId(), RFX_MSG_REQUEST_PHB_SIM_IO, msg, true);
                     phbMsg->setPriority(MTK_RIL_REQUEST_PRIORITY_LOW);
                     requestToMcl(phbMsg);
                 } else {
-                    // Do not use cache as modem is not supppported in all of platforms.
-                    // handleSimIo(msg);
                     requestToMcl(msg);
                 }
+            } else {
+                logD(mTag, "SIM IO fileId 2GSIM %s path is null", idToString(fileId));
+                requestToMcl(msg);
             }
-            break;
+        } break;
+        case 0x4F30: {  // EFPBR
+            logD(mTag, "SIM IO fileId PBR %s", idToString(fileId));
+            sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(
+                    msg->getSlotId(), RFX_MSG_REQUEST_PHB_PBR_SIM_IO, msg, true);
+            phbMsg->setPriority(MTK_RIL_REQUEST_PRIORITY_LOW);
+            requestToMcl(phbMsg);
+        } break;
+        default: {
+            RtcPhbSimIoController* phbSimIoController = (RtcPhbSimIoController*)findController(
+                    m_slot_id, RFX_OBJ_CLASS_INFO(RtcPhbSimIoController));
+            if (phbSimIoController->onCheckIfPhbRequest(fileId) == true) {
+                sp<RfxMessage> phbMsg = RfxMessage::obtainRequest(
+                        msg->getSlotId(), RFX_MSG_REQUEST_PHB_SIM_IO, msg, true);
+                phbMsg->setPriority(MTK_RIL_REQUEST_PRIORITY_LOW);
+                requestToMcl(phbMsg);
+            } else {
+                // Do not use cache as modem is not supppported in all of platforms.
+                // handleSimIo(msg);
+                requestToMcl(msg);
+            }
+        } break;
     }
     return true;
 }
@@ -515,44 +500,41 @@ bool RtcCommSimController::onHandleSimIoRequest(const sp<RfxMessage>& msg) {
 bool RtcCommSimController::onHandleRequest(const sp<RfxMessage>& msg) {
     int msg_id = msg->getId();
     switch (msg_id) {
-        case RFX_MSG_REQUEST_SIM_IO : {
-                onHandleSimIoRequest(msg);
-            }
-            break;
-        case RFX_MSG_REQUEST_SIM_GET_ICCID : {
-                handleGetIccid(msg);
-            }
-            break;
-        case RFX_MSG_REQUEST_GET_IMSI : {
-                handleGetImsi(msg);
-            }
-            break;
-        case RFX_MSG_REQUEST_GET_SIM_STATUS :
-        case RFX_MSG_REQUEST_ENTER_SIM_PIN :
-        case RFX_MSG_REQUEST_ENTER_SIM_PUK :
-        case RFX_MSG_REQUEST_ENTER_SIM_PIN2 :
-        case RFX_MSG_REQUEST_ENTER_SIM_PUK2 :
-        case RFX_MSG_REQUEST_CHANGE_SIM_PIN :
-        case RFX_MSG_REQUEST_CHANGE_SIM_PIN2 :
-        case RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION :
-        case RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION :
-        case RFX_MSG_REQUEST_ISIM_AUTHENTICATION :
-        case RFX_MSG_REQUEST_GENERAL_SIM_AUTH :
-        case RFX_MSG_REQUEST_SIM_AUTHENTICATION :
-        case RFX_MSG_REQUEST_SIM_OPEN_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC :
-        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_GET_ATR :
-        case RFX_MSG_REQUEST_SIM_SAP_CONNECT :
-        case RFX_MSG_REQUEST_SIM_SAP_DISCONNECT :
-        case RFX_MSG_REQUEST_SIM_SAP_APDU :
-        case RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR :
-        case RFX_MSG_REQUEST_SIM_SAP_POWER :
-        case RFX_MSG_REQUEST_SIM_SAP_RESET_SIM :
-        case RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL :
-        case RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP :
-        case RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK :
+        case RFX_MSG_REQUEST_SIM_IO: {
+            onHandleSimIoRequest(msg);
+        } break;
+        case RFX_MSG_REQUEST_SIM_GET_ICCID: {
+            handleGetIccid(msg);
+        } break;
+        case RFX_MSG_REQUEST_GET_IMSI: {
+            handleGetImsi(msg);
+        } break;
+        case RFX_MSG_REQUEST_GET_SIM_STATUS:
+        case RFX_MSG_REQUEST_ENTER_SIM_PIN:
+        case RFX_MSG_REQUEST_ENTER_SIM_PUK:
+        case RFX_MSG_REQUEST_ENTER_SIM_PIN2:
+        case RFX_MSG_REQUEST_ENTER_SIM_PUK2:
+        case RFX_MSG_REQUEST_CHANGE_SIM_PIN:
+        case RFX_MSG_REQUEST_CHANGE_SIM_PIN2:
+        case RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION:
+        case RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION:
+        case RFX_MSG_REQUEST_ISIM_AUTHENTICATION:
+        case RFX_MSG_REQUEST_GENERAL_SIM_AUTH:
+        case RFX_MSG_REQUEST_SIM_AUTHENTICATION:
+        case RFX_MSG_REQUEST_SIM_OPEN_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC:
+        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_GET_ATR:
+        case RFX_MSG_REQUEST_SIM_SAP_CONNECT:
+        case RFX_MSG_REQUEST_SIM_SAP_DISCONNECT:
+        case RFX_MSG_REQUEST_SIM_SAP_APDU:
+        case RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR:
+        case RFX_MSG_REQUEST_SIM_SAP_POWER:
+        case RFX_MSG_REQUEST_SIM_SAP_RESET_SIM:
+        case RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL:
+        case RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP:
+        case RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_SIM_VSIM_NOTIFICATION:
         case RFX_MSG_REQUEST_SIM_VSIM_OPERATION:
@@ -568,16 +550,14 @@ bool RtcCommSimController::onHandleRequest(const sp<RfxMessage>& msg) {
         case RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS:
         case RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS:
         case RFX_MSG_REQUEST_SML_RSU_REQUEST: {
-                // Send RMC directly
-                requestToMcl(msg);
-            }
-            break;
+            // Send RMC directly
+            requestToMcl(msg);
+        } break;
         case RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS: {
-                handleGetCurrentUiccCardProcisioningStatus(msg);
-            }
-            break;
-        case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK :
-        case RFX_MSG_REQUEST_SET_FACILITY_LOCK :
+            handleGetCurrentUiccCardProcisioningStatus(msg);
+        } break;
+        case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK:
+        case RFX_MSG_REQUEST_SET_FACILITY_LOCK:
             if (isCallBarringUsage(msg)) {
                 handleCallBarring(msg);
             } else {
@@ -595,29 +575,29 @@ bool RtcCommSimController::onHandleRequest(const sp<RfxMessage>& msg) {
 bool RtcCommSimController::onHandleResponse(const sp<RfxMessage>& msg) {
     int msg_id = msg->getId();
     switch (msg_id) {
-        case RFX_MSG_REQUEST_GET_SIM_STATUS :
-        case RFX_MSG_REQUEST_ENTER_SIM_PIN :
-        case RFX_MSG_REQUEST_ENTER_SIM_PUK :
-        case RFX_MSG_REQUEST_ENTER_SIM_PIN2 :
-        case RFX_MSG_REQUEST_ENTER_SIM_PUK2 :
-        case RFX_MSG_REQUEST_CHANGE_SIM_PIN :
-        case RFX_MSG_REQUEST_CHANGE_SIM_PIN2 :
-        case RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION :
-        case RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION :
-        case RFX_MSG_REQUEST_SIM_IO :
-        case RFX_MSG_REQUEST_ISIM_AUTHENTICATION :
-        case RFX_MSG_REQUEST_GENERAL_SIM_AUTH :
-        case RFX_MSG_REQUEST_SIM_AUTHENTICATION :
-        case RFX_MSG_REQUEST_SIM_OPEN_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC :
-        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL :
-        case RFX_MSG_REQUEST_SIM_GET_ATR :
-        case RFX_MSG_REQUEST_SIM_GET_ICCID :
-        case RFX_MSG_REQUEST_GET_IMSI :
-        case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK :
-        case RFX_MSG_REQUEST_SET_FACILITY_LOCK :
-        case RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK :
+        case RFX_MSG_REQUEST_GET_SIM_STATUS:
+        case RFX_MSG_REQUEST_ENTER_SIM_PIN:
+        case RFX_MSG_REQUEST_ENTER_SIM_PUK:
+        case RFX_MSG_REQUEST_ENTER_SIM_PIN2:
+        case RFX_MSG_REQUEST_ENTER_SIM_PUK2:
+        case RFX_MSG_REQUEST_CHANGE_SIM_PIN:
+        case RFX_MSG_REQUEST_CHANGE_SIM_PIN2:
+        case RFX_MSG_REQUEST_SIM_ENTER_NETWORK_DEPERSONALIZATION:
+        case RFX_MSG_REQUEST_SIM_ENTER_DEPERSONALIZATION:
+        case RFX_MSG_REQUEST_SIM_IO:
+        case RFX_MSG_REQUEST_ISIM_AUTHENTICATION:
+        case RFX_MSG_REQUEST_GENERAL_SIM_AUTH:
+        case RFX_MSG_REQUEST_SIM_AUTHENTICATION:
+        case RFX_MSG_REQUEST_SIM_OPEN_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_CLOSE_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_BASIC:
+        case RFX_MSG_REQUEST_SIM_TRANSMIT_APDU_CHANNEL:
+        case RFX_MSG_REQUEST_SIM_GET_ATR:
+        case RFX_MSG_REQUEST_SIM_GET_ICCID:
+        case RFX_MSG_REQUEST_GET_IMSI:
+        case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK:
+        case RFX_MSG_REQUEST_SET_FACILITY_LOCK:
+        case RFX_MSG_REQUEST_SIM_SET_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_SIM_QUERY_SIM_NETWORK_LOCK:
         case RFX_MSG_REQUEST_SIM_VSIM_NOTIFICATION:
         case RFX_MSG_REQUEST_SIM_VSIM_OPERATION:
@@ -634,22 +614,20 @@ bool RtcCommSimController::onHandleResponse(const sp<RfxMessage>& msg) {
         case RFX_MSG_REQUEST_SET_ALLOWED_CARRIERS:
         case RFX_MSG_REQUEST_GET_ALLOWED_CARRIERS:
         case RFX_MSG_REQUEST_SML_RSU_REQUEST: {
-                // Send RILJ directly
-                responseToRilj(msg);
-            }
-            break;
-        case RFX_MSG_REQUEST_SIM_SAP_CONNECT :
-        case RFX_MSG_REQUEST_SIM_SAP_DISCONNECT :
-        case RFX_MSG_REQUEST_SIM_SAP_APDU :
-        case RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR :
-        case RFX_MSG_REQUEST_SIM_SAP_POWER :
-        case RFX_MSG_REQUEST_SIM_SAP_RESET_SIM :
-        case RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL :
-        case RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP : {
-                // Send BT directly
-                responseToBT(msg);
-            }
-            break;
+            // Send RILJ directly
+            responseToRilj(msg);
+        } break;
+        case RFX_MSG_REQUEST_SIM_SAP_CONNECT:
+        case RFX_MSG_REQUEST_SIM_SAP_DISCONNECT:
+        case RFX_MSG_REQUEST_SIM_SAP_APDU:
+        case RFX_MSG_REQUEST_SIM_SAP_TRANSFER_ATR:
+        case RFX_MSG_REQUEST_SIM_SAP_POWER:
+        case RFX_MSG_REQUEST_SIM_SAP_RESET_SIM:
+        case RFX_MSG_REQUEST_SIM_SAP_SET_TRANSFER_PROTOCOL:
+        case RFX_MSG_REQUEST_SIM_SAP_ERROR_RESP: {
+            // Send BT directly
+            responseToBT(msg);
+        } break;
         default:
             logD(mTag, "Not Support the req %s", idToString(msg_id));
             break;
@@ -665,7 +643,7 @@ bool RtcCommSimController::onHandleUrc(const sp<RfxMessage>& message) {
             int* smlData = (int*)(message->getData()->getData());
             int smlDataLength = message->getData()->getDataLength();
             logD(mTag, "onHandleUrc %s %d %d %d %d %d (slot %d)", message->toString().string(),
-                    smlDataLength, smlData[0], smlData[1], smlData[2], smlData[3], getSlotId());
+                 smlDataLength, smlData[0], smlData[1], smlData[2], smlData[3], getSlotId());
             responseToRilj(message);
             break;
         }
@@ -684,8 +662,8 @@ void RtcCommSimController::handleCallBarring(const sp<RfxMessage>& msg) {
     mtkGetFeature(CONFIG_SS_MODE, &featurevalue);
     logD(mTag, "Check data only project, CONFIG_SS_MODE = %s", featurevalue.value);
     if (strcmp(featurevalue.value, "0") == 0) {
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED,
-                msg, false);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, msg, false);
         responseToRilj(responseMsg);
         return;
     }
@@ -698,8 +676,9 @@ void RtcCommSimController::handleCallBarring(const sp<RfxMessage>& msg) {
     }
 
     // Re-enqueue the message into main thread, RtcSuppServController will handle it
-    sp<RfxMessage> newMsg = RfxMessage::obtainRequest(msg_id,
-            RfxStringsData(msg->getData()->getData(), msg->getData()->getDataLength()), msg, true);
+    sp<RfxMessage> newMsg = RfxMessage::obtainRequest(
+            msg_id, RfxStringsData(msg->getData()->getData(), msg->getData()->getDataLength()), msg,
+            true);
     RfxMainThread::enqueueMessage(newMsg);
 }
 
@@ -721,9 +700,9 @@ void RtcCommSimController::handleGetIccid(const sp<RfxMessage>& msg) {
     String8 iccid = getStatusManager()->getString8Value(RFX_STATUS_KEY_SIM_ICCID);
 
     if (!iccid.isEmpty()) {
-        sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id,
-                RFX_MSG_REQUEST_SIM_GET_ICCID, RIL_E_SUCCESS, RfxStringData((void*)iccid.string(),
-                strlen(iccid.string())), msg);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(
+                m_slot_id, RFX_MSG_REQUEST_SIM_GET_ICCID, RIL_E_SUCCESS,
+                RfxStringData((void*)iccid.string(), strlen(iccid.string())), msg);
         logD(mTag, "handleGetIccid iccid: %.7s", iccid.string());
 
         responseToRilj(response);
@@ -739,7 +718,7 @@ void RtcCommSimController::handleGetImsi(const sp<RfxMessage>& msg) {
     char** pStrings = (char**)(msg->getData()->getData());
     int app = -1;
     String8 imsi("");
-    String8 aid(((pStrings != NULL) && (pStrings[0] != NULL))? pStrings[0] : "");
+    String8 aid(((pStrings != NULL) && (pStrings[0] != NULL)) ? pStrings[0] : "");
     bool bSendToMD = true;
 
     if (aid.isEmpty()) {
@@ -780,14 +759,14 @@ void RtcCommSimController::handleGetImsi(const sp<RfxMessage>& msg) {
     }
 
     if (!imsi.isEmpty()) {
-        sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id,
-                RFX_MSG_REQUEST_GET_IMSI, RIL_E_SUCCESS, RfxStringData((void*)imsi.string(),
-                strlen(imsi.string())), msg);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(
+                m_slot_id, RFX_MSG_REQUEST_GET_IMSI, RIL_E_SUCCESS,
+                RfxStringData((void*)imsi.string(), strlen(imsi.string())), msg);
         responseToRilj(response);
     } else if (!bSendToMD) {
         logD(mTag, "Not send the request to MD");
-        sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id,
-                RFX_MSG_REQUEST_GET_IMSI, RIL_E_SUCCESS, RfxVoidData(), msg);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id, RFX_MSG_REQUEST_GET_IMSI,
+                                                             RIL_E_SUCCESS, RfxVoidData(), msg);
         responseToRilj(response);
     } else {
         // Send request to modem.
@@ -796,12 +775,12 @@ void RtcCommSimController::handleGetImsi(const sp<RfxMessage>& msg) {
 }
 
 void RtcCommSimController::handleSimIo(const sp<RfxMessage>& msg) {
-    RIL_SIM_IO_v6 *pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
+    RIL_SIM_IO_v6* pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
     RIL_SIM_IO_Response sr;
     memset(&sr, 0, sizeof(RIL_SIM_IO_Response));
     bool isCached = false;
     int app = -1;
-    String8 aid((pData->aidPtr != NULL)? pData->aidPtr : "");
+    String8 aid((pData->aidPtr != NULL) ? pData->aidPtr : "");
     int cardType = getStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
 
     if (aid.isEmpty() && (cardType & RFX_CARD_TYPE_SIM)) {
@@ -812,13 +791,12 @@ void RtcCommSimController::handleSimIo(const sp<RfxMessage>& msg) {
 
     if (app != -1) {
         for (int i = 0; i < SIM_CACHED_FILE_COUNT; i++) {
-            if ((pData->fileid == mIoResponse[app][i].fileid)
-                    && (strncmp(pData->path, mIoResponse[app][i].path, strlen(pData->path))
-                    == 0)) {
+            if ((pData->fileid == mIoResponse[app][i].fileid) &&
+                (strncmp(pData->path, mIoResponse[app][i].path, strlen(pData->path)) == 0)) {
                 if ((pData->command == 0xc0) && (mIoResponse[app][i].get_rsp.valid)) {
                     // Get fcp from cache list.
-                    sr.sw1 =  mIoResponse[app][i].get_rsp.sw1;
-                    sr.sw2 =  mIoResponse[app][i].get_rsp.sw2;
+                    sr.sw1 = mIoResponse[app][i].get_rsp.sw1;
+                    sr.sw2 = mIoResponse[app][i].get_rsp.sw2;
 
                     if (mIoResponse[app][i].get_rsp.simResponse != NULL) {
                         asprintf(&sr.simResponse, "%s", mIoResponse[app][i].get_rsp.simResponse);
@@ -828,12 +806,12 @@ void RtcCommSimController::handleSimIo(const sp<RfxMessage>& msg) {
                     break;
                 } else if ((pData->command == 0xb0) && (mIoResponse[app][i].read_binary.valid)) {
                     // Get binary from cache list.
-                    sr.sw1 =  mIoResponse[app][i].read_binary.sw1;
-                    sr.sw2 =  mIoResponse[app][i].read_binary.sw2;
+                    sr.sw1 = mIoResponse[app][i].read_binary.sw1;
+                    sr.sw2 = mIoResponse[app][i].read_binary.sw2;
 
                     if (mIoResponse[app][i].read_binary.simResponse != NULL) {
-                        asprintf(&sr.simResponse, "%s", mIoResponse[app][i].read_binary
-                                .simResponse);
+                        asprintf(&sr.simResponse, "%s",
+                                 mIoResponse[app][i].read_binary.simResponse);
                     }
 
                     isCached = true;
@@ -842,12 +820,13 @@ void RtcCommSimController::handleSimIo(const sp<RfxMessage>& msg) {
             }
         }
     }
-    logD(mTag, "handleSimIo: sw1: %d, sw2: %d, rs: %s, isCached: %d",  sr.sw1, sr.sw2,
-            sr.simResponse, isCached);
+    logD(mTag, "handleSimIo: sw1: %d, sw2: %d, rs: %s, isCached: %d", sr.sw1, sr.sw2,
+         sr.simResponse, isCached);
 
     if ((app != -1) && isCached) {
-        sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id, RFX_MSG_REQUEST_SIM_IO,
-                RIL_E_SUCCESS, RfxSimIoRspData((void*)&sr, sizeof(sr)), msg);
+        sp<RfxMessage> response =
+                RfxMessage::obtainResponse(m_slot_id, RFX_MSG_REQUEST_SIM_IO, RIL_E_SUCCESS,
+                                           RfxSimIoRspData((void*)&sr, sizeof(sr)), msg);
         responseToRilj(response);
 
         if (sr.simResponse != NULL) {
@@ -862,14 +841,16 @@ void RtcCommSimController::handleSimIo(const sp<RfxMessage>& msg) {
 void RtcCommSimController::handleGetCurrentUiccCardProcisioningStatus(const sp<RfxMessage>& msg) {
     int simPowerOnOffState = 1;
 
-    if (getStatusManager()->getIntValue(RFX_STATUS_KEY_SIM_ONOFF_STATE) == SIM_POWER_STATE_SIM_OFF) {
+    if (getStatusManager()->getIntValue(RFX_STATUS_KEY_SIM_ONOFF_STATE) ==
+        SIM_POWER_STATE_SIM_OFF) {
         simPowerOnOffState = 0;
     }
 
-    logD(mTag, "handleGetCurrentUiccCardProcisioningStatus simPowerOnOffState: %d", simPowerOnOffState);
+    logD(mTag, "handleGetCurrentUiccCardProcisioningStatus simPowerOnOffState: %d",
+         simPowerOnOffState);
 
-    sp<RfxMessage> response = RfxMessage::obtainResponse(m_slot_id,
-            RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS, RIL_E_SUCCESS,
+    sp<RfxMessage> response = RfxMessage::obtainResponse(
+            m_slot_id, RFX_MSG_REQUEST_GET_CURRENT_UICC_CARD_PROVISIONING_STATUS, RIL_E_SUCCESS,
             RfxIntsData(&simPowerOnOffState, 1), msg);
     responseToRilj(response);
 }

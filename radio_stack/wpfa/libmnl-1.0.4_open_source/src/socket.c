@@ -74,8 +74,8 @@
  */
 
 struct mnl_socket {
-	int 			fd;
-	struct sockaddr_nl	addr;
+    int fd;
+    struct sockaddr_nl addr;
 };
 
 /**
@@ -90,10 +90,7 @@ struct mnl_socket {
  * This function returns the file descriptor of a given netlink socket.
  */
 EXPORT_SYMBOL(mnl_socket_get_fd);
-int mnl_socket_get_fd(const struct mnl_socket *nl)
-{
-	return nl->fd;
-}
+int mnl_socket_get_fd(const struct mnl_socket* nl) { return nl->fd; }
 
 /**
  * mnl_socket_get_portid - obtain Netlink PortID from netlink socket
@@ -105,26 +102,21 @@ int mnl_socket_get_fd(const struct mnl_socket *nl)
  * socket that is binded to the same Netlink subsystem from the same process.
  */
 EXPORT_SYMBOL(mnl_socket_get_portid);
-unsigned int mnl_socket_get_portid(const struct mnl_socket *nl)
-{
-	return nl->addr.nl_pid;
-}
+unsigned int mnl_socket_get_portid(const struct mnl_socket* nl) { return nl->addr.nl_pid; }
 
-static struct mnl_socket *__mnl_socket_open(int bus, int flags)
-{
-	struct mnl_socket *nl;
+static struct mnl_socket* __mnl_socket_open(int bus, int flags) {
+    struct mnl_socket* nl;
 
-	nl = calloc(1, sizeof(struct mnl_socket));
-	if (nl == NULL)
-		return NULL;
+    nl = calloc(1, sizeof(struct mnl_socket));
+    if (nl == NULL) return NULL;
 
-	nl->fd = socket(AF_NETLINK, SOCK_RAW | flags, bus);
-	if (nl->fd == -1) {
-		free(nl);
-		return NULL;
-	}
+    nl->fd = socket(AF_NETLINK, SOCK_RAW | flags, bus);
+    if (nl->fd == -1) {
+        free(nl);
+        return NULL;
+    }
 
-	return nl;
+    return nl;
 }
 
 /**
@@ -135,9 +127,8 @@ static struct mnl_socket *__mnl_socket_open(int bus, int flags)
  * returns a valid pointer to the mnl_socket structure.
  */
 EXPORT_SYMBOL(mnl_socket_open);
-struct mnl_socket *mnl_socket_open(int bus)
-{
-	return __mnl_socket_open(bus, 0);
+struct mnl_socket* mnl_socket_open(int bus) {
+    return __mnl_socket_open(bus, 0);
 }
 
 /**
@@ -153,9 +144,8 @@ struct mnl_socket *mnl_socket_open(int bus)
  * returns a valid pointer to the mnl_socket structure.
  */
 EXPORT_SYMBOL(mnl_socket_open2);
-struct mnl_socket *mnl_socket_open2(int bus, int flags)
-{
-	return __mnl_socket_open(bus, flags);
+struct mnl_socket* mnl_socket_open2(int bus, int flags) {
+    return __mnl_socket_open(bus, flags);
 }
 
 /**
@@ -170,26 +160,22 @@ struct mnl_socket *mnl_socket_open2(int bus, int flags)
  * non-netlink socket.
  */
 EXPORT_SYMBOL(mnl_socket_fdopen);
-struct mnl_socket *mnl_socket_fdopen(int fd)
-{
-	int ret;
-	struct mnl_socket *nl;
-	struct sockaddr_nl addr;
-	socklen_t addr_len = sizeof(struct sockaddr_nl);
+struct mnl_socket* mnl_socket_fdopen(int fd) {
+    int ret;
+    struct mnl_socket* nl;
+    struct sockaddr_nl addr;
+    socklen_t addr_len = sizeof(struct sockaddr_nl);
 
-	ret = getsockname(fd, (struct sockaddr *) &addr, &addr_len);
-	if (ret == -1)
-		return NULL;
+    ret = getsockname(fd, (struct sockaddr*)&addr, &addr_len);
+    if (ret == -1) return NULL;
 
-	nl = calloc(1, sizeof(struct mnl_socket));
-	if (nl == NULL)
-		return NULL;
+    nl = calloc(1, sizeof(struct mnl_socket));
+    if (nl == NULL) return NULL;
 
-	nl->fd = fd;
-	if (addr.nl_family == AF_NETLINK)
-		nl->addr = addr;
+    nl->fd = fd;
+    if (addr.nl_family == AF_NETLINK) nl->addr = addr;
 
-	return nl;
+    return nl;
 }
 
 /**
@@ -203,33 +189,30 @@ struct mnl_socket *mnl_socket_fdopen(int fd)
  * automatic port ID selection.
  */
 EXPORT_SYMBOL(mnl_socket_bind);
-int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
-{
-	int ret;
-	socklen_t addr_len;
+int mnl_socket_bind(struct mnl_socket* nl, unsigned int groups, pid_t pid) {
+    int ret;
+    socklen_t addr_len;
 
-	nl->addr.nl_family = AF_NETLINK;
-	nl->addr.nl_groups = groups;
-	nl->addr.nl_pid = pid;
+    nl->addr.nl_family = AF_NETLINK;
+    nl->addr.nl_groups = groups;
+    nl->addr.nl_pid = pid;
 
-	ret = bind(nl->fd, (struct sockaddr *) &nl->addr, sizeof (nl->addr));
-	if (ret < 0)
-		return ret;
+    ret = bind(nl->fd, (struct sockaddr*)&nl->addr, sizeof(nl->addr));
+    if (ret < 0) return ret;
 
-	addr_len = sizeof(nl->addr);
-	ret = getsockname(nl->fd, (struct sockaddr *) &nl->addr, &addr_len);
-	if (ret < 0)
-		return ret;
+    addr_len = sizeof(nl->addr);
+    ret = getsockname(nl->fd, (struct sockaddr*)&nl->addr, &addr_len);
+    if (ret < 0) return ret;
 
-	if (addr_len != sizeof(nl->addr)) {
-		errno = EINVAL;
-		return -1;
-	}
-	if (nl->addr.nl_family != AF_NETLINK) {
-		errno = EINVAL;
-		return -1;
-	}
-	return 0;
+    if (addr_len != sizeof(nl->addr)) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (nl->addr.nl_family != AF_NETLINK) {
+        errno = EINVAL;
+        return -1;
+    }
+    return 0;
 }
 
 /**
@@ -242,14 +225,9 @@ int mnl_socket_bind(struct mnl_socket *nl, unsigned int groups, pid_t pid)
  * returns the number of bytes sent.
  */
 EXPORT_SYMBOL(mnl_socket_sendto);
-ssize_t mnl_socket_sendto(const struct mnl_socket *nl, const void *buf,
-			  size_t len)
-{
-	static const struct sockaddr_nl snl = {
-		.nl_family = AF_NETLINK
-	};
-	return sendto(nl->fd, buf, len, 0,
-		      (struct sockaddr *) &snl, sizeof(snl));
+ssize_t mnl_socket_sendto(const struct mnl_socket* nl, const void* buf, size_t len) {
+    static const struct sockaddr_nl snl = {.nl_family = AF_NETLINK};
+    return sendto(nl->fd, buf, len, 0, (struct sockaddr*)&snl, sizeof(snl));
 }
 
 /**
@@ -267,37 +245,34 @@ ssize_t mnl_socket_sendto(const struct mnl_socket *nl, const void *buf,
  * message without truncating it.
  */
 EXPORT_SYMBOL(mnl_socket_recvfrom);
-ssize_t mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf,
-			    size_t bufsiz)
-{
-	ssize_t ret;
-	struct sockaddr_nl addr;
-	struct iovec iov = {
-		.iov_base	= buf,
-		.iov_len	= bufsiz,
-	};
-	struct msghdr msg = {
-		.msg_name	= &addr,
-		.msg_namelen	= sizeof(struct sockaddr_nl),
-		.msg_iov	= &iov,
-		.msg_iovlen	= 1,
-		.msg_control	= NULL,
-		.msg_controllen	= 0,
-		.msg_flags	= 0,
-	};
-	ret = recvmsg(nl->fd, &msg, 0);
-	if (ret == -1)
-		return ret;
+ssize_t mnl_socket_recvfrom(const struct mnl_socket* nl, void* buf, size_t bufsiz) {
+    ssize_t ret;
+    struct sockaddr_nl addr;
+    struct iovec iov = {
+            .iov_base = buf,
+            .iov_len = bufsiz,
+    };
+    struct msghdr msg = {
+            .msg_name = &addr,
+            .msg_namelen = sizeof(struct sockaddr_nl),
+            .msg_iov = &iov,
+            .msg_iovlen = 1,
+            .msg_control = NULL,
+            .msg_controllen = 0,
+            .msg_flags = 0,
+    };
+    ret = recvmsg(nl->fd, &msg, 0);
+    if (ret == -1) return ret;
 
-	if (msg.msg_flags & MSG_TRUNC) {
-		errno = ENOSPC;
-		return -1;
-	}
-	if (msg.msg_namelen != sizeof(struct sockaddr_nl)) {
-		errno = EINVAL;
-		return -1;
-	}
-	return ret;
+    if (msg.msg_flags & MSG_TRUNC) {
+        errno = ENOSPC;
+        return -1;
+    }
+    if (msg.msg_namelen != sizeof(struct sockaddr_nl)) {
+        errno = EINVAL;
+        return -1;
+    }
+    return ret;
 }
 
 /**
@@ -308,11 +283,10 @@ ssize_t mnl_socket_recvfrom(const struct mnl_socket *nl, void *buf,
  * On success, it returns 0.
  */
 EXPORT_SYMBOL(mnl_socket_close);
-int mnl_socket_close(struct mnl_socket *nl)
-{
-	int ret = close(nl->fd);
-	free(nl);
-	return ret;
+int mnl_socket_close(struct mnl_socket* nl) {
+    int ret = close(nl->fd);
+    free(nl);
+    return ret;
 }
 
 /**
@@ -341,10 +315,8 @@ int mnl_socket_close(struct mnl_socket *nl)
  * On error, this function returns -1 and errno is appropriately set.
  */
 EXPORT_SYMBOL(mnl_socket_setsockopt);
-int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
-			  void *buf, socklen_t len)
-{
-	return setsockopt(nl->fd, SOL_NETLINK, type, buf, len);
+int mnl_socket_setsockopt(const struct mnl_socket* nl, int type, void* buf, socklen_t len) {
+    return setsockopt(nl->fd, SOL_NETLINK, type, buf, len);
 }
 
 /**
@@ -357,10 +329,8 @@ int mnl_socket_setsockopt(const struct mnl_socket *nl, int type,
  * On error, this function returns -1 and errno is appropriately set.
  */
 EXPORT_SYMBOL(mnl_socket_getsockopt);
-int mnl_socket_getsockopt(const struct mnl_socket *nl, int type,
-			  void *buf, socklen_t *len)
-{
-	return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
+int mnl_socket_getsockopt(const struct mnl_socket* nl, int type, void* buf, socklen_t* len) {
+    return getsockopt(nl->fd, SOL_NETLINK, type, buf, len);
 }
 
 /**

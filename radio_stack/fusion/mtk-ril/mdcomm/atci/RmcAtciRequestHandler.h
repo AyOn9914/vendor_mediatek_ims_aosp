@@ -28,20 +28,20 @@
 class RmcAtciRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcAtciRequestHandler);
 
-public:
+  public:
     RmcAtciRequestHandler(int slot_id, int channel_id);
     virtual ~RmcAtciRequestHandler() {}
 
-protected:
+  protected:
     void handleOemHookAtciInternalRequest(const sp<RfxMclMessage>& msg);
     void handleMsgEventRawUrc(const sp<RfxMclMessage>& msg);
 
-protected:
-    static const char *LOG_TAG_ATCI;
+  protected:
+    static const char* LOG_TAG_ATCI;
 
-private:
-    static const char *ERROR_RESPONSE;
-    static const char *ENABLE_URC_PROP;
+  private:
+    static const char* ERROR_RESPONSE;
+    static const char* ENABLE_URC_PROP;
 };
 
 #endif /* __RMC_ATCI_REQUEST_HANDLER_H__ */

@@ -24,32 +24,36 @@
 
 #define RFX_LOG_TAG "RmcImsCtlUrcHdl"
 
-class RmcImsControlUrcHandler: public RfxBaseHandler {
+class RmcImsControlUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsControlUrcHandler);
-    public:
-        RmcImsControlUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcImsControlUrcHandler();
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    private:
-        void handleImsDisabling(const sp<RfxMclMessage>& msg);
-        void handleImsEnabling(const sp<RfxMclMessage>& msg);
-        void handleImsDisabled(const sp<RfxMclMessage>& msg);
-        void handleImsEnabled(const sp<RfxMclMessage>& msg);
-        void handleImsRegistrationInfo(const sp<RfxMclMessage>& msg);
-        void handleImsDereg(const sp<RfxMclMessage>& msg);
-        void handleSipMsgIndication(const sp<RfxMclMessage>& msg);
-        void handleImsEccSupportInfo(const sp<RfxMclMessage>& msg);
-        void handleImsRtpInfo(const sp<RfxMclMessage>& msg);
-        void handleImsEiregInfo(const sp<RfxMclMessage>& msg);
-        void handleSipRegInfoInd(const sp<RfxMclMessage>& msg);
-        int getIntFromTokenStr(char* tokenStr, int err, int base);
-        void onImsVopsIndication(const sp<RfxMclMessage>& msg);
-        void handleImsRegInfoInd(const sp<RfxMclMessage>& msg);
-        void handleImsRegRespInd(const sp<RfxMclMessage>& msg);
-    private:
-        bool mPreferCireg;
+
+  public:
+    RmcImsControlUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcImsControlUrcHandler();
+
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+
+  private:
+    void handleImsDisabling(const sp<RfxMclMessage>& msg);
+    void handleImsEnabling(const sp<RfxMclMessage>& msg);
+    void handleImsDisabled(const sp<RfxMclMessage>& msg);
+    void handleImsEnabled(const sp<RfxMclMessage>& msg);
+    void handleImsRegistrationInfo(const sp<RfxMclMessage>& msg);
+    void handleImsDereg(const sp<RfxMclMessage>& msg);
+    void handleSipMsgIndication(const sp<RfxMclMessage>& msg);
+    void handleImsEccSupportInfo(const sp<RfxMclMessage>& msg);
+    void handleImsRtpInfo(const sp<RfxMclMessage>& msg);
+    void handleImsEiregInfo(const sp<RfxMclMessage>& msg);
+    void handleSipRegInfoInd(const sp<RfxMclMessage>& msg);
+    int getIntFromTokenStr(char* tokenStr, int err, int base);
+    void onImsVopsIndication(const sp<RfxMclMessage>& msg);
+    void handleImsRegInfoInd(const sp<RfxMclMessage>& msg);
+    void handleImsRegRespInd(const sp<RfxMclMessage>& msg);
+
+  private:
+    bool mPreferCireg;
 };
 #endif

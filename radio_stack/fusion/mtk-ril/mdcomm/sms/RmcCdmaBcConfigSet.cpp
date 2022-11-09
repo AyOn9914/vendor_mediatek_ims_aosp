@@ -19,29 +19,26 @@
  *****************************************************************************/
 #include "RmcCdmaBcConfigSet.h"
 
-
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaSetBcConfigReq, RmcVoidRsp, RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG);
-
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaSetBcConfigReq, RmcVoidRsp,
+                                RFX_MSG_REQUEST_CDMA_SET_BROADCAST_SMS_CONFIG);
 
 /*****************************************************************************
  * Class RmcCdmaSetBcConfigReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaSetBcConfigReq);
-RmcCdmaSetBcConfigReq::RmcCdmaSetBcConfigReq(void *data, int length) :
-        RmcMultiAtReq(data, length),
-        m_channel(-1),
-        m_lan(-1),
-        m_mode(-1),
-        m_channel_md(-1),
-        m_lans_md(-1) {
-    RIL_CDMA_BroadcastSmsConfigInfo **p_cur =
-               (RIL_CDMA_BroadcastSmsConfigInfo **) data;
+RmcCdmaSetBcConfigReq::RmcCdmaSetBcConfigReq(void* data, int length)
+    : RmcMultiAtReq(data, length),
+      m_channel(-1),
+      m_lan(-1),
+      m_mode(-1),
+      m_channel_md(-1),
+      m_lans_md(-1) {
+    RIL_CDMA_BroadcastSmsConfigInfo** p_cur = (RIL_CDMA_BroadcastSmsConfigInfo**)data;
 
-    int num = length / sizeof (RIL_CDMA_BroadcastSmsConfigInfo *);
+    int num = length / sizeof(RIL_CDMA_BroadcastSmsConfigInfo*);
     for (int i = 0; i < num; i++) {
         m_infos.push(*(p_cur[i]));
     }
@@ -50,38 +47,35 @@ RmcCdmaSetBcConfigReq::RmcCdmaSetBcConfigReq(void *data, int length) :
     for (it = m_infos.begin(); it != m_infos.end(); it++, i++) {
         m_pInfos.push(it);
     }
-    m_data = (void *)m_pInfos.array();
+    m_data = (void*)m_pInfos.array();
     m_length = sizeof(RIL_CDMA_BroadcastSmsConfigInfo*) * m_pInfos.size();
 }
 
-RmcCdmaSetBcConfigReq::~RmcCdmaSetBcConfigReq() {
-}
+RmcCdmaSetBcConfigReq::~RmcCdmaSetBcConfigReq() {}
 
-
-RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetFirstAtInfo(RfxBaseHandler *h) {
-   RFX_UNUSED(h);
-   if (!sortCategoryAndLanguage()) {
-      return NULL;
-   }
-   RmcCdmaBcRangeParser::getRange(m_channels, m_categorys);
-   RmcCdmaBcRangeParser::getRange(m_lans, m_languages);
-   m_channel = 0;
-   m_lan = 0;
-   if (isSelected()) {
+RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetFirstAtInfo(RfxBaseHandler* h) {
+    RFX_UNUSED(h);
+    if (!sortCategoryAndLanguage()) {
+        return NULL;
+    }
+    RmcCdmaBcRangeParser::getRange(m_channels, m_categorys);
+    RmcCdmaBcRangeParser::getRange(m_lans, m_languages);
+    m_channel = 0;
+    m_lan = 0;
+    if (isSelected()) {
         String8 cmd("AT+ECSCBCHA?");
         String8 responsePrefix("+ECSCBCHA:");
         return new RmcSingleLineAtSendInfo(cmd, responsePrefix);
-   } else {
-      String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"",
-        0, m_channels[m_channel].start, m_channels[m_channel].end);
-      m_channel++;
-      return new RmcNoLineAtSendInfo(cmd);
-   }
-   return NULL;
+    } else {
+        String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"", 0, m_channels[m_channel].start,
+                                      m_channels[m_channel].end);
+        m_channel++;
+        return new RmcNoLineAtSendInfo(cmd);
+    }
+    return NULL;
 }
 
-
-RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetNextAtInfo(const String8 & cmd,RfxBaseHandler * h) {
+RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetNextAtInfo(const String8& cmd, RfxBaseHandler* h) {
     RFX_UNUSED(h);
     if (isSelected()) {
         if (cmd == String8("AT+ECSCBCHA?")) {
@@ -93,24 +87,27 @@ RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetNextAtInfo(const String8 & cmd,RfxBas
             String8 responsePrefix("+ECSCBLAN:");
             return new RmcSingleLineAtSendInfo(cmd, responsePrefix);
         } else {
-            if (m_channel_md< m_channels_md.size()) {
-                String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"",
-                  0, m_channels_md[m_channel_md].start, m_channels_md[m_channel_md].end);
+            if (m_channel_md < m_channels_md.size()) {
+                String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"", 0,
+                                              m_channels_md[m_channel_md].start,
+                                              m_channels_md[m_channel_md].end);
                 m_channel_md++;
                 return new RmcNoLineAtSendInfo(cmd);
-            } else if (m_lans_md < m_languages_md.size()){
-                String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"",
-                  0, m_languages_md[m_lans_md].start, m_languages_md[m_lans_md].end);
+            } else if (m_lans_md < m_languages_md.size()) {
+                String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"", 0,
+                                              m_languages_md[m_lans_md].start,
+                                              m_languages_md[m_lans_md].end);
                 m_lans_md++;
                 return new RmcNoLineAtSendInfo(cmd);
             } else if (m_channel < m_channels.size()) {
-                String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"",
-                  1, m_channels[m_channel].start, m_channels[m_channel].end);
+                String8 cmd =
+                        String8::format("AT+ECSCBCHA=%d,\"%d-%d\"", 1, m_channels[m_channel].start,
+                                        m_channels[m_channel].end);
                 m_channel++;
                 return new RmcNoLineAtSendInfo(cmd);
-            } else if (m_lan < m_languages.size()){
-                String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"",
-                  1, m_lans[m_lan].start, m_lans[m_lan].end);
+            } else if (m_lan < m_languages.size()) {
+                String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"", 1, m_lans[m_lan].start,
+                                              m_lans[m_lan].end);
                 m_lan++;
                 return new RmcNoLineAtSendInfo(cmd);
             }
@@ -118,13 +115,13 @@ RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetNextAtInfo(const String8 & cmd,RfxBas
 
     } else {
         if (m_channel < m_channels.size()) {
-            String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"",
-              0, m_channels[m_channel].start, m_channels[m_channel].end);
+            String8 cmd = String8::format("AT+ECSCBCHA=%d,\"%d-%d\"", 0,
+                                          m_channels[m_channel].start, m_channels[m_channel].end);
             m_channel++;
             return new RmcNoLineAtSendInfo(cmd);
-        } else if (m_lan < m_languages.size()){
-            String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"",
-              0, m_lans[m_lan].start, m_lans[m_lan].end);
+        } else if (m_lan < m_languages.size()) {
+            String8 cmd = String8::format("AT+ECSCBLAN=%d,\"%d-%d\"", 0, m_lans[m_lan].start,
+                                          m_lans[m_lan].end);
             m_lan++;
             return new RmcNoLineAtSendInfo(cmd);
         }
@@ -132,13 +129,11 @@ RmcAtSendInfo* RmcCdmaSetBcConfigReq::onGetNextAtInfo(const String8 & cmd,RfxBas
     return NULL;
 }
 
-
-bool RmcCdmaSetBcConfigReq::onHandleIntermediates(
-        const String8 & cmd,RfxAtLine * line,RfxBaseHandler * h) {
+bool RmcCdmaSetBcConfigReq::onHandleIntermediates(const String8& cmd, RfxAtLine* line,
+                                                  RfxBaseHandler* h) {
     RFX_UNUSED(h);
     if (isSelected()) {
-        if (cmd == String8("AT+ECSCBCHA?") ||
-                    cmd == String8("AT+ECSCBLAN?")) {
+        if (cmd == String8("AT+ECSCBCHA?") || cmd == String8("AT+ECSCBLAN?")) {
             int err;
             int mode = line->atTokNextint(&err);
             if (err < 0 || mode < 0 || mode > 1) {
@@ -149,13 +144,13 @@ bool RmcCdmaSetBcConfigReq::onHandleIntermediates(
             Range ranges[MAX_RANGE];
             int num = 0;
             if (mode == 1) {
-                char *str = line->atTokNextstr(&err);
+                char* str = line->atTokNextstr(&err);
                 if (err < 0) {
                     setError(RIL_E_SYSTEM_ERR);
                     return false;
                 }
                 rangeStr.setTo(str);
-                num = RmcCdmaBcRangeParser::getRangeFromModem((char *)rangeStr.string(), ranges);
+                num = RmcCdmaBcRangeParser::getRangeFromModem((char*)rangeStr.string(), ranges);
             }
             if (cmd == String8("AT+ECSCBCHA?")) {
                 for (int i = 0; i < num; i++) {

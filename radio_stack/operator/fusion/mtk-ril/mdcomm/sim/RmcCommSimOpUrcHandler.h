@@ -28,22 +28,22 @@
  *****************************************************************************/
 
 class RmcCommSimOpUrcHandler : public RmcCommSimUrcHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCommSimOpUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCommSimOpUrcHandler);
 
-public:
+  public:
     RmcCommSimOpUrcHandler(int slot_id, int channel_id);
     virtual ~RmcCommSimOpUrcHandler();
 
     // Process URC here
-    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
     // Check if the handler have to process the URC or not
     virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
-    virtual const char** queryUrcTable(int *record_num);
+    virtual const char** queryUrcTable(int* record_num);
 
-private:
+  private:
     void handleAttRsuSimLockEvent(const sp<RfxMclMessage>& msg, String8 urc);
-    void handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 };
 #endif /* __RMC_COMM_SIM_OP_URC_HANDLER_H__ */

@@ -26,12 +26,9 @@
 
 #define SLOGW(...) (mtkLogW(LOG_TAG, __VA_ARGS__))
 
-FrameworkCommand::FrameworkCommand(const char *cmd) {
-    mCommand = cmd;
-}
+FrameworkCommand::FrameworkCommand(const char* cmd) { mCommand = cmd; }
 
-int FrameworkCommand::runCommand(SocketClient *c UNUSED, int argc UNUSED,
-                                 char **argv UNUSED) {
+int FrameworkCommand::runCommand(SocketClient* c UNUSED, int argc UNUSED, char** argv UNUSED) {
     SLOGW("Command %s has no run handler!", getCommand());
     errno = ENOSYS;
     return -1;

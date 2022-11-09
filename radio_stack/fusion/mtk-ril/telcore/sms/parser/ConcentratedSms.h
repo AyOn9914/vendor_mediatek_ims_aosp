@@ -33,10 +33,10 @@ class ConcentratedSms : public RfxObject {
     // Required: declare this class
     RFX_DECLARE_CLASS(ConcentratedSms);
 
-public:
+  public:
     ConcentratedSms();
-    explicit ConcentratedSms(SmsMessage *msg);
-    void addSegment(SmsMessage *msg);
+    explicit ConcentratedSms(SmsMessage* msg);
+    void addSegment(SmsMessage* msg);
     int getRefNumber();
     bool isAllSegmentsReceived();
     void parseWappushPdu();
@@ -45,25 +45,25 @@ public:
     bool isWappush();
     bool isWapushForSUPL();
 
-private:
-    static bool compareSms(SmsMessage *msg1, SmsMessage *msg2);
+  private:
+    static bool compareSms(SmsMessage* msg1, SmsMessage* msg2);
     void onTimeout();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
 
-public:
+  public:
     RfxSignal1<int> mTimeOutSignal;
 
-private:
+  private:
     int mTotalSeg;
     int mRefNumber;
     bool mIsWapPush;
-    BYTE *mWapPushUserData;
-    WappushMessage *mWappushMsg;
-    list<SmsMessage *> mMsgList;
+    BYTE* mWapPushUserData;
+    WappushMessage* mWappushMsg;
+    list<SmsMessage*> mMsgList;
     TimerHandle mTimeoutHandle;
 };
 #endif /* __CONCENTRATED_SMS_H__ */

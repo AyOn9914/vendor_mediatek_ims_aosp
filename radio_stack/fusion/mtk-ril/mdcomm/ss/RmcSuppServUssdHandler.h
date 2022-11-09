@@ -28,18 +28,18 @@
 class RmcSuppServUssdHandler : public RmcSuppServUssdBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcSuppServUssdHandler);
 
-    public:
-        RmcSuppServUssdHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServUssdHandler();
+  public:
+    RmcSuppServUssdHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServUssdHandler();
 
-        virtual void requestSendUssdDomainSelect(const sp<RfxMclMessage>& msg);
-        virtual void requestCancelUssdDomainSelect(const sp<RfxMclMessage>& msg);
-        virtual void handleOnUssd(const sp<RfxMclMessage>& msg);
-        virtual void handleOnUssi(const sp<RfxMclMessage>& msg);
+    virtual void requestSendUssdDomainSelect(const sp<RfxMclMessage>& msg);
+    virtual void requestCancelUssdDomainSelect(const sp<RfxMclMessage>& msg);
+    virtual void handleOnUssd(const sp<RfxMclMessage>& msg);
+    virtual void handleOnUssi(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestSendUSSD(const sp<RfxMclMessage>& msg);
-        void requestCancelUssd(const sp<RfxMclMessage>& msg);
+  private:
+    void requestSendUSSD(const sp<RfxMclMessage>& msg);
+    void requestCancelUssd(const sp<RfxMclMessage>& msg);
 };
 
 #endif

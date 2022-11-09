@@ -55,7 +55,6 @@ RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_CS_NETWORK_STATE);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_PS_NETWORK_STATE);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_RERESH_PHYSICAL_CONFIG);
 
-
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcNetworkUrcHandler, RIL_CMD_PROXY_URC);
 
@@ -67,65 +66,40 @@ char RmcNetworkUrcHandler::ril_nw_nitz_tz[MAX_NITZ_TZ_DST_LENGTH] = {0};
 char RmcNetworkUrcHandler::ril_nw_nitz_dst[MAX_NITZ_TZ_DST_LENGTH] = {0};
 /// @}
 
-RmcNetworkUrcHandler::RmcNetworkUrcHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id),
-        allowed_urc(NULL),
-        ril_data_urc_status(4),
-        ril_data_urc_rat(0) {
+RmcNetworkUrcHandler::RmcNetworkUrcHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id),
+      allowed_urc(NULL),
+      ril_data_urc_status(4),
+      ril_data_urc_rat(0) {
     int m_slot_id = slot_id;
     int m_channel_id = channel_id;
-    ViaBaseHandler *mViaHandler = RfxViaUtils::getViaHandler();
+    ViaBaseHandler* mViaHandler = RfxViaUtils::getViaHandler();
     RFX_LOG_V(LOG_TAG, "%s[%d] start", __FUNCTION__, slot_id);
     if (mViaHandler != NULL) {
         mViaHandler->registerForViaUrc(this);
         allowed_urc = mViaHandler->getViaAllowedUrcForNw();
     }
     const char* urc[] = {
-        "+EREG:",
-        "+EGREG:",
-        "+PSBEARER:",
-        "+ECSQ:",
-        "^OTACMSG:",
-        "+ERPRAT:",
-        "+EGMSS:",
-        "+EIPRL:",
-        "+EDEFROAM:",
-        "+ECELLINFO:",
-        "+ENWINFO:",
-        "+ECSG:",
-        "+EFCELL:",
-        "+ECELL:",
-        "+CTZEU:",
-        "+CIEV: 10,",
-        "+CIEV: 11,",
-        "+EREGINFO:",
-        "+EMMRRS:",
-        "+EWFC:",
-        "+EACMT:",
-        "+EMODCFG:",
-        "+EONS:",
-        "+EAPC:",
-        "+EPCELLINFO:",
-        "+EMCCMNC:",
-        "+EIMSESS:",
-        "+EHOMEAS:"
-    };
+            "+EREG:",       "+EGREG:",   "+PSBEARER:", "+ECSQ:",      "^OTACMSG:",  "+ERPRAT:",
+            "+EGMSS:",      "+EIPRL:",   "+EDEFROAM:", "+ECELLINFO:", "+ENWINFO:",  "+ECSG:",
+            "+EFCELL:",     "+ECELL:",   "+CTZEU:",    "+CIEV: 10,",  "+CIEV: 11,", "+EREGINFO:",
+            "+EMMRRS:",     "+EWFC:",    "+EACMT:",    "+EMODCFG:",   "+EONS:",     "+EAPC:",
+            "+EPCELLINFO:", "+EMCCMNC:", "+EIMSESS:",  "+EHOMEAS:"};
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 
     // reset WFC state because it's persist property
-    setMSimProperty(m_slot_id, (char *)PROPERTY_WFC_STATE, (char*)"0");
+    setMSimProperty(m_slot_id, (char*)PROPERTY_WFC_STATE, (char*)"0");
 
     // reset ps bearer cache
     ril_ps_bearer_cache.cell_data_speed = 0;
     ril_ps_bearer_cache.max_data_bearer = 0;
 }
 
-RmcNetworkUrcHandler::~RmcNetworkUrcHandler() {
-}
+RmcNetworkUrcHandler::~RmcNetworkUrcHandler() {}
 
 void RmcNetworkUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    ViaBaseHandler *mViaHandler = RfxViaUtils::getViaHandler();
+    ViaBaseHandler* mViaHandler = RfxViaUtils::getViaHandler();
     if (strStartsWith(msg->getRawUrc()->getLine(), "+EREG:")) {
         handleCsNetworkStateChanged(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EGREG:")) {
@@ -142,10 +116,10 @@ void RmcNetworkUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
         handleGmssRatChanged(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EIPRL:")) {
         handleSystemInPrlIndication(msg);
-    }  else if (strStartsWith(msg->getRawUrc()->getLine(), "+EDEFROAM:")) {
+    } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EDEFROAM:")) {
         handleDefaultRoamingIndicator(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+ECELLINFO:")) {
-        //handleNeighboringCellInfo(msg);
+        // handleNeighboringCellInfo(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+ENWINFO:")) {
         handleNetworkInfo(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+ECSG:")) {
@@ -163,11 +137,11 @@ void RmcNetworkUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EREGINFO:")) {
         handleNetworkEventReceived(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EMMRRS:")) {
-        //handleMMRRStatusChanged(msg);
+        // handleMMRRStatusChanged(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EWFC:")) {
         handleWfcStateChanged(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EACMT:")) {
-        //handleACMT(msg);
+        // handleACMT(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EMODCFG:")) {
         handleModulationInfoReceived(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EONS:")) {
@@ -183,26 +157,28 @@ void RmcNetworkUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EHOMEAS:")) {
         handleCellularQualityReport(msg);
     } else if (mViaHandler != NULL) {
-        mViaHandler-> handleViaUrc(msg, this, m_slot_id);
+        mViaHandler->handleViaUrc(msg, this, m_slot_id);
     }
 }
 
 void RmcNetworkUrcHandler::handleCsNetworkStateChanged(const sp<RfxMclMessage>& msg) {
-    /* +EREG: <stat>[,<lac>,<ci>,[<eAct>],[nwk_existence>],[<roam_indicator>][,<cause_type>,<reject_cause>]] */
+    /* +EREG:
+     * <stat>[,<lac>,<ci>,[<eAct>],[nwk_existence>],[<roam_indicator>][,<cause_type>,<reject_cause>]]
+     */
     int err;
     int skip;
     int response[6] = {-1};
     unsigned long long ci_response = -1;
-    char *responseStr[6] = { 0 };
+    char* responseStr[6] = {0};
     int i = 0;
-    int state[4] = { 0 };
+    int state[4] = {0};
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char* tmp = NULL;
 
     pthread_mutex_lock(&mdEregMutex[m_slot_id]);
     MD_EREG* mMdEreg = mdEreg[m_slot_id];
-    MD_ECELL *mMdEcell = mdEcell[m_slot_id];
+    MD_ECELL* mMdEcell = mdEcell[m_slot_id];
     state[0] = convertRegState(mMdEreg->stat, true);
     state[1] = convertCSNetworkType(mMdEreg->eAct);
     memset(mdEreg[m_slot_id], 0, sizeof(MD_EREG));
@@ -228,7 +204,7 @@ void RmcNetworkUrcHandler::handleCsNetworkStateChanged(const sp<RfxMclMessage>& 
     // get <lac>
     response[1] = line->atTokNexthexint(&err);
     if (err >= 0) {
-        mMdEreg->lac = (unsigned int) response[1];
+        mMdEreg->lac = (unsigned int)response[1];
 
         free(responseStr[1]);
         responseStr[1] = NULL;
@@ -255,19 +231,19 @@ void RmcNetworkUrcHandler::handleCsNetworkStateChanged(const sp<RfxMclMessage>& 
                 asprintf(&responseStr[3], "%d", convertCSNetworkType(response[3]));
 
                 // get <nwk_existence>
-                response[5]= line->atTokNextint(&err);
+                response[5] = line->atTokNextint(&err);
                 mMdEreg->nwk_existence = response[5];
 
                 // ECC support
                 if (response[5] != 1) {
                     // if cid is 0x0fffffff or -1 means it is invalid
                     // if lac is 0xffff or -1 means it is invalid
-                    if (((response[0] == 0) || (response[0] == 2) || (response[0] == 3))
-                            && ((ci_response != 0x0fffffff)  // cid
-                            && (response[1] != 0xffff)       // lac
-                            && (ci_response != -1)           // cid
-                            && (response[1] != -1))          // lac
-                            && convertCSNetworkType(response[3]) != 14) {   // not LTE & LET_CA
+                    if (((response[0] == 0) || (response[0] == 2) || (response[0] == 3)) &&
+                        ((ci_response != 0x0fffffff)                   // cid
+                         && (response[1] != 0xffff)                    // lac
+                         && (ci_response != -1)                        // cid
+                         && (response[1] != -1))                       // lac
+                        && convertCSNetworkType(response[3]) != 14) {  // not LTE & LET_CA
                         response[5] = 1;
                     }
                 }
@@ -305,29 +281,28 @@ void RmcNetworkUrcHandler::handleCsNetworkStateChanged(const sp<RfxMclMessage>& 
     state[2] = convertRegState(mMdEreg->stat, true);
     state[3] = convertCSNetworkType(mMdEreg->eAct);
 
-    //keep the cs urc
+    // keep the cs urc
     pthread_mutex_lock(&s_urc_voiceRegStateMutex[m_slot_id]);
     if ((urc_voice_reg_state_cache[m_slot_id]->lac == (unsigned int)response[1]) &&
         (urc_voice_reg_state_cache[m_slot_id]->cid == ci_response) &&
-        (urc_voice_reg_state_cache[m_slot_id]->denied_reason > 0) &&
-        (response[4] == 0)) {
+        (urc_voice_reg_state_cache[m_slot_id]->denied_reason > 0) && (response[4] == 0)) {
         // do nothing to keep the latest reject cause when lac/cid are the same
         // and we have reject cause before but md doesn't provide with new URC.
     } else {
         urc_voice_reg_state_cache[m_slot_id]->denied_reason = response[4];
     }
     urc_voice_reg_state_cache[m_slot_id]->registration_state = response[0];  // stat
-    urc_voice_reg_state_cache[m_slot_id]->lac = response[1];  // lac
-    urc_voice_reg_state_cache[m_slot_id]->cid = ci_response;  // cid
-    urc_voice_reg_state_cache[m_slot_id]->radio_technology = response[3];  // act
+    urc_voice_reg_state_cache[m_slot_id]->lac = response[1];                 // lac
+    urc_voice_reg_state_cache[m_slot_id]->cid = ci_response;                 // cid
+    urc_voice_reg_state_cache[m_slot_id]->radio_technology = response[3];    // act
     pthread_mutex_unlock(&s_urc_voiceRegStateMutex[m_slot_id]);
     dumpEregCache(__func__, mMdEreg, mMdEcell);
     pthread_mutex_unlock(&mdEregMutex[m_slot_id]);
 
     sendEvent(RFX_MSG_EVENT_CS_NETWORK_STATE, RfxIntsData(state, 4), RIL_CMD_PROXY_3, m_slot_id);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_CS_NETWORK_STATE_CHANGED,
-            m_slot_id, RfxStringsData(responseStr, 6));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_CS_NETWORK_STATE_CHANGED, m_slot_id,
+                                   RfxStringsData(responseStr, 6));
     responseToTelCore(urc);
 
     isNeedNotifyStateChanged();
@@ -346,7 +321,7 @@ void RmcNetworkUrcHandler::handlePsDataServiceCapability(const sp<RfxMclMessage>
     int err, psService;
     int cell_data_speed = 0;
     int max_data_bearer = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     bool ret = false;
 
     // go to start position
@@ -361,18 +336,17 @@ void RmcNetworkUrcHandler::handlePsDataServiceCapability(const sp<RfxMclMessage>
     if (err < 0) goto error;
 
     if (urc_data_reg_state_cache[m_slot_id]->registration_state == 1 ||
-            urc_data_reg_state_cache[m_slot_id]->registration_state == 5) {
-        if (cell_data_speed < 0x1000) { // 3G case
+        urc_data_reg_state_cache[m_slot_id]->registration_state == 5) {
+        if (cell_data_speed < 0x1000) {  // 3G case
             if (max_data_bearer != ril_ps_bearer_cache.max_data_bearer &&
-                    ((max_data_bearer > 3 && max_data_bearer < 18) ||
-                    (ril_ps_bearer_cache.max_data_bearer > 3 &&
-                    ril_ps_bearer_cache.max_data_bearer < 18))) {
+                ((max_data_bearer > 3 && max_data_bearer < 18) ||
+                 (ril_ps_bearer_cache.max_data_bearer > 3 &&
+                  ril_ps_bearer_cache.max_data_bearer < 18))) {
                 ret = true;
             }
-        } else { // 4G case
+        } else {  // 4G case
             if (cell_data_speed != ril_ps_bearer_cache.cell_data_speed &&
-                    (cell_data_speed > 0x1000 ||
-                    ril_ps_bearer_cache.cell_data_speed > 0x1000)) {
+                (cell_data_speed > 0x1000 || ril_ps_bearer_cache.cell_data_speed > 0x1000)) {
                 ret = true;
             }
         }
@@ -389,53 +363,52 @@ error:
 }
 
 void RmcNetworkUrcHandler::handleSignalStrength(const sp<RfxMclMessage>& msg) {
-    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE)/sizeof(int);
-    int *resp = new int[len];
+    int len = sizeof(RIL_SIGNAL_STRENGTH_CACHE) / sizeof(int);
+    int* resp = new int[len];
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
     pthread_mutex_lock(&s_signalStrengthMutex[m_slot_id]);
-    memcpy(resp, signal_strength_cache[m_slot_id], len*sizeof(int));
+    memcpy(resp, signal_strength_cache[m_slot_id], len * sizeof(int));
 
     // go to start position
     line->atTokStart(&err);
     if (err < 0) {
         pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
-        delete [] resp;
+        delete[] resp;
         return;
     }
 
     err = getSignalStrength(line);
     if (err < 0) {
         pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
-        delete [] resp;
-        return; // some invalid value from MD.
+        delete[] resp;
+        return;  // some invalid value from MD.
     }
 
     // compare the current and previous signal strength
-    if (0 == memcmp(resp, signal_strength_cache[m_slot_id], len*sizeof(int))) {
+    if (0 == memcmp(resp, signal_strength_cache[m_slot_id], len * sizeof(int))) {
         logV(LOG_TAG, "The current signal is the same as previous, ignore");
         pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
-        delete [] resp;
+        delete[] resp;
         return;
     }
 
-    memcpy(resp, signal_strength_cache[m_slot_id], len*sizeof(int));
+    memcpy(resp, signal_strength_cache[m_slot_id], len * sizeof(int));
     pthread_mutex_unlock(&s_signalStrengthMutex[m_slot_id]);
 
-    printSignalStrengthCache((char*) __FUNCTION__);
+    printSignalStrengthCache((char*)__FUNCTION__);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH, m_slot_id, RfxIntsData((void*)resp,
-            len*sizeof(int)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH, m_slot_id,
+                                   RfxIntsData((void*)resp, len * sizeof(int)));
     responseToTelCore(urc);
     if (enableReportSignalStrengthWithWcdmaEcio()) {
         urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_SIGNAL_STRENGTH_WITH_WCDMA_ECIO, m_slot_id,
-                RfxIntsData((void*)resp, len*sizeof(int)));
+                                       RfxIntsData((void*)resp, len * sizeof(int)));
         responseToTelCore(urc);
     }
-    delete [] resp;
+    delete[] resp;
 }
-
 
 unsigned int RmcNetworkUrcHandler::combineWfcEgregState() {
     unsigned int uiRet = 0;
@@ -447,20 +420,20 @@ unsigned int RmcNetworkUrcHandler::combineWfcEgregState() {
     }
 
     RFX_LOG_V(LOG_TAG, "combineWfcEgregState() slot_id=%d, data_urc=%d, wfc_reg=%d, uiRet=%d",
-        m_slot_id, ril_data_urc_status, ril_wfc_reg_status[m_slot_id], uiRet);
+              m_slot_id, ril_data_urc_status, ril_wfc_reg_status[m_slot_id], uiRet);
 
     return uiRet;
 }
 
 void RmcNetworkUrcHandler::handlePsNetworkStateChanged(const sp<RfxMclMessage>& msg) {
     int err, skip;
-    int stat[4] = { 0 };
+    int stat[4] = {0};
     unsigned int response[4] = {0};
     unsigned long long ci_response = -1;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
-    MD_EGREG *mMdEgreg = mdEgreg[m_slot_id];
-    MD_ECELL *mMdEcell = mdEcell[m_slot_id];
+    RfxAtLine* line = msg->getRawUrc();
+    MD_EGREG* mMdEgreg = mdEgreg[m_slot_id];
+    MD_ECELL* mMdEcell = mdEcell[m_slot_id];
     char* tmp = NULL;
 
     // +EGREG: <n>,<stat>[,[<lac>],[<ci>],[<eAct>],[<rac>],[<nwk_existence >],[<roam_indicator>],
@@ -471,7 +444,7 @@ void RmcNetworkUrcHandler::handlePsNetworkStateChanged(const sp<RfxMclMessage>& 
 
     // logD(LOG_TAG, "sendEvent RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE");
     sendEvent(RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE, RfxStringData(urc_str, strlen(urc_str)),
-        RIL_CMD_PROXY_EMBMS, msg->getSlotId());
+              RIL_CMD_PROXY_EMBMS, msg->getSlotId());
 
     pthread_mutex_lock(&mdEgregMutex[m_slot_id]);
     stat[0] = convertRegState(mMdEgreg->stat, false);
@@ -491,7 +464,7 @@ void RmcNetworkUrcHandler::handlePsNetworkStateChanged(const sp<RfxMclMessage>& 
     // get <lac>
     response[1] = line->atTokNexthexint(&err);
     if (err < 0) goto error;
-    mMdEgreg->lac = (unsigned int) response[1];
+    mMdEgreg->lac = (unsigned int)response[1];
 
     // get <ci>
     tmp = line->atTokNextstr(&err);
@@ -499,7 +472,7 @@ void RmcNetworkUrcHandler::handlePsNetworkStateChanged(const sp<RfxMclMessage>& 
     ci_response = strtoull(tmp, NULL, 16);
     mMdEgreg->ci = ci_response;
 
-    //get <Act>
+    // get <Act>
     response[3] = line->atTokNextint(&err);
     if (err < 0) goto error;
     ril_data_urc_rat = response[3];
@@ -554,33 +527,31 @@ void RmcNetworkUrcHandler::handlePsNetworkStateChanged(const sp<RfxMclMessage>& 
         stat[3] = convertPSNetworkType(response[3]);
     }
 
-    sendEvent(RFX_MSG_EVENT_PS_NETWORK_STATE, RfxIntsData(stat, 4),
-        RIL_CMD_PROXY_3, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_PS_NETWORK_STATE, RfxIntsData(stat, 4), RIL_CMD_PROXY_3, m_slot_id);
 
     urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_CELLULAR_DATA_REG_STATE, m_slot_id,
-            RfxIntsData(&ril_data_urc_status, 1));
+                                   RfxIntsData(&ril_data_urc_status, 1));
     responseToTelCore(urc);
 
     if (isInService(response[0]) ||
-            isInService(urc_data_reg_state_cache[m_slot_id]->registration_state)) {
+        isInService(urc_data_reg_state_cache[m_slot_id]->registration_state)) {
         isNeedNotifyStateChanged();
     }
 
-    //keep the ps urc
+    // keep the ps urc
     pthread_mutex_lock(&s_urc_dataRegStateMutex[m_slot_id]);
     if ((urc_data_reg_state_cache[m_slot_id]->lac == (unsigned int)response[1]) &&
         (urc_data_reg_state_cache[m_slot_id]->cid == ci_response) &&
-        (urc_data_reg_state_cache[m_slot_id]->denied_reason > 0) &&
-        (reject_cause == 0)) {
+        (urc_data_reg_state_cache[m_slot_id]->denied_reason > 0) && (reject_cause == 0)) {
         // do nothing to keep the latest reject cause when lac/cid are the same
         // and we have reject cause before but md doesn't provide with new URC.
     } else {
         urc_data_reg_state_cache[m_slot_id]->denied_reason = reject_cause;
     }
     urc_data_reg_state_cache[m_slot_id]->registration_state = response[0];  // stat
-    urc_data_reg_state_cache[m_slot_id]->lac = response[1];  // lac
-    urc_data_reg_state_cache[m_slot_id]->cid = ci_response;  // cid
-    urc_data_reg_state_cache[m_slot_id]->radio_technology= response[3];  // act
+    urc_data_reg_state_cache[m_slot_id]->lac = response[1];                 // lac
+    urc_data_reg_state_cache[m_slot_id]->cid = ci_response;                 // cid
+    urc_data_reg_state_cache[m_slot_id]->radio_technology = response[3];    // act
     urc_data_reg_state_cache[m_slot_id]->dcnr_restricted = dcnr_restricted;
     urc_data_reg_state_cache[m_slot_id]->endc_sib = endc_sib;
     urc_data_reg_state_cache[m_slot_id]->endc_available = endc_available;
@@ -616,7 +587,7 @@ void RmcNetworkUrcHandler::handleOtaProvisionStatus(const sp<RfxMclMessage>& msg
     int err;
     int otaState;
     int convertState;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
 
     // go to start position
@@ -633,7 +604,7 @@ void RmcNetworkUrcHandler::handleOtaProvisionStatus(const sp<RfxMclMessage>& msg
     convertState = convertOtaProvisionStatus(otaState);
     if (convertState >= 0) {
         urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CDMA_OTA_PROVISION_STATUS, m_slot_id,
-                RfxIntsData(&convertState, 1));
+                                       RfxIntsData(&convertState, 1));
         responseToTelCore(urc);
     }
 
@@ -700,15 +671,14 @@ int RmcNetworkUrcHandler::convertOtaProvisionStatus(int rawState) {
 
 void RmcNetworkUrcHandler::handleConfirmRatBegin(const sp<RfxMclMessage>& msg) {
     RFX_UNUSED(msg);
-    sendEvent(RFX_MSG_EVENT_CONFIRM_RAT_BEGIN, RfxVoidData(),
-            m_channel_id, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_CONFIRM_RAT_BEGIN, RfxVoidData(), m_channel_id, m_slot_id);
 }
 
 void RmcNetworkUrcHandler::handleGmssRatChanged(const sp<RfxMclMessage>& msg) {
     int i = 0;
     int err = 0;
-    int data[5] = { 0 };
-    RfxAtLine *line = msg->getRawUrc();
+    int data[5] = {0};
+    RfxAtLine* line = msg->getRawUrc();
 
     // go to start position
     line->atTokStart(&err);
@@ -729,8 +699,8 @@ void RmcNetworkUrcHandler::handleGmssRatChanged(const sp<RfxMclMessage>& msg) {
         }
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_GMSS_RAT_CHANGED,
-            m_slot_id, RfxIntsData(data, 5));
+    sp<RfxMclMessage> urc =
+            RfxMclMessage::obtainUrc(RFX_MSG_URC_GMSS_RAT_CHANGED, m_slot_id, RfxIntsData(data, 5));
     responseToTelCore(urc);
 }
 
@@ -804,11 +774,11 @@ void RmcNetworkUrcHandler::handleDefaultRoamingIndicator(const sp<RfxMclMessage>
     if (err < 0) return;
 
     int default_roaming_indicator = line->atTokNextint(&err);
-    if(err < 0) return;
+    if (err < 0) return;
 
-    if(line->atTokHasmore()) {
+    if (line->atTokHasmore()) {
         default_roaming_indicator = line->atTokNextint(&err);
-        if(err < 0) return;
+        if (err < 0) return;
     }
 
     pthread_mutex_lock(&s_voiceRegStateMutex[m_slot_id]);
@@ -831,8 +801,8 @@ void RmcNetworkUrcHandler::handleNeighboringCellInfo(const sp<RfxMclMessage>& ms
     /* +ECELLINFO: <valid>,<rat>,<cell_info> */
     int err;
     int valid, rat;
-    char *responseStr[2];
-    RfxAtLine *line = msg->getRawUrc();
+    char* responseStr[2];
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -847,20 +817,20 @@ void RmcNetworkUrcHandler::handleNeighboringCellInfo(const sp<RfxMclMessage>& ms
 
     responseStr[0] = line->atTokNextstr(&err);
 
-    if (strcmp(responseStr[0], "1") &&
-            strcmp(responseStr[0], "2")) {
+    if (strcmp(responseStr[0], "1") && strcmp(responseStr[0], "2")) {
         logD(LOG_TAG, "Abnormal RAT");
         return;
     }
 
     // get raw data of of Neighbor cell info
     responseStr[1] = line->atTokNextstr(&err);
-    if ( err < 0 ) return;
+    if (err < 0) return;
 
-    logD(LOG_TAG, "NbrCellInfo: %s, len:%zu ,%s", responseStr[0], strlen(responseStr[1]), responseStr[1]);
+    logD(LOG_TAG, "NbrCellInfo: %s, len:%zu ,%s", responseStr[0], strlen(responseStr[1]),
+         responseStr[1]);
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NEIGHBORING_CELL_INFO,
-            m_slot_id, RfxStringsData(responseStr, 2));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NEIGHBORING_CELL_INFO, m_slot_id,
+                                                     RfxStringsData(responseStr, 2));
     responseToTelCore(urc);
 }
 
@@ -868,8 +838,8 @@ void RmcNetworkUrcHandler::handleNetworkInfo(const sp<RfxMclMessage>& msg) {
     /* +ENWINFO: <type>,<nw_info> */
     int err;
     int type;
-    char *responseStr[2];
-    RfxAtLine *line = msg->getRawUrc();
+    char* responseStr[2];
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
 
     line->atTokStart(&err);
@@ -885,10 +855,10 @@ void RmcNetworkUrcHandler::handleNetworkInfo(const sp<RfxMclMessage>& msg) {
     if (err < 0) goto error;
 
     logD(LOG_TAG, "NWInfo: %s, len:%zu ,%s", responseStr[0], strlen(responseStr[1]),
-            responseStr[1]);
+         responseStr[1]);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NETWORK_INFO,
-            m_slot_id, RfxStringsData(responseStr, 2));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NETWORK_INFO, m_slot_id,
+                                   RfxStringsData(responseStr, 2));
     responseToTelCore(urc);
     free(responseStr[0]);
     return;
@@ -914,7 +884,7 @@ void RmcNetworkUrcHandler::handlePseudoCellInfo(const sp<RfxMclMessage>& msg) {
     int err;
     int num;
     int response[13] = {0};
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
 
     line->atTokStart(&err);
@@ -929,36 +899,36 @@ void RmcNetworkUrcHandler::handlePseudoCellInfo(const sp<RfxMclMessage>& msg) {
     // get raw data of structure of pseudo cell info
     for (int i = 0; i < num; i++) {
         // type
-        response[i*6 + 1] = line->atTokNextint(&err);
+        response[i * 6 + 1] = line->atTokNextint(&err);
         if (err < 0) goto error;
 
-        if (response[i*6 + 1] == 2) {
+        if (response[i * 6 + 1] == 2) {
             logD(LOG_TAG, "PseudoCellInfo: attached to a pseudo cell");
-        } else if (response[i*6 + 1] == 3) {
+        } else if (response[i * 6 + 1] == 3) {
             logD(LOG_TAG, "PseudoCellInfo: attached cell changed and is not a pseudo cell");
         }
 
         if (line->atTokHasmore()) {
             // plmn
-            response[i*6 + 2] = line->atTokNextint(&err);
+            response[i * 6 + 2] = line->atTokNextint(&err);
             if (err < 0) goto error;
             // lac
-            response[i*6 + 3] = line->atTokNextint(&err);
+            response[i * 6 + 3] = line->atTokNextint(&err);
             if (err < 0) goto error;
             // cid
-            response[i*6 + 4] = line->atTokNextint(&err);
+            response[i * 6 + 4] = line->atTokNextint(&err);
             if (err < 0) goto error;
             // arfcn
-            response[i*6 + 5] = line->atTokNextint(&err);
+            response[i * 6 + 5] = line->atTokNextint(&err);
             if (err < 0) goto error;
             // bsic
-            response[i*6 + 6] = line->atTokNextint(&err);
+            response[i * 6 + 6] = line->atTokNextint(&err);
             if (err < 0) goto error;
         }
     }
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PSEUDO_CELL_INFO,
-            m_slot_id, RfxIntsData(response, 13));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PSEUDO_CELL_INFO, m_slot_id,
+                                   RfxIntsData(response, 13));
     responseToTelCore(urc);
     return;
 
@@ -968,13 +938,14 @@ error:
 
 void RmcNetworkUrcHandler::handleGsmFemtoCellInfo(const sp<RfxMclMessage>& msg) {
     int err = 0;
-    char *responseStr = NULL;
+    char* responseStr = NULL;
     // Use INT_MAX: 0x7FFFFFFF denotes invalid value
     int INVALID = 0x7FFFFFFF;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     int is_csg_cell = 0;
 
-    /* +ECSG:  <domain>,<state>,<plmn_id>,<act>,<is_csg_cell>,<csg_id>,<csg_icon_type>,<hnb_name>,<cause> */
+    /* +ECSG:
+     * <domain>,<state>,<plmn_id>,<act>,<is_csg_cell>,<csg_id>,<csg_icon_type>,<hnb_name>,<cause> */
     pthread_mutex_lock(&ril_nw_femtoCell_mutex);
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1027,8 +998,7 @@ void RmcNetworkUrcHandler::handleGsmFemtoCellInfo(const sp<RfxMclMessage>& msg) 
         if (err < 0) goto error;
 
         // trigger event
-        sendEvent(RFX_MSG_EVENT_FEMTOCELL_UPDATE, RfxVoidData(),
-                m_channel_id, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_FEMTOCELL_UPDATE, RfxVoidData(), m_channel_id, m_slot_id);
 #ifdef MTK_TC1_COMMON_SERVICE
         sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
                 RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED, m_slot_id, RfxVoidData());
@@ -1050,7 +1020,7 @@ void RmcNetworkUrcHandler::handleCdmaFemtoCellInfo(const sp<RfxMclMessage>& msg)
     int skip;
     int err;
     int system, c2kfemto, evdofemto, is_femtocell = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
 
     line->atTokStart(&err);
@@ -1077,24 +1047,23 @@ void RmcNetworkUrcHandler::handleCdmaFemtoCellInfo(const sp<RfxMclMessage>& msg)
 
     pthread_mutex_lock(&ril_nw_femtoCell_mutex);
 #ifdef MTK_TC1_FEATURE
-    if (c2kfemto != femto_cell_cache[m_slot_id]->is_1x_femtocell
-            || evdofemto != femto_cell_cache[m_slot_id]->is_evdo_femtocell) {
+    if (c2kfemto != femto_cell_cache[m_slot_id]->is_1x_femtocell ||
+        evdofemto != femto_cell_cache[m_slot_id]->is_evdo_femtocell) {
         memset(femto_cell_cache[m_slot_id], 0, sizeof(RIL_FEMTO_CELL_CACHE));
         femto_cell_cache[m_slot_id]->is_1x_femtocell = c2kfemto;
         femto_cell_cache[m_slot_id]->is_evdo_femtocell = evdofemto;
 
-        urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED,
-                m_slot_id, RfxVoidData());
+        urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED, m_slot_id,
+                                       RfxVoidData());
         responseToTelCore(urc);
     }
 #else
-   if (is_femtocell != femto_cell_cache[m_slot_id]->is_femtocell) {
-       memset(femto_cell_cache[m_slot_id], 0, sizeof(RIL_FEMTO_CELL_CACHE));
-       femto_cell_cache[m_slot_id]->is_femtocell = is_femtocell;
+    if (is_femtocell != femto_cell_cache[m_slot_id]->is_femtocell) {
+        memset(femto_cell_cache[m_slot_id], 0, sizeof(RIL_FEMTO_CELL_CACHE));
+        femto_cell_cache[m_slot_id]->is_femtocell = is_femtocell;
         // trigger event
-    sendEvent(RFX_MSG_EVENT_FEMTOCELL_UPDATE, RfxVoidData(),
-                          m_channel_id, m_slot_id);
-   }
+        sendEvent(RFX_MSG_EVENT_FEMTOCELL_UPDATE, RfxVoidData(), m_channel_id, m_slot_id);
+    }
 #endif
     pthread_mutex_unlock(&ril_nw_femtoCell_mutex);
     return;
@@ -1106,8 +1075,8 @@ error:
 void RmcNetworkUrcHandler::handleCellInfoList(const sp<RfxMclMessage>& msg) {
     int err = 0;
     int num = 0;
-    RIL_CellInfo_v12 * response = NULL;
-    RfxAtLine *line = msg->getRawUrc();
+    RIL_CellInfo_v12* response = NULL;
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
     // +ECELL: <num_of_cell>...
     line->atTokStart(&err);
@@ -1117,18 +1086,18 @@ void RmcNetworkUrcHandler::handleCellInfoList(const sp<RfxMclMessage>& msg) {
     if (err < 0) goto error;
 
     if (num < 1) {
-            logE(LOG_TAG, "No cell info listed, num=%d", num);
-            goto error;
+        logE(LOG_TAG, "No cell info listed, num=%d", num);
+        goto error;
     }
 
     logD(LOG_TAG, "Cell Info listed, number =%d", num);
-    response = (RIL_CellInfo_v12 *) alloca(num * sizeof(RIL_CellInfo_v12));
+    response = (RIL_CellInfo_v12*)alloca(num * sizeof(RIL_CellInfo_v12));
     memset(response, 0, num * sizeof(RIL_CellInfo_v12));
     err = getCellInfoListV12(line, num, response);
     if (err < 0) goto error;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CELL_INFO_LIST,
-            m_slot_id, RfxCellInfoData(response, num * sizeof(RIL_CellInfo_v12)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CELL_INFO_LIST, m_slot_id,
+                                   RfxCellInfoData(response, num * sizeof(RIL_CellInfo_v12)));
     responseToTelCore(urc);
     freeOperatorNameOfCellInfo(num, response);
     return;
@@ -1139,15 +1108,15 @@ error:
 
 void RmcNetworkUrcHandler::handleNitzTzReceived(const sp<RfxMclMessage>& msg) {
     int err;
-    char *utct = NULL;
-    char *tz = NULL;
+    char* utct = NULL;
+    char* tz = NULL;
     int dst = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     sp<RfxMclMessage> urc;
 
-    char *nitz_string = NULL;
+    char* nitz_string = NULL;
     time_t calendar_time;
-    struct tm *t_info = NULL;
+    struct tm* t_info = NULL;
 
     /*+CTZEU: <tz>,<dst>,[<utime>].
     <utime>: string type value representing the universal time. The format is "YYYY/MM/DD,hh:mm:ss".
@@ -1165,18 +1134,16 @@ void RmcNetworkUrcHandler::handleNitzTzReceived(const sp<RfxMclMessage>& msg) {
     if (err < 0) {
         logE(LOG_TAG, "There is no valid <tz>");
         goto error;
-    }
-    else {
+    } else {
         bNitzTzAvailble = 1;
-        strncpy(ril_nw_nitz_tz, tz, MAX_NITZ_TZ_DST_LENGTH-1);
+        strncpy(ril_nw_nitz_tz, tz, MAX_NITZ_TZ_DST_LENGTH - 1);
     }
     // <dst>
     dst = line->atTokNextint(&err);
     if (err < 0) {
         logE(LOG_TAG, "There is no valid <dst>");
         goto error;
-    }
-    else {
+    } else {
         bNitzDstAvailble = 1;
         snprintf(ril_nw_nitz_dst, MAX_NITZ_TZ_DST_LENGTH, "%d", dst);
     }
@@ -1190,15 +1157,9 @@ void RmcNetworkUrcHandler::handleNitzTzReceived(const sp<RfxMclMessage>& msg) {
         strptime(utct, "%Y/%m/%d,%H:%M:%S", &utc_tm);
 
         // "yy/mm/dd,hh:mm:ss(+/-)tz,dst"
-        asprintf(&nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%d",
-                (utc_tm.tm_year)%100,
-                utc_tm.tm_mon+1,
-                utc_tm.tm_mday,
-                utc_tm.tm_hour,
-                utc_tm.tm_min,
-                utc_tm.tm_sec,
-                tz,
-                dst);
+        asprintf(&nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%d", (utc_tm.tm_year) % 100,
+                 utc_tm.tm_mon + 1, utc_tm.tm_mday, utc_tm.tm_hour, utc_tm.tm_min, utc_tm.tm_sec,
+                 tz, dst);
         RFX_LOG_V(LOG_TAG, "NITZ:%s", nitz_string);
     } else {
         // get the system time to fullfit the NITZ string format
@@ -1209,21 +1170,15 @@ void RmcNetworkUrcHandler::handleNitzTzReceived(const sp<RfxMclMessage>& msg) {
         if (NULL == t_info) return;
 
         // "yy/mm/dd,hh:mm:ss(+/-)tz,dst"
-        asprintf(&nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%d",
-                (t_info->tm_year)%100,
-                t_info->tm_mon+1,
-                t_info->tm_mday,
-                t_info->tm_hour,
-                t_info->tm_min,
-                t_info->tm_sec,
-                tz,
-                dst);
+        asprintf(&nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%d", (t_info->tm_year) % 100,
+                 t_info->tm_mon + 1, t_info->tm_mday, t_info->tm_hour, t_info->tm_min,
+                 t_info->tm_sec, tz, dst);
         RFX_LOG_V(LOG_TAG, "NITZ:%s", nitz_string);
     }
     // ignore local time information in the EMM INFORMATION if SIB16 is broadcast by the network
     if (!bSIB16Received) {
         urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NITZ_TIME_RECEIVED, m_slot_id,
-                RfxStringData(nitz_string, (strlen(nitz_string)+1)));
+                                       RfxStringData(nitz_string, (strlen(nitz_string) + 1)));
         responseToTelCore(urc);
     }
     free(nitz_string);
@@ -1238,16 +1193,16 @@ error:
 void RmcNetworkUrcHandler::handleNitzOperNameReceived(const sp<RfxMclMessage>& msg) {
     int err;
     int length, i, id;
-    char *oper_code;
-    char *oper_lname;
-    char *oper_sname;
-    char *str;
+    char* oper_code;
+    char* oper_lname;
+    char* oper_sname;
+    char* str;
     int is_lname_hex_str = 0;
     int is_sname_hex_str = 0;
-    char temp_oper_name[MAX_OPER_NAME_LENGTH]={0};
+    char temp_oper_name[MAX_OPER_NAME_LENGTH] = {0};
 
     /* +CIEV: 10,"PLMN","long_name","short_name" */
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1260,7 +1215,7 @@ void RmcNetworkUrcHandler::handleNitzOperNameReceived(const sp<RfxMclMessage>& m
         return;
     }
 
-    oper_code  = m_ril_nw_nitz_oper_code[m_slot_id];
+    oper_code = m_ril_nw_nitz_oper_code[m_slot_id];
     oper_lname = m_ril_nw_nitz_oper_lname[m_slot_id];
     oper_sname = m_ril_nw_nitz_oper_sname[m_slot_id];
 
@@ -1271,53 +1226,55 @@ void RmcNetworkUrcHandler::handleNitzOperNameReceived(const sp<RfxMclMessage>& m
     str = line->atTokNextstr(&err);
     if (err < 0) goto error;
     strncpy(oper_code, str, MAX_OPER_NAME_LENGTH);
-    oper_code[MAX_OPER_NAME_LENGTH-1] = '\0';
+    oper_code[MAX_OPER_NAME_LENGTH - 1] = '\0';
 
     str = line->atTokNextstr(&err);
     if (err < 0) goto error;
     strncpy(oper_lname, str, MAX_OPER_NAME_LENGTH);
-    oper_lname[MAX_OPER_NAME_LENGTH-1] = '\0';
+    oper_lname[MAX_OPER_NAME_LENGTH - 1] = '\0';
 
     str = line->atTokNextstr(&err);
     if (err < 0) goto error;
     strncpy(oper_sname, str, MAX_OPER_NAME_LENGTH);
-    oper_sname[MAX_OPER_NAME_LENGTH-1] = '\0';
+    oper_sname[MAX_OPER_NAME_LENGTH - 1] = '\0';
 
     /* ALPS00459516 start */
-    if ((strlen(oper_lname)%8) == 0) {
+    if ((strlen(oper_lname) % 8) == 0) {
         logD(LOG_TAG, "strlen(oper_lname)=%zu", strlen(oper_lname));
 
         length = strlen(oper_lname);
-        if (oper_lname[length-1] == '@') {
-            oper_lname[length-1] = '\0';
+        if (oper_lname[length - 1] == '@') {
+            oper_lname[length - 1] = '\0';
             logD(LOG_TAG, "remove @ new oper_lname:%s", oper_lname);
         }
     }
 
-    if ((strlen(oper_sname)%8) == 0) {
+    if ((strlen(oper_sname) % 8) == 0) {
         logD(LOG_TAG, "strlen(oper_sname)=%zu", strlen(oper_sname));
 
         length = strlen(oper_sname);
-        if (oper_sname[length-1] == '@') {
-            oper_sname[length-1] = '\0';
+        if (oper_sname[length - 1] == '@') {
+            oper_sname[length - 1] = '\0';
             logD(LOG_TAG, "remove @ new oper_sname:%s", oper_sname);
         }
     }
     /* ALPS00459516 end */
 
     /* ALPS00262905 start
-       +CIEV: 10, <plmn_str>,<full_name_str>,<short_name_str>,<is_full_name_hex_str>,<is_short_name_hex_str> for UCS2 string */
+       +CIEV: 10,
+       <plmn_str>,<full_name_str>,<short_name_str>,<is_full_name_hex_str>,<is_short_name_hex_str>
+       for UCS2 string */
     is_lname_hex_str = line->atTokNextint(&err);
     if (err >= 0) {
         // logD(LOG_TAG, "is_lname_hex_str=%d", is_lname_hex_str);
         if (is_lname_hex_str == 1) {
-            /* ALPS00273663 Add specific prefix "uCs2" to identify this operator name is UCS2 format.
-                   prefix + hex string ex: "uCs2806F767C79D1"  */
+            /* ALPS00273663 Add specific prefix "uCs2" to identify this operator name is UCS2
+               format. prefix + hex string ex: "uCs2806F767C79D1"  */
             memset(temp_oper_name, 0, sizeof(temp_oper_name));
             strncpy(temp_oper_name, "uCs2", 4);
-            strncpy(&(temp_oper_name[4]), oper_lname, MAX_OPER_NAME_LENGTH-4);
+            strncpy(&(temp_oper_name[4]), oper_lname, MAX_OPER_NAME_LENGTH - 4);
             memset(oper_lname, 0, MAX_OPER_NAME_LENGTH);
-            strncpy(oper_lname, temp_oper_name, MAX_OPER_NAME_LENGTH-1);
+            strncpy(oper_lname, temp_oper_name, MAX_OPER_NAME_LENGTH - 1);
             logD(LOG_TAG, "lname add prefix uCs2");
         } else {
             convertToUtf8String(oper_lname);
@@ -1326,13 +1283,13 @@ void RmcNetworkUrcHandler::handleNitzOperNameReceived(const sp<RfxMclMessage>& m
         is_sname_hex_str = line->atTokNextint(&err);
         // logD(LOG_TAG, "is_sname_hex_str=%d", is_sname_hex_str);
         if ((err >= 0) && (is_sname_hex_str == 1)) {
-            /* ALPS00273663 Add specific prefix "uCs2" to identify this operator name is UCS2 format.
-                   prefix + hex string ex: "uCs2806F767C79D1"  */
+            /* ALPS00273663 Add specific prefix "uCs2" to identify this operator name is UCS2
+               format. prefix + hex string ex: "uCs2806F767C79D1"  */
             memset(temp_oper_name, 0, sizeof(temp_oper_name));
             strncpy(temp_oper_name, "uCs2", 4);
-            strncpy(&(temp_oper_name[4]), oper_sname, MAX_OPER_NAME_LENGTH-4);
+            strncpy(&(temp_oper_name[4]), oper_sname, MAX_OPER_NAME_LENGTH - 4);
             memset(oper_sname, 0, MAX_OPER_NAME_LENGTH);
-            strncpy(oper_sname, temp_oper_name, MAX_OPER_NAME_LENGTH-1);
+            strncpy(oper_sname, temp_oper_name, MAX_OPER_NAME_LENGTH - 1);
             logD(LOG_TAG, "sname Add prefix uCs2");
         } else {
             convertToUtf8String(oper_sname);
@@ -1343,11 +1300,12 @@ void RmcNetworkUrcHandler::handleNitzOperNameReceived(const sp<RfxMclMessage>& m
     }
     /* ALPS00262905 end */
 
-    logD(LOG_TAG, "Get NITZ Operator Name of RIL %d: %s %s %s", m_slot_id+1, oper_code, oper_lname, oper_sname);
+    logD(LOG_TAG, "Get NITZ Operator Name of RIL %d: %s %s %s", m_slot_id + 1, oper_code,
+         oper_lname, oper_sname);
     if (m_slot_id >= 0) {
-        setMSimProperty(m_slot_id, (char *)PROPERTY_NITZ_OPER_CODE, oper_code);
-        setMSimProperty(m_slot_id, (char *)PROPERTY_NITZ_OPER_LNAME, oper_lname);
-        setMSimProperty(m_slot_id, (char *)PROPERTY_NITZ_OPER_SNAME, oper_sname);
+        setMSimProperty(m_slot_id, (char*)PROPERTY_NITZ_OPER_CODE, oper_code);
+        setMSimProperty(m_slot_id, (char*)PROPERTY_NITZ_OPER_LNAME, oper_lname);
+        setMSimProperty(m_slot_id, (char*)PROPERTY_NITZ_OPER_SNAME, oper_sname);
     }
     pthread_mutex_unlock(&ril_nw_nitzName_mutex[m_slot_id]);
     isNeedNotifyStateChanged();
@@ -1373,26 +1331,26 @@ void RmcNetworkUrcHandler::handleSib16TimeInfoReceived(const sp<RfxMclMessage>& 
     long long abs_time = 0;
 
     // currentUtcTimeMillis = raw_utc*10 - epochDiffInMillis + elapsedTimeSinceBroadcast
-    time_t  currentUtcTimeMillis;  // time_t is measured in seconds.
-    struct tm *ts;
+    time_t currentUtcTimeMillis;  // time_t is measured in seconds.
+    struct tm* ts;
 
     char* responseStr[5];
     char nitz_string[30];
     char sib16_time_string[70];
     int i;
 
-    /* +CIEV: 11, <UTC>, [<daylightSavingTime >], [<leapSeconds >], [<localTimeOffset >], <delayTicks>
-      <UTC>: The field counts the number of UTC seconds in 10 ms units since 00:00:00 on Gregorian calendar date 1 January, 1900
-      <daylightSavingTime>: It indicates if and how daylight saving time (DST) is applied to obtain the local time.
-      <leapSeconds>: GPS time - leapSeconds = UTC time.
-      <localTimeOffset>: Offset between UTC and local time in units of 15 minutes.
-      <delayTicks>: Time difference from AS receive SIB16 to L4 receive notify
+    /* +CIEV: 11, <UTC>, [<daylightSavingTime >], [<leapSeconds >], [<localTimeOffset >],
+      <delayTicks> <UTC>: The field counts the number of UTC seconds in 10 ms units since 00:00:00
+      on Gregorian calendar date 1 January, 1900 <daylightSavingTime>: It indicates if and how
+      daylight saving time (DST) is applied to obtain the local time. <leapSeconds>: GPS time -
+      leapSeconds = UTC time. <localTimeOffset>: Offset between UTC and local time in units of 15
+      minutes. <delayTicks>: Time difference from AS receive SIB16 to L4 receive notify
 
       Final format :  "yy/mm/dd,hh:mm:ss(+/-)tz[,dst]" */
 
     /* +CIEV: 10,"PLMN","long_name","short_name" */
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -1419,9 +1377,9 @@ void RmcNetworkUrcHandler::handleSib16TimeInfoReceived(const sp<RfxMclMessage>& 
         if (bNitzDstAvailble) {
             logE(LOG_TAG, "Use <daylightSavingTime> from (E)MM INFORMATION");
             asprintf(&responseStr[1], "%s", ril_nw_nitz_dst);
-        }
-        else {
-            logE(LOG_TAG, "ERROR occurs when parsing <daylightSavingTime> of the SIB16 time info URC");
+        } else {
+            logE(LOG_TAG,
+                 "ERROR occurs when parsing <daylightSavingTime> of the SIB16 time info URC");
             responseStr[1] = (char*)"";
             dst = -1;
         }
@@ -1444,8 +1402,7 @@ void RmcNetworkUrcHandler::handleSib16TimeInfoReceived(const sp<RfxMclMessage>& 
         if (bNitzTzAvailble) {
             logE(LOG_TAG, "Use <localTimeOffset> from (E)MM INFORMATION");
             asprintf(&responseStr[3], "%s", ril_nw_nitz_tz);
-        }
-        else {
+        } else {
             logE(LOG_TAG, "ERROR occurs when parsing <localTimeOffset> of the SIB16 time info URC");
             asprintf(&responseStr[3], "%s", "+00");
         }
@@ -1465,12 +1422,13 @@ void RmcNetworkUrcHandler::handleSib16TimeInfoReceived(const sp<RfxMclMessage>& 
     }
     asprintf(&responseStr[4], "%d", dt);
 
-    // logD(LOG_TAG, "SIB16 time info: UTC %s,daylightSavingTime %s,leapSeconds %s,localTimeOffset %s,delayTicks %s",
+    // logD(LOG_TAG, "SIB16 time info: UTC %s,daylightSavingTime %s,leapSeconds %s,localTimeOffset
+    // %s,delayTicks %s",
     //        responseStr[0], responseStr[1], responseStr[2], responseStr[3], responseStr[4]);
 
     abs_time = (raw_utc * 10) - epochDiffInMillis;
 
-    currentUtcTimeMillis = ((raw_utc * 10) - epochDiffInMillis + dt)/1000;
+    currentUtcTimeMillis = ((raw_utc * 10) - epochDiffInMillis + dt) / 1000;
     logD(LOG_TAG, "currentUtcTimeMillis: %s", ctime(&currentUtcTimeMillis));
 
     ts = gmtime(&currentUtcTimeMillis);
@@ -1480,55 +1438,33 @@ void RmcNetworkUrcHandler::handleSib16TimeInfoReceived(const sp<RfxMclMessage>& 
     memset(sib16_time_string, 0, sizeof(sib16_time_string));
     if (dst != -1) {
         // nitz_string with dst
-        sprintf(nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%s",  // "yy/mm/dd,hh:mm:ss(+/-)tz[,dst]"
-                (ts->tm_year)%100,
-                ts->tm_mon+1,
-                ts->tm_mday,
-                ts->tm_hour,
-                ts->tm_min,
-                ts->tm_sec,
-                responseStr[3],
-                responseStr[1]);
+        sprintf(nitz_string,
+                "%02d/%02d/%02d,%02d:%02d:%02d%s,%s",  // "yy/mm/dd,hh:mm:ss(+/-)tz[,dst]"
+                (ts->tm_year) % 100, ts->tm_mon + 1, ts->tm_mday, ts->tm_hour, ts->tm_min,
+                ts->tm_sec, responseStr[3], responseStr[1]);
 
         // sib16_time_string with dst
         // "yy/mm/dd,hh:mm:ss(+/-)tz,dst,abs_time"
-        sprintf(sib16_time_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%s,%lli",
-                (ts->tm_year)%100,
-                ts->tm_mon+1,
-                ts->tm_mday,
-                ts->tm_hour,
-                ts->tm_min,
-                ts->tm_sec,
-                responseStr[3],
-                responseStr[1],
-                abs_time);
+        sprintf(sib16_time_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,%s,%lli", (ts->tm_year) % 100,
+                ts->tm_mon + 1, ts->tm_mday, ts->tm_hour, ts->tm_min, ts->tm_sec, responseStr[3],
+                responseStr[1], abs_time);
     } else {
         // nitz_srting without dst
         sprintf(nitz_string, "%02d/%02d/%02d,%02d:%02d:%02d%s",  // "yy/mm/dd,hh:mm:ss(+/-)tz"
-                (ts->tm_year)%100,
-                ts->tm_mon+1,
-                ts->tm_mday,
-                ts->tm_hour,
-                ts->tm_min,
-                ts->tm_sec,
-                responseStr[3]);
+                (ts->tm_year) % 100, ts->tm_mon + 1, ts->tm_mday, ts->tm_hour, ts->tm_min,
+                ts->tm_sec, responseStr[3]);
         // sib16_time_string with dst=0
         // "yy/mm/dd,hh:mm:ss(+/-)tz,dst,abs_time"
-        sprintf(sib16_time_string, "%02d/%02d/%02d,%02d:%02d:%02d%s,0,%lli",  // "yy/mm/dd,hh:mm:ss(+/-)tz"
-                (ts->tm_year)%100,
-                ts->tm_mon+1,
-                ts->tm_mday,
-                ts->tm_hour,
-                ts->tm_min,
-                ts->tm_sec,
-                responseStr[3],
-                abs_time);
+        sprintf(sib16_time_string,
+                "%02d/%02d/%02d,%02d:%02d:%02d%s,0,%lli",  // "yy/mm/dd,hh:mm:ss(+/-)tz"
+                (ts->tm_year) % 100, ts->tm_mon + 1, ts->tm_mday, ts->tm_hour, ts->tm_min,
+                ts->tm_sec, responseStr[3], abs_time);
     }
     logD(LOG_TAG, "NITZ:%s, SIB16_Time:%s", nitz_string, sib16_time_string);
 
     bSIB16Received = 1;
     urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NITZ_TIME_RECEIVED, m_slot_id,
-        RfxStringData(nitz_string, (strlen(nitz_string)+1)));
+                                   RfxStringData(nitz_string, (strlen(nitz_string) + 1)));
     responseToTelCore(urc);
 
     for (i = 0; i < 5; i++) {
@@ -1547,7 +1483,7 @@ void RmcNetworkUrcHandler::handleNetworkEventReceived(const sp<RfxMclMessage>& m
     int err;
     int response[2] = {0};
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1573,7 +1509,7 @@ void RmcNetworkUrcHandler::handleMMRRStatusChanged(const sp<RfxMclMessage>& msg)
     int err = 0;
     int status = 0;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1582,7 +1518,8 @@ void RmcNetworkUrcHandler::handleMMRRStatusChanged(const sp<RfxMclMessage>& msg)
     if (err < 0) goto error;
 
     logD(LOG_TAG, "onMMRRStatusChanged= %d", status);
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_MMRR_STATUS_CHANGED, m_slot_id, RfxIntsData(&status, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_MMRR_STATUS_CHANGED, m_slot_id,
+                                   RfxIntsData(&status, 1));
     responseToTelCore(urc);
     return;
 
@@ -1592,11 +1529,11 @@ error:
 
 void RmcNetworkUrcHandler::handleWfcStateChanged(const sp<RfxMclMessage>& msg) {
     int err = 0;
-    int stat[4] = { 0 };
+    int stat[4] = {0};
     int status = 0;
     stat[0] = convertRegState(urc_data_reg_state_cache[m_slot_id]->registration_state, false);
     stat[1] = convertPSNetworkType(urc_data_reg_state_cache[m_slot_id]->radio_technology);
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     int prevStatus = ril_wfc_reg_status[m_slot_id];
 
     line->atTokStart(&err);
@@ -1621,8 +1558,7 @@ void RmcNetworkUrcHandler::handleWfcStateChanged(const sp<RfxMclMessage>& msg) {
         stat[3] = convertPSNetworkType(ril_data_urc_rat);
     }
 
-    sendEvent(RFX_MSG_EVENT_PS_NETWORK_STATE, RfxIntsData(stat, 4),
-        RIL_CMD_PROXY_3, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_PS_NETWORK_STATE, RfxIntsData(stat, 4), RIL_CMD_PROXY_3, m_slot_id);
     RFX_LOG_V(LOG_TAG, "Send RFX_MSG_EVENT_PS_NETWORK_STATE");
 
     if (prevStatus != status) {
@@ -1640,7 +1576,7 @@ void RmcNetworkUrcHandler::handleACMT(const sp<RfxMclMessage>& msg) {
     int err;
     int response[2] = {0};
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1667,7 +1603,7 @@ void RmcNetworkUrcHandler::handleModulationInfoReceived(const sp<RfxMclMessage>&
     int err;
     int response = 0;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1679,7 +1615,8 @@ void RmcNetworkUrcHandler::handleModulationInfoReceived(const sp<RfxMclMessage>&
     if (response > 0xFF) goto error;
 
     logD(LOG_TAG, "handleModulationInfoReceived: <mode>:%d", response);
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_MODULATION_INFO, m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_MODULATION_INFO, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
     return;
 
@@ -1691,7 +1628,7 @@ void RmcNetworkUrcHandler::handleEnhancedOperatorNameDisplay(const sp<RfxMclMess
     int err;
     int pnn, opl;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     /* +EONS: <PNN_service>,<OPL_service> */
 
@@ -1708,8 +1645,8 @@ void RmcNetworkUrcHandler::handleEnhancedOperatorNameDisplay(const sp<RfxMclMess
 
     if (pnn == 1 && opl == 1) {
         eons_info[m_slot_id].eons_status = EONS_INFO_RECEIVED_ENABLED;
-        urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED,
-                m_slot_id, RfxVoidData());
+        urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED, m_slot_id,
+                                       RfxVoidData());
         responseToTelCore(urc);
     } else {
         eons_info[m_slot_id].eons_status = EONS_INFO_RECEIVED_DISABLED;
@@ -1719,16 +1656,17 @@ void RmcNetworkUrcHandler::handleEnhancedOperatorNameDisplay(const sp<RfxMclMess
 void RmcNetworkUrcHandler::handleNetworkScanResult(const sp<RfxMclMessage>& msg) {
     int err = 0;
     sp<RfxMclMessage> urc;
-    RIL_NetworkScanResult *response = NULL;
-    RfxAtLine *line = msg->getRawUrc();
+    RIL_NetworkScanResult* response = NULL;
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
 
-    response = (RIL_NetworkScanResult *) alloca(sizeof(RIL_NetworkScanResult));
+    response = (RIL_NetworkScanResult*)alloca(sizeof(RIL_NetworkScanResult));
     memset(response, 0, sizeof(RIL_NetworkScanResult));
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NETWORK_SCAN_RESULT, m_slot_id,
+    urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_URC_NETWORK_SCAN_RESULT, m_slot_id,
             RfxNetworkScanResultData(response, sizeof(RIL_NetworkScanResult)));
     responseToTelCore(urc);
     return;
@@ -1741,7 +1679,7 @@ void RmcNetworkUrcHandler::handleLteNetworkInfo(const sp<RfxMclMessage>& msg) {
     int err = 0;
     int lteBand = 0;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1751,7 +1689,7 @@ void RmcNetworkUrcHandler::handleLteNetworkInfo(const sp<RfxMclMessage>& msg) {
 
     logD(LOG_TAG, "onLteNetworkInfo: %d", lteBand);
     urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_LTE_NETWORK_INFO, m_slot_id,
-            RfxIntsData(&lteBand, 1));
+                                   RfxIntsData(&lteBand, 1));
     responseToTelCore(urc);
 
     return;
@@ -1769,7 +1707,7 @@ void RmcNetworkUrcHandler::handleMccMncChanged(const sp<RfxMclMessage>& msg) {
     char* mnc = NULL;
     char* mccmnc = NULL;
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1781,9 +1719,8 @@ void RmcNetworkUrcHandler::handleMccMncChanged(const sp<RfxMclMessage>& msg) {
     if (err < 0) goto error;
 
     // Invalid MCC MNC information will be sent as +EMCCMNC:FFF,FFF, ignore it
-    if ((mcc == NULL || mnc == NULL)
-            || (strlen(mcc) == 0 || strlen(mnc) == 0)
-            || (strcmp(mcc, "FFF") == 0 || strcmp(mnc, "FFF") == 0)) {
+    if ((mcc == NULL || mnc == NULL) || (strlen(mcc) == 0 || strlen(mnc) == 0) ||
+        (strcmp(mcc, "FFF") == 0 || strcmp(mnc, "FFF") == 0)) {
         goto error;
     }
 
@@ -1797,7 +1734,7 @@ void RmcNetworkUrcHandler::handleMccMncChanged(const sp<RfxMclMessage>& msg) {
     logD(LOG_TAG, "handleMccMncChanged: mccmnc=%s", mccmnc);
 
     urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_MCCMNC_CHANGED, m_slot_id,
-            RfxStringData(mccmnc, strlen(mccmnc)));
+                                   RfxStringData(mccmnc, strlen(mccmnc)));
     responseToTelCore(urc);
     free(mccmnc);
     return;
@@ -1817,25 +1754,25 @@ void RmcNetworkUrcHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
 }
 
 bool RmcNetworkUrcHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-        RIL_RadioState radioState) {
+                                                  RIL_RadioState radioState) {
     bool reject = false;
     if (RADIO_STATE_UNAVAILABLE == radioState) {
-        if (((strStartsWith(msg->getRawUrc()->getLine(), "+ERPRAT:"))
-                || (strStartsWith(msg->getRawUrc()->getLine(), "+EIPRL:")))
-                        && (RmcWpRequestHandler::isWorldModeSwitching())) {
+        if (((strStartsWith(msg->getRawUrc()->getLine(), "+ERPRAT:")) ||
+             (strStartsWith(msg->getRawUrc()->getLine(), "+EIPRL:"))) &&
+            (RmcWpRequestHandler::isWorldModeSwitching())) {
             reject = false;
         } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EWFC:")) {
             reject = false;
         } else {
             if (allowed_urc != NULL) {
-                int length = sizeof(allowed_urc) / sizeof(char *);
+                int length = sizeof(allowed_urc) / sizeof(char*);
                 for (int i = 0; i < length && allowed_urc[i] != NULL; i++) {
                     if ((strStartsWith(msg->getRawUrc()->getLine(), allowed_urc[i]))) {
                         if (RmcWpRequestHandler::isWorldModeSwitching()) {
                             reject = false;
                         } else {
                             logD(LOG_TAG, "onCheckIfRejectMessage, urc = %s, i = %d, length = %d.",
-                                    allowed_urc[i], i, length);
+                                 allowed_urc[i], i, length);
                             reject = true;
                         }
                         break;
@@ -1858,7 +1795,6 @@ bool RmcNetworkUrcHandler::enableReportSignalStrengthWithWcdmaEcio() {
     return enableReport;
 }
 
-
 void RmcNetworkUrcHandler::onImsEmergencySupportR9(const sp<RfxMclMessage>& msg) {
     int err;
     sp<RfxAtResponse> p_response;
@@ -1876,18 +1812,18 @@ void RmcNetworkUrcHandler::onImsEmergencySupportR9(const sp<RfxMclMessage>& msg)
     ecc = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    if ( (rat == 3 || rat == 4) && (ecc == 1)) {
+    if ((rat == 3 || rat == 4) && (ecc == 1)) {
         ims_ecc_state[m_slot_id] = true;
     } else {
         ims_ecc_state[m_slot_id] = false;
     }
-    logD(LOG_TAG, "onImsEmergencySupportR9: %d", ims_ecc_state[m_slot_id]? 1: 0);
+    logD(LOG_TAG, "onImsEmergencySupportR9: %d", ims_ecc_state[m_slot_id] ? 1 : 0);
 
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_IMS_EMERGENCY_SUPPORT_STATE,
-            ims_ecc_state[m_slot_id]? 1: 0);
+                                       ims_ecc_state[m_slot_id] ? 1 : 0);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED,
-            m_slot_id, RfxVoidData());
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_VOICE_NETWORK_STATE_CHANGED, m_slot_id,
+                                   RfxVoidData());
     // response to TeleCore
     responseToTelCore(urc);
 error:
@@ -1899,7 +1835,7 @@ void RmcNetworkUrcHandler::handleCellularQualityReport(const sp<RfxMclMessage>& 
     int err = 0;
     int report[2];
     sp<RfxMclMessage> urc;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) goto error;
@@ -1912,7 +1848,7 @@ void RmcNetworkUrcHandler::handleCellularQualityReport(const sp<RfxMclMessage>& 
 
     logD(LOG_TAG, "onCellularQualityReport: %d, %d", report[0], report[1]);
     urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CELLULAR_QUALITY_CHANGED_IND, m_slot_id,
-            RfxIntsData(report, 2));
+                                   RfxIntsData(report, 2));
     responseToTelCore(urc);
 
     return;

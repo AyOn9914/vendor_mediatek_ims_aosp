@@ -18,20 +18,17 @@
 #include "RilOpOemClient.h"
 
 #define RFX_LOG_TAG "RtcOpRilClientController"
-#define NUM_ELEMS(a)  (sizeof (a) / sizeof (a)[0])
+#define NUM_ELEMS(a) (sizeof(a) / sizeof(a)[0])
 
-RFX_IMPLEMENT_CLASS("RtcOpRilClientController", RtcOpRilClientController,
-        RtcRilClientController);
+RFX_IMPLEMENT_CLASS("RtcOpRilClientController", RtcOpRilClientController, RtcRilClientController);
 
 const ClientInformation opClient[] = {
-    {CLIENT_ID_OEM, (char *) "rild-oem", CLIENT_TYPE_OEM},
+        {CLIENT_ID_OEM, (char*)"rild-oem", CLIENT_TYPE_OEM},
 };
 
-RtcOpRilClientController::RtcOpRilClientController() {
-}
+RtcOpRilClientController::RtcOpRilClientController() {}
 
-RtcOpRilClientController::~RtcOpRilClientController() {
-}
+RtcOpRilClientController::~RtcOpRilClientController() {}
 
 void RtcOpRilClientController::initRilClient() {
     RtcRilClientController::initRilClient();
@@ -39,7 +36,7 @@ void RtcOpRilClientController::initRilClient() {
     for (unsigned int i = 0; i < NUM_ELEMS(opClient); i++) {
         ClientInformation information = opClient[i];
         RilClient* client;
-        switch(information.type) {
+        switch (information.type) {
             case CLIENT_TYPE_OEM:
                 client = new RilOpOemClient(information.identity, information.socketName);
                 break;

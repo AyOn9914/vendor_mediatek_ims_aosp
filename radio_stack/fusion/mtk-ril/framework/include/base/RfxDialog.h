@@ -33,10 +33,11 @@ using ::android::sp;
  * Represents mediaAttributes element in Dialog Event Package.
  */
 class RfxMediaAttribute : public virtual RefBase {
-public:
+  public:
     RfxMediaAttribute();
     virtual ~RfxMediaAttribute();
-public:
+
+  public:
     string mediaType;
     string mediaDirection;
     bool port0;
@@ -45,11 +46,12 @@ public:
 /**
  * Represents dialog element in Dialog Event Package.
  */
-class RfxDialog: public virtual RefBase {
-public:
+class RfxDialog : public virtual RefBase {
+  public:
     RfxDialog();
     virtual ~RfxDialog();
-public:
+
+  public:
     static const string AUDIO;
     static const string VIDEO;
     static const string SIP_RENDERING;
@@ -74,7 +76,7 @@ public:
         CALL_STATE_EARLY = 5,
     } DialogCallState;
 
-    //call type is corresponding to value in ImsCallProfile
+    // call type is corresponding to value in ImsCallProfile
     typedef enum {
         CALL_TYPE_VOICE = 2,
         CALL_TYPE_VT = 4,
@@ -83,33 +85,33 @@ public:
         CALL_TYPE_VT_NODIR = 7,
     } DialogCallType;
 
-public:
+  public:
     int dialogId;
     bool exclusive;
     string state;
     bool initiator;
 
-    //local start
+    // local start
     string identity;
     string targetUri;
     vector<sp<RfxMediaAttribute>> mediaAttributes;
 
-    //Param start
+    // Param start
     string pname;
     string pval;
-    //Param end
-    //local end
+    // Param end
+    // local end
 
-    //remote start
+    // remote start
     string remoteIdentity;
     string remoteTargetUri;
 
-    //Param start
+    // Param start
     string remotePname;
     string remotePval;
-    //Param end
-    //remote end
-public:
+    // Param end
+    // remote end
+  public:
     int getDialogId();
     string getAddress();
     string getRemoteAddress();
@@ -118,7 +120,8 @@ public:
     bool isPullable();
     int getCallState();
     int getCallType();
-private:
+
+  private:
     bool isCallHeld(vector<sp<RfxMediaAttribute>> mediaAttributes);
     bool isVideoCallInBackground();
 };

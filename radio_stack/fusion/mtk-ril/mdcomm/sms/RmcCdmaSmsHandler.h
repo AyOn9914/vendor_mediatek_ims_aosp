@@ -21,22 +21,21 @@
  *****************************************************************************/
 #include "common/RmcChannelHandler.h"
 
-
 /*****************************************************************************
  * Class RmcCdmaSmsReqHandler
  *****************************************************************************/
 class RmcCdmaSmsReqHandler : public RmcBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCdmaSmsReqHandler);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     RmcCdmaSmsReqHandler(int slotId, int channelId);
     virtual ~RmcCdmaSmsReqHandler();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    virtual RmcMessageHandler *onCreateReqHandler(const sp < RfxMclMessage > & msg);
+    virtual RmcMessageHandler* onCreateReqHandler(const sp<RfxMclMessage>& msg);
 };
 
 /*****************************************************************************
@@ -45,15 +44,15 @@ protected:
 class RmcCdmaMoSmsReqHandler : public RmcBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCdmaMoSmsReqHandler);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     RmcCdmaMoSmsReqHandler(int slotId, int channelId);
     virtual ~RmcCdmaMoSmsReqHandler();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    virtual RmcMessageHandler *onCreateReqHandler(const sp < RfxMclMessage > & msg);
+    virtual RmcMessageHandler* onCreateReqHandler(const sp<RfxMclMessage>& msg);
 };
 
 /*****************************************************************************
@@ -62,15 +61,15 @@ protected:
 class RmcCdmaMtSmsAckReqHandler : public RmcBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCdmaMtSmsAckReqHandler);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     RmcCdmaMtSmsAckReqHandler(int slotId, int channelId);
     virtual ~RmcCdmaMtSmsAckReqHandler();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    virtual RmcMessageHandler *onCreateReqHandler(const sp < RfxMclMessage > & msg);
+    virtual RmcMessageHandler* onCreateReqHandler(const sp<RfxMclMessage>& msg);
 };
 
 /*****************************************************************************
@@ -79,14 +78,14 @@ protected:
 class RmcCdmaSmsUrcHandler : public RmcBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCdmaSmsUrcHandler);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     RmcCdmaSmsUrcHandler(int slotId, int channelId);
     virtual ~RmcCdmaSmsUrcHandler();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    virtual RmcMessageHandler *onCreateUrcHandler(const sp < RfxMclMessage > & msg);
+    virtual RmcMessageHandler* onCreateUrcHandler(const sp<RfxMclMessage>& msg);
 };
 #endif /* __RMC_CDMA_SMS_HANDLER__ */

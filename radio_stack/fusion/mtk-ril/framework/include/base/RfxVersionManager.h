@@ -21,54 +21,45 @@
 #include "utils/String8.h"
 #include "RfxAtLine.h"
 
-using ::android::Vector;
 using ::android::String8;
+using ::android::Vector;
 using namespace std;
 
 class FeatureVersion {
-    public:
-        FeatureVersion():
-            mFeature(String8()),
-            mVersion(-1) {
-        }
+  public:
+    FeatureVersion() : mFeature(String8()), mVersion(-1) {}
 
-        FeatureVersion(String8 feature, int version):
-            mFeature(feature),
-            mVersion(version){
-        }
+    FeatureVersion(String8 feature, int version) : mFeature(feature), mVersion(version) {}
 
-        String8 getFeature() {
-            return mFeature;
-        }
+    String8 getFeature() { return mFeature; }
 
-        int getVersion() {
-            return mVersion;
-        }
-    private:
-        String8 mFeature;
-        int mVersion;
+    int getVersion() { return mVersion; }
+
+  private:
+    String8 mFeature;
+    int mVersion;
 };
 
 class RfxVersionManager {
+  public:
+    static RfxVersionManager* init();
 
-    public:
-        static RfxVersionManager* init();
+    static RfxVersionManager* getInstance();
 
-        static RfxVersionManager* getInstance();
+  public:
+    void initVersion(RfxAtLine* line);
 
-    public:
-        void initVersion(RfxAtLine *line);
+    int getFeatureVersion(char* feature, int defaultVaule);
 
-        int getFeatureVersion(char *feature, int defaultVaule);
+    // if no corresponding feature name, return 0
+    int getFeatureVersion(char* feature);
 
-        // if no corresponding feature name, return 0
-        int getFeatureVersion(char *feature);
-    private:
-        void waitVersion();
+  private:
+    void waitVersion();
 
-        static RfxVersionManager* sSelf;
+    static RfxVersionManager* sSelf;
 
-        Vector<FeatureVersion> mVersionList;
+    Vector<FeatureVersion> mVersionList;
 };
 
 #endif

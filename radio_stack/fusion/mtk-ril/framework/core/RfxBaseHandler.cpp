@@ -32,8 +32,7 @@
 #include "RfxVersionManager.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 #include "pb_decode.h"
@@ -50,9 +49,8 @@ void RfxBaseHandler::processMessage(const sp<RfxMclMessage>& msg) {
     if (REQUEST == msg->getType() || SAP_REQUEST == msg->getType()) {
         onHandleRequest(msg);
     } else if (RAW_URC == msg->getType()) {
-
         // check radio state condition
-        RIL_RadioState radioState = (RIL_RadioState) getMclStatusManager()->getIntValue(
+        RIL_RadioState radioState = (RIL_RadioState)getMclStatusManager()->getIntValue(
                 RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF);
         if (onCheckIfRejectMessage(msg, radioState)) {
             return;
@@ -64,27 +62,26 @@ void RfxBaseHandler::processMessage(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RfxBaseHandler::registerToHandleRequest(const int *request_id_list, size_t length) {
+void RfxBaseHandler::registerToHandleRequest(const int* request_id_list, size_t length) {
     int realChannelId = m_channel_id + RIL_PROXY_OFFSET * m_slot_id;
-    RfxHandlerManager::registerToHandleRequest(this , realChannelId, m_slot_id, request_id_list,
-            length);
+    RfxHandlerManager::registerToHandleRequest(this, realChannelId, m_slot_id, request_id_list,
+                                               length);
 }
 
-void RfxBaseHandler::registerToHandleURC(const char **urc_prefix_list, size_t length) {
+void RfxBaseHandler::registerToHandleURC(const char** urc_prefix_list, size_t length) {
     int realChannelId = m_channel_id + RIL_PROXY_OFFSET * m_slot_id;
-    RfxHandlerManager::registerToHandleUrc(this , realChannelId, m_slot_id, urc_prefix_list, length);
+    RfxHandlerManager::registerToHandleUrc(this, realChannelId, m_slot_id, urc_prefix_list, length);
 }
 
-void RfxBaseHandler::registerToHandleEvent(const int *event_id_list, size_t length) {
+void RfxBaseHandler::registerToHandleEvent(const int* event_id_list, size_t length) {
     int realChannelId = m_channel_id + RIL_PROXY_OFFSET * m_slot_id;
-    RfxHandlerManager::registerToHandleEvent(this , realChannelId, m_slot_id, event_id_list, length);
+    RfxHandlerManager::registerToHandleEvent(this, realChannelId, m_slot_id, event_id_list, length);
 }
 
-void RfxBaseHandler::registerToHandleEvent(int client_id, const int *event_id_list,
-            size_t length) {
+void RfxBaseHandler::registerToHandleEvent(int client_id, const int* event_id_list, size_t length) {
     int realChannelId = m_channel_id + RIL_PROXY_OFFSET * m_slot_id;
-    RfxHandlerManager::registerToHandleEvent(this,
-            realChannelId, m_slot_id, client_id, event_id_list, length);
+    RfxHandlerManager::registerToHandleEvent(this, realChannelId, m_slot_id, client_id,
+                                             event_id_list, length);
 }
 
 void RfxBaseHandler::responseToTelCore(const sp<RfxMclMessage>& msg) {
@@ -101,16 +98,17 @@ void RfxBaseHandler::responseToTelCore(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RfxBaseHandler::sendEvent(int id, const RfxBaseData &data, int channelId,
-        int slotId, int clientId, int token, nsecs_t delayTime, MTK_RIL_REQUEST_PRIORITY priority) {
-    sp<RfxMclMessage> msg = RfxMclMessage::obtainEvent(id, data, channelId, slotId, clientId,
-            token, delayTime, priority);
+void RfxBaseHandler::sendEvent(int id, const RfxBaseData& data, int channelId, int slotId,
+                               int clientId, int token, nsecs_t delayTime,
+                               MTK_RIL_REQUEST_PRIORITY priority) {
+    sp<RfxMclMessage> msg = RfxMclMessage::obtainEvent(id, data, channelId, slotId, clientId, token,
+                                                       delayTime, priority);
     sendEvent(msg);
 }
 
 void RfxBaseHandler::sendEvent(sp<RfxMclMessage> msg) {
-    msg->setMainProtocolSlotId(getNonSlotMclStatusManager()->getIntValue(
-                    RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
+    msg->setMainProtocolSlotId(
+            getNonSlotMclStatusManager()->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0));
     if (msg->getDelayTime() > 0) {
         RfxMclDispatcherThread::enqueueMclMessageDelay(msg);
     } else {
@@ -133,29 +131,29 @@ void RfxBaseHandler::sendBtSapStatusInd(RIL_SIM_SAP_STATUS_IND_Status message) {
     unsolMsg.statusChange = message;
 
     if (message == RIL_SIM_SAP_STATUS_IND_Status_RIL_SIM_STATUS_CARD_RESET &&
-            status == BT_SAP_CONNECTION_SETUP) {
+        status == BT_SAP_CONNECTION_SETUP) {
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_BTSAP_STATUS, BT_SAP_ONGOING_CONNECTION);
     }
 
     // send unsolicited message STATUS_IND
-    if ((success = pb_get_encoded_size(&encoded_size, RIL_SIM_SAP_STATUS_IND_fields,
-            &unsolMsg)) && encoded_size <= INT32_MAX) {
+    if ((success = pb_get_encoded_size(&encoded_size, RIL_SIM_SAP_STATUS_IND_fields, &unsolMsg)) &&
+        encoded_size <= INT32_MAX) {
         buffer_size = encoded_size;
         uint8_t buffer[buffer_size];
         ostream = pb_ostream_from_buffer(buffer, buffer_size);
         success = pb_encode(&ostream, RIL_SIM_SAP_STATUS_IND_fields, &unsolMsg);
 
-        if(success) {
+        if (success) {
             logD("[BTSAP]", "notifyBtSapStatusInd, Size: %zu (0x%zx)", encoded_size, encoded_size);
-            sp<RfxMclMessage> response = RfxMclMessage::obtainSapUrc(RFX_MSG_URC_SIM_SAP_STATUS,
-                    m_slot_id, RfxRawData(buffer, buffer_size));
+            sp<RfxMclMessage> response = RfxMclMessage::obtainSapUrc(
+                    RFX_MSG_URC_SIM_SAP_STATUS, m_slot_id, RfxRawData(buffer, buffer_size));
             responseToTelCore(response);
         } else {
             logE("[BTSAP]", "notifyBtSapStatusInd, Encode failed!");
         }
     } else {
         logE("[BTSAP]", "Not sending response type %d: encoded_size: %zu. encoded size result: %d",
-                msgId, encoded_size, success);
+             msgId, encoded_size, success);
     }
 }
 
@@ -164,7 +162,7 @@ RfxSender* RfxBaseHandler::getSender() {
     return RfxChannelManager::getSender(realChannelId);
 }
 
-void RfxBaseHandler::logD(const char *tag, const char *fmt, ...) const {
+void RfxBaseHandler::logD(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -178,11 +176,10 @@ void RfxBaseHandler::logD(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(DEBUG, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(DEBUG, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxBaseHandler::logI(const char *tag, const char *fmt, ...) const {
+void RfxBaseHandler::logI(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -196,11 +193,10 @@ void RfxBaseHandler::logI(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(INFO, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(INFO, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxBaseHandler::logV(const char *tag, const char *fmt, ...) const {
+void RfxBaseHandler::logV(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -214,11 +210,10 @@ void RfxBaseHandler::logV(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(VERBOSE, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(VERBOSE, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxBaseHandler::logE(const char *tag, const char *fmt, ...) const {
+void RfxBaseHandler::logE(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -232,11 +227,10 @@ void RfxBaseHandler::logE(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(ERROR, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(ERROR, tagString, String8::format("%s", buf), m_slot_id);
 }
 
-void RfxBaseHandler::logW(const char *tag, const char *fmt, ...) const {
+void RfxBaseHandler::logW(const char* tag, const char* fmt, ...) const {
     va_list ap;
     char buf[LOG_BUF_SIZE] = {0};
 
@@ -250,8 +244,7 @@ void RfxBaseHandler::logW(const char *tag, const char *fmt, ...) const {
     vsnprintf(buf, LOG_BUF_SIZE, fmt, ap);
     va_end(ap);
 
-    RfxRilUtils::printLog(WARN, tagString,
-            String8::format("%s", buf), m_slot_id);
+    RfxRilUtils::printLog(WARN, tagString, String8::format("%s", buf), m_slot_id);
 }
 
 RfxMclStatusManager* RfxBaseHandler::getMclStatusManager() {
@@ -266,53 +259,47 @@ RfxMclStatusManager* RfxBaseHandler::getNonSlotMclStatusManager() {
     return RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandSingleline(const char *command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    return getSender()->atSendCommandSinglelineAck(command, responsePrefix,
-            ackToken);
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandSingleline(const char* command,
+                                                          const char* responsePrefix,
+                                                          RIL_Token ackToken) {
+    return getSender()->atSendCommandSinglelineAck(command, responsePrefix, ackToken);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandSingleline(const String8 &command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    return getSender()->atSendCommandSinglelineAck(command.string(), responsePrefix,
-            ackToken);
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandSingleline(const String8& command,
+                                                          const char* responsePrefix,
+                                                          RIL_Token ackToken) {
+    return getSender()->atSendCommandSinglelineAck(command.string(), responsePrefix, ackToken);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandNumeric(const char *command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandNumeric(const char* command, RIL_Token ackToken) {
     return getSender()->atSendCommandNumericAck(command, ackToken);
 }
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandNumeric(const String8 &command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandNumeric(const String8& command, RIL_Token ackToken) {
     return getSender()->atSendCommandNumericAck(command.string(), ackToken);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandMultiline(const char *command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    return getSender()->atSendCommandMultilineAck(command, responsePrefix,
-            ackToken);
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandMultiline(const char* command,
+                                                         const char* responsePrefix,
+                                                         RIL_Token ackToken) {
+    return getSender()->atSendCommandMultilineAck(command, responsePrefix, ackToken);
 }
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandMultiline(const String8 &command,
-        const char *responsePrefix, RIL_Token ackToken) {
-    return getSender()->atSendCommandMultilineAck(command.string(), responsePrefix,
-            ackToken);
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandMultiline(const String8& command,
+                                                         const char* responsePrefix,
+                                                         RIL_Token ackToken) {
+    return getSender()->atSendCommandMultilineAck(command.string(), responsePrefix, ackToken);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommand(const char *command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommand(const char* command, RIL_Token ackToken) {
     return getSender()->atSendCommandAck(command, ackToken);
 }
-sp<RfxAtResponse> RfxBaseHandler::atSendCommand(const String8 &command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommand(const String8& command, RIL_Token ackToken) {
     return getSender()->atSendCommandAck(command.string(), ackToken);
 }
 
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandRaw(const char *command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandRaw(const char* command, RIL_Token ackToken) {
     return getSender()->atSendCommandRawAck(command, ackToken);
 }
-sp<RfxAtResponse> RfxBaseHandler::atSendCommandRaw(const String8 &command,
-        RIL_Token ackToken) {
+sp<RfxAtResponse> RfxBaseHandler::atSendCommandRaw(const String8& command, RIL_Token ackToken) {
     return getSender()->atSendCommandRawAck(command.string(), ackToken);
 }
 
@@ -324,36 +311,26 @@ bool RfxBaseHandler::sendUserData(int clientId, int config, unsigned char* data,
     return getSender()->sendUserData(clientId, config, data, length);
 }
 
-int RfxBaseHandler::strStartsWith(const char *line, const char *prefix) {
+int RfxBaseHandler::strStartsWith(const char* line, const char* prefix) {
     return RfxMisc::strStartsWith(line, prefix);
 }
 
-const char* RfxBaseHandler::idToString(int id) {
-    return RFX_ID_TO_STR(id);
-}
+const char* RfxBaseHandler::idToString(int id) { return RFX_ID_TO_STR(id); }
 
-int RfxBaseHandler::getFeatureVersion(char *feature, int defaultVaule) {
+int RfxBaseHandler::getFeatureVersion(char* feature, int defaultVaule) {
     return RfxVersionManager::getInstance()->getFeatureVersion(feature, defaultVaule);
 }
 
-int RfxBaseHandler::getFeatureVersion(char *feature) {
-    return getFeatureVersion(feature, 0);
-}
+int RfxBaseHandler::getFeatureVersion(char* feature) { return getFeatureVersion(feature, 0); }
 
-void RfxBaseHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
-    RFX_UNUSED(msg);
-}
+void RfxBaseHandler::onHandleRequest(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-void RfxBaseHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    RFX_UNUSED(msg);
-}
+void RfxBaseHandler::onHandleUrc(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-void RfxBaseHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
-    RFX_UNUSED(msg);
-}
+void RfxBaseHandler::onHandleEvent(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
 bool RfxBaseHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-        RIL_RadioState radioState) {
+                                            RIL_RadioState radioState) {
     RFX_UNUSED(msg);
     RFX_UNUSED(radioState);
     return false;
@@ -362,10 +339,9 @@ bool RfxBaseHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
 /* An utility function for Urc.
  * To parse the URC and convert to the MCL data without any logic.
  */
-void RfxBaseHandler::notifyStringsDataToTcl(
-            const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen, bool appendPhoneId) {
-
-    RfxAtLine *urc = msg->getRawUrc();
+void RfxBaseHandler::notifyStringsDataToTcl(const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen,
+                                            bool appendPhoneId) {
+    RfxAtLine* urc = msg->getRawUrc();
     if (urc == NULL) return;
     // token init
     int ret;
@@ -401,10 +377,10 @@ void RfxBaseHandler::notifyStringsDataToTcl(
     responseToTelCore(unsol);
 }
 
-void RfxBaseHandler::notifyIntsDataToTcl(
-            const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen, bool appendPhoneId) {
+void RfxBaseHandler::notifyIntsDataToTcl(const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen,
+                                         bool appendPhoneId) {
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -412,7 +388,7 @@ void RfxBaseHandler::notifyIntsDataToTcl(
     std::vector<int> params;
 
     int index = 0;
-    while(maxLen == 0 || index < maxLen) {
+    while (maxLen == 0 || index < maxLen) {
         int val = line->atTokNextint(&err);
         if (err < 0) break;
         params.push_back(val);
@@ -424,12 +400,11 @@ void RfxBaseHandler::notifyIntsDataToTcl(
     }
 
     sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        rfxMsg, m_slot_id, RfxIntsData(params.data(), (int)params.size()));
+            rfxMsg, m_slot_id, RfxIntsData(params.data(), (int)params.size()));
     responseToTelCore(urc);
 }
 
-RIL_Errno RfxBaseHandler::handleCmdWithVoidResponse(
-                                       const sp<RfxMclMessage>& msg, String8 cmd) {
+RIL_Errno RfxBaseHandler::handleCmdWithVoidResponse(const sp<RfxMclMessage>& msg, String8 cmd) {
     sp<RfxAtResponse> atResponse = atSendCommand(cmd);
     // check at cmd result, consider default as success
     RIL_Errno result = RIL_E_SUCCESS;
@@ -446,7 +421,7 @@ RIL_Errno RfxBaseHandler::handleCmdWithVoidResponse(
 
     // report to tcl
     sp<RfxMclMessage> mclResponse =
-        RfxMclMessage::obtainResponse(msg->getId(), result, RfxVoidData(), msg);
+            RfxMclMessage::obtainResponse(msg->getId(), result, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
     return result;
 }

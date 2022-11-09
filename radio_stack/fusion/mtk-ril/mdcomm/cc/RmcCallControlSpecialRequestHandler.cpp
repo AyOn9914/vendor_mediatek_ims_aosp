@@ -29,23 +29,23 @@
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCallControlSpecialRequestHandler, RIL_CMD_PROXY_1);
 
 RmcCallControlSpecialRequestHandler::RmcCallControlSpecialRequestHandler(int slot_id,
-        int channel_id) : RmcCallControlBaseHandler(slot_id, channel_id) {
+                                                                         int channel_id)
+    : RmcCallControlBaseHandler(slot_id, channel_id) {
     const int requests[] = {
-        RFX_MSG_REQUEST_FORCE_RELEASE_CALL,                           //AT+ECHUP
-        RFX_MSG_REQUEST_SET_VOICE_DOMAIN_PREFERENCE,                  //AT+CEVDP
-        RFX_MSG_REQUEST_GET_VOICE_DOMAIN_PREFERENCE,                  //AT+CEVDP?
+            RFX_MSG_REQUEST_FORCE_RELEASE_CALL,           // AT+ECHUP
+            RFX_MSG_REQUEST_SET_VOICE_DOMAIN_PREFERENCE,  // AT+CEVDP
+            RFX_MSG_REQUEST_GET_VOICE_DOMAIN_PREFERENCE,  // AT+CEVDP?
     };
 
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcCallControlSpecialRequestHandler::~RmcCallControlSpecialRequestHandler() {
-}
+RmcCallControlSpecialRequestHandler::~RmcCallControlSpecialRequestHandler() {}
 
 void RmcCallControlSpecialRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_FORCE_RELEASE_CALL:
             requestForceReleaseCall(msg);
             break;
@@ -69,7 +69,7 @@ void RmcCallControlSpecialRequestHandler::requestForceReleaseCall(const sp<RfxMc
     /* +ECHUP=<call_id>
      * <call_id>: hangup call id
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
     char* atCmd = AT_FORCE_RELEASE;
     int callId = params[0];
@@ -78,9 +78,10 @@ void RmcCallControlSpecialRequestHandler::requestForceReleaseCall(const sp<RfxMc
     handleCmdWithVoidResponse(msg, cmd);
 }
 
-void RmcCallControlSpecialRequestHandler::requestSetVoiceDomainPreference(const sp<RfxMclMessage>& msg) {
-    int *params = (int *)msg->getData()->getData();
-    char *cmd;
+void RmcCallControlSpecialRequestHandler::requestSetVoiceDomainPreference(
+        const sp<RfxMclMessage>& msg) {
+    int* params = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -91,27 +92,28 @@ void RmcCallControlSpecialRequestHandler::requestSetVoiceDomainPreference(const 
     //  3:  IMS PS voice preferred, CS voice as secondary
     //  4:  IMS PS voice only
     logD(RFX_LOG_TAG, "requestSetVoiceDomainPreference settings: %d", params[0]);
-    p_response = atSendCommand(String8::format("AT+CEVDP=%d",params[0]));
+    p_response = atSendCommand(String8::format("AT+CEVDP=%d", params[0]));
 
     // set result
     if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-void RmcCallControlSpecialRequestHandler::requestGetVoiceDomainPreference(const sp<RfxMclMessage>& msg) {
+void RmcCallControlSpecialRequestHandler::requestGetVoiceDomainPreference(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> responseMsg;
     sp<RfxAtResponse> p_response = NULL;
     int err;
     int vps = 0;
-    char *tmp;
-    RfxAtLine *line = NULL;
+    char* tmp;
+    RfxAtLine* line = NULL;
 
     p_response = atSendCommandSingleline("AT+CEVDP?", "+CEVDP:");
 
@@ -129,14 +131,14 @@ void RmcCallControlSpecialRequestHandler::requestGetVoiceDomainPreference(const 
     if (err < 0) goto error;
 
     responseMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData((void*)&vps, sizeof(int)), msg, false);
+                                                RfxIntsData((void*)&vps, sizeof(int)), msg, false);
     // response to TeleCore
     responseToTelCore(responseMsg);
     return;
 error:
     logE(RFX_LOG_TAG, "requestGetVoiceDomainPreference error");
     responseMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData((void*)&vps, sizeof(int)), msg, false);
+                                                RfxIntsData((void*)&vps, sizeof(int)), msg, false);
     // response to TeleCore
     responseToTelCore(responseMsg);
 }

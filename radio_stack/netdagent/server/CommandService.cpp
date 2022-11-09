@@ -19,7 +19,6 @@
 
 #include "CommandService.h"
 
-
 using android::hardware::configureRpcThreadpool;
 using android::hardware::joinRpcThreadpool;
 using android::hardware::registerPassthroughServiceImplementation;
@@ -36,7 +35,6 @@ CommandService::CommandService(int maxThreads, std::string serviceName) {
 }
 
 CommandService::~CommandService() {
-
     for (auto it = mCommandDispatchList->begin(); it != mCommandDispatchList->end();) {
         delete (*it);
         it = mCommandDispatchList->erase(it);
@@ -45,7 +43,6 @@ CommandService::~CommandService() {
 }
 
 int CommandService::startService() {
-
     if (pthread_create(&mThread, NULL, CommandService::threadStart, this)) {
         ALOGE("pthread_create (%s)", strerror(errno));
         return -1;
@@ -53,8 +50,8 @@ int CommandService::startService() {
     return 0;
 }
 
-void *CommandService::threadStart(void *obj) {
-    CommandService *me = reinterpret_cast<CommandService *>(obj);
+void* CommandService::threadStart(void* obj) {
+    CommandService* me = reinterpret_cast<CommandService*>(obj);
     me->runListener();
     pthread_exit(NULL);
     return NULL;
@@ -71,15 +68,15 @@ void CommandService::runListener() {
 
 Return<bool> CommandService::dispatchNetdagentCmd(const hidl_string& cmd) {
     /* store command */
-    char *cmdBuffer = strdup(cmd.c_str());
+    char* cmdBuffer = strdup(cmd.c_str());
     /* parse command */
-    const char *delim = " ";
-    char *token = nullptr;
-    char *argv[CMD_ARG_COUNT];
+    const char* delim = " ";
+    char* token = nullptr;
+    char* argv[CMD_ARG_COUNT];
     int argc = 0;
     int res = 0;
 
-    //parse command
+    // parse command
     token = strtok(cmdBuffer, delim);
     while (token != NULL) {
         if (argc >= CMD_ARG_COUNT) {
@@ -104,19 +101,19 @@ Return<bool> CommandService::dispatchNetdagentCmd(const hidl_string& cmd) {
 #ifdef MTK_DEBUG
     ALOGI("Netdagent command %s\n", cmd.c_str());
 #endif
-   {//enter critical zone
-    android::netdagent::AutoMutexLock serviceLock(mServiceLock);
-    //dispatch command
-    for (auto it = mCommandDispatchList->begin(); it != mCommandDispatchList->end(); ++it) {
-        if (!strcmp(argv[1], (*it)->getCommand())) {
-            if ((*it)->runCommand(argc-1, &argv[1])) {
-                ALOGE("run command %s failed\n", (*it)->getCommand());
-                res = -1;
-            } else
-                res = 1;
+    {  // enter critical zone
+        android::netdagent::AutoMutexLock serviceLock(mServiceLock);
+        // dispatch command
+        for (auto it = mCommandDispatchList->begin(); it != mCommandDispatchList->end(); ++it) {
+            if (!strcmp(argv[1], (*it)->getCommand())) {
+                if ((*it)->runCommand(argc - 1, &argv[1])) {
+                    ALOGE("run command %s failed\n", (*it)->getCommand());
+                    res = -1;
+                } else
+                    res = 1;
+            }
         }
-    }
-    }//exit critical zone
+    }  // exit critical zone
 
     if (!res) {
         ALOGE("unknown command %s\n", cmdBuffer);
@@ -125,8 +122,7 @@ Return<bool> CommandService::dispatchNetdagentCmd(const hidl_string& cmd) {
 
 _release:
     int i;
-    for (i = 0; i < argc; i++)
-        free(argv[i]);
+    for (i = 0; i < argc; i++) free(argv[i]);
     free(cmdBuffer);
-    return (res==1) ? true : false;
+    return (res == 1) ? true : false;
 }

@@ -21,8 +21,8 @@
 #include <string.h>
 
 class RmcEmbmsUtils {
-    public:
-        static char* addLogMask(int i);
+  public:
+    static char* addLogMask(int i);
 };
 
 #endif

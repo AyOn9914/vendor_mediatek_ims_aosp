@@ -25,7 +25,7 @@ class NetlinkListener : public SocketListener {
     char mBuffer[64 * 1024] __attribute__((aligned(4)));
     int mFormat;
 
-public:
+  public:
     static const int NETLINK_FORMAT_ASCII = 0;
     static const int NETLINK_FORMAT_BINARY = 1;
     static const int NETLINK_FORMAT_BINARY_UNICAST = 2;
@@ -42,9 +42,9 @@ public:
 #endif
     virtual ~NetlinkListener() {}
 
-protected:
-    virtual bool onDataAvailable(SocketClient *cli);
-    virtual void onEvent(NetlinkEvent *evt) = 0;
+  protected:
+    virtual bool onDataAvailable(SocketClient* cli);
+    virtual void onEvent(NetlinkEvent* evt) = 0;
 };
 
 #endif

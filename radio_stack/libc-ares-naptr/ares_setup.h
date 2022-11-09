@@ -39,9 +39,9 @@
  */
 
 #ifdef NEED_THREAD_SAFE
-#  ifndef _THREAD_SAFE
-#    define _THREAD_SAFE
-#  endif
+#ifndef _THREAD_SAFE
+#define _THREAD_SAFE
+#endif
 #endif
 
 /*
@@ -51,9 +51,9 @@
  */
 
 #ifdef NEED_REENTRANT
-#  ifndef _REENTRANT
-#    define _REENTRANT
-#  endif
+#ifndef _REENTRANT
+#define _REENTRANT
+#endif
 #endif
 
 /* ================================================================ */
@@ -91,20 +91,20 @@
  */
 
 #ifdef HAVE_WINDOWS_H
-#  ifndef WIN32_LEAN_AND_MEAN
-#    define WIN32_LEAN_AND_MEAN
-#  endif
-#  include <windows.h>
-#  ifdef HAVE_WINSOCK2_H
-#    include <winsock2.h>
-#    ifdef HAVE_WS2TCPIP_H
-#       include <ws2tcpip.h>
-#    endif
-#  else
-#    ifdef HAVE_WINSOCK_H
-#      include <winsock.h>
-#    endif
-#  endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#ifdef HAVE_WS2TCPIP_H
+#include <ws2tcpip.h>
+#endif
+#else
+#ifdef HAVE_WINSOCK_H
+#include <winsock.h>
+#endif
+#endif
 #endif
 
 /*
@@ -116,11 +116,11 @@
 #undef USE_WINSOCK
 
 #ifdef HAVE_WINSOCK2_H
-#  define USE_WINSOCK 2
+#define USE_WINSOCK 2
 #else
-#  ifdef HAVE_WINSOCK_H
-#    define USE_WINSOCK 1
-#  endif
+#ifdef HAVE_WINSOCK_H
+#define USE_WINSOCK 1
+#endif
 #endif
 
 /*
@@ -144,9 +144,9 @@
 #endif /* HAVE_CONFIG_H */
 
 #ifdef __POCC__
-#  include <sys/types.h>
-#  include <unistd.h>
-#  define ESRCH 3
+#include <sys/types.h>
+#include <unistd.h>
+#define ESRCH 3
 #endif
 
 /*
@@ -168,7 +168,7 @@
 #if defined(HAVE_PF_INET6)
 #define AF_INET6 PF_INET6
 #else
-#define AF_INET6 AF_MAX+1
+#define AF_INET6 AF_MAX + 1
 #endif
 #endif
 

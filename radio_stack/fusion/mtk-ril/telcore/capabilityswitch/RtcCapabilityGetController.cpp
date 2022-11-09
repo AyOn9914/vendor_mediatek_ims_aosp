@@ -36,29 +36,28 @@ RtcCapabilityGetController::RtcCapabilityGetController() : m_cslot(0), m_first_u
     logI(RFX_LOG_TAG, "constructor entered");
 }
 
-RtcCapabilityGetController::~RtcCapabilityGetController() {
-}
+RtcCapabilityGetController::~RtcCapabilityGetController() {}
 
 void RtcCapabilityGetController::onInit() {
     RfxController::onInit();
 
     const int urc_id_list[] = {
-        RFX_MSG_URC_RADIO_CAPABILITY,
+            RFX_MSG_URC_RADIO_CAPABILITY,
     };
     logD(RFX_LOG_TAG, "onInit");
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
     registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
     memset(tempstr, 0, sizeof(tempstr));
     rfx_property_get("persist.vendor.radio.c_capability_slot", tempstr, "1");
     m_cslot = atoi(tempstr) - 1;
 }
 
-bool RtcCapabilityGetController::onHandleUrc(const sp<RfxMessage> &message) {
+bool RtcCapabilityGetController::onHandleUrc(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    RIL_RadioCapability *capability = (RIL_RadioCapability *)message->getData()->getData();
+    RIL_RadioCapability* capability = (RIL_RadioCapability*)message->getData()->getData();
 
     logD(RFX_LOG_TAG, "onHandleUrc, handle: %s", idToString(msg_id));
     logI(RFX_LOG_TAG, "RadioCapability version=%d, session=%d, phase=%d, rat=%d, uuid=%s, state=%d",
@@ -74,20 +73,21 @@ bool RtcCapabilityGetController::onHandleUrc(const sp<RfxMessage> &message) {
 
 // Only allow to be called by RtcModeSwitchController for once after SIM switch
 void RtcCapabilityGetController::updateRadioCapability(int cslot) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int session_id;
 
     rfx_property_get("vendor.ril.rc.session.id1", property_value, "-1");
     session_id = atoi(property_value);
-    if (session_id != -1 || getNonSlotScopeStatusManager()->getIntValue(
-            RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE) == CAPABILITY_SWITCH_STATE_ENDING) {
+    if (session_id != -1 ||
+        getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE) ==
+                CAPABILITY_SWITCH_STATE_ENDING) {
         updateRadioCapability(cslot, session_id);
         // Clear session id and set radio state if SIM switch has been done successfully
         rfx_property_set("vendor.ril.rc.session.id1", "-1");
         if (RtcCapabilitySwitchUtil::isDssNoResetSupport() == false) {
             for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-                getStatusManager(i)->setIntValue(
-                        RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF, false, false);
+                getStatusManager(i)->setIntValue(RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF, false,
+                                                 false);
             }
         }
         getNonSlotScopeStatusManager()->registerStatusChanged(
@@ -101,11 +101,12 @@ void RtcCapabilityGetController::updateRadioCapability(int cslot) {
 }
 
 void RtcCapabilityGetController::onModeSwitchFinished(RfxStatusKeyEnum key, RfxVariant old_value,
-                                                            RfxVariant value) {
+                                                      RfxVariant value) {
     RFX_UNUSED(key);
     logD(RFX_LOG_TAG, "onModeSwitchFinished (%d, %d)", old_value.asInt(), value.asInt());
-    RtcCapabilitySwitchController* switchController = (RtcCapabilitySwitchController *)
-            findController(RFX_OBJ_CLASS_INFO(RtcCapabilitySwitchController));
+    RtcCapabilitySwitchController* switchController =
+            (RtcCapabilitySwitchController*)findController(
+                    RFX_OBJ_CLASS_INFO(RtcCapabilitySwitchController));
     switchController->notifySetRatDone();
     getNonSlotScopeStatusManager()->unRegisterStatusChanged(
             RFX_STATUS_KEY_MODESWITCH_FINISHED,
@@ -113,7 +114,7 @@ void RtcCapabilityGetController::onModeSwitchFinished(RfxStatusKeyEnum key, RfxV
 }
 
 void RtcCapabilityGetController::updateRadioCapability(int cslot, int session_id) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int radio_capability;
 
     m_cslot = cslot;
@@ -136,8 +137,8 @@ void RtcCapabilityGetController::updateRadioCapability(int cslot, int session_id
             }
             logI(RFX_LOG_TAG, "updateRadioCapability, cslot=%d, session=%d, capability[%d] = %d",
                  cslot, session_id, i, radio_capability);
-            getStatusManager(i)->setIntValue(
-                    RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability, false, false);
+            getStatusManager(i)->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability,
+                                             false, false);
 
             // always send CDMA capability from Android Q
             radio_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
@@ -146,7 +147,8 @@ void RtcCapabilityGetController::updateRadioCapability(int cslot, int session_id
     }
 }
 
-void RtcCapabilityGetController::sendRadioCapabilityURC(int slot_id, int session_id, int radio_capability) {
+void RtcCapabilityGetController::sendRadioCapabilityURC(int slot_id, int session_id,
+                                                        int radio_capability) {
     RIL_RadioCapability rc;
 
     memset(&rc, 0, sizeof(RIL_RadioCapability));
@@ -156,16 +158,16 @@ void RtcCapabilityGetController::sendRadioCapabilityURC(int slot_id, int session
     rc.status = RC_STATUS_SUCCESS;
     rc.rat = radio_capability;
     RfxRilUtils::getLogicalModemId(rc.logicalModemUuid, MAX_UUID_LENGTH, slot_id);
-    sp<RfxMessage> urc = RfxMessage::obtainUrc(
-            slot_id, RFX_MSG_URC_RADIO_CAPABILITY,
-            RfxRadioCapabilityData(&rc, sizeof(RIL_RadioCapability)));
+    sp<RfxMessage> urc =
+            RfxMessage::obtainUrc(slot_id, RFX_MSG_URC_RADIO_CAPABILITY,
+                                  RfxRadioCapabilityData(&rc, sizeof(RIL_RadioCapability)));
     responseToRilj(urc);
 }
 
 void RtcCapabilityGetController::updateRadioCapabilityForWMChange(int world_mode) {
     int fixed_radio_capability, radio_capability;
-    int major_slot = getNonSlotScopeStatusManager()->getIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+    int major_slot =
+            getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
 
     if (RfxRilUtils::isTplusWSupport() || RfxRilUtils::getKeep3GMode() != 0) {
         return;
@@ -175,8 +177,8 @@ void RtcCapabilityGetController::updateRadioCapabilityForWMChange(int world_mode
         if (i == major_slot) {
             continue;
         }
-        fixed_radio_capability = getStatusManager(i)->getIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+        fixed_radio_capability =
+                getStatusManager(i)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
         radio_capability = getStatusManager(i)->getIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
         if (world_mode == 2) {
             // Remove 3G raf for non major SIMs in TDD mode
@@ -184,8 +186,8 @@ void RtcCapabilityGetController::updateRadioCapabilityForWMChange(int world_mode
         } else {
             radio_capability |= (fixed_radio_capability & RAF_UMTS);
         }
-        getStatusManager(i)->setIntValue(
-                RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability, false, false);
+        getStatusManager(i)->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability, false,
+                                         false);
         if (RtcCapabilitySwitchUtil::isDisableC2kCapability() == false) {
             // always send CDMA capability from Android Q
             radio_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);

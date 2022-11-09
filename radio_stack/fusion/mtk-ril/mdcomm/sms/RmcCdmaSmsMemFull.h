@@ -27,15 +27,15 @@
  * Class RmcCdmaSmsMemFullHdlr
  *****************************************************************************/
 class RmcCdmaSmsMemFullHdlr : public RmcBaseUrcHandler {
-public:
-    RmcCdmaSmsMemFullHdlr(RfxBaseHandler *h):RmcBaseUrcHandler(h) {}
+  public:
+    RmcCdmaSmsMemFullHdlr(RfxBaseHandler* h) : RmcBaseUrcHandler(h) {}
     virtual ~RmcCdmaSmsMemFullHdlr() {}
 
-public:
-    virtual bool onHandleRawUrc(RfxAtLine * line);
-    virtual RmcBaseUrspData *onGetUrcData(int slotId);
+  public:
+    virtual bool onHandleRawUrc(RfxAtLine* line);
+    virtual RmcBaseUrspData* onGetUrcData(int slotId);
 
-private:
+  private:
     String8 m_memType;
 };
 

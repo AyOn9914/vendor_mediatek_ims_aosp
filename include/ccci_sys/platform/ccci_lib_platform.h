@@ -17,19 +17,33 @@
 #include <android/log.h>
 
 #ifndef PROPERTY_VALUE_MAX
-#define PROPERTY_VALUE_MAX  128
+#define PROPERTY_VALUE_MAX 128
 #endif
 
-
 //----------------debug log define-----------------//
-#define LOGV(...) do{ __android_log_print(ANDROID_LOG_VERBOSE, "ccci_lib", __VA_ARGS__); }while(0)
+#define LOGV(...)                                                          \
+    do {                                                                   \
+        __android_log_print(ANDROID_LOG_VERBOSE, "ccci_lib", __VA_ARGS__); \
+    } while (0)
 
-#define LOGD(...) do{ __android_log_print(ANDROID_LOG_DEBUG, "ccci_lib", __VA_ARGS__); }while(0)
+#define LOGD(...)                                                        \
+    do {                                                                 \
+        __android_log_print(ANDROID_LOG_DEBUG, "ccci_lib", __VA_ARGS__); \
+    } while (0)
 
-#define LOGI(...) do{ __android_log_print(ANDROID_LOG_INFO, "ccci_lib", __VA_ARGS__); }while(0)
+#define LOGI(...)                                                       \
+    do {                                                                \
+        __android_log_print(ANDROID_LOG_INFO, "ccci_lib", __VA_ARGS__); \
+    } while (0)
 
-#define LOGW(...) do{ __android_log_print(ANDROID_LOG_WARN, "ccci_lib", __VA_ARGS__); }while(0)
+#define LOGW(...)                                                       \
+    do {                                                                \
+        __android_log_print(ANDROID_LOG_WARN, "ccci_lib", __VA_ARGS__); \
+    } while (0)
 
-#define LOGE(...) do{ __android_log_print(ANDROID_LOG_ERROR, "ccci_lib", __VA_ARGS__); }while(0)
+#define LOGE(...)                                                        \
+    do {                                                                 \
+        __android_log_print(ANDROID_LOG_ERROR, "ccci_lib", __VA_ARGS__); \
+    } while (0)
 
-void AB_image_get(char *buf);
+void AB_image_get(char* buf);

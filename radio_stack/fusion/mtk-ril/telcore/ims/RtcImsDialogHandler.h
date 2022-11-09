@@ -29,19 +29,19 @@ using ::android::sp;
  * the data is xml raw data that received from EIMSEVTPKG, and type is 2.
  */
 class RtcImsDialogHandler {
-public:
+  public:
     RtcImsDialogHandler(int slot);
     ~RtcImsDialogHandler();
 
-    //Handle IMS Dialog event package raw data.
+    // Handle IMS Dialog event package raw data.
     void handleImsDialogMessage(const sp<RfxMessage>& message);
     string concatData(int isFirst, string origData, string appendData);
     string recoverDataFromAsciiTag(string data);
-    string replaceAll(string &str, const string &old_value, const string &new_value);
-    static void replace(char * str, int n, const char * newStr);
+    string replaceAll(string& str, const string& old_value, const string& new_value);
+    static void replace(char* str, int n, const char* newStr);
     int getPhoneId();
 
-private:
+  private:
     static const string TAG_NEXT_LINE;
     static const string TAG_RETURN;
     static const string TAG_DOUBLE_QUOTE;
@@ -52,8 +52,8 @@ private:
 /**
  * DepMessageHandler, which is responsible for parsing Dialog event package.
  */
-class DepMessageHandler: public DefaultHandler {
-public:
+class DepMessageHandler : public DefaultHandler {
+  public:
     static const string DIALOG_INFO;
     static const string DIALOG;
     static const string VERSION;
@@ -81,15 +81,15 @@ public:
     static const string PORT0;
 
     static const string TRUE;
-public:
+
+  public:
     DepMessageHandler();
     virtual ~DepMessageHandler();
     void startElement(string nodeName, string nodeValue, string attributeName,
-            string attributeValue);
+                      string attributeValue);
     void endElement(string nodeName);
 
-private:
-
+  private:
     vector<sp<RfxDialog>> mDialogInfo;
     sp<RfxDialog> mDialog;
     sp<RfxMediaAttribute> mMediaAttr;
@@ -102,14 +102,10 @@ private:
     int mVersion;
     int mDepState;
 
-public:
+  public:
     vector<sp<RfxDialog>> getDialogInfo();
     int getVersion() const;
 
-    enum {
-        DEP_STATE_UNKNOWN,
-        DEP_STATE_FULL,
-        DEP_STATE_PARTIAL
-    };
+    enum { DEP_STATE_UNKNOWN, DEP_STATE_FULL, DEP_STATE_PARTIAL };
 };
 #endif /* __RFX_IMS_DIALOG_HANDLER_H__ */

@@ -18,13 +18,13 @@
 #define _SERVICE_MANAGER_H
 
 class ServiceManager {
-public:
+  public:
     ServiceManager();
     virtual ~ServiceManager() {}
 
-    int start(const char *name);
-    int stop(const char *name);
-    bool isRunning(const char *name);
+    int start(const char* name);
+    int stop(const char* name);
+    bool isRunning(const char* name);
 };
 
 #endif

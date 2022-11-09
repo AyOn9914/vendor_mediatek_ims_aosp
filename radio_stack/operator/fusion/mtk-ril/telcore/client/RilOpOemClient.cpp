@@ -22,43 +22,42 @@
 
 #define RFX_LOG_TAG "RilOpOemClient"
 #define OEM_MAX_PARA_LENGTH 768
-#define ISRSUFUNCTION(cmd, function) (0 == strcmp(cmd, (char *) function))
-#define ISRSUMESSAGE(id) (((id == RFX_MSG_REQUEST_GET_SHARED_KEY) || \
-        (id == RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS) || \
-        (id == RFX_MSG_REQUEST_GET_SIM_LOCK_INFO) || \
-        (id == RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS) || \
-        (id == RFX_MSG_REQUEST_GET_MODEM_STATUS) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_SHARED_KEY) || \
-        (id == RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION) || \
-        (id == RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_API_VERSION) || \
-        (id == RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS)) \
-        ? true : false)
+#define ISRSUFUNCTION(cmd, function) (0 == strcmp(cmd, (char*)function))
+#define ISRSUMESSAGE(id)                                                                        \
+    (((id == RFX_MSG_REQUEST_GET_SHARED_KEY) ||                                                 \
+      (id == RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS) ||                                       \
+      (id == RFX_MSG_REQUEST_GET_SIM_LOCK_INFO) ||                                              \
+      (id == RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS) ||                                        \
+      (id == RFX_MSG_REQUEST_GET_MODEM_STATUS) || (id == RFX_MSG_REQUEST_ATT_GET_SHARED_KEY) || \
+      (id == RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS) ||                                   \
+      (id == RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION) ||                                       \
+      (id == RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS) ||                                    \
+      (id == RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS) ||                                           \
+      (id == RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG) ||                                           \
+      (id == RFX_MSG_REQUEST_ATT_GET_API_VERSION) || (id == RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS)) \
+             ? true                                                                             \
+             : false)
 
 int RilOpOemClient::mRsuFd = -1;
 
-RilOpOemClient::RilOpOemClient(int identity, char* socketName):
-        RilOemClient(identity, socketName) {
+RilOpOemClient::RilOpOemClient(int identity, char* socketName)
+    : RilOemClient(identity, socketName) {
     RFX_LOG_D(RFX_LOG_TAG, "RilOpOemClient");
 }
 
-RilOpOemClient::~RilOpOemClient() {
-}
+RilOpOemClient::~RilOpOemClient() {}
 
-int RilOpOemClient::handleSpecialRequestWithArgs(int argCount,char **args) {
-    char *cmd;
+int RilOpOemClient::handleSpecialRequestWithArgs(int argCount, char** args) {
+    char* cmd;
     char orgArgs[OEM_MAX_PARA_LENGTH] = {0};
-    RfxAtLine *line;
+    RfxAtLine* line;
     int err = 0;
     int slotId = 0;
-    char *data = NULL;
+    char* data = NULL;
 
     RFX_LOG_D(RFX_LOG_TAG, "handleSpecialRequestWithArgs : %d", argCount);
     if (1 == argCount) {
-        strncpy(orgArgs, args[0], OEM_MAX_PARA_LENGTH-1);
+        strncpy(orgArgs, args[0], OEM_MAX_PARA_LENGTH - 1);
         line = new RfxAtLine(orgArgs, NULL);
         cmd = line->atTokNextstr(&err);
         if (err < 0) {
@@ -75,19 +74,16 @@ int RilOpOemClient::handleSpecialRequestWithArgs(int argCount,char **args) {
                 return FAILURE;
             }
         }
-        if (ISRSUFUNCTION(cmd, "SIMMELOCK_GETKEY") ||
-                ISRSUFUNCTION(cmd, "SIMMELOCK_SET")||
-                ISRSUFUNCTION(cmd, "SIMMELOCK_GET_VERSION")||
-                ISRSUFUNCTION(cmd, "SIMMELOCK_RESET")||
-                ISRSUFUNCTION(cmd, "SIMMELOCK_GET_STATUS") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GETKEY") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_SET") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_VERSION") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_RESET") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_STATUS") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_CONFIG") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_API_VER") ||
-                ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_SLOTS")) {
+        if (ISRSUFUNCTION(cmd, "SIMMELOCK_GETKEY") || ISRSUFUNCTION(cmd, "SIMMELOCK_SET") ||
+            ISRSUFUNCTION(cmd, "SIMMELOCK_GET_VERSION") || ISRSUFUNCTION(cmd, "SIMMELOCK_RESET") ||
+            ISRSUFUNCTION(cmd, "SIMMELOCK_GET_STATUS") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GETKEY") || ISRSUFUNCTION(cmd, "ATT_SIMLOCK_SET") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_VERSION") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_RESET") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_STATUS") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_CONFIG") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_API_VER") ||
+            ISRSUFUNCTION(cmd, "ATT_SIMLOCK_GET_SLOTS")) {
             if (mRsuFd >= 0) {
                 close(mRsuFd);
             }
@@ -98,25 +94,25 @@ int RilOpOemClient::handleSpecialRequestWithArgs(int argCount,char **args) {
             return SUCCESS;
         } else {
             RilOemClient::handleSpecialRequestWithArgs(argCount, args);
-        delete line;
+            delete line;
         }
     }
     RFX_LOG_E(RFX_LOG_TAG, "Invalid request");
     return FAILURE;
 }
 
-void RilOpOemClient::executeRemoteSimUnlockCommand(int slotId, char *command, char *data) {
+void RilOpOemClient::executeRemoteSimUnlockCommand(int slotId, char* command, char* data) {
     RFX_LOG_I(RFX_LOG_TAG, "executeRSUCommand cmd: %s", command);
-    char *cmd;
+    char* cmd;
     int err = 0;
     Parcel p;
-    char *slb = NULL;
+    char* slb = NULL;
 
-    RfxRequestInfo *pRI = (RfxRequestInfo *)calloc(1, sizeof(RfxRequestInfo));
+    RfxRequestInfo* pRI = (RfxRequestInfo*)calloc(1, sizeof(RfxRequestInfo));
     RFX_ASSERT(pRI != NULL);
-    pRI->socket_id = (RIL_SOCKET_ID) slotId;
+    pRI->socket_id = (RIL_SOCKET_ID)slotId;
     pRI->token = 0xffffffff;
-    pRI->clientId = (ClientId) CLIENT_ID_OEM;
+    pRI->clientId = (ClientId)CLIENT_ID_OEM;
 
     if (ISRSUFUNCTION(command, "SIMMELOCK_GETKEY")) {
         pRI->request = RFX_MSG_REQUEST_GET_SHARED_KEY;
@@ -148,22 +144,22 @@ void RilOpOemClient::executeRemoteSimUnlockCommand(int slotId, char *command, ch
         pRI->request = RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS;
     } else {
         RFX_LOG_E(RFX_LOG_TAG, "[RSU-SIMLOCK] executeRSUCommand, not RSU cmd: %s, %d", command,
-                pRI->request);
+                  pRI->request);
     }
-    rfx_enqueue_request_message_client(pRI->request,
-            slb, (slb == NULL) ? 0 : strlen(slb), pRI, (RIL_SOCKET_ID) slotId);
+    rfx_enqueue_request_message_client(pRI->request, slb, (slb == NULL) ? 0 : strlen(slb), pRI,
+                                       (RIL_SOCKET_ID)slotId);
 }
 
-void RilOpOemClient::requestComplete(RIL_Token token, RIL_Errno e, void *response,
-        size_t responselen) {
+void RilOpOemClient::requestComplete(RIL_Token token, RIL_Errno e, void* response,
+                                     size_t responselen) {
     RFX_UNUSED(responselen);
-    RfxRequestInfo *info = (RfxRequestInfo *) token;
+    RfxRequestInfo* info = (RfxRequestInfo*)token;
     // op logic
     if (ISRSUMESSAGE(info->request)) {
         char* strResult = NULL;
         RFX_LOG_I(RFX_LOG_TAG, "[RSU-SIMLOCK] request for RSU returned");
-        if(RIL_E_SUCCESS == e){
-            asprintf(&strResult, "%s",(char*)response);
+        if (RIL_E_SUCCESS == e) {
+            asprintf(&strResult, "%s", (char*)response);
         } else {
             asprintf(&strResult, "ERROR:%d", e);
         }
@@ -175,7 +171,7 @@ void RilOpOemClient::requestComplete(RIL_Token token, RIL_Errno e, void *respons
             ret = send(mRsuFd, &len, sizeof(int), MSG_NOSIGNAL);
             ret = send(mRsuFd, strResult, len, MSG_NOSIGNAL);
             RFX_LOG_I(RFX_LOG_TAG, "[RSU-SIMLOCK] e %d, len %d, ret=%d.", e, len, ret);
-            if (ret != (ssize_t) len) {
+            if (ret != (ssize_t)len) {
                 RFX_LOG_E(RFX_LOG_TAG, "[RSU-SIMLOCK] lose data when send response.");
             }
             close(mRsuFd);

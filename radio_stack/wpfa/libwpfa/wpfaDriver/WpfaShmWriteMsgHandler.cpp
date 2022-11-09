@@ -21,18 +21,16 @@
 
 using ::android::Mutex;
 
-WpfaShmWriteMsgHandler *WpfaShmWriteMsgHandler::s_self = NULL;
+WpfaShmWriteMsgHandler* WpfaShmWriteMsgHandler::s_self = NULL;
 
 static sem_t sWaitLooperSem;
 static bool sNeedWaitLooper = true;
 static Mutex sWaitLooperMutex;
 
-
 /*****************************************************************************
  * Class RuleReqMsgHandler
  *****************************************************************************/
-void WpfaShmWriteMsgHandler::ShmWriteMsgHandler::handleMessage(
-        const Message& message) {
+void WpfaShmWriteMsgHandler::ShmWriteMsgHandler::handleMessage(const Message& message) {
     WPFA_UNUSED(message);
     sender->processMessage(msg);
 }
@@ -64,13 +62,13 @@ bool WpfaShmWriteMsgHandler::threadLoop() {
         mtkLogD(WPFA_D_LOG_TAG, "threadLoop, result = %d, err=%d", result, err);
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    WPFA_D_ASSERT(0); // Can't go here
+    WPFA_D_ASSERT(0);  // Can't go here
     return true;
 }
 
 void WpfaShmWriteMsgHandler::enqueueShmWriteMessage(const sp<WpfaDriverMessage>& message) {
-    //if (!RfxRilUtils::isInLogReductionList(message->getId())) {
-        mtkLogD(WPFA_D_LOG_TAG, "enqueueShmWriteMessage: %s", message->toString().string());
+    // if (!RfxRilUtils::isInLogReductionList(message->getId())) {
+    mtkLogD(WPFA_D_LOG_TAG, "enqueueShmWriteMessage: %s", message->toString().string());
     //}
     WpfaShmWriteMsgHandler* sender = s_self;
     sp<MessageHandler> handler = new ShmWriteMsgHandler(sender, message);
@@ -150,11 +148,7 @@ int WpfaShmWriteMsgHandler::checkShmControllerState() {
 int WpfaShmWriteMsgHandler::sendMessageToModem(uint16_t msgId, uint16_t tId) {
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
-        sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-        msgId,
-        tId,
-        CCCI_CTRL_MSG,
-        0);
+        sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(msgId, tId, CCCI_CTRL_MSG, 0);
         retValue = mDriverAdapter->sendMsgToControlMsgDispatcher(msg);
     }
     return retValue;

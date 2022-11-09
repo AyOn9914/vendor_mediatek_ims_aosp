@@ -28,31 +28,27 @@
 #include <sap_service.h>
 #include <mtk_log.h>
 
-static RilSapSocket::RilSapSocketList *head = NULL;
+static RilSapSocket::RilSapSocketList* head = NULL;
 
-extern "C" void
-RIL_requestTimedCallback (RIL_TimedCallback callback, void *param,
-        const struct timeval *relativeTime);
+extern "C" void RIL_requestTimedCallback(RIL_TimedCallback callback, void* param,
+                                         const struct timeval* relativeTime);
 
 struct RIL_Env RilSapSocket::uimRilEnv = {
         .OnRequestComplete = RilSapSocket::sOnRequestComplete,
         .OnUnsolicitedResponse = RilSapSocket::sOnUnsolicitedResponse,
-        .RequestTimedCallback = RIL_requestTimedCallback
-};
+        .RequestTimedCallback = RIL_requestTimedCallback};
 
-void RilSapSocket::sOnRequestComplete (RIL_Token t,
-        RIL_Errno e,
-        void *response,
-        size_t responselen) {
-    RilSapSocket *sap_socket;
-    SapSocketRequest *request = (SapSocketRequest*) t;
+void RilSapSocket::sOnRequestComplete(RIL_Token t, RIL_Errno e, void* response,
+                                      size_t responselen) {
+    RilSapSocket* sap_socket;
+    SapSocketRequest* request = (SapSocketRequest*)t;
 
     mtkLogD(LOG_TAG, "Socket id:%d", request->socketId);
 
     sap_socket = getSocketById(request->socketId);
 
     if (sap_socket) {
-        sap_socket->onRequestComplete(t,e,response,responselen);
+        sap_socket->onRequestComplete(t, e, response, responselen);
     } else {
         mtkLogE(LOG_TAG, "Invalid socket id");
         if (request->curr) {
@@ -63,45 +59,41 @@ void RilSapSocket::sOnRequestComplete (RIL_Token t,
 }
 
 #if defined(ANDROID_MULTI_SIM)
-void RilSapSocket::sOnUnsolicitedResponse(int unsolResponse,
-        const void *data,
-        size_t datalen,
-        RIL_SOCKET_ID socketId) {
-    RilSapSocket *sap_socket = getSocketById(socketId);
+void RilSapSocket::sOnUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen,
+                                          RIL_SOCKET_ID socketId) {
+    RilSapSocket* sap_socket = getSocketById(socketId);
     if (sap_socket) {
-        sap_socket->onUnsolicitedResponse(unsolResponse, (void *)data, datalen);
+        sap_socket->onUnsolicitedResponse(unsolResponse, (void*)data, datalen);
     }
 }
 #else
-void RilSapSocket::sOnUnsolicitedResponse(int unsolResponse,
-       const void *data,
-       size_t datalen) {
-    RilSapSocket *sap_socket = getSocketById(RIL_SOCKET_1);
-    if(sap_socket){
-        sap_socket->onUnsolicitedResponse(unsolResponse, (void *)data, datalen);
+void RilSapSocket::sOnUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen) {
+    RilSapSocket* sap_socket = getSocketById(RIL_SOCKET_1);
+    if (sap_socket) {
+        sap_socket->onUnsolicitedResponse(unsolResponse, (void*)data, datalen);
     }
 }
 #endif
 
 void RilSapSocket::printList() {
-    RilSapSocketList *current = head;
+    RilSapSocketList* current = head;
     mtkLogD(LOG_TAG, "Printing socket list");
-    while(NULL != current) {
-        mtkLogD(LOG_TAG, "SocketName:%s",current->socket->name);
-        mtkLogD(LOG_TAG, "Socket id:%d",current->socket->id);
+    while (NULL != current) {
+        mtkLogD(LOG_TAG, "SocketName:%s", current->socket->name);
+        mtkLogD(LOG_TAG, "Socket id:%d", current->socket->id);
         current = current->next;
     }
 }
 
-RilSapSocket *RilSapSocket::getSocketById(RIL_SOCKET_ID socketId) {
-    RilSapSocket *sap_socket;
-    RilSapSocketList *current = head;
+RilSapSocket* RilSapSocket::getSocketById(RIL_SOCKET_ID socketId) {
+    RilSapSocket* sap_socket;
+    RilSapSocketList* current = head;
 
     mtkLogD(LOG_TAG, "Entered getSocketById");
     printList();
 
-    while(NULL != current) {
-        if(socketId == current->socket->id) {
+    while (NULL != current) {
+        if (socketId == current->socket->id) {
             sap_socket = current->socket;
             return sap_socket;
         }
@@ -110,40 +102,38 @@ RilSapSocket *RilSapSocket::getSocketById(RIL_SOCKET_ID socketId) {
     return NULL;
 }
 
-void RilSapSocket::initSapSocket(const char *socketName,
-        const RIL_RadioFunctions *uimFuncs) {
-
+void RilSapSocket::initSapSocket(const char* socketName, const RIL_RadioFunctions* uimFuncs) {
     if (strcmp(socketName, RIL1_SERVICE_NAME) == 0) {
-        if(!SocketExists(socketName)) {
+        if (!SocketExists(socketName)) {
             addSocketToList(socketName, RIL_SOCKET_1, uimFuncs);
         }
     }
 
     if (strcmp(socketName, RIL2_SERVICE_NAME) == 0) {
-        if(!SocketExists(socketName)) {
+        if (!SocketExists(socketName)) {
             addSocketToList(socketName, RIL_SOCKET_2, uimFuncs);
         }
     }
 
     if (strcmp(socketName, RIL3_SERVICE_NAME) == 0) {
-        if(!SocketExists(socketName)) {
+        if (!SocketExists(socketName)) {
             addSocketToList(socketName, RIL_SOCKET_3, uimFuncs);
         }
     }
 
     if (strcmp(socketName, RIL4_SERVICE_NAME) == 0) {
-        if(!SocketExists(socketName)) {
+        if (!SocketExists(socketName)) {
             addSocketToList(socketName, RIL_SOCKET_4, uimFuncs);
         }
     }
 }
 
-void RilSapSocket::addSocketToList(const char *socketName, RIL_SOCKET_ID socketid,
-        const RIL_RadioFunctions *uimFuncs) {
+void RilSapSocket::addSocketToList(const char* socketName, RIL_SOCKET_ID socketid,
+                                   const RIL_RadioFunctions* uimFuncs) {
     RilSapSocket* socket = NULL;
-    RilSapSocketList *current;
+    RilSapSocketList* current;
 
-    if(!SocketExists(socketName)) {
+    if (!SocketExists(socketName)) {
         socket = new RilSapSocket(socketName, socketid, uimFuncs);
         RilSapSocketList* listItem = (RilSapSocketList*)malloc(sizeof(RilSapSocketList));
         if (!listItem) {
@@ -156,13 +146,12 @@ void RilSapSocket::addSocketToList(const char *socketName, RIL_SOCKET_ID socketi
 
         mtkLogD(LOG_TAG, "Adding socket with id: %d", socket->id);
 
-        if(NULL == head) {
+        if (NULL == head) {
             head = listItem;
             head->next = NULL;
-        }
-        else {
+        } else {
             current = head;
-            while(NULL != current->next) {
+            while (NULL != current->next) {
                 current = current->next;
             }
             current->next = listItem;
@@ -170,11 +159,11 @@ void RilSapSocket::addSocketToList(const char *socketName, RIL_SOCKET_ID socketi
     }
 }
 
-bool RilSapSocket::SocketExists(const char *socketName) {
+bool RilSapSocket::SocketExists(const char* socketName) {
     RilSapSocketList* current = head;
 
-    while(NULL != current) {
-        if(strcmp(current->socket->name, socketName) == 0) {
+    while (NULL != current) {
+        if (strcmp(current->socket->name, socketName) == 0) {
             return true;
         }
         current = current->next;
@@ -182,18 +171,17 @@ bool RilSapSocket::SocketExists(const char *socketName) {
     return false;
 }
 
-RilSapSocket::RilSapSocket(const char *socketName,
-        RIL_SOCKET_ID socketId,
-        const RIL_RadioFunctions *inputUimFuncs):
-        RilSocket(socketName, socketId) {
+RilSapSocket::RilSapSocket(const char* socketName, RIL_SOCKET_ID socketId,
+                           const RIL_RadioFunctions* inputUimFuncs)
+    : RilSocket(socketName, socketId) {
     if (inputUimFuncs) {
         uimFuncs = inputUimFuncs;
     }
 }
 
-void RilSapSocket::dispatchRequest(MsgHeader *req) {
+void RilSapSocket::dispatchRequest(MsgHeader* req) {
     // SapSocketRequest will be deallocated in onRequestComplete()
-    SapSocketRequest* currRequest=(SapSocketRequest*)malloc(sizeof(SapSocketRequest));
+    SapSocketRequest* currRequest = (SapSocketRequest*)malloc(sizeof(SapSocketRequest));
     if (!currRequest) {
         mtkLogE(LOG_TAG, "dispatchRequest: OOM");
         // Free MsgHeader allocated in pushRecord()
@@ -208,13 +196,10 @@ void RilSapSocket::dispatchRequest(MsgHeader *req) {
     pendingResponseQueue.enqueue(currRequest);
 
     if (uimFuncs) {
-        mtkLogI(LOG_TAG, "RilSapSocket::dispatchRequest [%d] > SAP REQUEST type: %d. id: %d. error: %d, \
+        mtkLogI(LOG_TAG,
+                "RilSapSocket::dispatchRequest [%d] > SAP REQUEST type: %d. id: %d. error: %d, \
                 token 0x%p",
-                req->token,
-                req->type,
-                req->id,
-                req->error,
-                currRequest );
+                req->token, req->type, req->id, req->error, currRequest);
 
 #if defined(ANDROID_MULTI_SIM)
         uimFuncs->onRequest(req->id, req->payload->bytes, req->payload->size, currRequest, id);
@@ -224,23 +209,23 @@ void RilSapSocket::dispatchRequest(MsgHeader *req) {
     }
 }
 
-void RilSapSocket::onRequestComplete(RIL_Token t, RIL_Errno e, void *response,
-        size_t response_len) {
-    SapSocketRequest* request= (SapSocketRequest*)t;
+void RilSapSocket::onRequestComplete(RIL_Token t, RIL_Errno e, void* response,
+                                     size_t response_len) {
+    SapSocketRequest* request = (SapSocketRequest*)t;
 
     if (!request || !request->curr) {
         mtkLogE(LOG_TAG, "RilSapSocket::onRequestComplete: request/request->curr is NULL");
         return;
     }
 
-    MsgHeader *hdr = request->curr;
+    MsgHeader* hdr = request->curr;
 
     MsgHeader rsp;
     rsp.token = request->curr->token;
     rsp.type = MsgType_RESPONSE;
     rsp.id = request->curr->id;
     rsp.error = (Error)e;
-    rsp.payload = (pb_bytes_array_t *)calloc(1, sizeof(pb_bytes_array_t) + response_len);
+    rsp.payload = (pb_bytes_array_t*)calloc(1, sizeof(pb_bytes_array_t) + response_len);
     if (!rsp.payload) {
         mtkLogE(LOG_TAG, "onRequestComplete: OOM");
     } else {
@@ -259,7 +244,7 @@ void RilSapSocket::onRequestComplete(RIL_Token t, RIL_Errno e, void *response,
     }
 
     // Deallocate SapSocketRequest
-    if(!pendingResponseQueue.checkAndDequeue(hdr->id, hdr->token)) {
+    if (!pendingResponseQueue.checkAndDequeue(hdr->id, hdr->token)) {
         mtkLogE(LOG_TAG, "Token:%d, MessageId:%d", hdr->token, hdr->id);
         mtkLogE(LOG_TAG, "RilSapSocket::onRequestComplete: invalid Token or Message Id");
     }
@@ -268,10 +253,10 @@ void RilSapSocket::onRequestComplete(RIL_Token t, RIL_Errno e, void *response,
     free(hdr);
 }
 
-void RilSapSocket::onUnsolicitedResponse(int unsolResponse, void *data, size_t datalen) {
+void RilSapSocket::onUnsolicitedResponse(int unsolResponse, void* data, size_t datalen) {
     if (data && datalen > 0) {
-        pb_bytes_array_t *payload = (pb_bytes_array_t *)calloc(1,
-                sizeof(pb_bytes_array_t) + datalen);
+        pb_bytes_array_t* payload =
+                (pb_bytes_array_t*)calloc(1, sizeof(pb_bytes_array_t) + datalen);
         if (!payload) {
             mtkLogE(LOG_TAG, "onUnsolicitedResponse: OOM");
             return;

@@ -33,21 +33,21 @@ class RtcImsRttController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcImsRttController);
 
-public:
+  public:
     RtcImsRttController();
     virtual ~RtcImsRttController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-private:
+  private:
     // Private functions
     bool responseToRilj(const sp<RfxMessage>& msg);
 };

@@ -22,19 +22,19 @@ RFX_IMPLEMENT_DATA_CLASS(RfxIaApnData);
 
 #define RFX_LOG_TAG "RfxIaApnData"
 
-RfxIaApnData::RfxIaApnData(void *data, int length) : RfxBaseData(data, length) {
+RfxIaApnData::RfxIaApnData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
     RFX_ASSERT(m_length == sizeof(RIL_InitialAttachApn_v15));
 
     int result;
 
-    RIL_InitialAttachApn_v15 *pTmp =
-            (RIL_InitialAttachApn_v15 *) calloc(1, sizeof(RIL_InitialAttachApn_v15));
+    RIL_InitialAttachApn_v15* pTmp =
+            (RIL_InitialAttachApn_v15*)calloc(1, sizeof(RIL_InitialAttachApn_v15));
     if (pTmp == NULL) {
         m_data = NULL;
         return;
     }
-    RIL_InitialAttachApn_v15 *pCur = (RIL_InitialAttachApn_v15 *) data;
+    RIL_InitialAttachApn_v15* pCur = (RIL_InitialAttachApn_v15*)data;
 
     copyString(&(pTmp->apn), pCur->apn);
     copyString(&(pTmp->protocol), pCur->protocol);
@@ -47,38 +47,38 @@ RfxIaApnData::RfxIaApnData(void *data, int length) : RfxBaseData(data, length) {
 }
 
 RfxIaApnData::~RfxIaApnData() {
-    RIL_InitialAttachApn_v15* pTmp = (RIL_InitialAttachApn_v15 *)m_data;
+    RIL_InitialAttachApn_v15* pTmp = (RIL_InitialAttachApn_v15*)m_data;
     // free memory
     if (pTmp != NULL) {
-        if(pTmp->apn != NULL) {
+        if (pTmp->apn != NULL) {
             free(pTmp->apn);
         }
-        if(pTmp->protocol != NULL) {
+        if (pTmp->protocol != NULL) {
             free(pTmp->protocol);
         }
-        if(pTmp->roamingProtocol != NULL) {
+        if (pTmp->roamingProtocol != NULL) {
             free(pTmp->roamingProtocol);
         }
-        if(pTmp->username != NULL) {
+        if (pTmp->username != NULL) {
             free(pTmp->username);
         }
-        if(pTmp->password != NULL) {
+        if (pTmp->password != NULL) {
             free(pTmp->password);
         }
         free(pTmp);
     }
 }
 
-void RfxIaApnData::copyString(char **dst, char *src) {
+void RfxIaApnData::copyString(char** dst, char* src) {
     if (src != NULL) {
-        *dst = (char *) calloc(strlen(src) + 1, sizeof(char));
+        *dst = (char*)calloc(strlen(src) + 1, sizeof(char));
         if (*dst == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
         }
         strncpy(*dst, src, strlen(src));
     } else {
-        *dst = (char *) calloc(1, sizeof(char));
+        *dst = (char*)calloc(1, sizeof(char));
         if (*dst == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;

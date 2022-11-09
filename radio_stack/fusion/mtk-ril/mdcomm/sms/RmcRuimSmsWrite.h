@@ -25,48 +25,44 @@
 /*****************************************************************************
  * Class RmcCdmaWriteRuimSmsReq
  *****************************************************************************/
-class RmcCdmaWriteRuimSmsReq: RmcSingleAtReq {
+class RmcCdmaWriteRuimSmsReq : RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaWriteRuimSmsReq);
-public:
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
 
-    virtual bool onHandleIntermediates(RfxAtLine * line, RfxBaseHandler * h);
+  public:
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
 
-    int getIndex() const {
-        return m_index;
-    }
+    virtual bool onHandleIntermediates(RfxAtLine* line, RfxBaseHandler* h);
 
-private:
+    int getIndex() const { return m_index; }
+
+  private:
     RIL_CDMA_SMS_WriteArgs m_writeArgs;
     int m_index;
 };
 
-
-
 /*****************************************************************************
  * Class RmcCdmaWriteRuimSmsRsp
  *****************************************************************************/
-class RmcCdmaWriteRuimSmsRsp: public RmcVoidRsp {
+class RmcCdmaWriteRuimSmsRsp : public RmcVoidRsp {
     RFX_DECLARE_DATA_CLASS(RmcCdmaWriteRuimSmsRsp);
-public:
+
+  public:
     RmcCdmaWriteRuimSmsRsp(int index, RIL_Errno e);
 
-private:
+  private:
     int m_index;
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaWriteRuimSmsHdlr
  *****************************************************************************/
 class RmcCdmaWriteRuimSmsHdlr : public RmcBaseRequestHandler {
-public:
-    RmcCdmaWriteRuimSmsHdlr(RfxBaseHandler *h) :RmcBaseRequestHandler(h){}
+  public:
+    RmcCdmaWriteRuimSmsHdlr(RfxBaseHandler* h) : RmcBaseRequestHandler(h) {}
     virtual ~RmcCdmaWriteRuimSmsHdlr() {}
-public:
-    virtual RmcBaseRspData *onGetRspData(RmcBaseReqData *req);
+
+  public:
+    virtual RmcBaseRspData* onGetRspData(RmcBaseReqData* req);
 };
-
-
 
 #endif /* __RMC_RUIM_SMS_WRITE_H__ */

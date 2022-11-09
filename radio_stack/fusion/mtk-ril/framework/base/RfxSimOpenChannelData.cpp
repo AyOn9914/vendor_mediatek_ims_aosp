@@ -19,11 +19,12 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimOpenChannelData);
 
-RfxSimOpenChannelData::RfxSimOpenChannelData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimOpenChannelData::RfxSimOpenChannelData(void* _data, int _length)
+    : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_OpenChannelParams *pSimOpenChannel = (RIL_OpenChannelParams*)_data;
-        RIL_OpenChannelParams *pData = (RIL_OpenChannelParams *)calloc(1,
-                sizeof(RIL_OpenChannelParams));
+        RIL_OpenChannelParams* pSimOpenChannel = (RIL_OpenChannelParams*)_data;
+        RIL_OpenChannelParams* pData =
+                (RIL_OpenChannelParams*)calloc(1, sizeof(RIL_OpenChannelParams));
         RFX_ASSERT(pData != NULL);
 
         pData->p2 = pSimOpenChannel->p2;
@@ -40,7 +41,7 @@ RfxSimOpenChannelData::RfxSimOpenChannelData(void *_data, int _length) : RfxBase
 RfxSimOpenChannelData::~RfxSimOpenChannelData() {
     // free memory
     if (m_data != NULL) {
-        RIL_OpenChannelParams *pData = (RIL_OpenChannelParams*)m_data;
+        RIL_OpenChannelParams* pData = (RIL_OpenChannelParams*)m_data;
         if (pData->aidPtr != NULL) {
             free(pData->aidPtr);
             pData->aidPtr = NULL;

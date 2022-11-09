@@ -32,15 +32,13 @@
 #include "main_vtservice_hidl.h"
 
 using namespace android;
-using android::hardware::defaultPassthroughServiceImplementation;
 using ::android::hardware::configureRpcThreadpool;
+using android::hardware::defaultPassthroughServiceImplementation;
 using ::android::hardware::joinRpcThreadpool;
 
 using ::vendor::mediatek::hardware::videotelephony::V1_0::IVideoTelephony;
 
-
 int main(void) {
-
     configureRpcThreadpool(1, true /* callerWillJoin */);
 
     ALOGI("[VT][SRV]before VTService_HiDL_instantiate");
@@ -50,9 +48,10 @@ int main(void) {
 
     // use Pass through mode instead of New instance directly
     //
-    //sp<IVideoTelephony> vt = VideoTelephony::getInstance();
-    //status_t err = vt->registerAsService();
-    //ALOGE_IF(err != OK, "[VT][SRV] VTService_HiDL Cannot register %s: %d", IVideoTelephony::descriptor, err);
+    // sp<IVideoTelephony> vt = VideoTelephony::getInstance();
+    // status_t err = vt->registerAsService();
+    // ALOGE_IF(err != OK, "[VT][SRV] VTService_HiDL Cannot register %s: %d",
+    // IVideoTelephony::descriptor, err);
 
     ALOGI("[VT][SRV]after VTService_HiDL_instantiate");
 

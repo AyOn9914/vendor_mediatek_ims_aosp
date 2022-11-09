@@ -17,15 +17,8 @@
 #ifndef FEATURECONFIG_H
 #define FEATURECONFIG_H
 
+{CONFIG_SIM_MODE, "dsds"}, {CONFIG_SS_MODE, "1"},  // Capability of Supplementary Service
+        {CONFIG_SMS, "1"}, {CONFIG_CC, "1"},       // Capability of Call Control
+        {CONFIG_VOLTE, "1"}, {CONFIG_VILTE, "1"}, {CONFIG_WFC, "1"}, {CONFIG_VIWIFI, "1"},
 
-{CONFIG_SIM_MODE, "dsds"},
-{CONFIG_SS_MODE, "1"},       // Capability of Supplementary Service
-{CONFIG_SMS, "1"},
-{CONFIG_CC,  "1"},             // Capability of Call Control
-{CONFIG_VOLTE,  "1"},
-{CONFIG_VILTE,  "1"},
-{CONFIG_WFC,  "1"},
-{CONFIG_VIWIFI,  "1"},
-
-
-#endif // FEATURECONFIG_H
+#endif  // FEATURECONFIG_H

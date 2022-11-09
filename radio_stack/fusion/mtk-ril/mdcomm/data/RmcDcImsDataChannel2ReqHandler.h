@@ -31,33 +31,35 @@
 class RmcDcImsDataChannel2ReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcDcImsDataChannel2ReqHandler);
 
-    public:
-        RmcDcImsDataChannel2ReqHandler(int slot_id, int channel_id);
-        virtual ~RmcDcImsDataChannel2ReqHandler();
+  public:
+    RmcDcImsDataChannel2ReqHandler(int slot_id, int channel_id);
+    virtual ~RmcDcImsDataChannel2ReqHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-        // URC +EIMSPDN "notify" URC
-        virtual void handleImsBearerNotify(const sp<RfxMclMessage>& msg);
-        // AT+EIMSPDN activation/deactivation confirm to DDM
-        virtual void handleImsBearerConfirm(const sp<RfxMclMessage>& msg);
-        // Set flag to control "+EIMSPDN " notification to ap
-        virtual void handleImsBearerNotificationSet(const sp<RfxMclMessage>& msg);
-        // P-CSCF discovery, not support now
-        virtual void handlePcscfAddressDiscovery(const sp<RfxMclMessage>& msg);
-        // Callback function when RmcDcUrcHandler URC registration ready
-        virtual void handleRegisterUrcDone();
-        virtual void notifyImsBearerRequest(int requestId, RIL_IMS_BearerNotification* notification, bool isUpdateState);
-        virtual void notifyImsDataInfo(RIL_IMS_DataInfoNotify* notification);
+    // URC +EIMSPDN "notify" URC
+    virtual void handleImsBearerNotify(const sp<RfxMclMessage>& msg);
+    // AT+EIMSPDN activation/deactivation confirm to DDM
+    virtual void handleImsBearerConfirm(const sp<RfxMclMessage>& msg);
+    // Set flag to control "+EIMSPDN " notification to ap
+    virtual void handleImsBearerNotificationSet(const sp<RfxMclMessage>& msg);
+    // P-CSCF discovery, not support now
+    virtual void handlePcscfAddressDiscovery(const sp<RfxMclMessage>& msg);
+    // Callback function when RmcDcUrcHandler URC registration ready
+    virtual void handleRegisterUrcDone();
+    virtual void notifyImsBearerRequest(int requestId, RIL_IMS_BearerNotification* notification,
+                                        bool isUpdateState);
+    virtual void notifyImsDataInfo(RIL_IMS_DataInfoNotify* notification);
 
-        // handle unsynchronized scenario after phone process/ims service has been kill
-        virtual void notifyUnsyncImsBearerRequest();
-        // handle unsynchronized scenario after phone/ims service has been kill deu to phone decrypt
-        virtual void checkImsServiceRestartAfterSystemCrash();
-    private:
-        int isEnableBearerNotification = 0;
-        int isEncrypted = 0;
+    // handle unsynchronized scenario after phone process/ims service has been kill
+    virtual void notifyUnsyncImsBearerRequest();
+    // handle unsynchronized scenario after phone/ims service has been kill deu to phone decrypt
+    virtual void checkImsServiceRestartAfterSystemCrash();
+
+  private:
+    int isEnableBearerNotification = 0;
+    int isEncrypted = 0;
 };
 #endif /* __RMC_DC_IMS_DATA_CHANNEL2_REQ_HANDLER_H__ */

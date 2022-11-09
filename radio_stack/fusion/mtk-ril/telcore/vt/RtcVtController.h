@@ -45,15 +45,15 @@ typedef struct OperatorMapStruct {
 class RtcVtController : public RfxController {
     RFX_DECLARE_CLASS(RtcVtController);  // Required: declare this class
 
-public:
+  public:
     RtcVtController();
 
     virtual ~RtcVtController();
     bool isVTLogEnable(void);
     bool isImsVideoCallon(void);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
@@ -66,12 +66,9 @@ protected:
 
     void onCallStatusChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant new_value);
 
-private:
-
-    void onUiccMccMncChanged(RfxStatusKeyEnum key,
-                RfxVariant oldValue, RfxVariant value);
-    void onCardTypeChanged(RfxStatusKeyEnum key,
-                RfxVariant oldValue, RfxVariant value);
+  private:
+    void onUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
+    void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
     void updateOpId(int mccmnc);
 
     int mCurrentOpid;

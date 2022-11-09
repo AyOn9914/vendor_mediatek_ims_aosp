@@ -29,44 +29,30 @@ using ::android::Mutex;
 using ::android::RefBase;
 using ::android::sp;
 
-
 class RfxChannelContext {
+  public:
+    RfxChannelContext();
 
-    public:
-        RfxChannelContext();
+  public:
+    void setType(int type) { m_type = type; }
+    int getType() const { return m_type; }
+    void setResponse(sp<RfxAtResponse> response) { m_response = response; }
+    sp<RfxAtResponse> getResponse() const { return m_response; }
+    void setNeedWaitRestartCondition(bool need) { m_needWaitRestartCondition = need; }
+    bool getNeedWaitRestartCondition() const { return m_needWaitRestartCondition; }
 
-    public:
-        void setType(int type) {
-            m_type = type;
-        }
-        int getType() const {
-            return m_type;
-        }
-        void setResponse(sp<RfxAtResponse> response) {
-            m_response = response;
-        }
-        sp<RfxAtResponse> getResponse() const {
-            return m_response;
-        }
-        void setNeedWaitRestartCondition(bool need) {
-            m_needWaitRestartCondition = need;
-        }
-        bool getNeedWaitRestartCondition() const {
-            return m_needWaitRestartCondition;
-        }
+  public:
+    Mutex m_commandMutex;
+    Mutex m_readerMutex;
+    Mutex m_restartMutex;
+    Condition m_commandCondition;
+    Condition m_restartCondition;
 
-    public:
-        Mutex m_commandMutex;
-        Mutex m_readerMutex;
-        Mutex m_restartMutex;
-        Condition m_commandCondition;
-        Condition m_restartCondition;
-
-    private:
-        int m_readerClose;
-        int m_type; // channel usage. for request or urc
-        sp<RfxAtResponse> m_response;
-        bool m_needWaitRestartCondition;
+  private:
+    int m_readerClose;
+    int m_type;  // channel usage. for request or urc
+    sp<RfxAtResponse> m_response;
+    bool m_needWaitRestartCondition;
 };
 
 #endif

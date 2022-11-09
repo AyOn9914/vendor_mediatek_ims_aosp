@@ -21,11 +21,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhbMemStorageData);
 
-RfxPhbMemStorageData::RfxPhbMemStorageData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxPhbMemStorageData::RfxPhbMemStorageData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_PHB_MEM_STORAGE_RESPONSE *pInput = (RIL_PHB_MEM_STORAGE_RESPONSE*)_data;
-        RIL_PHB_MEM_STORAGE_RESPONSE *pData =
-                (RIL_PHB_MEM_STORAGE_RESPONSE *)calloc(1, sizeof(RIL_PHB_MEM_STORAGE_RESPONSE));
+        RIL_PHB_MEM_STORAGE_RESPONSE* pInput = (RIL_PHB_MEM_STORAGE_RESPONSE*)_data;
+        RIL_PHB_MEM_STORAGE_RESPONSE* pData =
+                (RIL_PHB_MEM_STORAGE_RESPONSE*)calloc(1, sizeof(RIL_PHB_MEM_STORAGE_RESPONSE));
         RFX_ASSERT(pData != NULL);
         if (pInput->storage != NULL) {
             pData->storage = strdup(pInput->storage);
@@ -42,7 +42,7 @@ RfxPhbMemStorageData::RfxPhbMemStorageData(void *_data, int _length) : RfxBaseDa
 RfxPhbMemStorageData::~RfxPhbMemStorageData() {
     // free memory
     if (m_data != NULL) {
-        RIL_PHB_MEM_STORAGE_RESPONSE *pData = (RIL_PHB_MEM_STORAGE_RESPONSE*)m_data;
+        RIL_PHB_MEM_STORAGE_RESPONSE* pData = (RIL_PHB_MEM_STORAGE_RESPONSE*)m_data;
         if (pData->storage != NULL) {
             free(pData->storage);
             pData->storage = NULL;

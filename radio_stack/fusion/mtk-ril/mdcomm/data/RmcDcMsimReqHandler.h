@@ -31,19 +31,19 @@
 class RmcDcMsimReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcDcMsimReqHandler);
 
-    public:
-        RmcDcMsimReqHandler(int slot_id, int channel_id);
-        virtual ~RmcDcMsimReqHandler();
+  public:
+    RmcDcMsimReqHandler(int slot_id, int channel_id);
+    virtual ~RmcDcMsimReqHandler();
 
-    private:
-        void handleRequestAllowData(const sp<RfxMclMessage>& msg);
-        void setDataAllowed(int allowed, const sp<RfxMclMessage>& msg);
-        void handleDataConnectionAttachRequest(const sp<RfxMclMessage>& msg);
-        void handleDataConnectionDetachRequest(const sp<RfxMclMessage>& msg);
-        void updateDataAllowStatus(int slotId, int allow);
-        void updatePreDataAllowStatus(int slotId, int allow);
+  private:
+    void handleRequestAllowData(const sp<RfxMclMessage>& msg);
+    void setDataAllowed(int allowed, const sp<RfxMclMessage>& msg);
+    void handleDataConnectionAttachRequest(const sp<RfxMclMessage>& msg);
+    void handleDataConnectionDetachRequest(const sp<RfxMclMessage>& msg);
+    void updateDataAllowStatus(int slotId, int allow);
+    void updatePreDataAllowStatus(int slotId, int allow);
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 };
 #endif /* __RMC_MSIM_REQ_HANDLER_H__ */

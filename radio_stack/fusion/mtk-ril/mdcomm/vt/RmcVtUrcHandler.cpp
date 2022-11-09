@@ -24,35 +24,32 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcVtUrcHandler, RIL_CMD_PROXY_URC);
 
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxRawData, RFX_MSG_EVENT_VT_COMMON_DATA);
 
-RmcVtUrcHandler::RmcVtUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-
+RmcVtUrcHandler::RmcVtUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     RFX_LOG_I(RFX_LOG_TAG, "RmcVtUrcHandler constructor");
     const char* urc[] = {
-        (char *) "+EANBR",
-        (char *) "+EIRAT",
+            (char*)"+EANBR",
+            (char*)"+EIRAT",
     };
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char*));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcVtUrcHandler::~RmcVtUrcHandler() {
-}
+RmcVtUrcHandler::~RmcVtUrcHandler() {}
 
 void RmcVtUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
+    char* urc = msg->getRawUrc()->getLine();
     RFX_LOG_E(RFX_LOG_TAG, "onHandleUrc urc: %s", urc);
     if (strStartsWith(urc, "+EANBR")) {
         handleEANBR(msg);
     } else if (strStartsWith(urc, "+EIRAT")) {
         handleEIRAT(msg);
-    }else {
+    } else {
         RFX_LOG_E(RFX_LOG_TAG, "we can not handle this raw urc?!");
     }
 }
 
 void RmcVtUrcHandler::handleEANBR(const sp<RfxMclMessage>& msg) {
-
     /* +EANBR:<anbrq_config>[,<ebi>,<is_ul>,<bitrate>,<bearer_id>,<pdu_session_id>,<ext_param>]
      *
      * <anbrq_config>: 0, anbrq not support; 1, anbrq support; 2, NW anbr value
@@ -67,7 +64,7 @@ void RmcVtUrcHandler::handleEANBR(const sp<RfxMclMessage>& msg) {
 
     int ret;
     int len = 4;
-    char *data[len];
+    char* data[len];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
@@ -97,8 +94,10 @@ void RmcVtUrcHandler::handleEANBR(const sp<RfxMclMessage>& msg) {
             int pdu_session_id = atoi(data[5]);
             int ext_param = atoi(data[6]);
 
-            RFX_LOG_I(RFX_LOG_TAG, "EANBR URC ebi=%d, is_ul=%d, bitrate=%d, bearer_id=%d, pdu_session_id=%d, ext_param=%d",
-                    ebi, is_ul, bitrate, bearer_id, pdu_session_id, ext_param);
+            RFX_LOG_I(RFX_LOG_TAG,
+                      "EANBR URC ebi=%d, is_ul=%d, bitrate=%d, bearer_id=%d, pdu_session_id=%d, "
+                      "ext_param=%d",
+                      ebi, is_ul, bitrate, bearer_id, pdu_session_id, ext_param);
 
             int msg_id = MSG_ID_WRAP_IMSVT_MD_ANBR_CONFIG_UPDATE_IND;
             int dataLen = sizeof(RIL_EANBR);
@@ -125,7 +124,7 @@ void RmcVtUrcHandler::handleEANBR(const sp<RfxMclMessage>& msg) {
             memcpy(&buffer[offset], &anbr, sizeof(RIL_EANBR));
 
             sendEvent(RFX_MSG_EVENT_VT_COMMON_DATA, RfxRawData(buffer, buffer_size),
-                    RIL_CMD_PROXY_2, m_slot_id);
+                      RIL_CMD_PROXY_2, m_slot_id);
             break;
         }
         default:
@@ -134,7 +133,6 @@ void RmcVtUrcHandler::handleEANBR(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcVtUrcHandler::handleEIRAT(const sp<RfxMclMessage>& msg) {
-
     /* +EIRAT:<irat_status>[,<is_successful>]
      *
      * <irat_status>: integer.
@@ -166,7 +164,7 @@ void RmcVtUrcHandler::handleEIRAT(const sp<RfxMclMessage>& msg) {
 
     int ret;
     int len = 4;
-    char *data[len];
+    char* data[len];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
@@ -184,7 +182,8 @@ void RmcVtUrcHandler::handleEIRAT(const sp<RfxMclMessage>& msg) {
     int dataLen = sizeof(RIL_EIRAT);
     RIL_EIRAT irat;
     irat.sim_slot_id = m_slot_id;
-    irat.irat_status = atoi(data[0]);;
+    irat.irat_status = atoi(data[0]);
+    ;
     if (data[1] != NULL) {
         irat.is_successful = atoi(data[1]);
     } else {
@@ -192,8 +191,8 @@ void RmcVtUrcHandler::handleEIRAT(const sp<RfxMclMessage>& msg) {
         irat.is_successful = -1;
     }
 
-    RFX_LOG_I(RFX_LOG_TAG, "EIRAT URC irat_status=%d, is_successful=%d",
-            irat.irat_status, irat.is_successful);
+    RFX_LOG_I(RFX_LOG_TAG, "EIRAT URC irat_status=%d, is_successful=%d", irat.irat_status,
+              irat.is_successful);
 
     int buffer_size = sizeof(int) + sizeof(int) + sizeof(RIL_EIRAT);
 
@@ -208,6 +207,6 @@ void RmcVtUrcHandler::handleEIRAT(const sp<RfxMclMessage>& msg) {
 
     memcpy(&buffer[offset], &irat, sizeof(RIL_EIRAT));
 
-    sendEvent(RFX_MSG_EVENT_VT_COMMON_DATA, RfxRawData(buffer, buffer_size),
-            RIL_CMD_PROXY_2, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_VT_COMMON_DATA, RfxRawData(buffer, buffer_size), RIL_CMD_PROXY_2,
+              m_slot_id);
 }

@@ -67,7 +67,7 @@
 #define INVALID_ID -1
 
 namespace android {
-#define NUM_ELEMS(a)     (sizeof (a) / sizeof (a)[0])
+#define NUM_ELEMS(a) (sizeof(a) / sizeof(a)[0])
 
 static CommandInfo s_mtk_op_commands[] = {
 #include <telephony/mtk_ril_op_commands.h>
@@ -77,11 +77,11 @@ static UnsolResponseInfo s_mtk_op_unsolResponses[] = {
 #include <telephony/mtk_ril_op_unsol_commands.h>
 };
 
-extern "C" android::CommandInfo *getOpCommandInfo(int request) {
+extern "C" android::CommandInfo* getOpCommandInfo(int request) {
     mtkLogD(LOG_TAG, "getOpCommandInfo: request %d", request);
-    android::CommandInfo *pCI = NULL;
+    android::CommandInfo* pCI = NULL;
 
-   for (int i = 0; i < (int)NUM_ELEMS(s_mtk_op_commands); i++) {
+    for (int i = 0; i < (int)NUM_ELEMS(s_mtk_op_commands); i++) {
         if (request == s_mtk_op_commands[i].requestNumber) {
             pCI = &(s_mtk_op_commands[i]);
             break;
@@ -94,14 +94,15 @@ extern "C" android::CommandInfo *getOpCommandInfo(int request) {
     return pCI;
 }
 
-extern "C" UnsolResponseInfo *getOpUnsolResponseInfo(int unsolResponse) {
+extern "C" UnsolResponseInfo* getOpUnsolResponseInfo(int unsolResponse) {
     mtkLogD(LOG_TAG, "getOpUnsolResponseInfo: unsolResponse %d", unsolResponse);
-    android::UnsolResponseInfo *pUnsolResponseInfo = NULL;
+    android::UnsolResponseInfo* pUnsolResponseInfo = NULL;
 
     for (int i = 0; i < (int)NUM_ELEMS(s_mtk_op_unsolResponses); i++) {
         if (unsolResponse == s_mtk_op_unsolResponses[i].requestNumber) {
             pUnsolResponseInfo = &(s_mtk_op_unsolResponses[i]);
-            mtkLogD(LOG_TAG, "find mtk op unsol index %d for %d, waketype: %d", i, unsolResponse, pUnsolResponseInfo->wakeType);
+            mtkLogD(LOG_TAG, "find mtk op unsol index %d for %d, waketype: %d", i, unsolResponse,
+                    pUnsolResponseInfo->wakeType);
             break;
         }
     }
@@ -113,7 +114,7 @@ extern "C" UnsolResponseInfo *getOpUnsolResponseInfo(int unsolResponse) {
 }
 
 extern "C" int getOpRequestIdFromMsgId(int msgId) {
-    switch(msgId) {
+    switch (msgId) {
         // RIL Request
         case RFX_MSG_REQUEST_SET_DIGITS_LINE:
             return RIL_REQUEST_SET_DIGITS_LINE;
@@ -134,7 +135,7 @@ extern "C" int getOpRequestIdFromMsgId(int msgId) {
         case RFX_MSG_REQUEST_CANCEL_DEVICE_SWITCH:
             return RIL_REQUEST_CANCEL_DEVICE_SWITCH;
         case RFX_MSG_REQUEST_SET_DIGITS_REG_STATUS:
-            return RIL_REQUEST_SET_DIGITS_REG_STATUS; // RCS Over Interenet PDN
+            return RIL_REQUEST_SET_DIGITS_REG_STATUS;  // RCS Over Interenet PDN
         case RFX_MSG_REQUEST_EXIT_SCBM:
             return RIL_REQUEST_EXIT_SCBM;
         case RFX_MSG_REQUEST_SEND_RSU_REQUEST:
@@ -162,7 +163,7 @@ extern "C" int getOpRequestIdFromMsgId(int msgId) {
         case RFX_MSG_REQUEST_GET_DISABLE_2G:
             return RIL_REQUEST_GET_DISABLE_2G;
         case RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO:
-            return RIL_UNSOL_RCS_DIGITS_LINE_INFO; // RCS Over Interenet PDN
+            return RIL_UNSOL_RCS_DIGITS_LINE_INFO;  // RCS Over Interenet PDN
         case RFX_MSG_UNSOL_ENTER_SCBM:
             return RIL_UNSOL_ENTER_SCBM;
         case RFX_MSG_UNSOL_EXIT_SCBM:
@@ -175,7 +176,7 @@ extern "C" int getOpRequestIdFromMsgId(int msgId) {
 }
 
 extern "C" int getOpMsgIdFromRequestId(int requestId) {
-    switch(requestId) {
+    switch (requestId) {
         // RIL Request
         case RIL_REQUEST_SET_DIGITS_LINE:
             return RFX_MSG_REQUEST_SET_DIGITS_LINE;
@@ -234,53 +235,58 @@ extern "C" int getOpMsgIdFromRequestId(int requestId) {
     }
 }
 
-extern "C" RmcGsmSimOpRequestHandler *createGsmSimOpRequestHandler(int slot_Id, int channel_Id) {
-    mtkLogD(LOG_TAG, "createGsmSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcGsmSimOpRequestHandler *mGsmOpReqHandler = NULL;
+extern "C" RmcGsmSimOpRequestHandler* createGsmSimOpRequestHandler(int slot_Id, int channel_Id) {
+    mtkLogD(LOG_TAG, "createGsmSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id,
+            channel_Id);
+    RmcGsmSimOpRequestHandler* mGsmOpReqHandler = NULL;
     RFX_HANDLER_CREATE(mGsmOpReqHandler, RmcGsmSimOpRequestHandler, (slot_Id, channel_Id));
     return mGsmOpReqHandler;
 }
 
-extern "C" RmcCdmaSimOpRequestHandler *createCdmaSimOpRequestHandler(int slot_Id, int channel_Id) {
-    mtkLogD(LOG_TAG, "createCdmaSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcCdmaSimOpRequestHandler *mCdmaOpReqHandler = NULL;
+extern "C" RmcCdmaSimOpRequestHandler* createCdmaSimOpRequestHandler(int slot_Id, int channel_Id) {
+    mtkLogD(LOG_TAG, "createCdmaSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id,
+            channel_Id);
+    RmcCdmaSimOpRequestHandler* mCdmaOpReqHandler = NULL;
     RFX_HANDLER_CREATE(mCdmaOpReqHandler, RmcCdmaSimOpRequestHandler, (slot_Id, channel_Id));
     return mCdmaOpReqHandler;
 }
 
-extern "C" RmcCommSimOpRequestHandler *createCommSimOpRequestHandler(int slot_Id, int channel_Id) {
-    mtkLogD(LOG_TAG, "createCommSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcCommSimOpRequestHandler *mCommOpReqHandler = NULL;
+extern "C" RmcCommSimOpRequestHandler* createCommSimOpRequestHandler(int slot_Id, int channel_Id) {
+    mtkLogD(LOG_TAG, "createCommSimOpRequestHandler: slot_Id %d, channel_Id %d", slot_Id,
+            channel_Id);
+    RmcCommSimOpRequestHandler* mCommOpReqHandler = NULL;
     RFX_HANDLER_CREATE(mCommOpReqHandler, RmcCommSimOpRequestHandler, (slot_Id, channel_Id));
     return mCommOpReqHandler;
 }
 
-extern "C" RmcGsmSimOpUrcHandler *createGsmSimOpUrcHandler(int slot_Id, int channel_Id) {
+extern "C" RmcGsmSimOpUrcHandler* createGsmSimOpUrcHandler(int slot_Id, int channel_Id) {
     mtkLogD(LOG_TAG, "createGsmSimOpUrcHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcGsmSimOpUrcHandler *mGsmOpUrcHandler = NULL;
+    RmcGsmSimOpUrcHandler* mGsmOpUrcHandler = NULL;
     RFX_HANDLER_CREATE(mGsmOpUrcHandler, RmcGsmSimOpUrcHandler, (slot_Id, channel_Id));
     return mGsmOpUrcHandler;
 }
 
-extern "C" RmcCdmaSimOpUrcHandler *createCdmaSimOpUrcHandler(int slot_Id, int channel_Id) {
+extern "C" RmcCdmaSimOpUrcHandler* createCdmaSimOpUrcHandler(int slot_Id, int channel_Id) {
     mtkLogD(LOG_TAG, "createCdmaSimOpUrcHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcCdmaSimOpUrcHandler *mCdmaOpUrcHandler = NULL;
+    RmcCdmaSimOpUrcHandler* mCdmaOpUrcHandler = NULL;
     RFX_HANDLER_CREATE(mCdmaOpUrcHandler, RmcCdmaSimOpUrcHandler, (slot_Id, channel_Id));
     return mCdmaOpUrcHandler;
 }
 
-extern "C" RmcCommSimOpUrcHandler *createCommSimOpUrcHandler(int slot_Id, int channel_Id) {
+extern "C" RmcCommSimOpUrcHandler* createCommSimOpUrcHandler(int slot_Id, int channel_Id) {
     mtkLogD(LOG_TAG, "createCommSimOpUrcHandler: slot_Id %d, channel_Id %d", slot_Id, channel_Id);
-    RmcCommSimOpUrcHandler *mCommOpUrcHandler = NULL;
+    RmcCommSimOpUrcHandler* mCommOpUrcHandler = NULL;
     RFX_HANDLER_CREATE(mCommOpUrcHandler, RmcCommSimOpUrcHandler, (slot_Id, channel_Id));
     return mCommOpUrcHandler;
 }
 
-extern "C" RmcOpDcImsReqHandler *createDcImsOpReqHandler(int slot_Id, int channel_Id, void *pPdnManager) {
+extern "C" RmcOpDcImsReqHandler* createDcImsOpReqHandler(int slot_Id, int channel_Id,
+                                                         void* pPdnManager) {
     mtkLogD(LOG_TAG, "%s: slot_Id %d, channel_Id %d", __FUNCTION__, slot_Id, channel_Id);
-    RmcOpDcImsReqHandler *pDcImsOpReqHandler = NULL;
-    RFX_HANDLER_CREATE(pDcImsOpReqHandler, RmcOpDcImsReqHandler, (slot_Id, channel_Id, (RmcDcPdnManager *) pPdnManager));
+    RmcOpDcImsReqHandler* pDcImsOpReqHandler = NULL;
+    RFX_HANDLER_CREATE(pDcImsOpReqHandler, RmcOpDcImsReqHandler,
+                       (slot_Id, channel_Id, (RmcDcPdnManager*)pPdnManager));
     return pDcImsOpReqHandler;
 }
 
-}
+}  // namespace android

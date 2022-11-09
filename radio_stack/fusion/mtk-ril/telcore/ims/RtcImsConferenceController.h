@@ -31,8 +31,8 @@
 //#include "utils/String8.h"
 //#include "utils/Vector.h"
 
-//using ::android::String8;
-//using ::android::Vector;
+// using ::android::String8;
+// using ::android::Vector;
 using ::android::sp;
 
 using namespace std;
@@ -46,19 +46,19 @@ class RtcImsConferenceController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcImsConferenceController);
 
-public:
+  public:
     RtcImsConferenceController();
     virtual ~RtcImsConferenceController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     void handleAddMember(const sp<RfxMessage>& message);
     void handleRemoveMember(const sp<RfxMessage>& message);
     void handleMergeConferenece(const sp<RfxMessage>& message);
@@ -70,7 +70,7 @@ protected:
     void tryhandleCachedCEP();
     bool tryhandleAddMemberByMerge(const sp<RfxMessage>& response);
 
-public:
+  public:
     bool handleMessgae(const sp<RfxMessage>& message);
     bool handleResponse(const sp<RfxMessage>& message);
     bool handleUrc(const sp<RfxMessage>& message);
@@ -84,16 +84,16 @@ public:
     void processFakeDisconnectDone();
     bool needSkipDueToFakeDisconnect(int callid);
 
-private:
+  private:
     void handleImsEventPackageIndication(const sp<RfxMessage>& msg);
     void onTimeout();
     void handleSpecificConferenceMode();
 
-protected:
+  protected:
     RtcImsConferenceHandler* mRtcImsConferenceHandler = NULL;
     RtcImsDialogHandler* mRtcImsDialogHandler = NULL;
 
-private:
+  private:
     bool mNormalCallsMerge;
     bool mInviteByNumber;
     bool mIsMerging;

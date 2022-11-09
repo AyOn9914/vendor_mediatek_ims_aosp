@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-
 #include "RtcImsConferenceCallMessageHandler.h"
 
 #include "RfxSignal.h"
@@ -34,11 +33,10 @@
 #include "utils/StrongPointer.h"
 #include "utils/Looper.h"
 
-
-using ::android::RefBase;
-using ::android::sp;
 using ::android::Looper;
 using ::android::MessageHandler;
+using ::android::RefBase;
+using ::android::sp;
 
 using namespace std;
 /*****************************************************************************
@@ -46,7 +44,7 @@ using namespace std;
  *****************************************************************************/
 
 class RtcImsConferenceHandler {
-public:
+  public:
     RtcImsConferenceHandler(int slot);
     ~RtcImsConferenceHandler();
     void handleImsConfCallMessage(const sp<RfxMessage>& message);
@@ -68,10 +66,10 @@ public:
     static string normalizeNumberFromCLIR(string number);
     static string concatData(int isFirst, string origData, string appendData);
     static string recoverDataFromAsciiTag(string data);
-    static string replaceAll(string &str, const string &old_value, const string &new_value);
+    static string replaceAll(string& str, const string& old_value, const string& new_value);
     static string encodeSpecialChars(string number);
 
-private:
+  private:
     RtcImsConferenceCallMessageHandler* parseXmlPackage(string data);
     void restoreParticipantsAddressByLocalCache();
     void restoreUnknowParticipants(vector<string> restoreUnknowCandidates);
@@ -85,13 +83,14 @@ private:
     void showCacheAndXmlData(string callerName);
     bool isContainParticipant(vector<string> participants, string participant);
     void removeParticipant(vector<string>& participants, string participant, bool compareLoosely);
-    string getPairedAddress(const string &addr);
+    string getPairedAddress(const string& addr);
     bool checkCarrierConfig(const RfxStatusKeyEnum key);
     string getPairedRestoredAddress(string userAddr);
     void dumpParticipantsAddrMap();
     bool isEmptyConference();
     void insertParticipantsAddrMap(string key, string value);
-private:
+
+  private:
     static const string TAG_NEXT_LINE;
     static const string TAG_RETURN;
     static const string TAG_DOUBLE_QUOTE;

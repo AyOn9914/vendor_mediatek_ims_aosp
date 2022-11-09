@@ -19,11 +19,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVoiceRegStateData);
 
-RfxVoiceRegStateData::RfxVoiceRegStateData(void *data, int length) : RfxBaseData(data, length)  {
+RfxVoiceRegStateData::RfxVoiceRegStateData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_VoiceRegistrationStateResponse *tmp = (RIL_VoiceRegistrationStateResponse *) data;
-        RIL_VoiceRegistrationStateResponse *pData =
-                (RIL_VoiceRegistrationStateResponse *) calloc(1, length);
+        RIL_VoiceRegistrationStateResponse* tmp = (RIL_VoiceRegistrationStateResponse*)data;
+        RIL_VoiceRegistrationStateResponse* pData =
+                (RIL_VoiceRegistrationStateResponse*)calloc(1, length);
         RFX_ASSERT(pData != NULL);
         memcpy(pData, tmp, length);
 
@@ -31,49 +31,49 @@ RfxVoiceRegStateData::RfxVoiceRegStateData(void *data, int length) : RfxBaseData
         switch (pData->cellIdentity.cellInfoType) {
             case RIL_CELL_INFO_TYPE_GSM: {
                 asprintf(&(pData->cellIdentity.cellIdentityGsm.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityGsm.operName.long_name);
+                         tmp->cellIdentity.cellIdentityGsm.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityGsm.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityGsm.operName.short_name);
+                         tmp->cellIdentity.cellIdentityGsm.operName.short_name);
                 break;
             }
 
             case RIL_CELL_INFO_TYPE_WCDMA: {
                 asprintf(&(pData->cellIdentity.cellIdentityWcdma.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityWcdma.operName.long_name);
+                         tmp->cellIdentity.cellIdentityWcdma.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityWcdma.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityWcdma.operName.short_name);
+                         tmp->cellIdentity.cellIdentityWcdma.operName.short_name);
                 break;
             }
 
             case RIL_CELL_INFO_TYPE_CDMA: {
                 asprintf(&(pData->cellIdentity.cellIdentityCdma.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityCdma.operName.long_name);
+                         tmp->cellIdentity.cellIdentityCdma.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityCdma.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityCdma.operName.short_name);
+                         tmp->cellIdentity.cellIdentityCdma.operName.short_name);
                 break;
             }
 
             case RIL_CELL_INFO_TYPE_LTE: {
                 asprintf(&(pData->cellIdentity.cellIdentityLte.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityLte.operName.long_name);
+                         tmp->cellIdentity.cellIdentityLte.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityLte.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityLte.operName.short_name);
+                         tmp->cellIdentity.cellIdentityLte.operName.short_name);
                 break;
             }
 
             case RIL_CELL_INFO_TYPE_TD_SCDMA: {
                 asprintf(&(pData->cellIdentity.cellIdentityTdscdma.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityTdscdma.operName.long_name);
+                         tmp->cellIdentity.cellIdentityTdscdma.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityTdscdma.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityTdscdma.operName.short_name);
+                         tmp->cellIdentity.cellIdentityTdscdma.operName.short_name);
                 break;
             }
 
             case RIL_CELL_INFO_TYPE_NR: {
                 asprintf(&(pData->cellIdentity.cellIdentityNr.operName.long_name), "%s",
-                    tmp->cellIdentity.cellIdentityNr.operName.long_name);
+                         tmp->cellIdentity.cellIdentityNr.operName.long_name);
                 asprintf(&(pData->cellIdentity.cellIdentityNr.operName.short_name), "%s",
-                    tmp->cellIdentity.cellIdentityNr.operName.short_name);
+                         tmp->cellIdentity.cellIdentityNr.operName.short_name);
                 break;
             }
             case RIL_CELL_INFO_TYPE_NONE: {
@@ -90,7 +90,7 @@ RfxVoiceRegStateData::RfxVoiceRegStateData(void *data, int length) : RfxBaseData
 
 RfxVoiceRegStateData::~RfxVoiceRegStateData() {
     if (m_data) {
-        RIL_VoiceRegistrationStateResponse *tmp = (RIL_VoiceRegistrationStateResponse *) m_data;
+        RIL_VoiceRegistrationStateResponse* tmp = (RIL_VoiceRegistrationStateResponse*)m_data;
         // free string if it is not null.
         switch (tmp->cellIdentity.cellInfoType) {
             case RIL_CELL_INFO_TYPE_GSM: {

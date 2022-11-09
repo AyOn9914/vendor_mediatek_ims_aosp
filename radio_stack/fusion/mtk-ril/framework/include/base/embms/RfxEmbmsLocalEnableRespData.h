@@ -23,9 +23,10 @@
 class RfxEmbmsLocalEnableRespData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsLocalEnableRespData);
 
-    public:
-        RfxEmbmsLocalEnableRespData(RIL_EMBMS_LocalEnableResp* data, int length);
-    private:
-        void copyData(RIL_EMBMS_LocalEnableResp *data, int length);
+  public:
+    RfxEmbmsLocalEnableRespData(RIL_EMBMS_LocalEnableResp* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_LocalEnableResp* data, int length);
 };
 #endif /*__RFX_EMBMS_LOCAL_ENABLE_RESP_DATA__H__*/

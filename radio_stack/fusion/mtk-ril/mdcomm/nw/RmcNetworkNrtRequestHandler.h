@@ -21,7 +21,6 @@
 #include "RfxNetworkScanData.h"
 #include "RfxNetworkScanResultData.h"
 
-
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
@@ -30,23 +29,23 @@
 class RmcNetworkNrtRequestHandler : public RmcNetworkHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcNetworkNrtRequestHandler);
 
-    public:
-        RmcNetworkNrtRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcNetworkNrtRequestHandler();
+  public:
+    RmcNetworkNrtRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcNetworkNrtRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestQueryAvailableNetworks(const sp<RfxMclMessage>& msg);
-        void requestQueryAvailableNetworksWithAct(const sp<RfxMclMessage>& msg);
-        void requestStartNetworkScan(const sp<RfxMclMessage>& msg);
-        void handleSimulatedNetworkScan();
+  private:
+    void requestQueryAvailableNetworks(const sp<RfxMclMessage>& msg);
+    void requestQueryAvailableNetworksWithAct(const sp<RfxMclMessage>& msg);
+    void requestStartNetworkScan(const sp<RfxMclMessage>& msg);
+    void handleSimulatedNetworkScan();
 
-    protected:
-        int m_slot_id;
-        int m_channel_id;
-        int mPlmn_list_format;
+  protected:
+    int m_slot_id;
+    int m_channel_id;
+    int mPlmn_list_format;
 };
 #endif

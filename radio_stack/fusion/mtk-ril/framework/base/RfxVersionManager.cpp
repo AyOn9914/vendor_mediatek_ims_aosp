@@ -51,13 +51,11 @@ RfxVersionManager* RfxVersionManager::init() {
     return sSelf;
 }
 
-RfxVersionManager* RfxVersionManager::getInstance() {
-    return sSelf;
-}
+RfxVersionManager* RfxVersionManager::getInstance() { return sSelf; }
 
-void RfxVersionManager::initVersion(RfxAtLine *line) {
+void RfxVersionManager::initVersion(RfxAtLine* line) {
     int err = 0;
-    char *feature = NULL;
+    char* feature = NULL;
     int version = 0;
 
     if (err < 0) {
@@ -65,17 +63,16 @@ void RfxVersionManager::initVersion(RfxAtLine *line) {
         return;
     }
 
-
     if (RfxRilUtils::getRilRunMode() == RIL_RUN_MODE_MOCK) {
         RFX_LOG_E(RFX_LOG_TAG, "initVersion ignored in UT test");
         return;
     }
 
-    while(1) {
+    while (1) {
         line->atTokStart(&err);
         feature = line->atTokNextstr(&err);
         version = line->atTokNextint(&err);
-        FeatureVersion fv (String8(feature), version);
+        FeatureVersion fv(String8(feature), version);
         mVersionList.add(fv);
         if (NULL == line->getNext()) {
             break;
@@ -86,20 +83,20 @@ void RfxVersionManager::initVersion(RfxAtLine *line) {
     // debug
     for (size_t i = 0; i < mVersionList.size(); i++) {
         FeatureVersion fv = mVersionList.itemAt(i);
-        RFX_LOG_D(RFX_LOG_TAG, "[%zu] feature: [%s], version: [%d]",
-                i, fv.getFeature().string(), fv.getVersion());
+        RFX_LOG_D(RFX_LOG_TAG, "[%zu] feature: [%s], version: [%d]", i, fv.getFeature().string(),
+                  fv.getVersion());
     }
 
     // finish to update all feature version
     sem_post(&sWaitLooperSem);
 }
 
-int RfxVersionManager::getFeatureVersion(char *feature) {
+int RfxVersionManager::getFeatureVersion(char* feature) {
     waitVersion();
     return getFeatureVersion(feature, 0);
 }
 
-int RfxVersionManager::getFeatureVersion(char *feature, int defaultVaule) {
+int RfxVersionManager::getFeatureVersion(char* feature, int defaultVaule) {
     if (RfxRilUtils::getRilRunMode() == RIL_RUN_MODE_MOCK) {
         RFX_LOG_E(RFX_LOG_TAG, "return default version on UT");
         return defaultVaule;

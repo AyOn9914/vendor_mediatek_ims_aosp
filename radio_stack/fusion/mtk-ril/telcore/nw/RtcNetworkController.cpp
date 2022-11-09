@@ -27,56 +27,49 @@
 
 RFX_IMPLEMENT_CLASS("RtcNetworkController", RtcNetworkController, RfxController);
 
-RtcNetworkController::RtcNetworkController() :
-    mNetworkScanOngoing(false),
-    mForceStopNetworkScan(false),
-    mNwScanMessage(NULL) {
-}
+RtcNetworkController::RtcNetworkController()
+    : mNetworkScanOngoing(false), mForceStopNetworkScan(false), mNwScanMessage(NULL) {}
 
-RtcNetworkController::~RtcNetworkController() {
-}
+RtcNetworkController::~RtcNetworkController() {}
 
 void RtcNetworkController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
-   logV(NW_CTRL_TAG, "[onInit]");
-    const int request_id_list[] = {
-        RFX_MSG_REQUEST_SET_BAND_MODE,
-        RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS,
-        RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE,
-        RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE,
-        RFX_MSG_REQUEST_DATA_REGISTRATION_STATE,
-        RFX_MSG_REQUEST_OPERATOR,
-        RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE,
-        RFX_MSG_REQUEST_SCREEN_STATE,
-        RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER,
-        RFX_MSG_RIL_REQUEST_START_NETWORK_SCAN,
-        RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN,
-        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL,
-        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT,
-        RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
-        RFX_MSG_REQUEST_SET_SERVICE_STATE,
-        RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE,
-        RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE,
-        RFX_MSG_REQUEST_SET_LTE_RELEASE_VERSION,
-        RFX_MSG_REQUEST_GET_LTE_RELEASE_VERSION,
-        RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS,
-        RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS_WITH_ACT,
-        RFX_MSG_REQUEST_DATA_REGISTRATION_STATE_EXT,
-        RFX_MSG_REQUEST_GET_EHRPD_INFO_FOR_IMS,
-        RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS,
-        RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT
-    };
+    logV(NW_CTRL_TAG, "[onInit]");
+    const int request_id_list[] = {RFX_MSG_REQUEST_SET_BAND_MODE,
+                                   RFX_MSG_REQUEST_GET_NEIGHBORING_CELL_IDS,
+                                   RFX_MSG_REQUEST_SET_UNSOL_CELL_INFO_LIST_RATE,
+                                   RFX_MSG_REQUEST_VOICE_REGISTRATION_STATE,
+                                   RFX_MSG_REQUEST_DATA_REGISTRATION_STATE,
+                                   RFX_MSG_REQUEST_OPERATOR,
+                                   RFX_MSG_REQUEST_QUERY_NETWORK_SELECTION_MODE,
+                                   RFX_MSG_REQUEST_SCREEN_STATE,
+                                   RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER,
+                                   RFX_MSG_RIL_REQUEST_START_NETWORK_SCAN,
+                                   RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN,
+                                   RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL,
+                                   RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT,
+                                   RFX_MSG_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
+                                   RFX_MSG_REQUEST_SET_SERVICE_STATE,
+                                   RFX_MSG_REQUEST_CDMA_SET_ROAMING_PREFERENCE,
+                                   RFX_MSG_REQUEST_CDMA_QUERY_ROAMING_PREFERENCE,
+                                   RFX_MSG_REQUEST_SET_LTE_RELEASE_VERSION,
+                                   RFX_MSG_REQUEST_GET_LTE_RELEASE_VERSION,
+                                   RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS,
+                                   RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS_WITH_ACT,
+                                   RFX_MSG_REQUEST_DATA_REGISTRATION_STATE_EXT,
+                                   RFX_MSG_REQUEST_GET_EHRPD_INFO_FOR_IMS,
+                                   RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS,
+                                   RFX_MSG_REQUEST_REGISTER_CELLULAR_QUALITY_REPORT};
 
-    const int urc_id_list[] = {
-        RFX_MSG_URC_NETWORK_SCAN_RESULT
-    };
+    const int urc_id_list[] = {RFX_MSG_URC_NETWORK_SCAN_RESULT};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int), DEFAULT);
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
-    getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_MODEM_RESET,
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int), DEFAULT);
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
+    getNonSlotScopeStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_MODEM_RESET,
             RfxStatusChangeCallback(this, &RtcNetworkController::onHandleModemReset));
 }
 
@@ -87,8 +80,8 @@ bool RtcNetworkController::onHandleRequest(const sp<RfxMessage>& message) {
     switch (msg_id) {
         case RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS:
         case RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS_WITH_ACT:
-            logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d isAPInCall:%d",
-                    mNetworkScanOngoing, isAPInCall());
+            logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d isAPInCall:%d", mNetworkScanOngoing,
+                 isAPInCall());
             if (isAPInCall() == true) {
                 sp<RfxMessage> resToRilj = RfxMessage::obtainResponse(RIL_E_MODEM_ERR, message);
                 responseToRilj(resToRilj);
@@ -97,8 +90,8 @@ bool RtcNetworkController::onHandleRequest(const sp<RfxMessage>& message) {
             if (mNetworkScanOngoing == true) {
                 mNwScanMessage = message;
                 mForceStopNetworkScan = true;
-                sp<RfxMessage> reqToRild = RfxMessage::obtainRequest(m_slot_id,
-                        RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS, RfxVoidData());
+                sp<RfxMessage> reqToRild = RfxMessage::obtainRequest(
+                        m_slot_id, RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS, RfxVoidData());
                 requestToMcl(reqToRild);
             } else {
                 mNetworkScanOngoing = true;
@@ -106,14 +99,14 @@ bool RtcNetworkController::onHandleRequest(const sp<RfxMessage>& message) {
             }
             break;
         case RFX_MSG_RIL_REQUEST_START_NETWORK_SCAN:
-            logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d isAPInCall:%d",
-                    mNetworkScanOngoing, isAPInCall());
+            logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d isAPInCall:%d", mNetworkScanOngoing,
+                 isAPInCall());
             // VTS case.
             if (mNetworkScanOngoing == true) {
                 mNwScanMessage = message;
                 mForceStopNetworkScan = true;
-                sp<RfxMessage> reqToRild = RfxMessage::obtainRequest(m_slot_id,
-                        RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN, RfxVoidData());
+                sp<RfxMessage> reqToRild = RfxMessage::obtainRequest(
+                        m_slot_id, RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN, RfxVoidData());
                 requestToMcl(reqToRild);
             } else {
                 mNetworkScanOngoing = true;
@@ -129,10 +122,10 @@ bool RtcNetworkController::onHandleRequest(const sp<RfxMessage>& message) {
             logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d", mNetworkScanOngoing);
             if (mNetworkScanOngoing == true) {
                 mNwScanMessage = message;
-                RtcRatSwitchController* nwRatController = (RtcRatSwitchController *)findController
-                        (RFX_OBJ_CLASS_INFO(RtcRatSwitchController));
-                sp<RfxAction> action = new RfxAction0(this,
-                        &RtcNetworkController::onLocalAbortAvailableNetworkDone);
+                RtcRatSwitchController* nwRatController = (RtcRatSwitchController*)findController(
+                        RFX_OBJ_CLASS_INFO(RtcRatSwitchController));
+                sp<RfxAction> action = new RfxAction0(
+                        this, &RtcNetworkController::onLocalAbortAvailableNetworkDone);
                 nwRatController->setLocalAbortAvailableNetwork(action);
             } else {
                 requestToMcl(message);
@@ -164,7 +157,7 @@ bool RtcNetworkController::onHandleResponse(const sp<RfxMessage>& response) {
         case RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS:
         case RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN:
             logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d mForceStopNetworkScan:%d",
-                    mNetworkScanOngoing, mForceStopNetworkScan);
+                 mNetworkScanOngoing, mForceStopNetworkScan);
             if (mForceStopNetworkScan == true) {
                 if (mNwScanMessage != NULL) {
                     requestToMcl(mNwScanMessage);
@@ -189,11 +182,11 @@ bool RtcNetworkController::onHandleUrc(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
 
     if (msg_id == RFX_MSG_URC_NETWORK_SCAN_RESULT) {
-        RfxNetworkScanResultData *ptr = (RfxNetworkScanResultData *)message->getData();
-        RIL_NetworkScanResult *data = (RIL_NetworkScanResult *)ptr->getData();
-        logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d data->status:%d",
-                mNetworkScanOngoing, data->status);
-        if (data->status == COMPLETE) { // for now we don't support PARTIAL.
+        RfxNetworkScanResultData* ptr = (RfxNetworkScanResultData*)message->getData();
+        RIL_NetworkScanResult* data = (RIL_NetworkScanResult*)ptr->getData();
+        logV(NW_CTRL_TAG, "mNetworkScanOngoing:%d data->status:%d", mNetworkScanOngoing,
+             data->status);
+        if (data->status == COMPLETE) {  // for now we don't support PARTIAL.
             mNetworkScanOngoing = false;
         }
     }
@@ -202,14 +195,13 @@ bool RtcNetworkController::onHandleUrc(const sp<RfxMessage>& message) {
 }
 
 bool RtcNetworkController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState) {
-
+                                                  bool isModemPowerOff, int radioState) {
     /* Reject the request in radio unavailable or modem off */
     if ((radioState == (int)RADIO_STATE_UNAVAILABLE &&
-            RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER != message->getId()) ||
-            isModemPowerOff == true) {
+         RFX_MSG_REQUEST_SET_UNSOLICITED_RESPONSE_FILTER != message->getId()) ||
+        isModemPowerOff == true) {
         logD(NW_CTRL_TAG, "onCheckIfRejectMessage, id = %d, isModemPowerOff = %d, rdioState = %d",
-                message->getId(), isModemPowerOff, radioState);
+             message->getId(), isModemPowerOff, radioState);
         return true;
     }
 
@@ -218,10 +210,10 @@ bool RtcNetworkController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
 
 bool RtcNetworkController::onPreviewMessage(const sp<RfxMessage>& message) {
     if (getStatusManager()->getBoolValue(RFX_STATUS_KEY_IS_RAT_MODE_SWITCHING) == true &&
-            (message->getId() == RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS ||
-            message->getId() == RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT)) {
+        (message->getId() == RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS ||
+         message->getId() == RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT)) {
         logV(NW_CTRL_TAG, "onPreviewMessage, put %s into pending list",
-                RFX_ID_TO_STR(message->getId()));
+             RFX_ID_TO_STR(message->getId()));
         return false;
     } else {
         return true;
@@ -230,10 +222,9 @@ bool RtcNetworkController::onPreviewMessage(const sp<RfxMessage>& message) {
 
 bool RtcNetworkController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
     if (getStatusManager()->getBoolValue(RFX_STATUS_KEY_IS_RAT_MODE_SWITCHING) == false &&
-            (message->getId() == RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS ||
-            message->getId() == RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT)) {
-        logV(NW_CTRL_TAG, "resume the request %s",
-                RFX_ID_TO_STR(message->getId()));
+        (message->getId() == RFX_MSG_REQUEST_QUERY_AVAILABLE_NETWORKS ||
+         message->getId() == RFX_MSG_REQUEST_SET_NETWORK_SELECTION_MANUAL_WITH_ACT)) {
+        logV(NW_CTRL_TAG, "resume the request %s", RFX_ID_TO_STR(message->getId()));
         return true;
     } else {
         return false;
@@ -241,22 +232,24 @@ bool RtcNetworkController::onCheckIfResumeMessage(const sp<RfxMessage>& message)
 }
 
 void RtcNetworkController::onHandleModemReset(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value) {
+                                              RfxVariant value) {
     RFX_UNUSED(key);
     bool old_mode = old_value.asBool();
     bool new_mode = value.asBool();
 
     logE(NW_CTRL_TAG, "onHandleModemReset:old_mode:%d, new_mode:%d, mNetworkScanOngoing:%d",
-            old_mode, new_mode, mNetworkScanOngoing);
+         old_mode, new_mode, mNetworkScanOngoing);
 
-    if (new_mode == true && mNetworkScanOngoing == true) { // send plmn list complete when TRM.
+    if (new_mode == true && mNetworkScanOngoing == true) {  // send plmn list complete when TRM.
         sp<RfxMessage> urcToRilj;
-        RIL_NetworkScanResult* resp = (RIL_NetworkScanResult*) calloc(1, sizeof(RIL_NetworkScanResult));
+        RIL_NetworkScanResult* resp =
+                (RIL_NetworkScanResult*)calloc(1, sizeof(RIL_NetworkScanResult));
         RFX_ASSERT(resp != NULL);
         memset(resp, 0, sizeof(RIL_NetworkScanResult));
-        resp->status = COMPLETE; // for now we don't support PARTIAL.
-        urcToRilj = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_URC_NETWORK_SCAN_RESULT,
-                RfxNetworkScanResultData((void*) resp, sizeof(RIL_NetworkScanResult)));
+        resp->status = COMPLETE;  // for now we don't support PARTIAL.
+        urcToRilj = RfxMessage::obtainUrc(
+                m_slot_id, RFX_MSG_URC_NETWORK_SCAN_RESULT,
+                RfxNetworkScanResultData((void*)resp, sizeof(RIL_NetworkScanResult)));
         // response to TeleCore
         responseToRilj(urcToRilj);
         free(resp);

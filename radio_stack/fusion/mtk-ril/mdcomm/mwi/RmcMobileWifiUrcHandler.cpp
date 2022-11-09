@@ -44,31 +44,28 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_WIFI_PDN_OOS);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_WIFI_LOCK);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_SSAC_STATUS);
 
-
 static const char* urc[] = {
-    URC_WFC_WIFI_ROVEOUT,
-    URC_PDN_HANDOVER,
-    URC_ACTIVE_WIFI_PDN_COUNT,
-    URC_WIFI_RSSI_MONITOR_CONFIG,
-    URC_WIFI_PDN_ERROR,
-    URC_MD_GEO_REQUEST,
-    URC_NATT_KEEP_ALIVE_CHANGED,
-    URC_WIFI_PING_REQUEST,
-    URC_WIFI_PDN_OOS,
-    URC_WIFI_LOCK,
+        URC_WFC_WIFI_ROVEOUT,
+        URC_PDN_HANDOVER,
+        URC_ACTIVE_WIFI_PDN_COUNT,
+        URC_WIFI_RSSI_MONITOR_CONFIG,
+        URC_WIFI_PDN_ERROR,
+        URC_MD_GEO_REQUEST,
+        URC_NATT_KEEP_ALIVE_CHANGED,
+        URC_WIFI_PING_REQUEST,
+        URC_WIFI_PDN_OOS,
+        URC_WIFI_LOCK,
 };
 
-RmcMobileWifiUrcHandler::RmcMobileWifiUrcHandler(
-    int slot_id, int channel_id) : RfxBaseHandler(slot_id, channel_id) {
-
-    registerToHandleURC(urc, sizeof(urc) / sizeof(char *));
+RmcMobileWifiUrcHandler::RmcMobileWifiUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcMobileWifiUrcHandler::~RmcMobileWifiUrcHandler() {
-}
+RmcMobileWifiUrcHandler::~RmcMobileWifiUrcHandler() {}
 
 void RmcMobileWifiUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
+    char* urc = msg->getRawUrc()->getLine();
     // logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
     if (strStartsWith(urc, URC_WFC_WIFI_ROVEOUT)) {
         onNotifyWfcWifiRoveout(msg);
@@ -204,7 +201,7 @@ void RmcMobileWifiUrcHandler::onNotifyWifiPingRequest(const sp<RfxMclMessage>& m
      * <rat_type>: rat type on which ping is requested
      * <phoneId>: add by MCL
      */
-    //char *urc = msg->getRawUrc()->getLine();
+    // char *urc = msg->getRawUrc()->getLine();
     const int maxLen = 1;
     bool appendPhoneId = true;
     int rfxMsg = RFX_MSG_UNSOL_WIFI_PING_REQUEST;

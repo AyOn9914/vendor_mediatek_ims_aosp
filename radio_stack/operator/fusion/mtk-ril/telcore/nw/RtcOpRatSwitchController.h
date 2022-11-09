@@ -33,27 +33,27 @@ class RtcOpRatSwitchController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcOpRatSwitchController);
 
-    public:
-        RtcOpRatSwitchController();
-        virtual ~RtcOpRatSwitchController();
+  public:
+    RtcOpRatSwitchController();
+    virtual ~RtcOpRatSwitchController();
 
-    protected:
-        void onInit();
-        bool onHandleRequest(const sp<RfxMessage>& message);
-        bool onHandleResponse(const sp<RfxMessage> &message);
-        bool onPreviewMessage(const sp<RfxMessage>& message);
-        bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
-        bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-                bool isModemPowerOff,int radioState);
+  protected:
+    void onInit();
+    bool onHandleRequest(const sp<RfxMessage>& message);
+    bool onHandleResponse(const sp<RfxMessage>& message);
+    bool onPreviewMessage(const sp<RfxMessage>& message);
+    bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
+    bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                int radioState);
 
-        void requestRadioPower(bool state);
-        void onRequestRadioOffDone(int slotId);
-        void onRequestRadioOnDone(int slotId);
+    void requestRadioPower(bool state);
+    void onRequestRadioOffDone(int slotId);
+    void onRequestRadioOnDone(int slotId);
 
-    private:
-        sp<RfxMessage> mMessage;
-        RIL_Errno mError;
-        bool backupRadioPower[MAX_SIM_COUNT];
-        int radioCount;
+  private:
+    sp<RfxMessage> mMessage;
+    RIL_Errno mError;
+    bool backupRadioPower[MAX_SIM_COUNT];
+    int radioCount;
 };
 #endif /* __RTC_OP_RAT_SWITCH_CONTROLLER_H__ */

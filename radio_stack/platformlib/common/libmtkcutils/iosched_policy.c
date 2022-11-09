@@ -31,7 +31,8 @@
 #define __android_unused __attribute__((__unused__))
 #endif
 
-int android_set_ioprio(int pid __android_unused, IoSchedClass clazz __android_unused, int ioprio __android_unused) {
+int android_set_ioprio(int pid __android_unused, IoSchedClass clazz __android_unused,
+                       int ioprio __android_unused) {
 #if defined(__ANDROID__)
     if (syscall(SYS_ioprio_set, IOPRIO_WHO_PROCESS, pid, ioprio | (clazz << IOPRIO_CLASS_SHIFT))) {
         return -1;
@@ -40,7 +41,7 @@ int android_set_ioprio(int pid __android_unused, IoSchedClass clazz __android_un
     return 0;
 }
 
-int android_get_ioprio(int pid __android_unused, IoSchedClass *clazz, int *ioprio) {
+int android_get_ioprio(int pid __android_unused, IoSchedClass* clazz, int* ioprio) {
 #if defined(__ANDROID__)
     int rc;
 

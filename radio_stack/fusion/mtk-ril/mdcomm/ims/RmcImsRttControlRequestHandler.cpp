@@ -22,34 +22,35 @@
 #include "ConfigUtil.h"
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST,    // AT+RTTCALL
-    RFX_MSG_REQUEST_SEND_RTT_TEXT,              // AT+RTTSTR
-    RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE,  // AT+PRTTCALL
-    RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION,  // AT+EIMSAUDIOSID
+        RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST,      // AT+RTTCALL
+        RFX_MSG_REQUEST_SEND_RTT_TEXT,                // AT+RTTSTR
+        RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE,  // AT+PRTTCALL
+        RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION,  // AT+EIMSAUDIOSID
 };
 
 // register data
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SEND_RTT_TEXT);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_RTT_MODIFY_REQUEST_RESPONSE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_TOGGLE_RTT_AUDIO_INDICATION);
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcImsRttControlRequestHandler, RIL_CMD_PROXY_1);
 
-RmcImsRttControlRequestHandler::RmcImsRttControlRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcImsRttControlRequestHandler::RmcImsRttControlRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcImsRttControlRequestHandler constructor");
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcImsRttControlRequestHandler::~RmcImsRttControlRequestHandler() {
-}
+RmcImsRttControlRequestHandler::~RmcImsRttControlRequestHandler() {}
 
 void RmcImsRttControlRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
-    //logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
+    // logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SEND_RTT_MODIFY_REQUEST:
             sendRttModifyRequest(msg);
             break;
@@ -73,7 +74,7 @@ void RmcImsRttControlRequestHandler::sendRttModifyRequest(const sp<RfxMclMessage
      * <call id>: call id
      * <op>: 0 = downgrade; 1 = upgrade;
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
     int callId = params[0];
     int op = params[1];
 
@@ -86,7 +87,7 @@ void RmcImsRttControlRequestHandler::sendRttModifyRequest(const sp<RfxMclMessage
 }
 
 void RmcImsRttControlRequestHandler::sendRttText(const sp<RfxMclMessage>& msg) {
-    //AT+ERTTSTR= =<callid>, <len>, <text>
+    // AT+ERTTSTR= =<callid>, <len>, <text>
     char** params = (char**)msg->getData()->getData();
     char* callId = params[0];
     char* len = params[1];
@@ -100,10 +101,9 @@ void RmcImsRttControlRequestHandler::sendRttText(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcImsRttControlRequestHandler::rttModifyRequestResponse(const sp<RfxMclMessage>& msg) {
-
     /* AT+PRTTCALL=<call id>, <result>
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
     int callId = params[0];
     int result = params[1];
 
@@ -121,7 +121,7 @@ void RmcImsRttControlRequestHandler::toggleRttAudioIndication(const sp<RfxMclMes
      *      0 = disable audio indication;
      *      1 = enable audio indication;
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
     int callId = params[0];
     int enable = params[1];
 

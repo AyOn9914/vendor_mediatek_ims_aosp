@@ -26,12 +26,10 @@
  *****************************************************************************/
 RFX_IMPLEMENT_HANDLER_CLASS(RmcAtciSpecialRequestHandler, RIL_CMD_PROXY_7);
 
-RmcAtciSpecialRequestHandler::RmcAtciSpecialRequestHandler(int slot_id, int channel_id) :
-        RmcAtciRequestHandler(slot_id, channel_id) {
-    const int request[] = {
-        RFX_MSG_REQUEST_ATCI_SPECIAL_COMMAND
-    };
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+RmcAtciSpecialRequestHandler::RmcAtciSpecialRequestHandler(int slot_id, int channel_id)
+    : RmcAtciRequestHandler(slot_id, channel_id) {
+    const int request[] = {RFX_MSG_REQUEST_ATCI_SPECIAL_COMMAND};
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
 }
 
 void RmcAtciSpecialRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {

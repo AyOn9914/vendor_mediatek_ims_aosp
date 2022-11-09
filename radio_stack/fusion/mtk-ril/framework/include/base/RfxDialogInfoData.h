@@ -24,6 +24,6 @@
 class RfxDialogInfoData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxDialogInfoData);
 
-    public:
+  public:
 };
 #endif

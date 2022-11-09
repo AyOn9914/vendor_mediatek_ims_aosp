@@ -23,31 +23,23 @@ const string RfxDialog::SENDRECV("sendrecv");
 const string RfxDialog::SENDONLY("sendonly");
 const string RfxDialog::RECVONLY("recvonly");
 
-RfxMediaAttribute::RfxMediaAttribute() :
-        mediaType(""),
-        mediaDirection(""),
-        port0(false) {
-}
+RfxMediaAttribute::RfxMediaAttribute() : mediaType(""), mediaDirection(""), port0(false) {}
 
-RfxMediaAttribute::~RfxMediaAttribute(){
-}
+RfxMediaAttribute::~RfxMediaAttribute() {}
 
-RfxDialog::RfxDialog() :
-        dialogId(-1),
-        exclusive(false),
-        state(""),
-        initiator(false),
-        identity(""),
-        targetUri(""),
-        pname(""),
-        pval(""),
-        remoteIdentity(""),
-        remoteTargetUri("") {
-}
+RfxDialog::RfxDialog()
+    : dialogId(-1),
+      exclusive(false),
+      state(""),
+      initiator(false),
+      identity(""),
+      targetUri(""),
+      pname(""),
+      pval(""),
+      remoteIdentity(""),
+      remoteTargetUri("") {}
 
-RfxDialog::~RfxDialog() {
-
-}
+RfxDialog::~RfxDialog() {}
 
 int RfxDialog::getDialogId() {
     RFX_LOG_D(RFX_LOG_TAG, "getDialogId: %d", dialogId);
@@ -69,18 +61,16 @@ string RfxDialog::getRemoteAddress() {
         remoteAddress = remoteTargetUri;
     }
     RFX_LOG_D(RFX_LOG_TAG, "getRemoteAddress: %s",
-            RfxRilUtils::pii(RFX_LOG_TAG, remoteAddress.c_str()));
+              RfxRilUtils::pii(RFX_LOG_TAG, remoteAddress.c_str()));
     return remoteAddress;
 }
 
-bool RfxDialog::isMt() {
-    return !initiator;
-}
+bool RfxDialog::isMt() { return !initiator; }
 
 bool RfxDialog::isCallHeld(vector<sp<RfxMediaAttribute>> mediaAttributes) {
     for (sp<RfxMediaAttribute> mediaAttribute : mediaAttributes) {
-        if (strcasecmp(AUDIO.c_str(), mediaAttribute->mediaType.c_str()) == 0
-                && strcasecmp(SENDRECV.c_str(), mediaAttribute->mediaDirection.c_str()) != 0) {
+        if (strcasecmp(AUDIO.c_str(), mediaAttribute->mediaType.c_str()) == 0 &&
+            strcasecmp(SENDRECV.c_str(), mediaAttribute->mediaDirection.c_str()) != 0) {
             return true;
         }
     }
@@ -89,8 +79,8 @@ bool RfxDialog::isCallHeld(vector<sp<RfxMediaAttribute>> mediaAttributes) {
 
 bool RfxDialog::isCallHeld() {
     bool isHeld = false;
-    if (strcasecmp(SIP_RENDERING.c_str(), pname.c_str()) == 0
-            && strcasecmp(NO.c_str(), pval.c_str()) == 0) {
+    if (strcasecmp(SIP_RENDERING.c_str(), pname.c_str()) == 0 &&
+        strcasecmp(NO.c_str(), pval.c_str()) == 0) {
         isHeld = true;
     } else if (isCallHeld(mediaAttributes)) {
         isHeld = true;
@@ -101,8 +91,8 @@ bool RfxDialog::isCallHeld() {
 
 bool RfxDialog::isVideoCallInBackground() {
     for (sp<RfxMediaAttribute> mediaAttribute : mediaAttributes) {
-        if (strcasecmp(VIDEO.c_str(), mediaAttribute->mediaType.c_str()) == 0
-                && strcasecmp(INACTIVE.c_str(), mediaAttribute->mediaDirection.c_str()) == 0) {
+        if (strcasecmp(VIDEO.c_str(), mediaAttribute->mediaType.c_str()) == 0 &&
+            strcasecmp(INACTIVE.c_str(), mediaAttribute->mediaDirection.c_str()) == 0) {
             return true;
         }
     }

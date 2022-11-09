@@ -24,49 +24,42 @@
 #include "RfxChannelManager.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 class RfxMclBaseMessenger : public MessageHandler {
-public:
-
+  public:
     virtual ~RfxMclBaseMessenger() {}
 
-public:
-
+  public:
     virtual void handleMessage(const Message& message);
 
-protected:
-
+  protected:
     // Sub-class should override onHandleMessage(), not handleMessage()
     virtual void onHandleMessage(const Message& message) = 0;
 };
 
 class RfxMclMessenger : public RfxMclBaseMessenger {
-public:
+  public:
     RfxMclMessenger(const sp<RfxMclMessage>& _msg) : msg(_msg) {}
 
-protected:
-
+  protected:
     // Sub-class should override onHandleMessage(), not handleMessage()
     virtual void onHandleMessage(const Message& message);
 
-private:
+  private:
     sp<RfxMclMessage> msg;
 };
 
 class RfxMclDispatcherThread : public Thread {
-
-private:
-
+  private:
     RfxMclDispatcherThread();
 
     virtual ~RfxMclDispatcherThread() {}
 
-public:
-
+  public:
     static void init();
 
     static void enqueueMclMessage(const sp<RfxMclMessage>& message);
@@ -77,13 +70,11 @@ public:
 
     static sp<Looper> waitLooper();
 
-private:
-
+  private:
     virtual bool threadLoop();
 
-private:
-
-    static RfxMclDispatcherThread *s_self;
+  private:
+    static RfxMclDispatcherThread* s_self;
     sp<Looper> m_looper;
     Message m_dummy_msg;
 };

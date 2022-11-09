@@ -31,64 +31,51 @@ using ::android::String8;
 
 const rfx_class_info_struct RfxObject::s_class_info = {RFX_OBJECT_CLASS_NAME, NULL, NULL};
 
+RfxClassInfo* RfxObject::getRfxObjectClassInfo() { return (RfxClassInfo*)&s_class_info; }
 
-RfxClassInfo *RfxObject::getRfxObjectClassInfo()
-{
-    return (RfxClassInfo *)&s_class_info;
-}
+int RfxObject::static_isObjCheck(void* ptr, void** parent_p) {
+    RfxObject* obj = (RfxObject*)ptr;
 
-int RfxObject::static_isObjCheck(void* ptr, void** parent_p)
-{
-    RfxObject *obj = (RfxObject *)ptr;
-
-    if (obj->m_guard == RFX_OBJ_CREATED_GUARD_PATTERN)
-    {
-        *parent_p = (void*) obj->m_parent_obj;
+    if (obj->m_guard == RFX_OBJ_CREATED_GUARD_PATTERN) {
+        *parent_p = (void*)obj->m_parent_obj;
         return 1;
-    }
-    else
-    {
+    } else {
         return 0;
     }
-
 }
 
-RfxObject::RfxObject() :
-    m_guard(RFX_OBJ_CREATED_GUARD_PATTERN),
-    m_obj_flags(0),
-    m_parent_obj(NULL),
-    m_first_child_obj(NULL),
-    m_last_child_obj(NULL),
-    m_next_obj(NULL),
-    m_prev_obj(NULL) {
+RfxObject::RfxObject()
+    : m_guard(RFX_OBJ_CREATED_GUARD_PATTERN),
+      m_obj_flags(0),
+      m_parent_obj(NULL),
+      m_first_child_obj(NULL),
+      m_last_child_obj(NULL),
+      m_next_obj(NULL),
+      m_prev_obj(NULL) {
 #ifdef RFX_OBJ_DEBUG
     if (RfxDebugInfo::isRfxDebugInfoEnabled()) {
-        m_debug_info = new RfxDebugInfo(static_cast<IRfxDebugLogger *>(this), this);
+        m_debug_info = new RfxDebugInfo(static_cast<IRfxDebugLogger*>(this), this);
     } else {
         m_debug_info = NULL;
     }
 #endif
 }
 
-
-RfxObject::~RfxObject()
-{
+RfxObject::~RfxObject() {
     RFX_ASSERT(m_guard == RFX_OBJ_CREATED_GUARD_PATTERN);
 
     // NOTE: Must use RFX_CLOSE() to destroy an object or it will cause this assert
     RFX_ASSERT(m_parent_obj == NULL);
 #ifdef RFX_OBJ_DEBUG
     if (m_debug_info) {
-        delete(m_debug_info);
+        delete (m_debug_info);
     }
 #endif
     // Update the guard patten
     m_guard = RFX_OBJ_DESTROYED_GUARD_PATTERN;
 }
 
-
-void RfxObject::_init(RfxObject *objParent)
-{
+void RfxObject::_init(RfxObject* objParent) {
     // set flags to init
     RFX_FLAG_SET(m_obj_flags, FLAGS_OBJ_INITING);
 
@@ -99,26 +86,25 @@ void RfxObject::_init(RfxObject *objParent)
         if (s_root_obj_debug_info == NULL) {
             s_root_obj_debug_info = new Vector<RfxDebugInfo*>();
         }
-        RFX_LOG_D(RFX_LOG_TAG, "%p, %s is added into debug info list", this, getClassInfo()->getClassName());
+        RFX_LOG_D(RFX_LOG_TAG, "%p, %s is added into debug info list", this,
+                  getClassInfo()->getClassName());
         s_root_obj_debug_info->add(m_debug_info);
     }
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG
 
     // Assign the parent object
     setParent(objParent);
 
     // Callback onInit()
     onInit();
-//    onAfterInit();
+    //    onAfterInit();
     onObjectNotify(RFX_OBJECT_NOTIFY_ID_AFTER_INIT, NULL);
 
     // clear flags
     RFX_FLAG_CLEAR(m_obj_flags, FLAGS_OBJ_INITING);
 }
 
-
-void RfxObject::_deinit()
-{
+void RfxObject::_deinit() {
     // NOTE: Assert here if the object has been closed
     RFX_ASSERT(m_guard == RFX_OBJ_CREATED_GUARD_PATTERN);
 
@@ -135,18 +121,19 @@ void RfxObject::_deinit()
     if (m_debug_info != NULL && m_parent_obj == NULL) {
         size_t size = s_root_obj_debug_info->size();
         for (size_t i = 0; i < size; i++) {
-            const RfxDebugInfo *item = s_root_obj_debug_info->itemAt(i);
+            const RfxDebugInfo* item = s_root_obj_debug_info->itemAt(i);
             if (m_debug_info == item) {
-                RFX_LOG_D(RFX_LOG_TAG, "%p, %s is removed from debug info list", this, getClassInfo()->getClassName());
+                RFX_LOG_D(RFX_LOG_TAG, "%p, %s is removed from debug info list", this,
+                          getClassInfo()->getClassName());
                 s_root_obj_debug_info->removeAt(i);
                 break;
             }
         }
     }
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG
 
     // Callback onDeinit()
-//    onBeforeDeinit();
+    //    onBeforeDeinit();
     onObjectNotify(RFX_OBJECT_NOTIFY_ID_BEFORE_DEINIT, NULL);
     onDeinit();
 
@@ -154,16 +141,14 @@ void RfxObject::_deinit()
     releaseAllChild();
 
     // Callback onAfterDeinit()
-//    onAfterDeinit();
+    //    onAfterDeinit();
     onObjectNotify(RFX_OBJECT_NOTIFY_ID_AFTER_DEINIT, NULL);
 
     // Remove the relation to parent object
     removeFromParent();
 }
 
-
-void RfxObject::_close()
-{
+void RfxObject::_close() {
     _deinit();
     /* M: This is a workaround for SP<>::cleare reentry error;
      * When call sp<>::clear(), it will follow the following way:
@@ -176,11 +161,8 @@ void RfxObject::_close()
     mHoldSelf.clear();
 }
 
-
-void RfxObject::setParent(RfxObject *obj_parent)
-{
-    if (obj_parent == NULL)
-    {
+void RfxObject::setParent(RfxObject* obj_parent) {
+    if (obj_parent == NULL) {
         removeFromParent();
         return;
     }
@@ -188,37 +170,28 @@ void RfxObject::setParent(RfxObject *obj_parent)
     obj_parent->addChild(this);
 }
 
-
 // TODO: move all this implement to onRemoveChild()
-void RfxObject::removeFromParent()
-{
-    if (m_parent_obj == NULL)
-    {
+void RfxObject::removeFromParent() {
+    if (m_parent_obj == NULL) {
         // Do nothing
         return;
     }
 
     // Callback the virtual function
-//    m_parent_obj->onRemoveChild(this);
-    m_parent_obj->onObjectNotify(RFX_OBJECT_NOTIFY_ID_REMOVE_CHILD, (void *)this);
+    //    m_parent_obj->onRemoveChild(this);
+    m_parent_obj->onObjectNotify(RFX_OBJECT_NOTIFY_ID_REMOVE_CHILD, (void*)this);
 
     // Remove from child list of parent
-    if (m_prev_obj != NULL)
-    {
+    if (m_prev_obj != NULL) {
         m_prev_obj->m_next_obj = m_next_obj;
-    }
-    else
-    {
+    } else {
         RFX_ASSERT(m_parent_obj->m_first_child_obj == this);
         m_parent_obj->m_first_child_obj = m_next_obj;
     }
 
-    if (m_next_obj != NULL)
-    {
+    if (m_next_obj != NULL) {
         m_next_obj->m_prev_obj = m_prev_obj;
-    }
-    else
-    {
+    } else {
         RFX_ASSERT(m_parent_obj->m_last_child_obj == this);
         m_parent_obj->m_last_child_obj = m_prev_obj;
     }
@@ -228,15 +201,12 @@ void RfxObject::removeFromParent()
     m_next_obj = NULL;
 }
 
-
 // TODO: move all this implement to onAddChild()
-void RfxObject::addChild(RfxObject *child_obj)
-{
+void RfxObject::addChild(RfxObject* child_obj) {
     RFX_OBJ_ASSERT_VALID(child_obj);
     RFX_ASSERT(child_obj != this);
 
-    if (child_obj->m_parent_obj == this)
-    {
+    if (child_obj->m_parent_obj == this) {
         // Do nothing
         return;
     }
@@ -255,41 +225,33 @@ void RfxObject::addChild(RfxObject *child_obj)
     child_obj->m_prev_obj = m_last_child_obj;
     child_obj->m_next_obj = NULL;
 
-    if (m_first_child_obj == NULL)
-    {
+    if (m_first_child_obj == NULL) {
         m_first_child_obj = child_obj;
     }
-    if (m_last_child_obj != NULL)
-    {
+    if (m_last_child_obj != NULL) {
         m_last_child_obj->m_next_obj = child_obj;
     }
     m_last_child_obj = child_obj;
 
     // Callback the virtual function
-//    onAddChild(childObj);
-    onObjectNotify(RFX_OBJECT_NOTIFY_ID_ADD_CHILD, (void *)child_obj);
+    //    onAddChild(childObj);
+    onObjectNotify(RFX_OBJECT_NOTIFY_ID_ADD_CHILD, (void*)child_obj);
 }
 
-
-int RfxObject::getChildCount() const
-{
+int RfxObject::getChildCount() const {
     int count = 0;
-    RfxObject *i;
-    for (i = m_first_child_obj; i != NULL; i = i->m_next_obj)
-    {
+    RfxObject* i;
+    for (i = m_first_child_obj; i != NULL; i = i->m_next_obj) {
         count++;
     }
     return count;
 }
 
-
-void RfxObject::releaseAllChild()
-{
+void RfxObject::releaseAllChild() {
     // Because the child will remove itself from the child object list,
     // So we only need to see if the list is empty
-    while (m_last_child_obj != NULL)
-    {
-        RfxObject *obj = m_last_child_obj;
+    while (m_last_child_obj != NULL) {
+        RfxObject* obj = m_last_child_obj;
         RFX_OBJ_CLOSE(obj);
     }
 
@@ -297,66 +259,45 @@ void RfxObject::releaseAllChild()
     RFX_ASSERT(m_last_child_obj == NULL);
 }
 
+RfxClassInfo* RfxObject::onGetClassInfo() const { return getRfxObjectClassInfo(); }
 
-RfxClassInfo *RfxObject::onGetClassInfo() const
-{
-    return getRfxObjectClassInfo();
-}
-
-
-void RfxObject::onInit()
-{
+void RfxObject::onInit() {
     // do nothing
 }
 
-
-void RfxObject::onDeinit()
-{
+void RfxObject::onDeinit() {
     // do nothing
 }
 
-
-void RfxObject::onObjectNotify(RfxObjectNotifyIdEnum id, void *userData)
-{
+void RfxObject::onObjectNotify(RfxObjectNotifyIdEnum id, void* userData) {
     RFX_UNUSED(id);
     RFX_UNUSED(userData);
     // do nothing
 }
 
-
-void RfxObject::onAfterInit()
-{
+void RfxObject::onAfterInit() {
     // do nothing
 }
 
-
-void RfxObject::onBeforeDeinit()
-{
+void RfxObject::onBeforeDeinit() {
     // do nothing
 }
 
-
-void RfxObject::onAfterDeinit()
-{
+void RfxObject::onAfterDeinit() {
     // do nothing
 }
 
-
-void RfxObject::onAddChild(RfxObject *child)
-{
+void RfxObject::onAddChild(RfxObject* child) {
     RFX_UNUSED(child);
     // do nothing
 }
 
-
-void RfxObject::onRemoveChild(RfxObject *child)
-{
+void RfxObject::onRemoveChild(RfxObject* child) {
     RFX_UNUSED(child);
     // do nothing
 }
 
-RfxObject *RfxObject::findObject(RfxObject *parent, const RfxClassInfo *class_info)
-{
+RfxObject* RfxObject::findObject(RfxObject* parent, const RfxClassInfo* class_info) {
     if (parent == NULL) {
         return NULL;
     }
@@ -365,9 +306,8 @@ RfxObject *RfxObject::findObject(RfxObject *parent, const RfxClassInfo *class_in
         return parent;
     }
 
-    for (RfxObject *i = parent->getFirstChildObj(); i != NULL; i = i->getNextObj()) {
-
-        RfxObject *ret = findObject(i, class_info);
+    for (RfxObject* i = parent->getFirstChildObj(); i != NULL; i = i->getNextObj()) {
+        RfxObject* ret = findObject(i, class_info);
 
         if (ret != NULL) {
             return ret;
@@ -377,27 +317,25 @@ RfxObject *RfxObject::findObject(RfxObject *parent, const RfxClassInfo *class_in
     return NULL;
 }
 
-
-void rfxObjClose(RfxObject *ptr)
-{
-    if (ptr != NULL)
-    {
+void rfxObjClose(RfxObject* ptr) {
+    if (ptr != NULL) {
         ptr->_close();
     }
 }
 
 #ifdef RFX_OBJ_DEBUG
 
-Vector<RfxDebugInfo*> *RfxObject::s_root_obj_debug_info = NULL;
+Vector<RfxDebugInfo*>* RfxObject::s_root_obj_debug_info = NULL;
 
 void RfxObject::dump(int level) const {
     String8 level_string("");
     for (int i = 0; i < level; i++) {
         level_string.append("    ");
     }
-    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%s%p, %s", level_string.string(), this, getClassInfo()->getClassName());
+    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%s%p, %s", level_string.string(), this,
+              getClassInfo()->getClassName());
 
-    for (RfxObject *i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
+    for (RfxObject* i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
         i->dump(level + 1);
     }
 }
@@ -406,31 +344,34 @@ void RfxObject::dumpAllObjTree() {
     size_t size = RfxObject::s_root_obj_debug_info->size();
     RFX_LOG_D(RFX_DEBUG_INFO_TAG, "dumpAllObjTree() Object count is %zu", size);
     for (size_t i = 0; i < size; i++) {
-        const RfxDebugInfo *item = RfxObject::s_root_obj_debug_info->itemAt(i);
+        const RfxDebugInfo* item = RfxObject::s_root_obj_debug_info->itemAt(i);
         item->getLogger()->dump();
     }
 }
 
-void RfxObject::dumpObjConstructionCallStack(void *obj_address) {
+void RfxObject::dumpObjConstructionCallStack(void* obj_address) {
     size_t size = RfxObject::s_root_obj_debug_info->size();
     for (size_t i = 0; i < size; i++) {
-        const RfxDebugInfo *item = RfxObject::s_root_obj_debug_info->itemAt(i);
-        const RfxObject *obj = RfxObject::matchObj((const RfxObject *)item->getUserData(), obj_address);
+        const RfxDebugInfo* item = RfxObject::s_root_obj_debug_info->itemAt(i);
+        const RfxObject* obj =
+                RfxObject::matchObj((const RfxObject*)item->getUserData(), obj_address);
         if (obj) {
-            RFX_LOG_D(RFX_DEBUG_INFO_TAG, "dumpObjConstructionCallStack() Found obj, start to dump callstack");
+            RFX_LOG_D(RFX_DEBUG_INFO_TAG,
+                      "dumpObjConstructionCallStack() Found obj, start to dump callstack");
             obj->m_debug_info->dump();
             return;
         }
     }
-    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "dumpObjConstructionCallStack() Can't find object %p", obj_address);
+    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "dumpObjConstructionCallStack() Can't find object %p",
+              obj_address);
 }
 
-const RfxObject *RfxObject::matchObj(const RfxObject *obj, const void *obj_address) {
+const RfxObject* RfxObject::matchObj(const RfxObject* obj, const void* obj_address) {
     if (obj == obj_address) {
         return obj;
     } else {
-        for (const RfxObject *i = obj->getFirstChildObj(); i != NULL; i = i->getNextObj()) {
-            const RfxObject *ret = RfxObject::matchObj(i, obj_address);
+        for (const RfxObject* i = obj->getFirstChildObj(); i != NULL; i = i->getNextObj()) {
+            const RfxObject* ret = RfxObject::matchObj(i, obj_address);
             if (ret) {
                 return ret;
             }
@@ -438,4 +379,4 @@ const RfxObject *RfxObject::matchObj(const RfxObject *obj, const void *obj_addre
         return NULL;
     }
 }
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG

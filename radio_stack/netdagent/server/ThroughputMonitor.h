@@ -20,20 +20,21 @@
 #include <pthread.h>
 
 class ThroughputMonitor {
-public:
-        ThroughputMonitor();
-        ~ThroughputMonitor();
+  public:
+    ThroughputMonitor();
+    ~ThroughputMonitor();
 
-        static void* threadStart(void* monitor);
-        int start();
-        void stop();
-        int dumpOn();
-        void dumpOff();
-private:
-       void run();
-       unsigned long long readCount(char const* filename);
-       int mRunning, mDumpRunning;
-       pthread_t mThread;
-    };
+    static void* threadStart(void* monitor);
+    int start();
+    void stop();
+    int dumpOn();
+    void dumpOff();
+
+  private:
+    void run();
+    unsigned long long readCount(char const* filename);
+    int mRunning, mDumpRunning;
+    pthread_t mThread;
+};
 
 #endif

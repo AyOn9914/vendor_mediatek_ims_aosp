@@ -21,10 +21,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxKeepaliveRequestData);
 
-RfxKeepaliveRequestData::RfxKeepaliveRequestData(void *data, int length) : RfxBaseData(data, length) {
+RfxKeepaliveRequestData::RfxKeepaliveRequestData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_KeepaliveRequest *pInput = (RIL_KeepaliveRequest*)data;
-        RIL_KeepaliveRequest *pData =
+        RIL_KeepaliveRequest* pInput = (RIL_KeepaliveRequest*)data;
+        RIL_KeepaliveRequest* pData =
                 (RIL_KeepaliveRequest*)calloc(1, sizeof(RIL_KeepaliveRequest));
         RFX_ASSERT(pData != NULL);
 

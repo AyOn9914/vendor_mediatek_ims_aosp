@@ -36,21 +36,19 @@
 #define RFX_LOG_TAG "RtcRilClientController"
 
 static ClientInformation client[] = {
-    {CLIENT_ID_OEM, (char *) "rild-oem", CLIENT_TYPE_OEM},
-    {CLIENT_ID_MTTS1, (char *) "rild-mtts1", CLIENT_TYPE_MTTS1},
-    {CLIENT_ID_MTTS2, (char *) "rild-mtts2", CLIENT_TYPE_MTTS2},
-    {CLIENT_ID_MTTS3, (char *) "rild-mtts3", CLIENT_TYPE_MTTS3},
-    {CLIENT_ID_MTTS4, (char *) "rild-mtts4", CLIENT_TYPE_MTTS4},
-    {CLIENT_ID_ATCI, (char *) "rild-atci", CLIENT_TYPE_ATCI},
+        {CLIENT_ID_OEM, (char*)"rild-oem", CLIENT_TYPE_OEM},
+        {CLIENT_ID_MTTS1, (char*)"rild-mtts1", CLIENT_TYPE_MTTS1},
+        {CLIENT_ID_MTTS2, (char*)"rild-mtts2", CLIENT_TYPE_MTTS2},
+        {CLIENT_ID_MTTS3, (char*)"rild-mtts3", CLIENT_TYPE_MTTS3},
+        {CLIENT_ID_MTTS4, (char*)"rild-mtts4", CLIENT_TYPE_MTTS4},
+        {CLIENT_ID_ATCI, (char*)"rild-atci", CLIENT_TYPE_ATCI},
 };
 
 RFX_IMPLEMENT_CLASS("RtcRilClientController", RtcRilClientController, RfxController);
 
-RtcRilClientController::RtcRilClientController() {
-}
+RtcRilClientController::RtcRilClientController() {}
 
-RtcRilClientController::~RtcRilClientController() {
-}
+RtcRilClientController::~RtcRilClientController() {}
 
 RilClientQueue* RtcRilClientController::clientHead = new RilClientQueue();
 
@@ -62,12 +60,12 @@ void RtcRilClientController::onInit() {
 
 void RtcRilClientController::initRilClient() {
     logD(RFX_LOG_TAG, "init client number: %u", NUM_ELEMS(client));
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.ril.test_mode", property_value, "0");
     for (unsigned int i = 0; i < NUM_ELEMS(client); i++) {
         ClientInformation information = client[i];
         RilClient* client;
-        switch(information.type) {
+        switch (information.type) {
             case CLIENT_TYPE_DEFAULT:
                 client = new RilClient(information.identity, information.socketName);
                 break;
@@ -128,11 +126,10 @@ void RtcRilClientController::initRilClient() {
     }
 }
 
-
 void RtcRilClientController::registerRilClient(RilClient* client) {
     RilClientQueue* queue = clientHead;
     RilClientQueue* clientBeingRegistered = new RilClientQueue(client);
-    while(true) {
+    while (true) {
         if (queue->nextClient == NULL) {
             queue->nextClient = clientBeingRegistered;
             clientBeingRegistered->prevClient = queue;
@@ -144,14 +141,14 @@ void RtcRilClientController::registerRilClient(RilClient* client) {
 }
 
 RilClient* RtcRilClientController::findClientWithId(int clientId) {
-    RilClientQueue* queue = clientHead -> nextClient;
+    RilClientQueue* queue = clientHead->nextClient;
     RilClient* matchedClient;
-    while(true) {
+    while (true) {
         if (queue == NULL) {
             matchedClient = NULL;
             break;
         }
-        RilClient* client = queue -> client;
+        RilClient* client = queue->client;
         if (client == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "should not have client null here");
             RFX_ASSERT(0);
@@ -180,8 +177,8 @@ int RtcRilClientController::queryFileDescriptor(int clientId) {
 }
 
 // Implement this here because we want to force everyone send response back
-bool RtcRilClientController::onClientRequestComplete(RIL_Token token, RIL_Errno e,
-        void *response, size_t responselen, int clientId) {
+bool RtcRilClientController::onClientRequestComplete(RIL_Token token, RIL_Errno e, void* response,
+                                                     size_t responselen, int clientId) {
     RilClient* client = findClientWithId(clientId);
     if (client == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "should not have client null here");
@@ -193,11 +190,11 @@ bool RtcRilClientController::onClientRequestComplete(RIL_Token token, RIL_Errno 
     return true;
 }
 
-int RtcRilClientController::sendResponse (Parcel& p, int fd) {
+int RtcRilClientController::sendResponse(Parcel& p, int fd) {
     uint32_t header;
     int ret;
     header = htonl(p.dataSize());
-    ret = blockingWrite(fd, (void *)&header, sizeof(header));
+    ret = blockingWrite(fd, (void*)&header, sizeof(header));
 
     if (ret < 0) {
         RFX_LOG_D(RFX_LOG_TAG, "sendResponse: ret %d", ret);
@@ -214,12 +211,12 @@ int RtcRilClientController::sendResponse (Parcel& p, int fd) {
     return ret;
 }
 
-bool RtcRilClientController::onClientUnsolicitedResponse(int slotId, int urcId,
-        void *response, size_t responseLen, UrcDispatchRule rule) {
+bool RtcRilClientController::onClientUnsolicitedResponse(int slotId, int urcId, void* response,
+                                                         size_t responseLen, UrcDispatchRule rule) {
     RilClientQueue* queue = clientHead->nextClient;
 
     // go through every client and ask them to handle unsolicited
-    while(true) {
+    while (true) {
         if (queue == NULL) {
             break;
         }
@@ -235,17 +232,16 @@ bool RtcRilClientController::onClientUnsolicitedResponse(int slotId, int urcId,
     return true;
 }
 
-int RtcRilClientController::blockingWrite(int fd, const void *buffer, size_t len) {
+int RtcRilClientController::blockingWrite(int fd, const void* buffer, size_t len) {
     size_t writeOffset = 0;
-    const uint8_t *toWrite;
+    const uint8_t* toWrite;
 
-    toWrite = (const uint8_t *)buffer;
+    toWrite = (const uint8_t*)buffer;
 
     while (writeOffset < len) {
         ssize_t written;
         do {
-            written = write(fd, toWrite + writeOffset,
-                    len - writeOffset);
+            written = write(fd, toWrite + writeOffset, len - writeOffset);
         } while (written < 0 && ((errno == EINTR) || (errno == EAGAIN)));
 
         if (written >= 0) {

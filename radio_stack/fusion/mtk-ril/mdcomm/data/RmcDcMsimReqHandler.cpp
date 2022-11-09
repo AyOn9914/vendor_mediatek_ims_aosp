@@ -30,26 +30,24 @@
 RFX_IMPLEMENT_HANDLER_CLASS(RmcDcMsimReqHandler, RIL_CMD_PROXY_5);
 
 RmcDcMsimReqHandler::RmcDcMsimReqHandler(int slot_id, int channel_id)
-: RfxBaseHandler(slot_id, channel_id) {
+    : RfxBaseHandler(slot_id, channel_id) {
     // The use of EDALLOW=3 to notify modem current project is single PS attach.
     char multiPs[MTK_PROPERTY_VALUE_MAX] = {0};
     mtk_property_get("ro.vendor.mtk_data_config", multiPs, "0");
     // Check if Single-PS or Multi-PS
     if (atoi(multiPs) != 1) {
-        RFX_LOG_D(RFX_LOG_TAG,
-                "Single PS project - multiPs= %s, send EDALLOW=3", multiPs);
+        RFX_LOG_D(RFX_LOG_TAG, "Single PS project - multiPs= %s, send EDALLOW=3", multiPs);
         atSendCommand(String8::format("AT+EDALLOW=3"));
     }
 
     // TODO: Since AOSP doesn't send ALLOW_DATA on single SIM project from O1,
     // Remove it if AOSP send data allow in single PS project again.
     if (RfxRilUtils::rfxGetSimCount() == 1 && slot_id == 0) {
-        RFX_LOG_D(RFX_LOG_TAG,
-                "Single SIM project, send EDALLOW=1 at boot time");
+        RFX_LOG_D(RFX_LOG_TAG, "Single SIM project, send EDALLOW=1 at boot time");
         atSendCommand(String8::format("AT+EDALLOW=1"));
     }
 
-    //clear allow flag when initialized
+    // clear allow flag when initialized
     updateDataAllowStatus(m_slot_id, 0);
 
     // From Gen97, MD has ability to set EDALLOW=1/0 it self.
@@ -64,17 +62,16 @@ RmcDcMsimReqHandler::RmcDcMsimReqHandler(int slot_id, int channel_id)
     }
 
     const int requestList[] = {
-        RFX_MSG_REQUEST_ALLOW_DATA,
-        RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH,
-        RFX_MSG_REQUEST_DATA_CONNECTION_DETACH,
-        RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA,
+            RFX_MSG_REQUEST_ALLOW_DATA,
+            RFX_MSG_REQUEST_DATA_CONNECTION_ATTACH,
+            RFX_MSG_REQUEST_DATA_CONNECTION_DETACH,
+            RFX_MSG_REQUEST_RECOVERY_ALLOW_DATA,
     };
 
     registerToHandleRequest(requestList, sizeof(requestList) / sizeof(int));
 }
 
-RmcDcMsimReqHandler::~RmcDcMsimReqHandler() {
-}
+RmcDcMsimReqHandler::~RmcDcMsimReqHandler() {}
 
 void RmcDcMsimReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
@@ -96,7 +93,7 @@ void RmcDcMsimReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcDcMsimReqHandler::handleRequestAllowData(const sp<RfxMclMessage>& msg) {
-    const int *pRspData = (const int *)msg->getData()->getData();
+    const int* pRspData = (const int*)msg->getData()->getData();
     int dataAllowed = pRspData[0];
     setDataAllowed(dataAllowed, msg);
 }
@@ -127,8 +124,7 @@ void RmcDcMsimReqHandler::setDataAllowed(int allowed, const sp<RfxMclMessage>& m
     }
 
     updateDataAllowStatus(m_slot_id, allowed);
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
     responseToTelCore(response);
 
     return;
@@ -138,8 +134,8 @@ error:
         cause = RIL_E_OEM_MULTI_ALLOW_ERR;
     }
     RFX_LOG_E(RFX_LOG_TAG, "setDataAllowed: modem response ERROR cause= %d", cause);
-    response = RfxMclMessage::obtainResponse(msg->getId(), (RIL_Errno) cause,
-                RfxVoidData(), msg, true);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), (RIL_Errno)cause, RfxVoidData(), msg, true);
     responseToTelCore(response);
     return;
 }
@@ -161,13 +157,13 @@ void RmcDcMsimReqHandler::handleDataConnectionAttachRequest(const sp<RfxMclMessa
         response = atSendCommand(String8::format("AT+EGTYPE=4"));
         if (response == NULL || response->isAtResponseFail()) {
             responseToTcl = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_MODEM_ERR,
-                    RfxVoidData(), msg, true);
+                                                          RfxVoidData(), msg, true);
             retry++;
             interval = (1 << (retry >> 1)) * 1000 * 1000;
             usleep(interval);
         } else {
-            responseToTcl = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg);
+            responseToTcl =
+                    RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
             break;
         }
     }
@@ -186,11 +182,11 @@ void RmcDcMsimReqHandler::handleDataConnectionDetachRequest(const sp<RfxMclMessa
 
     response = atSendCommand(String8::format("AT+EGTYPE=5"));
     if (response != NULL && !response->isAtResponseFail()) {
-        responseToTcl = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxVoidData(), msg);
+        responseToTcl =
+                RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
     } else {
-        responseToTcl = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_MODEM_ERR,
-                RfxVoidData(), msg, true);
+        responseToTcl = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_MODEM_ERR, RfxVoidData(),
+                                                      msg, true);
     }
 
     responseToTelCore(responseToTcl);
@@ -198,24 +194,22 @@ void RmcDcMsimReqHandler::handleDataConnectionDetachRequest(const sp<RfxMclMessa
 
 void RmcDcMsimReqHandler::updateDataAllowStatus(int slotId, int allow) {
     String8 tempString8Value;
-    if (allow == 1){
+    if (allow == 1) {
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 1);
-    }
-    else {
+    } else {
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 0);
     }
     RFX_LOG_D(RFX_LOG_TAG, "[updateDataAllowStatus] SIM[%d]: %d , allowed = %d", slotId,
-        getMclStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 0), allow);
+              getMclStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 0), allow);
 }
 
 void RmcDcMsimReqHandler::updatePreDataAllowStatus(int slotId, int allow) {
     String8 tempString8Value;
     if (allow == 1) {
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_SLOT_ALLOW, -2);
-    }
-    else {
+    } else {
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_SLOT_ALLOW, -1);
     }
     RFX_LOG_D(RFX_LOG_TAG, "[updatePreDataAllowStatus] SIM[%d]: %d , allowed = %d", slotId,
-        getMclStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 0), allow);
+              getMclStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_SLOT_ALLOW, 0), allow);
 }

@@ -48,13 +48,12 @@ typedef int (*Looper_callbackFunc)(int fd, int events, void* data);
  * A message that can be posted to a Looper.
  */
 struct Message {
-    Message() : what(0) { }
-    Message(int what) : what(what) { }
+    Message() : what(0) {}
+    Message(int what) : what(what) {}
 
     /* The message type. (interpretation is left up to the handler) */
     int what;
 };
-
 
 /**
  * Interface for a Looper message handler.
@@ -65,41 +64,39 @@ struct Message {
  * can be destroyed.
  */
 class MessageHandler : public virtual RefBase {
-protected:
-    virtual ~MessageHandler() { }
+  protected:
+    virtual ~MessageHandler() {}
 
-public:
+  public:
     /**
      * Handles a message.
      */
     virtual void handleMessage(const Message& message) = 0;
 };
 
-
 /**
  * A simple proxy that holds a weak reference to a message handler.
  */
 class WeakMessageHandler : public MessageHandler {
-protected:
+  protected:
     virtual ~WeakMessageHandler();
 
-public:
+  public:
     WeakMessageHandler(const wp<MessageHandler>& handler);
     virtual void handleMessage(const Message& message);
 
-private:
+  private:
     wp<MessageHandler> mHandler;
 };
-
 
 /**
  * A looper callback.
  */
 class LooperCallback : public virtual RefBase {
-protected:
-    virtual ~LooperCallback() { }
+  protected:
+    virtual ~LooperCallback() {}
 
-public:
+  public:
     /**
      * Handles a poll event for the given file descriptor.
      * It is given the file descriptor it is associated with,
@@ -116,14 +113,14 @@ public:
  * Wraps a Looper_callbackFunc function pointer.
  */
 class SimpleLooperCallback : public LooperCallback {
-protected:
+  protected:
     virtual ~SimpleLooperCallback();
 
-public:
+  public:
     SimpleLooperCallback(Looper_callbackFunc callback);
     virtual int handleEvent(int fd, int events, void* data);
 
-private:
+  private:
     Looper_callbackFunc mCallback;
 };
 
@@ -134,10 +131,10 @@ private:
  * A looper can be associated with a thread although there is no requirement that it must be.
  */
 class Looper : public RefBase {
-protected:
+  protected:
     virtual ~Looper();
 
-public:
+  public:
     enum {
         /**
          * Result from Looper_pollOnce() and Looper_pollAll():
@@ -216,7 +213,7 @@ public:
          * or Looper_pollAll() MUST check the return from these functions to
          * discover when data is available on such fds and process it.
          */
-        PREPARE_ALLOW_NON_CALLBACKS = 1<<0
+        PREPARE_ALLOW_NON_CALLBACKS = 1 << 0
     };
 
     /**
@@ -261,9 +258,7 @@ public:
      * for all file descriptors that were signalled.
      */
     int pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData);
-    inline int pollOnce(int timeoutMillis) {
-        return pollOnce(timeoutMillis, NULL, NULL, NULL);
-    }
+    inline int pollOnce(int timeoutMillis) { return pollOnce(timeoutMillis, NULL, NULL, NULL); }
 
     /**
      * Like pollOnce(), but performs all pending callbacks until all
@@ -271,9 +266,7 @@ public:
      * This function will never return POLL_CALLBACK.
      */
     int pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData);
-    inline int pollAll(int timeoutMillis) {
-        return pollAll(timeoutMillis, NULL, NULL, NULL);
-    }
+    inline int pollAll(int timeoutMillis) { return pollAll(timeoutMillis, NULL, NULL, NULL); }
 
     /**
      * Wakes the poll asynchronously.
@@ -356,7 +349,7 @@ public:
      * This method can be called on any thread.
      */
     void sendMessageDelayed(nsecs_t uptimeDelay, const sp<MessageHandler>& handler,
-            const Message& message);
+                            const Message& message);
 
     /**
      * Enqueues a message to be processed by the specified handler after all pending messages
@@ -367,7 +360,7 @@ public:
      * This method can be called on any thread.
      */
     void sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler,
-            const Message& message);
+                           const Message& message);
 
     /**
      * Removes all messages for the specified handler from the queue.
@@ -416,7 +409,7 @@ public:
      */
     static sp<Looper> getForThread();
 
-private:
+  private:
     struct Request {
         int fd;
         int ident;
@@ -434,31 +427,30 @@ private:
     };
 
     struct MessageEnvelope {
-        MessageEnvelope() : uptime(0) { }
+        MessageEnvelope() : uptime(0) {}
 
-        MessageEnvelope(nsecs_t uptime, const sp<MessageHandler> handler,
-                const Message& message) : uptime(uptime), handler(handler), message(message) {
-        }
+        MessageEnvelope(nsecs_t uptime, const sp<MessageHandler> handler, const Message& message)
+            : uptime(uptime), handler(handler), message(message) {}
 
         nsecs_t uptime;
         sp<MessageHandler> handler;
         Message message;
     };
 
-    const bool mAllowNonCallbacks; // immutable
+    const bool mAllowNonCallbacks;  // immutable
 
     int mWakeEventFd;  // immutable
     Mutex mLock;
 
-    Vector<MessageEnvelope> mMessageEnvelopes; // guarded by mLock
-    bool mSendingMessage; // guarded by mLock
+    Vector<MessageEnvelope> mMessageEnvelopes;  // guarded by mLock
+    bool mSendingMessage;                       // guarded by mLock
 
     // Whether we are currently waiting for work.  Not protected by a lock,
     // any use of it is racy anyway.
     volatile bool mPolling;
 
-    int mEpollFd; // guarded by mLock but only modified on the looper thread
-    bool mEpollRebuildRequired; // guarded by mLock
+    int mEpollFd;                // guarded by mLock but only modified on the looper thread
+    bool mEpollRebuildRequired;  // guarded by mLock
 
     // Locked list of file descriptor monitoring requests.
     KeyedVector<int, Request> mRequests;  // guarded by mLock
@@ -468,7 +460,7 @@ private:
     // it runs on a single thread.
     Vector<Response> mResponses;
     size_t mResponseIndex;
-    nsecs_t mNextMessageUptime; // set to LLONG_MAX when none
+    nsecs_t mNextMessageUptime;  // set to LLONG_MAX when none
 
     int pollInner(int timeoutMillis);
     int removeFd(int fd, int seq);
@@ -478,10 +470,10 @@ private:
     void scheduleEpollRebuildLocked();
 
     static void initTLSKey();
-    static void threadDestructor(void *st);
+    static void threadDestructor(void* st);
     static void initEpollEvent(struct epoll_event* eventItem);
 };
 
-} // namespace android
+}  // namespace android
 
-#endif // UTILS_LOOPER_H
+#endif  // UTILS_LOOPER_H

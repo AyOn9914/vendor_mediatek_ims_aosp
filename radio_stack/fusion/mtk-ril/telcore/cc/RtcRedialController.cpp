@@ -36,10 +36,7 @@
 /*****************************************************************************
  * Utility function
  *****************************************************************************/
-const char *boolToString(bool value) {
-    return value ? "true" : "false";
-}
-
+const char* boolToString(bool value) { return value ? "true" : "false"; }
 
 /*****************************************************************************
  * Class RtcRedialController
@@ -75,12 +72,12 @@ void RtcRedialController::onInit() {
     logD(LOG_REDIAL_TAG, "onInit !!");
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL,
-        RFX_MSG_REQUEST_EMERGENCY_REDIAL,
-        RFX_MSG_REQUEST_EMERGENCY_SESSION_END,
+            RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL,
+            RFX_MSG_REQUEST_EMERGENCY_REDIAL,
+            RFX_MSG_REQUEST_EMERGENCY_SESSION_END,
     };
 
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(int));
 }
 
 void RtcRedialController::onDeinit() {
@@ -110,7 +107,6 @@ bool RtcRedialController::onHandleResponse(const sp<RfxMessage>& message) {
     return notifyRilResponse(message);
 }
 
-
 bool RtcRedialController::onHandleUrc(const sp<RfxMessage>& message) {
     return notifyRilUrc(message);
 }
@@ -126,8 +122,8 @@ bool RtcRedialController::onHandleAtciRequest(const sp<RfxMessage>& message) {
     }
 
     if (msgId == RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL) {
-        char *pString = (char *)message->getData();
-        const char  *data = &pString[0];
+        char* pString = (char*)message->getData();
+        const char* data = &pString[0];
         int dataLength = strlen(data);
         int targetSlotId = 0;
         char simNo[RFX_PROPERTY_VALUE_MAX] = {0};
@@ -145,8 +141,8 @@ bool RtcRedialController::onHandleAtciRequest(const sp<RfxMessage>& message) {
         }
 
         if (targetSlotId != getSlotId()) {
-            logE(LOG_REDIAL_TAG, "Controller cannot handle this slot request: %d,%d",
-                    targetSlotId, getSlotId());
+            logE(LOG_REDIAL_TAG, "Controller cannot handle this slot request: %d,%d", targetSlotId,
+                 getSlotId());
             return false;
         }
 
@@ -165,7 +161,7 @@ bool RtcRedialController::onHandleAtciResponse(const sp<RfxMessage>& message) {
 }
 
 bool RtcRedialController::handleAtciDialRequest(const char* data, int dataLength) {
-    char *callNumber = NULL;
+    char* callNumber = NULL;
     int offset = 4;
 
     // Only handle ATDE.
@@ -177,22 +173,21 @@ bool RtcRedialController::handleAtciDialRequest(const char* data, int dataLength
     setEmergencyModeExt(true);
     checkMoCallAndFree();
 
-    callNumber = new char[dataLength] {0};
+    callNumber = new char[dataLength]{0};
     strncpy(callNumber, data + offset, dataLength - offset - 1);
     logD(LOG_REDIAL_TAG, "ATCI number %s", (RfxRilUtils::isUserLoad() ? "[hidden]" : callNumber));
 
     mMoCall = new MoCallContext(callNumber);
-    delete [] callNumber;
+    delete[] callNumber;
 
     return false;
 }
 
-bool RtcRedialController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
+bool RtcRedialController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
+                                                 bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
-    if ((radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_EMERGENCY_REDIAL ||
-             msgId == RFX_MSG_REQUEST_EMERGENCY_SESSION_END)) {
+    if ((radioState == (int)RADIO_STATE_OFF) && (msgId == RFX_MSG_REQUEST_EMERGENCY_REDIAL ||
+                                                 msgId == RFX_MSG_REQUEST_EMERGENCY_SESSION_END)) {
         return false;
     }
 
@@ -219,9 +214,8 @@ bool RtcRedialController::notifyRilRequest(const sp<RfxMessage>& message) {
             break;
 
         case RFX_MSG_REQUEST_HANGUP:
-            hangupCallId = ((int *)message->getData()->getData())[0];
-            if (mMoCall != NULL &&
-                    mMoCall->getCallId() == hangupCallId) {
+            hangupCallId = ((int*)message->getData()->getData())[0];
+            if (mMoCall != NULL && mMoCall->getCallId() == hangupCallId) {
                 setUserHangUping(true);
             }
             break;
@@ -259,17 +253,17 @@ bool RtcRedialController::notifyRilRequest(const sp<RfxMessage>& message) {
 
             if (!needChangeEmcsMode) {
                 logD(LOG_REDIAL_TAG,
-                        "setEmergencyMode update emcs count (mEmcsCount:%d, mInEmergencyMode:%s",
-                        mEmcsCount, boolToString(mInEmergencyMode));
+                     "setEmergencyMode update emcs count (mEmcsCount:%d, mInEmergencyMode:%s",
+                     mEmcsCount, boolToString(mInEmergencyMode));
 
-                sp<RfxMessage>  rilResponse = RfxMessage::obtainResponse(RIL_E_SUCCESS, message);
+                sp<RfxMessage> rilResponse = RfxMessage::obtainResponse(RIL_E_SUCCESS, message);
                 responseToRilj(rilResponse);
                 ret = true;
                 return ret;
             }
 
-            logD(LOG_REDIAL_TAG, "setEmergencyMode:(%s->%s)",
-                    boolToString(mInEmergencyMode), boolToString(emergencyMode));
+            logD(LOG_REDIAL_TAG, "setEmergencyMode:(%s->%s)", boolToString(mInEmergencyMode),
+                 boolToString(emergencyMode));
             getStatusManager()->setBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE, emergencyMode);
             mInEmergencyMode = emergencyMode;
             break;
@@ -283,7 +277,7 @@ bool RtcRedialController::notifyRilRequest(const sp<RfxMessage>& message) {
 
 void RtcRedialController::handleEmergencyDial(const sp<RfxMessage>& message) {
     RtcModeSwitchController* modeSwitchController =
-            (RtcModeSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+            (RtcModeSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
 
     // Condition to set ECM: let RILD to check
     // - 6M(with C2K) project: only to C2K-enabled phone
@@ -296,17 +290,15 @@ void RtcRedialController::handleEmergencyDial(const sp<RfxMessage>& message) {
         if (!mIsEccModeSent) {
             increaseEmcsCount();
         }
-        logD(LOG_REDIAL_TAG, "handleEmergencyDial mEmcsCount:%d, mInEmergencyMode:%s",
-                    mEmcsCount, boolToString(mInEmergencyMode));
+        logD(LOG_REDIAL_TAG, "handleEmergencyDial mEmcsCount:%d, mInEmergencyMode:%s", mEmcsCount,
+             boolToString(mInEmergencyMode));
         if (!mInEmergencyMode) {
             setEmergencyMode(true);
             int msg_data[2];
             msg_data[0] = 0;  // airplane
             msg_data[1] = 0;  // imsReg
             sp<RfxMessage> rilRequest = RfxMessage::obtainRequest(
-                                                getSlotId(),
-                                                RFX_MSG_REQUEST_LOCAL_CURRENT_STATUS,
-                                                RfxIntsData(msg_data, 2));
+                    getSlotId(), RFX_MSG_REQUEST_LOCAL_CURRENT_STATUS, RfxIntsData(msg_data, 2));
             requestToMcl(rilRequest);
         }
     }
@@ -314,7 +306,6 @@ void RtcRedialController::handleEmergencyDial(const sp<RfxMessage>& message) {
     // create MoCallContext
     resetController();
     mMoCall = new MoCallContext(message);
-
 }
 
 bool RtcRedialController::isEmergencyModeSupported(int slotId) {
@@ -323,7 +314,7 @@ bool RtcRedialController::isEmergencyModeSupported(int slotId) {
     }
 
     RtcModeSwitchController* modeSwitchController =
-            (RtcModeSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+            (RtcModeSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
 
     if (modeSwitchController->getCCapabilitySlotId() == slotId) {
         return true;
@@ -371,11 +362,9 @@ bool RtcRedialController::notifyRilResponse(const sp<RfxMessage>& message) {
             if (mRedialState == REDIAL_DIALING || mRedialState == REDIAL_DIALED) {
                 // modify response message
                 logD(LOG_REDIAL_TAG, "modify response message");
-                sp<RfxMessage> msg = RfxMessage::obtainResponse(message->getSlotId(),
-                                                            message->getId(),
-                                                            RIL_E_GENERIC_FAILURE,
-                                                            RfxVoidData(),
-                                                            message);
+                sp<RfxMessage> msg =
+                        RfxMessage::obtainResponse(message->getSlotId(), message->getId(),
+                                                   RIL_E_GENERIC_FAILURE, RfxVoidData(), message);
                 ret = true;
                 responseToRilj(msg);
             }
@@ -394,7 +383,7 @@ bool RtcRedialController::notifyRilUrc(const sp<RfxMessage>& message) {
 
     if (DBG) {
         logD(LOG_REDIAL_TAG, "redialState: %d, message: %d, %s", mRedialState, msgId,
-                RFX_ID_TO_STR(msgId));
+             RFX_ID_TO_STR(msgId));
     }
 
     if (!checkFeatureEnabled()) {
@@ -455,7 +444,7 @@ bool RtcRedialController::handleCallInfoUpdate(const sp<RfxMessage>& message) {
     }
 
     logD(LOG_REDIAL_TAG, "handleCallInfoUpdate slot:%d, callId:%d, msgType:%d, disc:%d, redial:%d",
-                slotId, callId, msgType, discCause, mRedialState);
+         slotId, callId, msgType, discCause, mRedialState);
 
     if (mMoCall != NULL) {
         if (mMoCall->getCallId() > 0) {
@@ -560,7 +549,7 @@ void RtcRedialController::ForceReleaseEmergency() {
 
     if (mEcbm == EMERGENCY_CALLBACK_MODE_ENTER) {
         handleEmergencyCallbackMode(EMERGENCY_CALLBACK_MODE_EXIT);
-    }else if (mRatOp != REDIAL_RAT_OP_NONE) {
+    } else if (mRatOp != REDIAL_RAT_OP_NONE) {
         decreaseEmcsCountAndIsZero();
         setRatMode(REDIAL_RAT_OP_RESUME);
     } else if (mInEmergencyMode) {
@@ -571,24 +560,21 @@ void RtcRedialController::ForceReleaseEmergency() {
 void RtcRedialController::checkMoCallAndFree() {
     if (mMoCall != NULL) {
         logE(LOG_REDIAL_TAG, "has a mocall: %d, %s", mMoCall->getCallId(),
-                (RfxRilUtils::isUserLoad() ? "[hidden]" : mMoCall->getNumber()));
+             (RfxRilUtils::isUserLoad() ? "[hidden]" : mMoCall->getNumber()));
 
-        delete(mMoCall);
+        delete (mMoCall);
         mMoCall = NULL;
     }
 }
 
-void  RtcRedialController::destroyMoCallContext() {
-    checkMoCallAndFree();
-}
+void RtcRedialController::destroyMoCallContext() { checkMoCallAndFree(); }
 
 int RtcRedialController::getGlobalRatMode() {
     char temp_str[RFX_PROPERTY_VALUE_MAX] = {0};
     int c_slot = -1;
     int pref_nw = -1;
-    int radio_capability = getStatusManager(m_slot_id)->getIntValue(
-                                                            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY,
-                                                            0);
+    int radio_capability =
+            getStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     if (RatConfig_isC2kSupported()) {
         memset(temp_str, 0, sizeof(temp_str));
         rfx_property_get("persist.vendor.radio.c_capability_slot", temp_str, "1");
@@ -616,7 +602,7 @@ void RtcRedialController::setRedialState(RedialState state) {
 }
 
 sp<RfxMessage> RtcRedialController::getRedialRequest() {
-    RfxRedialData *pRedial = NULL;
+    RfxRedialData* pRedial = NULL;
 
     if (mIsUserHangUping) {
         logD(LOG_REDIAL_TAG, "userhangup is %s", boolToString(mIsUserHangUping));
@@ -636,14 +622,12 @@ sp<RfxMessage> RtcRedialController::getRedialRequest() {
         return NULL;
     }
 
-    return RfxMessage::obtainRequest(getSlotId(),
-                            RFX_MSG_REQUEST_EMERGENCY_REDIAL,
-                            *pRedial);
+    return RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_EMERGENCY_REDIAL, *pRedial);
 }
 
 void RtcRedialController::setUserHangUping(bool userHangUping) {
-    logD(LOG_REDIAL_TAG, "setUserHangUping: %s to %s",
-            boolToString(mIsUserHangUping), boolToString(userHangUping));
+    logD(LOG_REDIAL_TAG, "setUserHangUping: %s to %s", boolToString(mIsUserHangUping),
+         boolToString(userHangUping));
     if (mIsUserHangUping == userHangUping) {
         return;
     }
@@ -662,25 +646,23 @@ void RtcRedialController::setEmergencyModeExt(bool emergencyMode) {
 }
 
 void RtcRedialController::setEmergencyMode(bool emergencyMode) {
-    logD(LOG_REDIAL_TAG, "setEmergencyMode:(%s->%s)",
-            boolToString(mInEmergencyMode), boolToString(emergencyMode));
+    logD(LOG_REDIAL_TAG, "setEmergencyMode:(%s->%s)", boolToString(mInEmergencyMode),
+         boolToString(emergencyMode));
 
     if (mInEmergencyMode == emergencyMode ||
-            (emergencyMode == false && !canReleaseEmergencySession())) {
+        (emergencyMode == false && !canReleaseEmergencySession())) {
         return;
     }
 
     if (emergencyMode == false) {
         sp<RfxMessage> rilRequest = RfxMessage::obtainRequest(
-                                            getSlotId(),
-                                            RFX_MSG_REQUEST_EMERGENCY_SESSION_END,
-                                            RfxVoidData());
+                getSlotId(), RFX_MSG_REQUEST_EMERGENCY_SESSION_END, RfxVoidData());
         requestToMcl(rilRequest);
 
         // Since ECMI is also unset in modem with AT+EMCS=0
         // update EMCI status key when trigger AT+EMCS=0
-        getNonSlotScopeStatusManager()->setBoolValue(
-                RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE, false);
+        getNonSlotScopeStatusManager()->setBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE,
+                                                     false);
     }
 
     getStatusManager()->setBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE, emergencyMode);
@@ -712,7 +694,7 @@ void RtcRedialController::setRatMode(RedialRatOp ratOp) {
     int oldRatOp = mRatOp;
     sp<RfxAction> action;
     RtcRatSwitchController* nwRatController =
-            (RtcRatSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcRatSwitchController));
+            (RtcRatSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcRatSwitchController));
 
     logD(LOG_REDIAL_TAG, "setRatMode, ratOp:%d->%d, ratState:%d", oldRatOp, ratOp, mRatState);
 
@@ -721,9 +703,8 @@ void RtcRedialController::setRatMode(RedialRatOp ratOp) {
         return;
     }
 
-    if (ratOp == REDIAL_RAT_OP_RESUME &&
-            mRatState == REDIAL_RAT_CHANGED &&
-            (getStatusManager()->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0)) {
+    if (ratOp == REDIAL_RAT_OP_RESUME && mRatState == REDIAL_RAT_CHANGED &&
+        (getStatusManager()->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0)) {
         logD(LOG_REDIAL_TAG, "setRatMode, pending to resume due to call count not zero");
         mRatOp = REDIAL_RAT_OP_RESUME_PENDING;
 
@@ -741,8 +722,8 @@ void RtcRedialController::setRatMode(RedialRatOp ratOp) {
         int curRatMode = getStatusManager()->getIntValue(RFX_STATUS_KEY_PREFERRED_NW_TYPE);
         ratMode = getGlobalRatMode();
 
-        logD(LOG_REDIAL_TAG, "swtich rat mode(Preferred network type:%d -> %d)",
-                curRatMode, ratMode);
+        logD(LOG_REDIAL_TAG, "swtich rat mode(Preferred network type:%d -> %d)", curRatMode,
+             ratMode);
         if (curRatMode == ratMode) {  // already in global. maybe MD should handle this.
             if (mRatState != REDIAL_RAT_CHANGED) {
                 mRatState = REDIAL_RAT_NONE;
@@ -752,7 +733,7 @@ void RtcRedialController::setRatMode(RedialRatOp ratOp) {
         }
 
         mRatState = REDIAL_RAT_CHANGED;
-    } else if (ratOp == REDIAL_RAT_OP_RESUME) { // resume
+    } else if (ratOp == REDIAL_RAT_OP_RESUME) {  // resume
         if (mRatState == REDIAL_RAT_NONE) {
             onRatModeSwitchDone(REDIAL_RAT_OP_RESUME);
             return;
@@ -770,12 +751,10 @@ void RtcRedialController::increaseEmcsCount() {
     setPendingExitEmergencySession(false);
 }
 
-bool RtcRedialController::canReleaseEmergencySession() {
-    return (mEmcsCount == 0) ? true : false;
-}
+bool RtcRedialController::canReleaseEmergencySession() { return (mEmcsCount == 0) ? true : false; }
 
 bool RtcRedialController::decreaseEmcsCountAndIsZero() {
-    bool ret = ((-- mEmcsCount) <= 0) ? true : false;
+    bool ret = ((--mEmcsCount) <= 0) ? true : false;
     logD(LOG_REDIAL_TAG, "mEmcsCount:%d", mEmcsCount);
     if (mEmcsCount < 0) {
         mEmcsCount = 0;
@@ -791,7 +770,7 @@ void RtcRedialController::deferMsg(const sp<RfxMessage>& msg) {
 }
 
 void RtcRedialController::resumeDeferMsg() {
-    const RfxSuspendedMsgEntry *msgEntry;
+    const RfxSuspendedMsgEntry* msgEntry;
 
     while (mSuspendedMsgQueue.isEmpty() == false) {
         msgEntry = &(mSuspendedMsgQueue.itemAt(0));
@@ -809,7 +788,7 @@ void RtcRedialController::clearDeferMsg() {
 }
 
 void RtcRedialController::onCallCountChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value) {
+                                             RfxVariant value) {
     RFX_UNUSED(key);
     RFX_UNUSED(old_value);
     int callCount = value.asInt();
@@ -826,14 +805,12 @@ void RtcRedialController::onCallCountChanged(RfxStatusKeyEnum key, RfxVariant ol
 }
 
 void RtcRedialController::setPendingExitEmergencySession(bool pending) {
-    // Remove, when mEmcsCount is zero, it will call setEmergencyMode and register call count status.
-    // mPendingExitES = pending;
+    // Remove, when mEmcsCount is zero, it will call setEmergencyMode and register call count
+    // status. mPendingExitES = pending;
     RFX_UNUSED(pending);
 }
 
-bool RtcRedialController::isPendingExitEmergencySession() {
-    return mPendingExitES;
-}
+bool RtcRedialController::isPendingExitEmergencySession() { return mPendingExitES; }
 
 void RtcRedialController::setEccCallId(int callId) {
     if (mMoCall != NULL && mMoCall->getCallId() <= 0) {
@@ -841,7 +818,6 @@ void RtcRedialController::setEccCallId(int callId) {
         logD(LOG_REDIAL_TAG, "set call id.");
     }
 }
-
 
 /*****************************************************************************
  * Class MoCallContext
@@ -853,8 +829,7 @@ MoCallContext::MoCallContext(const sp<RfxMessage>& msg, bool isEcc) {
     mNumber = NULL;
     mRedialData = NULL;
 
-    mDialData = new RfxDialData(msg->getData()->getData(),
-                                        msg->getData()->getDataLength());
+    mDialData = new RfxDialData(msg->getData()->getData(), msg->getData()->getDataLength());
     if (DBG) {  // false
         mtkLogD(LOG_REDIAL_TAG,
                 "MoCallContext Constructor(message:%s, clientId:%d, isEcc:%s), number =%s",
@@ -862,7 +837,7 @@ MoCallContext::MoCallContext(const sp<RfxMessage>& msg, bool isEcc) {
     }
 }
 
-MoCallContext::MoCallContext(char *callNumber, bool isEcc) {
+MoCallContext::MoCallContext(char* callNumber, bool isEcc) {
     mCallId = -1;
     mClientId = -1;
     mIsEcc = isEcc;
@@ -876,8 +851,8 @@ MoCallContext::MoCallContext(char *callNumber, bool isEcc) {
     }
 
     if (DBG) {
-        mtkLogD(LOG_REDIAL_TAG, "MoCallContext Constructor(CallNumber:%s, isEcc:%s)",
-                callNumber, boolToString(isEcc));
+        mtkLogD(LOG_REDIAL_TAG, "MoCallContext Constructor(CallNumber:%s, isEcc:%s)", callNumber,
+                boolToString(isEcc));
     }
 }
 
@@ -889,11 +864,11 @@ MoCallContext::~MoCallContext() {
     }
 
     if (mDialData != NULL) {
-        delete(mDialData);
+        delete (mDialData);
     }
 
     if (mRedialData != NULL) {
-        delete(mRedialData);
+        delete (mRedialData);
     }
 }
 
@@ -904,29 +879,30 @@ void MoCallContext::setCallId(int callId) {
     mCallId = callId;
 }
 
-char *MoCallContext::getNumber() const {
-    char *number = mNumber;
+char* MoCallContext::getNumber() const {
+    char* number = mNumber;
     if (number == NULL && mDialData != NULL) {
-        RIL_Dial *dial_data = (RIL_Dial *)mDialData->getData();;
+        RIL_Dial* dial_data = (RIL_Dial*)mDialData->getData();
+        ;
         number = dial_data->address;
     }
 
     return number;
 }
 
-RfxRedialData *MoCallContext::getRedialData() {
-    RIL_Dial *dial_data = NULL;
+RfxRedialData* MoCallContext::getRedialData() {
+    RIL_Dial* dial_data = NULL;
     bool is_free = false;
 
     if (DBG) {
         mtkLogD(LOG_REDIAL_TAG, "MoCallContext data null(number:%s,mDialData:%s)",
-            boolToString(mNumber == NULL), boolToString(mDialData == NULL));
+                boolToString(mNumber == NULL), boolToString(mDialData == NULL));
     }
 
     if (mDialData != NULL) {
-        dial_data = (RIL_Dial *)mDialData->getData();
+        dial_data = (RIL_Dial*)mDialData->getData();
     } else if (mNumber != NULL) {
-        dial_data = (RIL_Dial *)calloc(1, sizeof(RIL_Dial));
+        dial_data = (RIL_Dial*)calloc(1, sizeof(RIL_Dial));
         RFX_ASSERT(dial_data != NULL);
         dial_data->address = mNumber;
         dial_data->clir = 0;
@@ -936,7 +912,7 @@ RfxRedialData *MoCallContext::getRedialData() {
 
     if (dial_data != NULL) {
         if (mRedialData != NULL) {
-            delete(mRedialData);
+            delete (mRedialData);
         }
 
         mRedialData = new RfxRedialData(dial_data, mCallId);

@@ -34,33 +34,33 @@
 
 #define RFX_LOG_TAG "RilMttsClient"
 
-#define NUM_ELEMS(a)  (sizeof (a) / sizeof (a)[0])
+#define NUM_ELEMS(a) (sizeof(a) / sizeof(a)[0])
 
 RilMttsClient::RilMttsClient(int identity, char* socketName) : RilClient(identity, socketName) {
     RFX_LOG_D(RFX_LOG_TAG, "Init MTTS client : %s", socketName);
 }
 
-void RilMttsClient::processCommands(void *buffer, size_t buflen, int clientId) {
+void RilMttsClient::processCommands(void* buffer, size_t buflen, int clientId) {
     Parcel p;
     status_t status;
     int32_t request = 0;
     int32_t token = 0;
-    RfxRequestInfo *pRI;
+    RfxRequestInfo* pRI;
 
-    p.setData((uint8_t *) buffer, buflen);
+    p.setData((uint8_t*)buffer, buflen);
     status = p.readInt32(&request);
-    status = p.readInt32 (&token);
+    status = p.readInt32(&token);
 
     char prop_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_3G_SIM, prop_value, "1");
     int capabilitySim = atoi(prop_value) - 1;
 
     RFX_LOG_D(RFX_LOG_TAG, "enqueue request id %d with token %d for client %d to slot = %d",
-            request, token, clientId, capabilitySim);
+              request, token, clientId, capabilitySim);
 
-    pRI = (RfxRequestInfo *)calloc(1, sizeof(RfxRequestInfo));
+    pRI = (RfxRequestInfo*)calloc(1, sizeof(RfxRequestInfo));
     if (pRI == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG,"OOM");
+        RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
     if (clientId == CLIENT_ID_MTTS4) {
@@ -69,11 +69,11 @@ void RilMttsClient::processCommands(void *buffer, size_t buflen, int clientId) {
         pRI->socket_id = RIL_SOCKET_3;
     } else if (clientId == CLIENT_ID_MTTS2) {
         pRI->socket_id = RIL_SOCKET_2;
-    } else { //if (clientId == CLIENT_ID_MTTS1) {
+    } else {  // if (clientId == CLIENT_ID_MTTS1) {
         pRI->socket_id = RIL_SOCKET_1;
     }
     pRI->token = token;
-    pRI->clientId = (ClientId) clientId;
+    pRI->clientId = (ClientId)clientId;
     for (unsigned int i = 0; i < sCommands_size; i++) {
         if (request == sCommands[i].requestNumber) {
             RFX_LOG_D(RFX_LOG_TAG, "find entry! request = %d", request);
@@ -86,12 +86,12 @@ void RilMttsClient::processCommands(void *buffer, size_t buflen, int clientId) {
     RFX_LOG_E(RFX_LOG_TAG, "Didn't find any entry, please check ril_client_commands.h");
 }
 
-void RilMttsClient::handleUnsolicited(int slotId, int unsolResponse, void *data,
-        size_t datalen, UrcDispatchRule rule) {
+void RilMttsClient::handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                      UrcDispatchRule rule) {
     RFX_UNUSED(rule);
 
     int ret;
-    RfxUnsolResponseInfo *pUI = NULL;
+    RfxUnsolResponseInfo* pUI = NULL;
 
     if (commandFd == -1) {
         RFX_LOG_D(RFX_LOG_TAG, "command Fd not ready here");
@@ -112,8 +112,8 @@ void RilMttsClient::handleUnsolicited(int slotId, int unsolResponse, void *data,
     }
 
     Parcel p;
-    p.writeInt32 (RESPONSE_UNSOLICITED);
-    p.writeInt32 (unsolResponse);
+    p.writeInt32(RESPONSE_UNSOLICITED);
+    p.writeInt32(unsolResponse);
     ret = pUI->responseFunction(p, data, datalen);
 
     if (ret != 0) {
@@ -124,6 +124,4 @@ void RilMttsClient::handleUnsolicited(int slotId, int unsolResponse, void *data,
     RtcRilClientController::sendResponse(p, commandFd);
 }
 
-bool RilMttsClient::isNeedToCache(int unsolResponse __unused) {
-    return false;
-}
+bool RilMttsClient::isNeedToCache(int unsolResponse __unused) { return false; }

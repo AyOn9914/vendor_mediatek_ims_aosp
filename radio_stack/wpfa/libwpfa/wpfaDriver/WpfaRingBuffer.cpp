@@ -18,9 +18,7 @@
 
 #define WPFA_D_LOG_TAG "WpfaRingBuffer"
 
-WpfaRingBuffer::WpfaRingBuffer() {
-    mtkLogD(WPFA_D_LOG_TAG, "-new()");
-}
+WpfaRingBuffer::WpfaRingBuffer() { mtkLogD(WPFA_D_LOG_TAG, "-new()"); }
 
 WpfaRingBuffer::~WpfaRingBuffer() {
     pthread_mutex_destroy(&mControlPara.mutex);
@@ -63,11 +61,11 @@ void WpfaRingBuffer::unlock(const char* user) {
 
 void WpfaRingBuffer::waitCanWrite(const char* user, uint16_t dataSize) {
     mtkLogD(WPFA_D_LOG_TAG, "----[RB] wait can write .... (%s)", user);
-    //Kuncheng: add for A2M buffer is full, assert in IT phase.
-    if(isFull() || (getFreeSize() < dataSize)){
+    // Kuncheng: add for A2M buffer is full, assert in IT phase.
+    if (isFull() || (getFreeSize() < dataSize)) {
         mtkLogD(WPFA_D_LOG_TAG, "The Buffer is Full");
     }
-    while(isFull() || (getFreeSize() < dataSize)) {
+    while (isFull() || (getFreeSize() < dataSize)) {
         // wait until some data packets are consumed
         pthread_cond_wait(&mControlPara.cond_can_write, &mControlPara.mutex);
     }
@@ -81,7 +79,7 @@ void WpfaRingBuffer::signalCanWrite(const char* user) {
 
 void WpfaRingBuffer::waitCanRead(const char* user) {
     mtkLogD(WPFA_D_LOG_TAG, "----[RB] wait can read .... (%s)", user);
-    while(isEmpty()) {
+    while (isEmpty()) {
         // wait for new data packets to be appended to the buffer
         pthread_cond_wait(&mControlPara.cond_can_read, &mControlPara.mutex);
     }
@@ -93,15 +91,16 @@ void WpfaRingBuffer::signalCanRead(const char* user) {
     mtkLogD(WPFA_D_LOG_TAG, "----[RB] signal can read success (%s)", user);
 }
 
-int WpfaRingBuffer::writeDataToRingBuffer(const void *src, uint16_t dataSize) {
-    char *p_src = (char *)src;
+int WpfaRingBuffer::writeDataToRingBuffer(const void* src, uint16_t dataSize) {
+    char* p_src = (char*)src;
 
     // check free size
     if (dataSize <= getFreeSize()) {
         // memcpy
         if (mControlPara.mWriteIdx >= mControlPara.mReadIdx) {
-            uint16_t w2e = RING_BUFFER_SIZE - mControlPara.mWriteIdx; // remain size from writeIdx to eof
-            //cout << "dataSize:" << dataSize << " w2e:" << w2e << endl;
+            uint16_t w2e =
+                    RING_BUFFER_SIZE - mControlPara.mWriteIdx;  // remain size from writeIdx to eof
+            // cout << "dataSize:" << dataSize << " w2e:" << w2e << endl;
             if (dataSize <= w2e) {
                 ringBuffer_memcpy(mRingBuffer + mControlPara.mWriteIdx, src, dataSize);
                 toString();
@@ -116,7 +115,7 @@ int WpfaRingBuffer::writeDataToRingBuffer(const void *src, uint16_t dataSize) {
                 }
             } else {
                 ringBuffer_memcpy(mRingBuffer + mControlPara.mWriteIdx, src, w2e);
-                ringBuffer_memcpy(mRingBuffer, (uint8_t *)src + w2e, dataSize - w2e);
+                ringBuffer_memcpy(mRingBuffer, (uint8_t*)src + w2e, dataSize - w2e);
                 toString();
 
                 // update mReadDataSize before update wirte index
@@ -125,7 +124,7 @@ int WpfaRingBuffer::writeDataToRingBuffer(const void *src, uint16_t dataSize) {
                 // update wirte index
                 mControlPara.mWriteIdx = dataSize - w2e;
             }
-        } else { // readIdx > writeIdx
+        } else {  // readIdx > writeIdx
             ringBuffer_memcpy(mRingBuffer + mControlPara.mWriteIdx, src, dataSize);
             toString();
 
@@ -137,7 +136,7 @@ int WpfaRingBuffer::writeDataToRingBuffer(const void *src, uint16_t dataSize) {
         }
         dumpParam();
     } else {
-        //wait
+        // wait
         mtkLogD(WPFA_D_LOG_TAG, "wait()");
         return 0;
     }
@@ -149,67 +148,66 @@ int WpfaRingBuffer::writeDataToRingBuffer(const void *src, uint16_t dataSize) {
         notifyToReader(mControlPara.mReadIdx, mControlPara.mReadDataSize);
     }
     */
-    //cout << "- WpfaRingBuffer-writeDataToRingBuffer()" << endl;
+    // cout << "- WpfaRingBuffer-writeDataToRingBuffer()" << endl;
     return dataSize;
 }
 
-void WpfaRingBuffer::readDataFromRingBuffer(void *des, uint32_t readIdx, uint16_t dataSize) {
-    char *p_src = (char *)des;
-    uint32_t currentWriteIdx = (readIdx + dataSize)%RING_BUFFER_SIZE;
+void WpfaRingBuffer::readDataFromRingBuffer(void* des, uint32_t readIdx, uint16_t dataSize) {
+    char* p_src = (char*)des;
+    uint32_t currentWriteIdx = (readIdx + dataSize) % RING_BUFFER_SIZE;
 
     if ((mControlPara.mReadIdx == readIdx) && (dataSize == mControlPara.mReadDataSize)) {
         if (readIdx <= currentWriteIdx) {
             ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
         } else {
             uint16_t r2e = RING_BUFFER_SIZE - readIdx;
-            //cout << "r2e:" << r2e << endl;
+            // cout << "r2e:" << r2e << endl;
             if (dataSize > r2e) {
                 ringBuffer_memcpy(des, mRingBuffer + readIdx, r2e);
-                ringBuffer_memcpy((uint8_t *)des + r2e, mRingBuffer, dataSize - r2e);
+                ringBuffer_memcpy((uint8_t*)des + r2e, mRingBuffer, dataSize - r2e);
             } else {
                 ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
             }
         }
     } else {
-        //error
+        // error
         mtkLogE(WPFA_D_LOG_TAG, "read error");
     }
-    //cout << "- WpfaRingBuffer-readDataFromRingBuffer()" << endl;
+    // cout << "- WpfaRingBuffer-readDataFromRingBuffer()" << endl;
 }
 
-void WpfaRingBuffer::readDataWithoutRegionCheck(void *des, uint32_t readIdx, uint16_t dataSize) {
-    char *p_src = (char *)des;
-    uint32_t currentWriteIdx = (readIdx + dataSize)%RING_BUFFER_SIZE;
+void WpfaRingBuffer::readDataWithoutRegionCheck(void* des, uint32_t readIdx, uint16_t dataSize) {
+    char* p_src = (char*)des;
+    uint32_t currentWriteIdx = (readIdx + dataSize) % RING_BUFFER_SIZE;
 
     // 1. the *des should be a linear
     // 2. user needs to make sure read index and data size is the same with
     //    the return of getRegionInfoForReader().
-    mtkLogD(WPFA_D_LOG_TAG,"DataPktCopy+");
-    //if ((mControlPara.mReadIdx == readIdx) && (dataSize == mControlPara.mReadDataSize)) {
-        if (readIdx <= currentWriteIdx) {  // Ex: RING_BUFFER_SIZE = 10, readIdx=5 and currentWriteIdx=9
-            ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
-            dump_hex((unsigned char *)des, dataSize);
+    mtkLogD(WPFA_D_LOG_TAG, "DataPktCopy+");
+    // if ((mControlPara.mReadIdx == readIdx) && (dataSize == mControlPara.mReadDataSize)) {
+    if (readIdx <= currentWriteIdx) {  // Ex: RING_BUFFER_SIZE = 10, readIdx=5 and currentWriteIdx=9
+        ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
+        dump_hex((unsigned char*)des, dataSize);
+    } else {
+        // Ex: RING_BUFFER_SIZE = 10, readIdx=9 and currentWriteIdx=5, r2e=1
+        uint16_t r2e = RING_BUFFER_SIZE - readIdx;
+        // cout << "r2e:" << r2e << endl;
+        if (dataSize > r2e) {
+            ringBuffer_memcpy(des, mRingBuffer + readIdx, r2e);
+            dump_hex((unsigned char*)des, r2e);
+            ringBuffer_memcpy((uint8_t*)des + r2e, mRingBuffer, dataSize - r2e);
+            dump_hex((unsigned char*)des + r2e, dataSize - r2e);
         } else {
-            // Ex: RING_BUFFER_SIZE = 10, readIdx=9 and currentWriteIdx=5, r2e=1
-            uint16_t r2e = RING_BUFFER_SIZE - readIdx;
-            //cout << "r2e:" << r2e << endl;
-            if (dataSize > r2e) {
-                ringBuffer_memcpy(des, mRingBuffer + readIdx, r2e);
-                dump_hex((unsigned char *)des, r2e);
-                ringBuffer_memcpy((uint8_t *)des + r2e, mRingBuffer, dataSize - r2e);
-                dump_hex((unsigned char *)des + r2e, dataSize - r2e);
-            } else {
-                ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
-                dump_hex((unsigned char *)des, dataSize);
-            }
+            ringBuffer_memcpy(des, mRingBuffer + readIdx, dataSize);
+            dump_hex((unsigned char*)des, dataSize);
         }
-    mtkLogD(WPFA_D_LOG_TAG,"DataPktCopy-");
+    }
+    mtkLogD(WPFA_D_LOG_TAG, "DataPktCopy-");
     //} else {
     //    mtkLogE(WPFA_D_LOG_TAG, "read error");
     //}
-    //cout << "- WpfaRingBuffer-readDataFromRingBuffer()" << endl;
+    // cout << "- WpfaRingBuffer-readDataFromRingBuffer()" << endl;
 }
-
 
 /*
 int WpfaRingBuffer::notifyToReader(uint32_t readIdx, uint16_t dataSize) {
@@ -235,10 +233,9 @@ void WpfaRingBuffer::getRegionInfoForReader(region_info_t* mRegion) {
     mRegion->data_size = mControlPara.mReadDataSize;
 }
 
-
 void WpfaRingBuffer::readDone() {
     mtkLogD(WPFA_D_LOG_TAG, "-readDone()");
-    //dumpParam();
+    // dumpParam();
 
     if (mControlPara.mTempReadIdx == INVALID_INDEX) {
         // no more data after notify
@@ -267,7 +264,7 @@ void WpfaRingBuffer::readDone() {
     }
     mControlPara.mRbState = RING_BUFFER_STATE_NONE;
     dumpParam();
-    //mtkLogD(WPFA_D_LOG_TAG, "- WpfaRingBuffer-readDone()");
+    // mtkLogD(WPFA_D_LOG_TAG, "- WpfaRingBuffer-readDone()");
 }
 
 void WpfaRingBuffer::updateReadDataSizeByState(uint16_t dataSize) {
@@ -282,16 +279,12 @@ void WpfaRingBuffer::updateReadDataSizeByState(uint16_t dataSize) {
     }
 }
 
-void WpfaRingBuffer::setState(int state) {
-    mControlPara.mRbState = state;
-}
+void WpfaRingBuffer::setState(int state) { mControlPara.mRbState = state; }
 
-int WpfaRingBuffer::getState() {
-    return mControlPara.mRbState;
-}
+int WpfaRingBuffer::getState() { return mControlPara.mRbState; }
 
-void WpfaRingBuffer::ringBuffer_memset(void *des, uint8_t value, uint16_t size) {
-    char *p_des = (char *)des;
+void WpfaRingBuffer::ringBuffer_memset(void* des, uint8_t value, uint16_t size) {
+    char* p_des = (char*)des;
     uint16_t i = 0;
 
     for (i = 0; i < size; i++) {
@@ -299,10 +292,9 @@ void WpfaRingBuffer::ringBuffer_memset(void *des, uint8_t value, uint16_t size) 
     }
 }
 
-
-void WpfaRingBuffer::ringBuffer_memcpy(void *des, const void *src, uint16_t size) {
-    char *p_src = (char *)src;
-    char *p_des = (char *)des;
+void WpfaRingBuffer::ringBuffer_memcpy(void* des, const void* src, uint16_t size) {
+    char* p_src = (char*)src;
+    char* p_des = (char*)des;
     uint16_t i = 0;
 
     for (i = 0; i < size; i++) {
@@ -318,7 +310,7 @@ bool WpfaRingBuffer::isEmpty() {
 }
 
 bool WpfaRingBuffer::isFull() {
-    if ((mControlPara.mWriteIdx+1)%RING_BUFFER_SIZE == mControlPara.mReadIdx) {
+    if ((mControlPara.mWriteIdx + 1) % RING_BUFFER_SIZE == mControlPara.mReadIdx) {
         return true;
     }
     return false;
@@ -343,56 +335,55 @@ void WpfaRingBuffer::toString() {
 
 void WpfaRingBuffer::dumpParam() {
     mtkLogD(WPFA_D_LOG_TAG, " W_Idx:%d,R_idx:%d,R_Size:%d,State:%d,T_Idx:%d,T_Size:%d",
-            mControlPara.mWriteIdx, mControlPara.mReadIdx,
-            mControlPara.mReadDataSize, mControlPara.mRbState,
-            mControlPara.mTempReadIdx, mControlPara.mTempReadDataSize);
+            mControlPara.mWriteIdx, mControlPara.mReadIdx, mControlPara.mReadDataSize,
+            mControlPara.mRbState, mControlPara.mTempReadIdx, mControlPara.mTempReadDataSize);
 }
 
-int WpfaRingBuffer::dump_hex(unsigned char *data, int len) {
-    int i,counter ,rest;
-    char * dumpbuffer;
-    char  printbuf[1024];
+int WpfaRingBuffer::dump_hex(unsigned char* data, int len) {
+    int i, counter, rest;
+    char* dumpbuffer;
+    char printbuf[1024];
 
-    dumpbuffer = (char*)malloc(16*1024);
+    dumpbuffer = (char*)malloc(16 * 1024);
     if (!dumpbuffer) {
         mtkLogD(WPFA_D_LOG_TAG, "DUMP_HEX ALLOC memory fail \n");
         return -1;
     }
 
-    if (len >8*1024 ){
+    if (len > 8 * 1024) {
         mtkLogD(WPFA_D_LOG_TAG, "trac the packet \n");
-        len = 8*1024;
+        len = 8 * 1024;
     }
 
-    //memset((void *)dumpbuffer,0,16*1024);
-    memset(dumpbuffer, 0, 16*1024);
-    //mtkLogD(UPLINK_LOG_TAG, "dumpbuffer size =%d \n",(int)sizeof(*dumpbuffer));
+    // memset((void *)dumpbuffer,0,16*1024);
+    memset(dumpbuffer, 0, 16 * 1024);
+    // mtkLogD(UPLINK_LOG_TAG, "dumpbuffer size =%d \n",(int)sizeof(*dumpbuffer));
 
-    for (i = 0 ; i < len ; i++) {
-       sprintf(&dumpbuffer[i*2],"%02x",data[i]);
+    for (i = 0; i < len; i++) {
+        sprintf(&dumpbuffer[i * 2], "%02x", data[i]);
     }
-    dumpbuffer[i*2] = '\0' ;
+    dumpbuffer[i * 2] = '\0';
 
     // android log buffer =1024bytes, need to splite the log
-    counter = len/300 ;
-    rest = len - counter*300 ;
+    counter = len / 300;
+    rest = len - counter * 300;
 
-    mtkLogD(WPFA_D_LOG_TAG, " Data Length = %d ,counter =%d ,rest =%d", len ,counter,rest);
+    mtkLogD(WPFA_D_LOG_TAG, " Data Length = %d ,counter =%d ,rest =%d", len, counter, rest);
 
     mtkLogD(WPFA_D_LOG_TAG, " NFQUEU Data: ");
-    for (i = 0 ; i < counter ; i++) {
+    for (i = 0; i < counter; i++) {
         memset(printbuf, 0, sizeof(printbuf));
-        memcpy(printbuf ,dumpbuffer+i*600 , 300*2);
-        printbuf[600]='\0';
-        mtkLogD(WPFA_D_LOG_TAG, "data:%s",printbuf);
+        memcpy(printbuf, dumpbuffer + i * 600, 300 * 2);
+        printbuf[600] = '\0';
+        mtkLogD(WPFA_D_LOG_TAG, "data:%s", printbuf);
         mtkLogD(WPFA_D_LOG_TAG, "~");
     }
 
-    //for rest data
+    // for rest data
     memset(printbuf, 0, sizeof(printbuf));
-    memcpy(printbuf ,dumpbuffer+counter*600 , rest*2);
-    printbuf[rest*2]='\0';
-    mtkLogD(WPFA_D_LOG_TAG, "%s",printbuf);
+    memcpy(printbuf, dumpbuffer + counter * 600, rest * 2);
+    printbuf[rest * 2] = '\0';
+    mtkLogD(WPFA_D_LOG_TAG, "%s", printbuf);
 
     free(dumpbuffer);
     return 1;

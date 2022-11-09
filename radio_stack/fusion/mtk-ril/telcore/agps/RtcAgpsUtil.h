@@ -13,16 +13,15 @@
  * Class Declaraion
  *****************************************************************************/
 
-
 /*****************************************************************************
  * Namespace Declaration
  *****************************************************************************/
-using ::android::MessageHandler;
-using ::android::Message;
-using ::android::sp;
 using ::android::Looper;
-using ::android::RefBase;
+using ::android::Message;
+using ::android::MessageHandler;
 using ::android::Parcel;
+using ::android::RefBase;
+using ::android::sp;
 
 /*****************************************************************************
  * Defines
@@ -33,30 +32,23 @@ using ::android::Parcel;
  * Class RtcAgpsMessage
  *****************************************************************************/
 class RtcAgpsMessage : public virtual RefBase {
-private:
-    RtcAgpsMessage() : m_id(-1), m_parcel(NULL){}
+  private:
+    RtcAgpsMessage() : m_id(-1), m_parcel(NULL) {}
     RtcAgpsMessage(const RtcAgpsMessage& o);
     RtcAgpsMessage& operator=(const RtcAgpsMessage& o);
     virtual ~RtcAgpsMessage();
 
-public:
-    int32_t getId() const {
-        return m_id;
-    }
+  public:
+    int32_t getId() const { return m_id; }
 
-    Parcel* getParcel() const {
-        return m_parcel;
-    }
+    Parcel* getParcel() const { return m_parcel; }
 
-    static sp<RtcAgpsMessage> obtainMessage(
-        int32_t id,
-        Parcel* parcel);
+    static sp<RtcAgpsMessage> obtainMessage(int32_t id, Parcel* parcel);
 
-private:
+  private:
     int32_t m_id;
-    Parcel *m_parcel;
+    Parcel* m_parcel;
 };
-
 
 /*****************************************************************************
  * Class RtcAgpsHandler
@@ -65,14 +57,14 @@ private:
  * Base handler to handle AGPS message
  */
 class RtcAgpsHandler : public RfxMainHandler {
-public:
+  public:
     explicit RtcAgpsHandler(const sp<RtcAgpsMessage>& msg) : m_msg(msg) {}
     // Destructor
     virtual ~RtcAgpsHandler() {}
     // Send AGPS message
     void sendMessage(sp<Looper> looper);
 
-protected:
+  protected:
     // AGPS message referance
     sp<RtcAgpsMessage> m_msg;
 
@@ -86,21 +78,21 @@ protected:
 /*
  * Handler that is used to send message to AGPS working thread
  */
-class RtcAgpsWorkingThreadHandler: public RtcAgpsHandler {
-public:
+class RtcAgpsWorkingThreadHandler : public RtcAgpsHandler {
+  public:
     // Constructor
-    explicit RtcAgpsWorkingThreadHandler(
-        const sp<RtcAgpsMessage>& msg  // [IN] the AGPS message
-        ): RtcAgpsHandler(msg) {}
+    explicit RtcAgpsWorkingThreadHandler(const sp<RtcAgpsMessage>& msg  // [IN] the AGPS message
+                                         )
+        : RtcAgpsHandler(msg) {}
 
     // Destructor
     virtual ~RtcAgpsWorkingThreadHandler() {}
 
-// Override
-public:
+    // Override
+  public:
     // Override handleMessage, don't the watch dog in RfxMainHandler
     virtual void handleMessage(const Message& message);
-    virtual void onHandleMessage(const Message& message) { RFX_UNUSED(message);}
+    virtual void onHandleMessage(const Message& message) { RFX_UNUSED(message); }
 };
 
 /*****************************************************************************
@@ -109,17 +101,17 @@ public:
 /*
  * Handler that is used to send message to main thread
  */
-class RtcAgpsMainThreadHandler: public RtcAgpsHandler {
-public:
+class RtcAgpsMainThreadHandler : public RtcAgpsHandler {
+  public:
     // Constructor
-    explicit RtcAgpsMainThreadHandler(
-        const sp<RtcAgpsMessage>& msg  // [IN] the AGPS message
-        ) : RtcAgpsHandler(msg) {}
+    explicit RtcAgpsMainThreadHandler(const sp<RtcAgpsMessage>& msg  // [IN] the AGPS message
+                                      )
+        : RtcAgpsHandler(msg) {}
     // Destructor
     virtual ~RtcAgpsMainThreadHandler() {}
 
-// Override
-public:
+    // Override
+  public:
     virtual void onHandleMessage(const Message& message);
 };
 

@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimIoData);
 
-RfxSimIoData::RfxSimIoData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimIoData::RfxSimIoData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SIM_IO_v6 *pSimIoV6 = (RIL_SIM_IO_v6*)_data;
-        RIL_SIM_IO_v6 *pData = (RIL_SIM_IO_v6 *)calloc(1, sizeof(RIL_SIM_IO_v6));
+        RIL_SIM_IO_v6* pSimIoV6 = (RIL_SIM_IO_v6*)_data;
+        RIL_SIM_IO_v6* pData = (RIL_SIM_IO_v6*)calloc(1, sizeof(RIL_SIM_IO_v6));
         RFX_ASSERT(pData != NULL);
 
         pData->command = pSimIoV6->command;
@@ -54,7 +54,7 @@ RfxSimIoData::RfxSimIoData(void *_data, int _length) : RfxBaseData(_data, _lengt
 RfxSimIoData::~RfxSimIoData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SIM_IO_v6 *pData = (RIL_SIM_IO_v6*)m_data;
+        RIL_SIM_IO_v6* pData = (RIL_SIM_IO_v6*)m_data;
         if (pData->path != NULL) {
             free(pData->path);
             pData->path = NULL;

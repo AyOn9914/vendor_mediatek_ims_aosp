@@ -27,33 +27,33 @@
  * Class RmcDcMiscImpl
  *****************************************************************************/
 class RmcDcMiscImpl {
-    public:
-        RmcDcMiscImpl(RfxBaseHandler* handler, int slotId);
-        virtual ~RmcDcMiscImpl();
-        void init();
-        void setFdMode(const sp<RfxMclMessage>& msg);
-        void requestStartLce(const sp<RfxMclMessage>& msg);
-        void requestStopLce(const sp<RfxMclMessage>& msg);
-        void requestPullLceData(const sp<RfxMclMessage>& msg);
-        void onLceStatusChanged(const sp<RfxMclMessage>& msg);
-        void requestSetLinkCapacityReportingCriteria(const sp<RfxMclMessage>& msg);
-        void onLinkCapacityEstimate(const sp<RfxMclMessage>& msg);
+  public:
+    RmcDcMiscImpl(RfxBaseHandler* handler, int slotId);
+    virtual ~RmcDcMiscImpl();
+    void init();
+    void setFdMode(const sp<RfxMclMessage>& msg);
+    void requestStartLce(const sp<RfxMclMessage>& msg);
+    void requestStopLce(const sp<RfxMclMessage>& msg);
+    void requestPullLceData(const sp<RfxMclMessage>& msg);
+    void onLceStatusChanged(const sp<RfxMclMessage>& msg);
+    void requestSetLinkCapacityReportingCriteria(const sp<RfxMclMessage>& msg);
+    void onLinkCapacityEstimate(const sp<RfxMclMessage>& msg);
 
-    protected:
-        int getIntValue(int slotId, const RfxStatusKeyEnum key, int default_value);
-        RfxMclStatusManager* getMclStatusManager(int slotId);
-        sp<RfxAtResponse> atSendCommand(const String8 cmd);
-        sp<RfxAtResponse> atSendCommandSingleline(const String8 cmd, const char *rspPrefix);
-        void responseToTelCore(const sp<RfxMclMessage> msg);
+  protected:
+    int getIntValue(int slotId, const RfxStatusKeyEnum key, int default_value);
+    RfxMclStatusManager* getMclStatusManager(int slotId);
+    sp<RfxAtResponse> atSendCommand(const String8 cmd);
+    sp<RfxAtResponse> atSendCommandSingleline(const String8 cmd, const char* rspPrefix);
+    void responseToTelCore(const sp<RfxMclMessage> msg);
 
-    private:
-        void initializeFastDormancy();
-        int isFastDormancySupport();
-        void syncEpdgConfigToMd();
-        void syncIwlanOperationModeToMd();
-        void disableLegacyFastDormancy();
+  private:
+    void initializeFastDormancy();
+    int isFastDormancySupport();
+    void syncEpdgConfigToMd();
+    void syncIwlanOperationModeToMd();
+    void disableLegacyFastDormancy();
 
-    private:
-        RfxBaseHandler* mHandler;
-        int mSlotId;
+  private:
+    RfxBaseHandler* mHandler;
+    int mSlotId;
 };

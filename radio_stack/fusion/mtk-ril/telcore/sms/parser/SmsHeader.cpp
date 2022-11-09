@@ -20,17 +20,15 @@
 #include "SmsHeader.h"
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "SmsHeader"
+#define RFX_LOG_TAG "SmsHeader"
 /*****************************************************************************
  * Class SmsHeader
  *****************************************************************************/
 const int SmsHeader::PORT_WAP_PUSH = 2948;
 const int SmsHeader::PORT_SUPL = 7275;
 
-SmsHeader::SmsHeader() :
-        mLanguageShiftTable(0),
-        mLanguageTable(0) {
-    mPortAddrs.destPort =-1;
+SmsHeader::SmsHeader() : mLanguageShiftTable(0), mLanguageTable(0) {
+    mPortAddrs.destPort = -1;
     mPortAddrs.origPort = -1;
     mPortAddrs.areEightBits = false;
     mConcatRef.refNumber = -1;
@@ -50,7 +48,7 @@ SmsHeader::~SmsHeader() {
 }
 
 SmsHeader* SmsHeader::fromByteArray(BYTE* data, int headerLength) {
-    SmsHeader *smsHeader = new SmsHeader();
+    SmsHeader* smsHeader = new SmsHeader();
     int curr = 0;
     while (curr < headerLength) {
         /**
@@ -77,13 +75,14 @@ SmsHeader* SmsHeader::fromByteArray(BYTE* data, int headerLength) {
                 concatRef.seqNumber = data[curr++];
                 concatRef.isEightBits = true;
                 if (concatRef.msgCount != 0 && concatRef.seqNumber != 0 &&
-                        concatRef.seqNumber <= concatRef.msgCount) {
+                    concatRef.seqNumber <= concatRef.msgCount) {
                     smsHeader->mConcatRef = concatRef;
                 }
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray concatRef.refNumber: %d,"
-                        "concatRef.msgCount: %d,"
-                        "concatRef.seqNumber: %d",
-                        concatRef.refNumber, concatRef.msgCount, concatRef.seqNumber);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "fromByteArray concatRef.refNumber: %d,"
+                          "concatRef.msgCount: %d,"
+                          "concatRef.seqNumber: %d",
+                          concatRef.refNumber, concatRef.msgCount, concatRef.seqNumber);
                 break;
             }
             case ELT_ID_CONCATENATED_16_BIT_REFERENCE: {
@@ -94,13 +93,14 @@ SmsHeader* SmsHeader::fromByteArray(BYTE* data, int headerLength) {
                 concatRef.seqNumber = data[curr++];
                 concatRef.isEightBits = false;
                 if (concatRef.msgCount != 0 && concatRef.seqNumber != 0 &&
-                        concatRef.seqNumber <= concatRef.msgCount) {
+                    concatRef.seqNumber <= concatRef.msgCount) {
                     smsHeader->mConcatRef = concatRef;
                 }
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray concatRef.refNumber: %d,"
-                        "concatRef.msgCount: %d,"
-                        "concatRef.seqNumber: %d",
-                        concatRef.refNumber, concatRef.msgCount, concatRef.seqNumber);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "fromByteArray concatRef.refNumber: %d,"
+                          "concatRef.msgCount: %d,"
+                          "concatRef.seqNumber: %d",
+                          concatRef.refNumber, concatRef.msgCount, concatRef.seqNumber);
                 break;
             }
             case ELT_ID_APPLICATION_PORT_ADDRESSING_8_BIT: {
@@ -108,9 +108,10 @@ SmsHeader* SmsHeader::fromByteArray(BYTE* data, int headerLength) {
                 portAddrs.origPort = data[curr++];
                 portAddrs.areEightBits = true;
                 smsHeader->mPortAddrs = portAddrs;
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray portAddrs.destPort: %d,"
-                        "portAddrs.origPort: %d",
-                        portAddrs.destPort, portAddrs.origPort);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "fromByteArray portAddrs.destPort: %d,"
+                          "portAddrs.origPort: %d",
+                          portAddrs.destPort, portAddrs.origPort);
                 break;
             }
             case ELT_ID_APPLICATION_PORT_ADDRESSING_16_BIT: {
@@ -122,29 +123,34 @@ SmsHeader* SmsHeader::fromByteArray(BYTE* data, int headerLength) {
                 portAddrs.origPort = temp3 | temp4;
                 portAddrs.areEightBits = false;
                 smsHeader->mPortAddrs = portAddrs;
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray portAddrs.destPort: %d,"
-                        "portAddrs.origPort: %d",
-                        portAddrs.destPort, portAddrs.origPort);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "fromByteArray portAddrs.destPort: %d,"
+                          "portAddrs.origPort: %d",
+                          portAddrs.destPort, portAddrs.origPort);
                 break;
             }
             case ELT_ID_NATIONAL_LANGUAGE_SINGLE_SHIFT: {
                 smsHeader->mLanguageShiftTable = data[curr++];
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray mLanguageShiftTable: %d", smsHeader->mLanguageShiftTable);
+                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray mLanguageShiftTable: %d",
+                          smsHeader->mLanguageShiftTable);
                 break;
             }
             case ELT_ID_NATIONAL_LANGUAGE_LOCKING_SHIFT: {
                 smsHeader->mLanguageTable = data[curr++];
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray mLanguageShiftTable: %d", smsHeader->mLanguageTable);
-               break;
+                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray mLanguageShiftTable: %d",
+                          smsHeader->mLanguageTable);
+                break;
             }
             case ELT_ID_SPECIAL_SMS_MESSAGE_INDICATION: {
-                SpecialSmsMsg specialSmsMsg;;
+                SpecialSmsMsg specialSmsMsg;
+                ;
                 specialSmsMsg.msgIndType = data[curr++];
                 specialSmsMsg.msgCount = data[curr++];
                 smsHeader->mSpecialSmsMsgList.push_back(specialSmsMsg);
-                RFX_LOG_D(RFX_LOG_TAG, "fromByteArray specialSmsMsg.msgIndType: %d,"
-                        "specialSmsMsg.msgCount: %d",
-                        specialSmsMsg.msgIndType, specialSmsMsg.msgCount);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "fromByteArray specialSmsMsg.msgIndType: %d,"
+                          "specialSmsMsg.msgCount: %d",
+                          specialSmsMsg.msgIndType, specialSmsMsg.msgCount);
                 break;
             }
             default: {

@@ -22,19 +22,18 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsOosNotifyData);
 
-RfxEmbmsOosNotifyData::RfxEmbmsOosNotifyData(void* data, int length)
-    : RfxBaseData(data, length)  {
+RfxEmbmsOosNotifyData::RfxEmbmsOosNotifyData(void* data, int length) : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_OosNotify*)data, length);
 }
 
 RfxEmbmsOosNotifyData::RfxEmbmsOosNotifyData(RIL_EMBMS_OosNotify* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsOosNotifyData::copyData(RIL_EMBMS_OosNotify *data, int length) {
+void RfxEmbmsOosNotifyData::copyData(RIL_EMBMS_OosNotify* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_OosNotify *) calloc(1, sizeof(RIL_EMBMS_OosNotify));
+    m_data = (RIL_EMBMS_OosNotify*)calloc(1, sizeof(RIL_EMBMS_OosNotify));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

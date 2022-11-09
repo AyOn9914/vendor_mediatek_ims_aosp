@@ -20,10 +20,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhbEntryData);
 
-RfxPhbEntryData::RfxPhbEntryData(void *data, int length) : RfxBaseData(data, length) {
+RfxPhbEntryData::RfxPhbEntryData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_PhbEntryStructure *pInput = (RIL_PhbEntryStructure*)data;
-        RIL_PhbEntryStructure *pData = (RIL_PhbEntryStructure*)calloc(1, sizeof(RIL_PhbEntryStructure));
+        RIL_PhbEntryStructure* pInput = (RIL_PhbEntryStructure*)data;
+        RIL_PhbEntryStructure* pData =
+                (RIL_PhbEntryStructure*)calloc(1, sizeof(RIL_PhbEntryStructure));
         RFX_ASSERT(pData != NULL);
         pData->type = pInput->type;
         pData->index = pInput->index;
@@ -43,7 +44,7 @@ RfxPhbEntryData::RfxPhbEntryData(void *data, int length) : RfxBaseData(data, len
 RfxPhbEntryData::~RfxPhbEntryData() {
     // free
     if (m_data != NULL) {
-        RIL_PhbEntryStructure *pTmp = (RIL_PhbEntryStructure *) m_data;
+        RIL_PhbEntryStructure* pTmp = (RIL_PhbEntryStructure*)m_data;
         if (pTmp->number != NULL) {
             free(pTmp->number);
             pTmp->number = NULL;

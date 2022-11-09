@@ -16,7 +16,7 @@
 
 #ifndef __SUPL_MSG_DISPATCHER_H__
 #define __SUPL_MSG_DISPATCHER_H__
-#define HAL_MNL_INTERFACE_VERSION   1
+#define HAL_MNL_INTERFACE_VERSION 1
 
 /*****************************************************************************
  * Include
@@ -26,16 +26,16 @@
 #include "RfxObject.h"
 #include "SmsParserUtils.h"
 
-#define SUPL_EXISTENCE_UNKNOWN      2
-#define SUPL_EXISTENCE_YES          1
-#define SUPL_EXISTENCE_NO           0
+#define SUPL_EXISTENCE_UNKNOWN 2
+#define SUPL_EXISTENCE_YES 1
+#define SUPL_EXISTENCE_NO 0
 
 #define SUPL_EXISTENCE_MAX_DETECTION 3
 
-#define HAL_MNL_BUFF_SIZE           (16 * 1024)
-#define HAL2MNL_NI_MESSAGE          401
-#define HAL_MNL_INTERFACE_VERSION   1
-#define MTK_HAL2MNL                 "mtk_hal2mnl"
+#define HAL_MNL_BUFF_SIZE (16 * 1024)
+#define HAL2MNL_NI_MESSAGE 401
+#define HAL_MNL_INTERFACE_VERSION 1
+#define MTK_HAL2MNL "mtk_hal2mnl"
 
 class ConcentratedSms;
 class SmsMessage;
@@ -47,16 +47,16 @@ class WappushMessage;
 class SuplMsgDispatcher : public RfxObject {
     // Required: declare this class
     RFX_DECLARE_CLASS(SuplMsgDispatcher);
-public:
+
+  public:
     void dispatchSuplMsg(string content);
     bool doesSuplExist(void);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onDeinit();
 
-
-private:
+  private:
     bool addToExistingConcSms(SmsMessage* msg);
     ConcentratedSms* findConcSms(int ref);
     void onConcSmsTimeout(int ref);
@@ -67,10 +67,10 @@ private:
     void put_binary(char* buff, int* offset, const char* input, const int len);
     int safe_sendto(const char* path, const char* buff, int len);
     bool notifyConcMsg2Mnl(ConcentratedSms* msg);
-    bool notifySms2Mnl(SmsMessage *msg);
-    bool notifyWappush2Mnl(WappushMessage *msg);
+    bool notifySms2Mnl(SmsMessage* msg);
+    bool notifyWappush2Mnl(WappushMessage* msg);
 
-private:
+  private:
     list<ConcentratedSms*> mConcSmsList;
     static int sSuplExistenceState;
     static int sSuplExistenceDetectionCount;

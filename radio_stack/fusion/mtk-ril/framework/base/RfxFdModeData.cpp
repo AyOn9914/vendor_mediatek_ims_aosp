@@ -18,10 +18,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxFdModeData);
 
-RfxFdModeData::RfxFdModeData(void *data, int length) : RfxBaseData(data, length) {
+RfxFdModeData::RfxFdModeData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    RIL_FdModeStructure *pTmp = (RIL_FdModeStructure *) data;
-    RIL_FdModeStructure *pData = (RIL_FdModeStructure *) calloc(1, sizeof(RIL_FdModeStructure));
+    RIL_FdModeStructure* pTmp = (RIL_FdModeStructure*)data;
+    RIL_FdModeStructure* pData = (RIL_FdModeStructure*)calloc(1, sizeof(RIL_FdModeStructure));
     if (pData != NULL) {
         pData->paramNumber = pTmp->paramNumber;
         pData->mode = pTmp->mode;

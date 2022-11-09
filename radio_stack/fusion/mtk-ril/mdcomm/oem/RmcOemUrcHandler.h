@@ -22,20 +22,20 @@
 class RmcOemUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOemUrcHandler);
 
-    public:
-        RmcOemUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcOemUrcHandler();
+  public:
+    RmcOemUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcOemUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleEWarning(RfxAtLine *line);
-        void handleTXPower(RfxAtLine *line);
-        void handleTXPowerStatus(RfxAtLine *line);
-        void handleOemUrc(RfxAtLine *line);
-        void handleNvErr(RfxAtLine *line);
-        void handleDsdaUrc(RfxAtLine *line);
+  private:
+    void handleEWarning(RfxAtLine* line);
+    void handleTXPower(RfxAtLine* line);
+    void handleTXPowerStatus(RfxAtLine* line);
+    void handleOemUrc(RfxAtLine* line);
+    void handleNvErr(RfxAtLine* line);
+    void handleDsdaUrc(RfxAtLine* line);
 };
 
 #endif

@@ -24,12 +24,15 @@
 
 class RmcImsProvisioningUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsProvisioningUrcHandler);
-    public:
-        RmcImsProvisioningUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcImsProvisioningUrcHandler();
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-    private:
-        void handleProvisionValueReceived(const sp<RfxMclMessage>& msg);
+
+  public:
+    RmcImsProvisioningUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcImsProvisioningUrcHandler();
+
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+
+  private:
+    void handleProvisionValueReceived(const sp<RfxMclMessage>& msg);
 };
 #endif

@@ -18,18 +18,19 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCrssNotificationData);
 
-RfxCrssNotificationData::RfxCrssNotificationData(void *data, int length) : RfxBaseData(data, length) {
+RfxCrssNotificationData::RfxCrssNotificationData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
     }
 
     m_length = length;
-    RIL_CrssNotification *dupData;
-    RIL_CrssNotification *srcData = (RIL_CrssNotification*)data;
+    RIL_CrssNotification* dupData;
+    RIL_CrssNotification* srcData = (RIL_CrssNotification*)data;
     int len;
 
-    dupData = (RIL_CrssNotification *)calloc(1, sizeof(RIL_CrssNotification));
+    dupData = (RIL_CrssNotification*)calloc(1, sizeof(RIL_CrssNotification));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_CrssNotification));
     m_data = dupData;
@@ -40,13 +41,13 @@ RfxCrssNotificationData::RfxCrssNotificationData(void *data, int length) : RfxBa
 
     if (srcData->number != NULL) {
         len = strlen(srcData->number);
-        dupData->number = (char *)calloc(len + 1, sizeof(char));
+        dupData->number = (char*)calloc(len + 1, sizeof(char));
         RFX_ASSERT(dupData->number != NULL);
         strncpy(dupData->number, srcData->number, len);
     }
     if (srcData->alphaid != NULL) {
         len = strlen(srcData->alphaid);
-        dupData->alphaid = (char *)calloc(len + 1, sizeof(char));
+        dupData->alphaid = (char*)calloc(len + 1, sizeof(char));
         RFX_ASSERT(dupData->alphaid != NULL);
         strncpy(dupData->alphaid, srcData->alphaid, len);
     }
@@ -54,7 +55,7 @@ RfxCrssNotificationData::RfxCrssNotificationData(void *data, int length) : RfxBa
 
 RfxCrssNotificationData::~RfxCrssNotificationData() {
     // free
-    RIL_CrssNotification *tmp = (RIL_CrssNotification *)m_data;
+    RIL_CrssNotification* tmp = (RIL_CrssNotification*)m_data;
     if (tmp != NULL) {
         if (tmp->number != NULL) {
             free(tmp->number);

@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSmsWriteData);
 
-RfxSmsWriteData::RfxSmsWriteData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSmsWriteData::RfxSmsWriteData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SMS_WriteArgs *pSmsWrite = (RIL_SMS_WriteArgs*)_data;
-        RIL_SMS_WriteArgs *pData = (RIL_SMS_WriteArgs *)calloc(1, sizeof(RIL_SMS_WriteArgs));
+        RIL_SMS_WriteArgs* pSmsWrite = (RIL_SMS_WriteArgs*)_data;
+        RIL_SMS_WriteArgs* pData = (RIL_SMS_WriteArgs*)calloc(1, sizeof(RIL_SMS_WriteArgs));
 
         if (pData != NULL) {
             pData->status = pSmsWrite->status;
@@ -43,7 +43,7 @@ RfxSmsWriteData::RfxSmsWriteData(void *_data, int _length) : RfxBaseData(_data, 
 RfxSmsWriteData::~RfxSmsWriteData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SMS_WriteArgs *pData = (RIL_SMS_WriteArgs*)m_data;
+        RIL_SMS_WriteArgs* pData = (RIL_SMS_WriteArgs*)m_data;
         if (pData->pdu != NULL) {
             free(pData->pdu);
             pData->pdu = NULL;

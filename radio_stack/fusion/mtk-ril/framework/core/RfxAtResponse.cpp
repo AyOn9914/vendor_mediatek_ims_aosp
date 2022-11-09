@@ -21,9 +21,7 @@
     m_finalResponse = final;
 }*/
 
-void RfxAtResponse::setFinalResponse(RfxAtLine* finalResponse) {
-    m_finalResponse = finalResponse;
-}
+void RfxAtResponse::setFinalResponse(RfxAtLine* finalResponse) { m_finalResponse = finalResponse; }
 
 /*void RfxAtResponse::setIntermediates(char* line) {
     RfxAtLine intermediates = new RfxAtLine(line, NULL);
@@ -54,16 +52,13 @@ void RfxAtResponse::setIntermediates(RfxAtLine* line) {
 AT_CME_Error RfxAtResponse::atGetCmeError() {
     int ret;
     int err;
-    char *p_cur;
+    char* p_cur;
 
-    if (m_success > 0)
-        return CME_SUCCESS;
+    if (m_success > 0) return CME_SUCCESS;
 
-    if (m_finalResponse == NULL)
-        return CME_ERROR_NON_CME;
+    if (m_finalResponse == NULL) return CME_ERROR_NON_CME;
 
-    if (RfxMisc::strStartsWith(m_finalResponse->getLine(), "ERROR"))
-        return CME_UNKNOWN;
+    if (RfxMisc::strStartsWith(m_finalResponse->getLine(), "ERROR")) return CME_UNKNOWN;
 
     if (!RfxMisc::strStartsWith(m_finalResponse->getLine(), "+CME ERROR:"))
         return CME_ERROR_NON_CME;
@@ -71,20 +66,16 @@ AT_CME_Error RfxAtResponse::atGetCmeError() {
     // make use of RfxAtLine
     m_finalResponse->atTokStart(&err);
 
-    if (err < 0)
-        return CME_ERROR_NON_CME;
+    if (err < 0) return CME_ERROR_NON_CME;
 
     ret = m_finalResponse->atTokNextint(&err);
 
-    if (err < 0)
-        return CME_ERROR_NON_CME;
+    if (err < 0) return CME_ERROR_NON_CME;
 
     return (AT_CME_Error)ret;
 }
 
-int RfxAtResponse::isATCmdRspErr() {
-    return (m_err < 0 || 0 == m_success) ? 1: 0;
-}
+int RfxAtResponse::isATCmdRspErr() { return (m_err < 0 || 0 == m_success) ? 1 : 0; }
 
 void RfxAtResponse::reverseIntermediates() {
     RfxAtLine *pcur, *pnext;
@@ -103,15 +94,10 @@ void RfxAtResponse::reverseIntermediates() {
 /*
 ** Indicate command send to mux or not
 */
-bool RfxAtResponse::isAtSent() {
-    return (m_err > 0);
-}
+bool RfxAtResponse::isAtSent() { return (m_err > 0); }
 
 /*
 ** Command has sent to modem and get response.
 ** This API will return success or failure of response
 */
-bool RfxAtResponse::isAtResponseFail() {
-    return (m_err < 0) ||
-            (m_success <= 0);
-}
+bool RfxAtResponse::isAtResponseFail() { return (m_err < 0) || (m_success <= 0); }

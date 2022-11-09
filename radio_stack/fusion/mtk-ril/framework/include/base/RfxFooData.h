@@ -20,16 +20,16 @@
 #include "RfxBaseData.h"
 
 class RfxFooData : public RfxBaseData {
-    private:
-        // Assume we have a structure contains four ints
-        typedef struct {
-            int timeout;
-            int power;
-        } RIL_Foo;
+  private:
+    // Assume we have a structure contains four ints
+    typedef struct {
+        int timeout;
+        int power;
+    } RIL_Foo;
 
     RFX_DECLARE_DATA_CLASS(RfxFooData);
 
-    public:
-         RfxFooData(int timeout, int power);
+  public:
+    RfxFooData(int timeout, int power);
 };
 #endif

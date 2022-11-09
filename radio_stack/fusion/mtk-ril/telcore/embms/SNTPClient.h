@@ -28,7 +28,7 @@ static uint64_t OFFSET_1900_TO_1970 = ((365LL * 70LL) + 17LL) * 24LL * 60LL * 60
 struct SNTPClient {
     SNTPClient();
 
-    status_t requestTime(const char *host);
+    status_t requestTime(const char* host);
 
     // given a time obtained from ALooper::GetNowUs()
     // return the number of us elapsed since Jan 1 1970 00:00:00 (UTC).
@@ -36,7 +36,7 @@ struct SNTPClient {
     int64_t mTimeReferenceUs;
     int64_t mRoundTripTimeNTP;
 
-private:
+  private:
     enum {
         kNTPPort = 123,
         kNTPPacketSize = 48,

@@ -23,14 +23,11 @@
  * are used in host builds, as the host libc will not contain these
  * functions.
  */
-void dlmalloc_inspect_all(void(*handler)(void*, void *, size_t, void*) UNUSED,
-                          void* arg UNUSED)
-{
-  ALOGW("Called host unimplemented stub: dlmalloc_inspect_all");
+void dlmalloc_inspect_all(void (*handler)(void*, void*, size_t, void*) UNUSED, void* arg UNUSED) {
+    ALOGW("Called host unimplemented stub: dlmalloc_inspect_all");
 }
 
-int dlmalloc_trim(size_t unused UNUSED)
-{
-  ALOGW("Called host unimplemented stub: dlmalloc_trim");
-  return 0;
+int dlmalloc_trim(size_t unused UNUSED) {
+    ALOGW("Called host unimplemented stub: dlmalloc_trim");
+    return 0;
 }

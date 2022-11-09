@@ -30,12 +30,11 @@
  * Class RfxController
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcCommSimRadioConfigController", RtcCommSimRadioConfigController,
-        RfxController);
+                    RfxController);
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSimSlotStatusData,
-        RFX_MSG_REQUEST_GET_SLOT_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSimSlotStatusData, RFX_MSG_REQUEST_GET_SLOT_STATUS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-        RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING);
+                                RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING);
 RFX_REGISTER_DATA_TO_URC_ID(RfxSimSlotStatusData, RFX_MSG_URC_ICC_SLOT_STATUS);
 
 RtcCommSimRadioConfigController::RtcCommSimRadioConfigController() {
@@ -43,35 +42,34 @@ RtcCommSimRadioConfigController::RtcCommSimRadioConfigController() {
     sending_count = 0;
 }
 
-RtcCommSimRadioConfigController::~RtcCommSimRadioConfigController() {
-}
+RtcCommSimRadioConfigController::~RtcCommSimRadioConfigController() {}
 
-void::RtcCommSimRadioConfigController::onDeinit() {
-}
+void ::RtcCommSimRadioConfigController::onDeinit() {}
 
 void RtcCommSimRadioConfigController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_GET_SLOT_STATUS,
-        RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING,
+            RFX_MSG_REQUEST_GET_SLOT_STATUS,
+            RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING,
     };
 
     const int urc_id_list[] = {
-        RFX_MSG_URC_ICC_SLOT_STATUS,
+            RFX_MSG_URC_ICC_SLOT_STATUS,
     };
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-        registerToHandleRequest(i, request_id_list, sizeof(request_id_list)/sizeof(const int));
-        registerToHandleUrc(i, urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+        registerToHandleRequest(i, request_id_list, sizeof(request_id_list) / sizeof(const int));
+        registerToHandleUrc(i, urc_id_list, sizeof(urc_id_list) / sizeof(const int));
     }
 
     // register callbacks to get required information
     logD(RC_LOG_TAG, "RtcCommSimRadioConfigController::onInit");
-    pp_slotStatus = (RIL_SimSlotStatus **)malloc(RfxRilUtils::rfxGetSimCount() * sizeof(RIL_SimSlotStatus *));
+    pp_slotStatus =
+            (RIL_SimSlotStatus**)malloc(RfxRilUtils::rfxGetSimCount() * sizeof(RIL_SimSlotStatus*));
 }
 
 bool RtcCommSimRadioConfigController::onPreviewMessage(const sp<RfxMessage>& message) {
@@ -123,15 +121,15 @@ bool RtcCommSimRadioConfigController::onHandleRequest(const sp<RfxMessage>& mess
     int msgId = message->getId();
     int mainSlotId = 0;
 
-   // sp<RfxMessage> msg = NULL;
+    // sp<RfxMessage> msg = NULL;
     switch (msgId) {
-    case RFX_MSG_REQUEST_GET_SLOT_STATUS:
-    case RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING:
-        logD(RC_LOG_TAG, "onHandleRequest, slot id = %d", message->getSlotId());
-        requestToMcl(message);
-        break;
-    default:
-        break;
+        case RFX_MSG_REQUEST_GET_SLOT_STATUS:
+        case RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING:
+            logD(RC_LOG_TAG, "onHandleRequest, slot id = %d", message->getSlotId());
+            requestToMcl(message);
+            break;
+        default:
+            break;
     }
     return true;
 }
@@ -146,23 +144,23 @@ bool RtcCommSimRadioConfigController::onHandleResponse(const sp<RfxMessage>& res
     int msgId = response->getId();
     int slotId = response->getSlotId();
     switch (msgId) {
-    case RFX_MSG_REQUEST_GET_SLOT_STATUS:
-    case RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING:
-        responseToRilj(response);
-        return true;
-    default:
-        break;
+        case RFX_MSG_REQUEST_GET_SLOT_STATUS:
+        case RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING:
+            responseToRilj(response);
+            return true;
+        default:
+            break;
     }
     return true;
 }
 
 bool RtcCommSimRadioConfigController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                             bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
 
     if (!isModemPowerOff && (radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_GET_SLOT_STATUS ||
-            msgId == RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING)) {
+        (msgId == RFX_MSG_REQUEST_GET_SLOT_STATUS ||
+         msgId == RFX_MSG_REQUEST_SET_LOGICAL_TO_PHYSICAL_SLOT_MAPPING)) {
         return false;
     }
 

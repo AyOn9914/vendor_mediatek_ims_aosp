@@ -40,20 +40,18 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_DIGITS_LINE_INDICATION
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO);
 
 static const char* urc[] = {
-    URC_DIGITS_LINE_INDICATION,
+        URC_DIGITS_LINE_INDICATION,
 };
 
-RmcOpImsControlUrcHandler::RmcOpImsControlUrcHandler(
-    int slot_id, int channel_id) : RfxBaseHandler(slot_id, channel_id) {
-
-    registerToHandleURC(urc, sizeof(urc) / sizeof(char *));
+RmcOpImsControlUrcHandler::RmcOpImsControlUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcOpImsControlUrcHandler::~RmcOpImsControlUrcHandler() {
-}
+RmcOpImsControlUrcHandler::~RmcOpImsControlUrcHandler() {}
 
 void RmcOpImsControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
+    char* urc = msg->getRawUrc()->getLine();
     logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
     if (strStartsWith(urc, URC_DIGITS_LINE_INDICATION)) {
         onDigitsLineIndication(msg);
@@ -83,7 +81,6 @@ void RmcOpImsControlUrcHandler::onDigitsLineIndication(const sp<RfxMclMessage>& 
 }
 
 void RmcOpImsControlUrcHandler::onRcsDigitsLineInfo(const sp<RfxMclMessage>& msg) {
-
     const int maxLen = 2;  // TODO: wait confirm
     bool appendPhoneId = true;
     int rfxMsg = RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO;

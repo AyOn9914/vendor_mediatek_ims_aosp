@@ -26,16 +26,16 @@
 
 #define RFX_LOG_TAG "RtcEccNumberController"
 
-#define MAX_PROP_CHARS       50
-#define MCC_CHAR_LEN         3
-#define PLMN_CHAR_LEN        6
+#define MAX_PROP_CHARS 50
+#define MCC_CHAR_LEN 3
+#define PLMN_CHAR_LEN 6
 #define ESIMS_CAUSE_RECOVERY 14
-#define MAX_ECC_NUM          16
-#define MAX_ECC_BUF_SIZE     (MAX_ECC_NUM * 8 + 1)
-#define MAX_PRINT_CHAR       2
-#define CTA_MCC              "460"
+#define MAX_ECC_NUM 16
+#define MAX_ECC_BUF_SIZE (MAX_ECC_NUM * 8 + 1)
+#define MAX_PRINT_CHAR 2
+#define CTA_MCC "460"
 
-#define DELAY_SET_FWK_READY_TIMER 5000 //5s
+#define DELAY_SET_FWK_READY_TIMER 5000  // 5s
 
 /*****************************************************************************
  * Class RtcEccNumberController
@@ -48,22 +48,23 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_GET_EC
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_UNSOL_ECC_NUM);
 RFX_REGISTER_DATA_TO_URC_ID(RfxEmergencyNumberListData, RFX_MSG_URC_EMERGENCY_NUMBER_LIST);
 
-RtcEccNumberController::RtcEccNumberController() :
-        mGsmEcc(""), mC2kEcc(""),
-        mCachedGsmUrc(NULL),
-        mCachedC2kUrc(NULL),
-        mIsSimInsert(false),
-        mSimEccSource(NULL),
-        mNetworkEccSource(NULL),
-        mDefaultEccSource(NULL),
-        mXmlEccSource(NULL),
-        mFrameworkEccSource(NULL),
-        mPropertyEccSource(NULL),
-        mTestEccSource(NULL),
-        mCtaEccSource(NULL),
-        mIsFwkReady(false),
-        mIsPendingUpdate(false),
-        mTimerHandle(NULL) {
+RtcEccNumberController::RtcEccNumberController()
+    : mGsmEcc(""),
+      mC2kEcc(""),
+      mCachedGsmUrc(NULL),
+      mCachedC2kUrc(NULL),
+      mIsSimInsert(false),
+      mSimEccSource(NULL),
+      mNetworkEccSource(NULL),
+      mDefaultEccSource(NULL),
+      mXmlEccSource(NULL),
+      mFrameworkEccSource(NULL),
+      mPropertyEccSource(NULL),
+      mTestEccSource(NULL),
+      mCtaEccSource(NULL),
+      mIsFwkReady(false),
+      mIsPendingUpdate(false),
+      mTimerHandle(NULL) {
     char testMode[MTK_PROPERTY_VALUE_MAX] = {0};
     mtk_property_get("persist.vendor.ril.test_mode", testMode, "0");
     if (atoi(testMode) != 0) {
@@ -74,15 +75,15 @@ RtcEccNumberController::RtcEccNumberController() :
 
 RtcEccNumberController::~RtcEccNumberController() {
     if (mCachedC2kUrc != NULL) {
-        delete(mCachedC2kUrc);
+        delete (mCachedC2kUrc);
     }
     if (mCachedGsmUrc != NULL) {
-        delete(mCachedGsmUrc);
+        delete (mCachedGsmUrc);
     }
 
     for (int i = 0; i < (int)mEccNumberSourceList.size(); i++) {
         if (mEccNumberSourceList[i] != NULL) {
-            delete(mEccNumberSourceList[i]);
+            delete (mEccNumberSourceList[i]);
         }
     }
     mEccNumberSourceList.clear();
@@ -103,13 +104,12 @@ EmergencyCallRouting RtcEccNumberController::getEmergencyCallRouting(String8 num
             // For special/fake emergency number, it should dial using normal call routing when
             // SIM ready, for other cases, it should still dial using emergency routing
             int simState = getStatusManager()->getIntValue(RFX_STATUS_KEY_SIM_STATE);
-            if ((mEccList[i].condition == CONDITION_MMI) &&
-                    (simState == RFX_SIM_STATE_READY)) {
+            if ((mEccList[i].condition == CONDITION_MMI) && (simState == RFX_SIM_STATE_READY)) {
                 RFX_LOG_I(RFX_LOG_TAG, "[%s] %s* is a special ECC", __FUNCTION__, maskNumber);
                 return ECC_ROUTING_NORMAL;
             } else {
                 RFX_LOG_I(RFX_LOG_TAG, "[%s] %s* is a ECC, condition: %d, simState: %d",
-                        __FUNCTION__, maskNumber, mEccList[i].condition, simState);
+                          __FUNCTION__, maskNumber, mEccList[i].condition, simState);
                 return ECC_ROUTING_EMERGENCY;
             }
         }
@@ -130,8 +130,8 @@ bool RtcEccNumberController::isEmergencyNumber(String8 number) {
 
     for (int i = 0; i < (int)mEccList.size(); i++) {
         if (mEccList[i].number == string(number.string())) {
-            RFX_LOG_I(RFX_LOG_TAG, "[%s] %s* is a ECC with condition: %d", __FUNCTION__,
-                    maskNumber, mEccList[i].condition);
+            RFX_LOG_I(RFX_LOG_TAG, "[%s] %s* is a ECC with condition: %d", __FUNCTION__, maskNumber,
+                      mEccList[i].condition);
             return true;
         }
     }
@@ -146,9 +146,9 @@ int RtcEccNumberController::getServiceCategory(String8 number) {
 
     for (int i = 0; i < (int)mEccList.size(); i++) {
         if ((mEccList[i].number == string(number.string())) &&
-                (mEccList[i].categories != ECC_CATEGORY_NOT_DEFINED)) {
+            (mEccList[i].categories != ECC_CATEGORY_NOT_DEFINED)) {
             RFX_LOG_I(RFX_LOG_TAG, "[%s] %s* category is %d", __FUNCTION__, maskNumber,
-                    mEccList[i].categories);
+                      mEccList[i].categories);
             return mEccList[i].categories;
         }
     }
@@ -163,49 +163,53 @@ void RtcEccNumberController::onInit() {
 
     logD(RFX_LOG_TAG, "[%s]", __FUNCTION__);
 
-    const int urc_id_list[] = {
-        RFX_MSG_URC_CC_GSM_SIM_ECC,
-        RFX_MSG_URC_CC_C2K_SIM_ECC,
-        RFX_MSG_UNSOL_ECC_NUM
-    };
+    const int urc_id_list[] = {RFX_MSG_URC_CC_GSM_SIM_ECC, RFX_MSG_URC_CC_C2K_SIM_ECC,
+                               RFX_MSG_UNSOL_ECC_NUM};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 
     const int requests[] = {
-        RFX_MSG_REQUEST_SET_ECC_NUM,
-        RFX_MSG_REQUEST_GET_ECC_NUM,
+            RFX_MSG_REQUEST_SET_ECC_NUM,
+            RFX_MSG_REQUEST_GET_ECC_NUM,
     };
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 
     // register callbacks to get card type change event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CARD_TYPE,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onCardTypeChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CARD_TYPE,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onCardTypeChanged));
 
     // register callbacks to get PLMN(MCC,MNC) change event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onPlmnChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onPlmnChanged));
 
     // register callbacks to get sim recovery event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_SIM_ESIMS_CAUSE,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onSimRecovery));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_SIM_ESIMS_CAUSE,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onSimRecovery));
 
     // register callbacks to get sim state event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_SIM_STATE,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onSimStateChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_SIM_STATE,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onSimStateChanged));
 
     // register callbacks to get sim state event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_CONNECTION_STATE,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onConnectionStateChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_CONNECTION_STATE,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onConnectionStateChanged));
 
     // register callbacks to get GSM UICC MCC/MNC
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_UICC_GSM_NUMERIC,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onGsmUiccMccMncChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_UICC_GSM_NUMERIC,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onGsmUiccMccMncChanged));
 
     // register callbacks to get CDMA UICC MCC/MNC
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_UICC_CDMA_NUMERIC,
-        RfxStatusChangeCallback(this, &RtcEccNumberController::onCdmaUiccMccMncChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_UICC_CDMA_NUMERIC,
+            RfxStatusChangeCallback(this, &RtcEccNumberController::onCdmaUiccMccMncChanged));
 
     initEmergencyNumberSource();
 }
@@ -249,14 +253,14 @@ void RtcEccNumberController::initEmergencyNumberSource() {
     mEccList.clear();
 }
 
-void RtcEccNumberController::onCardTypeChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                               RfxVariant newValue) {
     RFX_UNUSED(key);
     if (oldValue.asInt() != newValue.asInt()) {
-        logV(RFX_LOG_TAG, "[%s] oldValue %d, newValue %d", __FUNCTION__,
-            oldValue.asInt(), newValue.asInt());
+        logV(RFX_LOG_TAG, "[%s] oldValue %d, newValue %d", __FUNCTION__, oldValue.asInt(),
+             newValue.asInt());
         if (newValue.asInt() == 0) {
-            logD(RFX_LOG_TAG,"[%s], reset SIM/NW ECC due to No SIM", __FUNCTION__);
+            logD(RFX_LOG_TAG, "[%s], reset SIM/NW ECC due to No SIM", __FUNCTION__);
             mGsmEcc = String8("");
             mC2kEcc = String8("");
             // Clear network ECC when SIM removed according to spec.
@@ -264,16 +268,16 @@ void RtcEccNumberController::onCardTypeChanged(RfxStatusKeyEnum key,
             mIsSimInsert = false;
             mSimEccSource->update("", "");
             updateEmergencySourcesForAllSimStateChanges(hasSimInAnySlot());
-            //mDefaultEccSource->update(false);
-            //if (mXmlEccSource != NULL) {
-            //    mXmlEccSource->update(getPlmn(m_slot_id), false);
-            //}
+            // mDefaultEccSource->update(false);
+            // if (mXmlEccSource != NULL) {
+            //     mXmlEccSource->update(getPlmn(m_slot_id), false);
+            // }
             mNetworkEccSource->clear();
             mTestEccSource->update(false);
             updateEmergencyNumber();
         } else if (!isCdmaCard(newValue.asInt())) {
             // no CSIM or RUIM application, clear CDMA ecc property
-            logV(RFX_LOG_TAG,"[%s], Remove C2K ECC due to No C2K SIM", __FUNCTION__);
+            logV(RFX_LOG_TAG, "[%s], Remove C2K ECC due to No C2K SIM", __FUNCTION__);
             mC2kEcc = String8("");
             mSimEccSource->update(string(mGsmEcc.string()), "");
             updateEmergencyNumber();
@@ -281,12 +285,12 @@ void RtcEccNumberController::onCardTypeChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcEccNumberController::onPlmnChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onPlmnChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                           RfxVariant newValue) {
     RFX_UNUSED(key);
     bool isChange = false;
     logV(RFX_LOG_TAG, "[%s] oldValue %s, newValue %s", __FUNCTION__,
-        (const char *)(oldValue.asString8()), (const char *)(newValue.asString8()));
+         (const char*)(oldValue.asString8()), (const char*)(newValue.asString8()));
 
     if (newValue.asString8().length() < MCC_CHAR_LEN) {
         logE(RFX_LOG_TAG, "[%s] MCC length error !", __FUNCTION__);
@@ -299,7 +303,7 @@ void RtcEccNumberController::onPlmnChanged(RfxStatusKeyEnum key,
     // Thus if AP query PLMN at this time, onMccMncIndication() will be called and
     // previous network ECC saved will be cleared. To fix this timing issue, we'll
     // not reset network ECC when PLMN change to "000000".
-    if (strcmp((const char *)newValue.asString8(), "000000") == 0) {
+    if (strcmp((const char*)newValue.asString8(), "000000") == 0) {
         logV(RFX_LOG_TAG, "[%s] don't reset before camp on cell", __FUNCTION__);
         return;
     }
@@ -309,7 +313,7 @@ void RtcEccNumberController::onPlmnChanged(RfxStatusKeyEnum key,
        and if they are different then clear emergency number and service category */
     rfx_property_get(PROPERTY_NW_ECC_MCC[m_slot_id], currentMccmnc, "0");
     char mcc[MCC_CHAR_LEN + 1] = {0};
-    strncpy(mcc, (const char *)newValue.asString8(), MCC_CHAR_LEN);
+    strncpy(mcc, (const char*)newValue.asString8(), MCC_CHAR_LEN);
     if (strcmp(currentMccmnc, mcc)) {
         rfx_property_set(PROPERTY_NW_ECC_LIST[m_slot_id], "");
         mNetworkEccSource->clear();
@@ -323,8 +327,8 @@ void RtcEccNumberController::onPlmnChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcEccNumberController::onSimRecovery(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onSimRecovery(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                           RfxVariant newValue) {
     RFX_UNUSED(key);
     RFX_UNUSED(oldValue);
 
@@ -344,23 +348,23 @@ void RtcEccNumberController::onSimRecovery(RfxStatusKeyEnum key,
 // For special emergency number:
 //     SIM ready: Normal call routing
 //     Others: Emergency call routing
-void RtcEccNumberController::onSimStateChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onSimStateChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                               RfxVariant newValue) {
     RFX_UNUSED(key);
 
     if (oldValue.asInt() != newValue.asInt()) {
-        logV(RFX_LOG_TAG,"[%s] update special emergency number", __FUNCTION__);
+        logV(RFX_LOG_TAG, "[%s] update special emergency number", __FUNCTION__);
         updateSpecialEmergencyNumber();
     }
 }
 
-void RtcEccNumberController::onConnectionStateChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onConnectionStateChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                                      RfxVariant newValue) {
     RFX_UNUSED(oldValue);
     RFX_UNUSED(key);
 
-    logD(RFX_LOG_TAG,"[%s] status: %d, mIsFwkReady: %d, mIsPendingUpdate: %d",
-            __FUNCTION__, newValue.asBool(), mIsFwkReady, mIsPendingUpdate);
+    logD(RFX_LOG_TAG, "[%s] status: %d, mIsFwkReady: %d, mIsPendingUpdate: %d", __FUNCTION__,
+         newValue.asBool(), mIsFwkReady, mIsPendingUpdate);
 
     if (mTimerHandle != NULL) {
         RfxTimer::stop(mTimerHandle);
@@ -371,32 +375,33 @@ void RtcEccNumberController::onConnectionStateChanged(RfxStatusKeyEnum key,
         mIsFwkReady = false;
     } else if (!mIsFwkReady) {
         // Delay a timer to notify framework
-        logD(RFX_LOG_TAG,"[%s] Delay to sent emergency list", __FUNCTION__);
-        mTimerHandle = RfxTimer::start(RfxCallback0(this,
-                &RtcEccNumberController::delaySetFwkReady), ms2ns(DELAY_SET_FWK_READY_TIMER));
+        logD(RFX_LOG_TAG, "[%s] Delay to sent emergency list", __FUNCTION__);
+        mTimerHandle =
+                RfxTimer::start(RfxCallback0(this, &RtcEccNumberController::delaySetFwkReady),
+                                ms2ns(DELAY_SET_FWK_READY_TIMER));
     }
 }
 
-void RtcEccNumberController::onGsmUiccMccMncChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onGsmUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                                    RfxVariant newValue) {
     RFX_UNUSED(oldValue);
     RFX_UNUSED(key);
 
     logV(RFX_LOG_TAG, "[%s] oldValue %s, newValue %s", __FUNCTION__,
-        (const char *)(oldValue.asString8()), (const char *)(newValue.asString8()));
+         (const char*)(oldValue.asString8()), (const char*)(newValue.asString8()));
 
     if (updateEmergencySourcesForPlmnChange(true)) {
         updateEmergencyNumber();
     }
 }
 
-void RtcEccNumberController::onCdmaUiccMccMncChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcEccNumberController::onCdmaUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                                     RfxVariant newValue) {
     RFX_UNUSED(oldValue);
     RFX_UNUSED(key);
 
     logV(RFX_LOG_TAG, "[%s] oldValue %s, newValue %s", __FUNCTION__,
-        (const char *)(oldValue.asString8()), (const char *)(newValue.asString8()));
+         (const char*)(oldValue.asString8()), (const char*)(newValue.asString8()));
 
     if (updateEmergencySourcesForPlmnChange(true)) {
         updateEmergencyNumber();
@@ -404,8 +409,8 @@ void RtcEccNumberController::onCdmaUiccMccMncChanged(RfxStatusKeyEnum key,
 }
 
 void RtcEccNumberController::delaySetFwkReady() {
-    logD(RFX_LOG_TAG, "[%s] mIsFwkReady: %d, mIsPendingUpdate: %d", __FUNCTION__,
-            mIsFwkReady, mIsPendingUpdate);
+    logD(RFX_LOG_TAG, "[%s] mIsFwkReady: %d, mIsPendingUpdate: %d", __FUNCTION__, mIsFwkReady,
+         mIsPendingUpdate);
     mIsFwkReady = true;
     if (mIsPendingUpdate) {
         updateEmergencyNumber();
@@ -443,22 +448,24 @@ bool RtcEccNumberController::onHandleUrc(const sp<RfxMessage>& message) {
  * URC string:+ESIMECC:3,115,4,334,5,110,1
  *
  * Note:If it has no EF ECC, RtcEccNumberController will receive "0"
-*/
-void RtcEccNumberController::handleGsmSimEcc(const sp<RfxMessage>& message){
+ */
+void RtcEccNumberController::handleGsmSimEcc(const sp<RfxMessage>& message) {
     if (mCachedGsmUrc != NULL) {
-        delete(mCachedGsmUrc);
+        delete (mCachedGsmUrc);
     }
     // SIM ECC URC come earlier then other SIM status key
     mIsSimInsert = true;
 
-    mCachedGsmUrc = new RfxAtLine((const char* )(message->getData()->getData()), NULL);
-    //RFX_UNUSED(message);
-    //mCachedGsmUrc = new RfxAtLine("AT< +ESIMECC: 16,112,0,911,0,123,1,125,2,119,4,146,8,144,16,126,32,111,64,141,34,147,84,146,65,013,1,014,1,015,1,016,1", NULL);
+    mCachedGsmUrc = new RfxAtLine((const char*)(message->getData()->getData()), NULL);
+    // RFX_UNUSED(message);
+    // mCachedGsmUrc = new RfxAtLine("AT< +ESIMECC:
+    // 16,112,0,911,0,123,1,125,2,119,4,146,8,144,16,126,32,111,64,141,34,147,84,146,65,013,1,014,1,015,1,016,1",
+    // NULL);
 
     parseSimEcc(mCachedGsmUrc, true);
     mSimEccSource->update(string(mGsmEcc.string()), string(mC2kEcc.string()));
-    //mDefaultEccSource->update(true);
-    //updateEmergencySourcesForPlmnChange(true);
+    // mDefaultEccSource->update(true);
+    // updateEmergencySourcesForPlmnChange(true);
     updateEmergencySourcesForAllSimStateChanges(true);
     mTestEccSource->update(true);
     updateEmergencyNumber();
@@ -474,27 +481,27 @@ void RtcEccNumberController::handleGsmSimEcc(const sp<RfxMessage>& message){
  *
  * Note:If it has no EF ECC, RtcEccNumberController will receive "0"
  *
-*/
-void RtcEccNumberController::handleC2kSimEcc(const sp<RfxMessage>& message){
+ */
+void RtcEccNumberController::handleC2kSimEcc(const sp<RfxMessage>& message) {
     if (mCachedC2kUrc != NULL) {
-        delete(mCachedC2kUrc);
+        delete (mCachedC2kUrc);
     }
 
     // SIM ECC URC come earlier then other SIM status key
     mIsSimInsert = true;
 
-    mCachedC2kUrc = new RfxAtLine((const char* )(message->getData()->getData()), NULL);
+    mCachedC2kUrc = new RfxAtLine((const char*)(message->getData()->getData()), NULL);
 
     parseSimEcc(mCachedC2kUrc, false);
     mSimEccSource->update(string(mGsmEcc.string()), string(mC2kEcc.string()));
-    //mDefaultEccSource->update(true);
-    //updateEmergencySourcesForPlmnChange(true);
+    // mDefaultEccSource->update(true);
+    // updateEmergencySourcesForPlmnChange(true);
     updateEmergencySourcesForAllSimStateChanges(true);
     mTestEccSource->update(true);
     updateEmergencyNumber();
 }
 
-void RtcEccNumberController::parseSimEcc(RfxAtLine *line, bool isGsm) {
+void RtcEccNumberController::parseSimEcc(RfxAtLine* line, bool isGsm) {
     String8 writeEcc = String8("");
     int err = 0;
     int count = 0;
@@ -533,10 +540,10 @@ void RtcEccNumberController::parseSimEcc(RfxAtLine *line, bool isGsm) {
 
     if (isGsm) {
         mGsmEcc = writeEcc;
-        logD(RFX_LOG_TAG,"[%s] mGsmEcc: %s", __FUNCTION__, mGsmEcc.string());
+        logD(RFX_LOG_TAG, "[%s] mGsmEcc: %s", __FUNCTION__, mGsmEcc.string());
     } else {
         mC2kEcc = writeEcc;
-        logD(RFX_LOG_TAG,"[%s] mC2kEcc: %s", __FUNCTION__, mC2kEcc.string());
+        logD(RFX_LOG_TAG, "[%s] mC2kEcc: %s", __FUNCTION__, mC2kEcc.string());
     }
 
     return;
@@ -545,21 +552,20 @@ error:
 }
 
 bool RtcEccNumberController::isCdmaCard(int cardType) {
-     if ((cardType & RFX_CARD_TYPE_RUIM) > 0 ||
-         (cardType & RFX_CARD_TYPE_CSIM) > 0) {
-         return true;
-     }
-     return false;
+    if ((cardType & RFX_CARD_TYPE_RUIM) > 0 || (cardType & RFX_CARD_TYPE_CSIM) > 0) {
+        return true;
+    }
+    return false;
 }
 
-void RtcEccNumberController::handleUpdateNetworkEmergencyNumber(const sp<RfxMessage>& message){
+void RtcEccNumberController::handleUpdateNetworkEmergencyNumber(const sp<RfxMessage>& message) {
     RFX_UNUSED(message);
     if (mNetworkEccSource->update()) {
         updateEmergencyNumber();
     }
 }
 
-void RtcEccNumberController::createEmergencyNumberListResponse(RIL_EmergencyNumber *data) {
+void RtcEccNumberController::createEmergencyNumberListResponse(RIL_EmergencyNumber* data) {
     if (data == NULL) {
         return;
     }
@@ -573,15 +579,15 @@ void RtcEccNumberController::createEmergencyNumberListResponse(RIL_EmergencyNumb
         } else {
             data[i].categories = mEccList[i].categories;
         }
-        data[i].urns = NULL; // not used yet
+        data[i].urns = NULL;  // not used yet
         // Map EmergencyNumberSource to RIL_EmergencyNumberSource (AOSP value)
         // Convert all extended source type to MODEM_CONFIG
         data[i].sources = (mEccList[i].sources & 0x0F) |
-                (((mEccList[i].sources & 0xF0) > 0) ? MODEM_CONFIG : 0);
+                          (((mEccList[i].sources & 0xF0) > 0) ? MODEM_CONFIG : 0);
     }
 }
 
-void RtcEccNumberController::freeEmergencyNumberListResponse(RIL_EmergencyNumber *data) {
+void RtcEccNumberController::freeEmergencyNumberListResponse(RIL_EmergencyNumber* data) {
     for (int i = 0; i < mEccList.size(); i++) {
         FREEIF(data[i].number);
         FREEIF(data[i].mcc);
@@ -640,7 +646,7 @@ void RtcEccNumberController::updateEmergencyNumber() {
     }
 
     logI(RFX_LOG_TAG, "[%s] mIsFwkReady: %d, mIsPendingUpdate: %d, ecc list: %s", __FUNCTION__,
-            mIsFwkReady, mIsPendingUpdate, (char*)eccList.string());
+         mIsFwkReady, mIsPendingUpdate, (char*)eccList.string());
 
     // For framework solution, it will set ril.ecclist in framework
     // So we should not override it in RILD
@@ -655,16 +661,16 @@ void RtcEccNumberController::updateEmergencyNumber() {
     // Send URC to framework (Q AOSP)
     if (mIsFwkReady) {
         int length = mEccList.size() * sizeof(RIL_EmergencyNumber);
-        RIL_EmergencyNumber *pResponse = (RIL_EmergencyNumber *)calloc(1, length);
+        RIL_EmergencyNumber* pResponse = (RIL_EmergencyNumber*)calloc(1, length);
         createEmergencyNumberListResponse(pResponse);
         sp<RfxMessage> urc = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_URC_EMERGENCY_NUMBER_LIST,
-                    RfxEmergencyNumberListData(pResponse, length));
+                                                   RfxEmergencyNumberListData(pResponse, length));
         responseToRilj(urc);
         freeEmergencyNumberListResponse(pResponse);
 
         // Send URC to framework (Legacy)
         urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_UNSOL_ECC_NUM,
-                RfxStringData((char *)eccList.string()));
+                                    RfxStringData((char*)eccList.string()));
         responseToRilj(urc);
         mIsPendingUpdate = false;
     } else {
@@ -690,7 +696,7 @@ void RtcEccNumberController::updateSpecialEmergencyNumber() {
     }
     rfx_property_set(PROPERTY_SPECIAL_ECC_LIST[m_slot_id], specialEccList.string());
     logV(RFX_LOG_TAG, "[%s] simState: %d, list: %s", __FUNCTION__, simState,
-            (char*)specialEccList.string());
+         (char*)specialEccList.string());
 }
 
 string RtcEccNumberController::convertPlmnForRoaming(string plmn) {
@@ -705,11 +711,11 @@ string RtcEccNumberController::getPlmn(int slot) {
     // Get from network
     String8 networkPlmn = getStatusManager(slot)->getString8Value(
             RFX_STATUS_KEY_OPERATOR_INCLUDE_LIMITED, String8(""));
-    logV(RFX_LOG_TAG, "[%s] networkPlmn: %s", __FUNCTION__, (char *)networkPlmn.string());
+    logV(RFX_LOG_TAG, "[%s] networkPlmn: %s", __FUNCTION__, (char*)networkPlmn.string());
     if (networkPlmn.length() > MCC_CHAR_LEN &&
-            // Don't return invalid network PLMN here, instead we
-            // should try to get from SIM/UICC MCC/MNC
-            networkPlmn != "000000" && networkPlmn != "FFFFFF") {
+        // Don't return invalid network PLMN here, instead we
+        // should try to get from SIM/UICC MCC/MNC
+        networkPlmn != "000000" && networkPlmn != "FFFFFF") {
         return string(networkPlmn.string());
     }
 
@@ -717,7 +723,7 @@ string RtcEccNumberController::getPlmn(int slot) {
     char mccmnc[MTK_PROPERTY_VALUE_MAX] = {0};
     String8 gsmProp(PROPERTY_MCC_MNC);
     gsmProp.append((slot == 0) ? "" : String8::format(".%d", slot));
-    rfx_property_get((const char *)gsmProp.string(), mccmnc, "");
+    rfx_property_get((const char*)gsmProp.string(), mccmnc, "");
     logV(RFX_LOG_TAG, "[%s] %s is: %s", __FUNCTION__, gsmProp.string(), mccmnc);
     if (strlen(mccmnc) > MCC_CHAR_LEN) {
         return convertPlmnForRoaming(string(mccmnc));
@@ -726,7 +732,7 @@ string RtcEccNumberController::getPlmn(int slot) {
     // Try to get from CDMA SIM
     String8 cdmaProp(PROPERTY_MCC_MNC_CDMA);
     cdmaProp.append((slot == 0) ? "" : String8::format(".%d", slot));
-    rfx_property_get((const char *)cdmaProp.string(), mccmnc, "");
+    rfx_property_get((const char*)cdmaProp.string(), mccmnc, "");
     logV(RFX_LOG_TAG, "[%s] %s is: %s", __FUNCTION__, cdmaProp.string(), mccmnc);
     if (strlen(mccmnc) > MCC_CHAR_LEN) {
         return string(mccmnc);
@@ -778,14 +784,10 @@ string RtcEccNumberController::getSourcesString(int sources) {
 
 void RtcEccNumberController::dumpEccList() {
     for (int i = 0; i < (int)mEccList.size(); i++) {
-        logV(RFX_LOG_TAG, "[%s] ECC [%d][%s,%s,%s,%d,%d,%s]",
-                __FUNCTION__, i,
-                mEccList[i].number.c_str(),
-                mEccList[i].mcc.c_str(),
-                mEccList[i].mnc.c_str(),
-                mEccList[i].categories,
-                mEccList[i].condition,
-                getSourcesString(mEccList[i].sources).c_str());
+        logV(RFX_LOG_TAG, "[%s] ECC [%d][%s,%s,%s,%d,%d,%s]", __FUNCTION__, i,
+             mEccList[i].number.c_str(), mEccList[i].mcc.c_str(), mEccList[i].mnc.c_str(),
+             mEccList[i].categories, mEccList[i].condition,
+             getSourcesString(mEccList[i].sources).c_str());
     }
     if (ECC_DEBUG == 1) {
         testEcc();
@@ -794,46 +796,36 @@ void RtcEccNumberController::dumpEccList() {
 
 void RtcEccNumberController::testEcc() {
     logD(RFX_LOG_TAG, "[testEcc] start==================");
-    String8 testEccList[] = {
-            String8("111"),
-            String8("222"),
-            String8("123"),
-            String8("112"),
-            String8("911"),
-            String8("000"),
-            String8("08"),
-            String8("110"),
-            String8("119"),
-            String8("120"),
-            String8("122"),
-            String8("10086")};
-    for (int i = 0; i < (int)(sizeof(testEccList) / sizeof(testEccList[0])); i ++) {
+    String8 testEccList[] = {String8("111"), String8("222"), String8("123"), String8("112"),
+                             String8("911"), String8("000"), String8("08"),  String8("110"),
+                             String8("119"), String8("120"), String8("122"), String8("10086")};
+    for (int i = 0; i < (int)(sizeof(testEccList) / sizeof(testEccList[0])); i++) {
         logD(RFX_LOG_TAG, "[testEcc] %s EccRouting: %d, category: %d", testEccList[i].string(),
-                getEmergencyCallRouting(testEccList[i]), getServiceCategory(testEccList[i]));
+             getEmergencyCallRouting(testEccList[i]), getServiceCategory(testEccList[i]));
     }
     logD(RFX_LOG_TAG, "[testEcc] end==================");
 }
 
 bool RtcEccNumberController::onHandleRequest(const sp<RfxMessage>& message) {
-    logV(RFX_LOG_TAG, "[%d]Handle request %s",
-            message->getPToken(), RFX_ID_TO_STR(message->getId()));
+    logV(RFX_LOG_TAG, "[%d]Handle request %s", message->getPToken(),
+         RFX_ID_TO_STR(message->getId()));
 
     switch (message->getId()) {
-    case RFX_MSG_REQUEST_SET_ECC_NUM:
-        handleSetEccNum(message);
-        break;
-    case RFX_MSG_REQUEST_GET_ECC_NUM:
-        handleGetEccNum(message);
-        break;
-    default:
-        logD(RFX_LOG_TAG, "unknown request, ignore!");
-        break;
+        case RFX_MSG_REQUEST_SET_ECC_NUM:
+            handleSetEccNum(message);
+            break;
+        case RFX_MSG_REQUEST_GET_ECC_NUM:
+            handleGetEccNum(message);
+            break;
+        default:
+            logD(RFX_LOG_TAG, "unknown request, ignore!");
+            break;
     }
     return true;
 }
 
 void RtcEccNumberController::handleSetEccNum(const sp<RfxMessage>& message) {
-    const char **strings = (const char **)message->getData()->getData();
+    const char** strings = (const char**)message->getData()->getData();
     if (strings == NULL || (strings[0] == NULL && strings[1] == NULL)) {
         logE(RFX_LOG_TAG, "handleSetEccNum invalid arguments.");
         sp<RfxMessage> responseMsg =
@@ -842,8 +834,8 @@ void RtcEccNumberController::handleSetEccNum(const sp<RfxMessage>& message) {
         return;
     }
 
-    logD(RFX_LOG_TAG, "handleSetEccNum EccListWithCard: %s, EccListNoCard: %s",
-            strings[0], strings[1]);
+    logD(RFX_LOG_TAG, "handleSetEccNum EccListWithCard: %s, EccListNoCard: %s", strings[0],
+         strings[1]);
 
     // Create mFrameworkEccSource when needed
     if (mFrameworkEccSource == NULL) {
@@ -854,8 +846,7 @@ void RtcEccNumberController::handleSetEccNum(const sp<RfxMessage>& message) {
     mFrameworkEccSource->set(strings[0], strings[1]);
     mFrameworkEccSource->update(mIsSimInsert);
 
-    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message,
-            true);
+    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
     responseToRilj(responseMsg);
 
     // sent update ecc list to upper layer
@@ -864,8 +855,7 @@ void RtcEccNumberController::handleSetEccNum(const sp<RfxMessage>& message) {
 
 void RtcEccNumberController::handleGetEccNum(const sp<RfxMessage>& message) {
     logD(RFX_LOG_TAG, "handleGetEccNum");
-    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message,
-            true);
+    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
     responseToRilj(responseMsg);
 
     // Response ecc number
@@ -873,15 +863,13 @@ void RtcEccNumberController::handleGetEccNum(const sp<RfxMessage>& message) {
 }
 
 bool RtcEccNumberController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                    bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
-    if((radioState == (int)RADIO_STATE_OFF) &&
-            (msgId == RFX_MSG_REQUEST_SET_ECC_NUM ||
-             msgId == RFX_MSG_REQUEST_GET_ECC_NUM)) {
+    if ((radioState == (int)RADIO_STATE_OFF) &&
+        (msgId == RFX_MSG_REQUEST_SET_ECC_NUM || msgId == RFX_MSG_REQUEST_GET_ECC_NUM)) {
         return false;
     } else if ((radioState == (int)RADIO_STATE_UNAVAILABLE) &&
-            (msgId == RFX_MSG_REQUEST_SET_ECC_NUM ||
-             msgId == RFX_MSG_REQUEST_GET_ECC_NUM)) {
+               (msgId == RFX_MSG_REQUEST_SET_ECC_NUM || msgId == RFX_MSG_REQUEST_GET_ECC_NUM)) {
         return false;
     }
     return RfxController::onCheckIfRejectMessage(message, isModemPowerOff, radioState);
@@ -890,9 +878,7 @@ bool RtcEccNumberController::onCheckIfRejectMessage(const sp<RfxMessage>& messag
 bool RtcEccNumberController::isCtCard() {
     bool ret = false;
     int type = getStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA_CARD_TYPE);
-    if (type == CT_4G_UICC_CARD ||
-            type == CT_UIM_SIM_CARD ||
-            type == CT_3G_UIM_CARD) {
+    if (type == CT_4G_UICC_CARD || type == CT_UIM_SIM_CARD || type == CT_3G_UIM_CARD) {
         ret = true;
     }
     return ret;
@@ -901,14 +887,12 @@ bool RtcEccNumberController::isCtCard() {
 bool RtcEccNumberController::updateEmergencySourcesForPlmnChange(bool isSimInsert) {
     bool isChange = false;
     // reload XML ECC
-    if (mXmlEccSource != NULL &&
-            mXmlEccSource->update(getPlmn(m_slot_id), isSimInsert)) {
+    if (mXmlEccSource != NULL && mXmlEccSource->update(getPlmn(m_slot_id), isSimInsert)) {
         isChange = true;
     }
 
     // reload property ECC
-    if (mPropertyEccSource != NULL &&
-            mPropertyEccSource->update(getPlmn(m_slot_id), isSimInsert)) {
+    if (mPropertyEccSource != NULL && mPropertyEccSource->update(getPlmn(m_slot_id), isSimInsert)) {
         isChange = true;
     }
 
@@ -916,7 +900,7 @@ bool RtcEccNumberController::updateEmergencySourcesForPlmnChange(bool isSimInser
     int simCount = RfxRilUtils::rfxGetSimCount();
     for (int i = 0; i < simCount; i++) {
         if (i != m_slot_id) {
-            RtcEccNumberController* eccController = (RtcEccNumberController *)findController(
+            RtcEccNumberController* eccController = (RtcEccNumberController*)findController(
                     i, RFX_OBJ_CLASS_INFO(RtcEccNumberController));
             if (eccController != NULL) {
                 logD(RFX_LOG_TAG, "[%s] update ECC for peer slot %d", __FUNCTION__, i);
@@ -935,8 +919,8 @@ bool RtcEccNumberController::updateEmergencySourcesForPlmnChange(bool isSimInser
 // for PLMN because it can't get valid PLMN. In this case, we can update SIM2 emergency
 // numbers if SIM1 got PLMN.
 bool RtcEccNumberController::updateEmergencySourcesFromPeer(string plmn) {
-    if (getPlmn(m_slot_id).length() > MCC_CHAR_LEN || plmn.length() < MCC_CHAR_LEN
-            || mIsSimInsert) {
+    if (getPlmn(m_slot_id).length() > MCC_CHAR_LEN || plmn.length() < MCC_CHAR_LEN ||
+        mIsSimInsert) {
         logD(RFX_LOG_TAG, "[%s] No need mIsSimInsert: %d", __FUNCTION__, mIsSimInsert);
         return false;
     }
@@ -945,14 +929,12 @@ bool RtcEccNumberController::updateEmergencySourcesFromPeer(string plmn) {
 
     bool isChange = false;
     // reload XML ECC
-    if (mXmlEccSource != NULL &&
-            mXmlEccSource->update(plmn, mIsSimInsert)) {
+    if (mXmlEccSource != NULL && mXmlEccSource->update(plmn, mIsSimInsert)) {
         isChange = true;
     }
 
     // reload property ECC
-    if (mPropertyEccSource != NULL &&
-            mPropertyEccSource->update(plmn, mIsSimInsert)) {
+    if (mPropertyEccSource != NULL && mPropertyEccSource->update(plmn, mIsSimInsert)) {
         isChange = true;
     }
 
@@ -970,9 +952,7 @@ void RtcEccNumberController::removeNonEmergencyNumbers() {
     }
 }
 
-bool RtcEccNumberController::isSimInserted() {
-    return mIsSimInsert;
-}
+bool RtcEccNumberController::isSimInserted() { return mIsSimInsert; }
 
 bool RtcEccNumberController::hasSimInAnySlot() {
     if (mIsSimInsert) {
@@ -980,7 +960,7 @@ bool RtcEccNumberController::hasSimInAnySlot() {
     }
     int simCount = RfxRilUtils::rfxGetSimCount();
     for (int i = 0; i < simCount; i++) {
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 i, RFX_OBJ_CLASS_INFO(RtcEccNumberController));
         if (eccNumberController != NULL && eccNumberController->isSimInserted()) {
             return true;
@@ -998,7 +978,7 @@ void RtcEccNumberController::updateForSimStateChanges(bool isSimInserted) {
 void RtcEccNumberController::updateEmergencySourcesForAllSimStateChanges(bool isSimInserted) {
     int simCount = RfxRilUtils::rfxGetSimCount();
     for (int i = 0; i < simCount; i++) {
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 i, RFX_OBJ_CLASS_INFO(RtcEccNumberController));
         if (eccNumberController != NULL) {
             eccNumberController->updateForSimStateChanges(isSimInserted);

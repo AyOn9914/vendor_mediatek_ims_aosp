@@ -18,14 +18,14 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCdmaInfoRecData);
 
-RfxCdmaInfoRecData::RfxCdmaInfoRecData(void *data, int length) : RfxBaseData(data, length) {
+RfxCdmaInfoRecData::RfxCdmaInfoRecData(void* data, int length) : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
     }
 
     m_length = length;
-    m_data = (RIL_CDMA_InformationRecords *)calloc(1, sizeof(RIL_CDMA_InformationRecords));
+    m_data = (RIL_CDMA_InformationRecords*)calloc(1, sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(m_data != NULL);
     memcpy(m_data, data, sizeof(RIL_CDMA_InformationRecords));
 }

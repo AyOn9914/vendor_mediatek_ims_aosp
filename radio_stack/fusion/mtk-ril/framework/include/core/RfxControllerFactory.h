@@ -26,12 +26,12 @@
  * Typedef
  *****************************************************************************/
 
-typedef RfxObject* (*RfxCreateControllerFuncptr)(RfxObject *parent);
-typedef RfxClassInfo *(*RfxControClassInfo)();
+typedef RfxObject* (*RfxCreateControllerFuncptr)(RfxObject* parent);
+typedef RfxClassInfo* (*RfxControClassInfo)();
 
 typedef struct _rfx_ctrler_factory_initt {
-    RfxObject* (*getCreateControllerFuncptr)(RfxObject *parent);
-    RfxClassInfo *(*getControClassInfo)();
+    RfxObject* (*getCreateControllerFuncptr)(RfxObject* parent);
+    RfxClassInfo* (*getControClassInfo)();
     bool skip;
 } rfx_ctrler_factory_init;
 
@@ -40,29 +40,24 @@ typedef struct _rfx_ctrler_factory_initt {
  *****************************************************************************/
 
 class RfxControllerFactory {
-public:
-
+  public:
     static void createControllers();
 
-private:
-
-    static void createControllerInternal(
-        const Vector<rfx_ctrler_factory_init> * controller_list,
-        int length, RfxObject *parent);
+  private:
+    static void createControllerInternal(const Vector<rfx_ctrler_factory_init>* controller_list,
+                                         int length, RfxObject* parent);
     static void mergeControllerFactorList();
 
-private:
-
-    static Vector<rfx_ctrler_factory_init> *sPreNonSlotControllerList;
-    static Vector<rfx_ctrler_factory_init> *sPreNonSlotOpControllerList;
-    static Vector<rfx_ctrler_factory_init> *sSlotControllerList;
-    static Vector<rfx_ctrler_factory_init> *sSlotOpControllerList;
-    static Vector<rfx_ctrler_factory_init> *sNonSlotControllerList;
-    static Vector<rfx_ctrler_factory_init> *sNonSlotOpControllerList;
+  private:
+    static Vector<rfx_ctrler_factory_init>* sPreNonSlotControllerList;
+    static Vector<rfx_ctrler_factory_init>* sPreNonSlotOpControllerList;
+    static Vector<rfx_ctrler_factory_init>* sSlotControllerList;
+    static Vector<rfx_ctrler_factory_init>* sSlotOpControllerList;
+    static Vector<rfx_ctrler_factory_init>* sNonSlotControllerList;
+    static Vector<rfx_ctrler_factory_init>* sNonSlotOpControllerList;
     static const rfx_ctrler_factory_init s_slot_controllers[];
     static const rfx_ctrler_factory_init s_non_slot_controllers[];
     static const rfx_ctrler_factory_init s_pre_non_slot_controllers[];
 };
-
 
 #endif /* __RFX_CONTROLLER_FACTORY_H__ */

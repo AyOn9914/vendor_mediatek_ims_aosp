@@ -59,33 +59,36 @@ using ::android::String8;
  * Simplified macro to send a verbose radio log message using the user given tag - _rfx_tag.
  */
 #ifndef RFX_LOG_V
-#define __RFX_LOG_V(_rfx_tag, ...)\
-    do {\
-        if (__rfx_is_gt_mode()) {\
+#define __RFX_LOG_V(_rfx_tag, ...)                                         \
+    do {                                                                   \
+        if (__rfx_is_gt_mode()) {                                          \
             String8 tagString = String8::format("%s%s", "[GT]", _rfx_tag); \
-            mtkLogV(tagString, __VA_ARGS__); \
-        } else {\
-            mtkLogV(_rfx_tag, __VA_ARGS__); \
-        }\
+            mtkLogV(tagString, __VA_ARGS__);                               \
+        } else {                                                           \
+            mtkLogV(_rfx_tag, __VA_ARGS__);                                \
+        }                                                                  \
     } while (0)
 
 #if LOG_NDEBUG
-#define RFX_LOG_V(_rfx_tag, ...) do { if (0) { __RFX_LOG_V(_rfx_tag, __VA_ARGS__); } } while (0)
+#define RFX_LOG_V(_rfx_tag, ...)                \
+    do {                                        \
+        if (0) {                                \
+            __RFX_LOG_V(_rfx_tag, __VA_ARGS__); \
+        }                                       \
+    } while (0)
 #else
 #define RFX_LOG_V(_rfx_tag, ...) __RFX_LOG_V(_rfx_tag, __VA_ARGS__)
 #endif
 #endif
 
-#define CONDITION(cond)     (__builtin_expect((cond) != 0, 0))
+#define CONDITION(cond) (__builtin_expect((cond) != 0, 0))
 
 #ifndef RFX_LOG_V_IF
 #if LOG_NDEBUG
-#define RFX_LOG_V_IF(cond, _rfx_tag, ...)   ((void)0)
+#define RFX_LOG_V_IF(cond, _rfx_tag, ...) ((void)0)
 #else
 #define RFX_LOG_V_IF(cond, _rfx_tag, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)mtkLogV(_rfx_tag, __VA_ARGS__)) \
-    : (void)0 )
+    ((CONDITION(cond)) ? ((void)mtkLogV(_rfx_tag, __VA_ARGS__)) : (void)0)
 #endif
 #endif
 
@@ -93,103 +96,95 @@ using ::android::String8;
  * Simplified macro to send a debug radio log message using the user given tag - _rfx_tag.
  */
 #ifndef RFX_LOG_D
-#define RFX_LOG_D(_rfx_tag, ...) \
-    do {\
-        if (__rfx_is_gt_mode()) {\
+#define RFX_LOG_D(_rfx_tag, ...)                                           \
+    do {                                                                   \
+        if (__rfx_is_gt_mode()) {                                          \
             String8 tagString = String8::format("%s%s", "[GT]", _rfx_tag); \
-            mtkLogD(tagString, __VA_ARGS__); \
-        } else {\
-            mtkLogD(_rfx_tag, __VA_ARGS__); \
-        }\
+            mtkLogD(tagString, __VA_ARGS__);                               \
+        } else {                                                           \
+            mtkLogD(_rfx_tag, __VA_ARGS__);                                \
+        }                                                                  \
     } while (0)
 
 #endif
 
 #ifndef RFX_LOG_D_IF
 #define RFX_LOG_D_IF(cond, _rfx_tag, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)mtkLogD(_rfx_tag, __VA_ARGS__)) \
-    : (void)0 )
+    ((CONDITION(cond)) ? ((void)mtkLogD(_rfx_tag, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
  * Simplified macro to send an info radio log message using the user given tag - _rfx_tag.
  */
 #ifndef RFX_LOG_I
-#define RFX_LOG_I(_rfx_tag, ...) \
-    do {\
-        if (__rfx_is_gt_mode()) {\
+#define RFX_LOG_I(_rfx_tag, ...)                                           \
+    do {                                                                   \
+        if (__rfx_is_gt_mode()) {                                          \
             String8 tagString = String8::format("%s%s", "[GT]", _rfx_tag); \
-            mtkLogI(tagString, __VA_ARGS__); \
-        } else {\
-           mtkLogI(_rfx_tag, __VA_ARGS__); \
-        }\
+            mtkLogI(tagString, __VA_ARGS__);                               \
+        } else {                                                           \
+            mtkLogI(_rfx_tag, __VA_ARGS__);                                \
+        }                                                                  \
     } while (0)
 
 #endif
 
 #ifndef RFX_LOG_I_IF
 #define RFX_LOG_I_IF(cond, _rfx_tag, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)mtkLogI(_rfx_tag, __VA_ARGS__)) \
-    : (void)0 )
+    ((CONDITION(cond)) ? ((void)mtkLogI(_rfx_tag, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
  * Simplified macro to send a warning radio log message using the user given tag - _rfx_tag.
  */
 #ifndef RFX_LOG_W
-#define RFX_LOG_W(_rfx_tag, ...) \
-    do {\
-        if (__rfx_is_gt_mode()) {\
+#define RFX_LOG_W(_rfx_tag, ...)                                           \
+    do {                                                                   \
+        if (__rfx_is_gt_mode()) {                                          \
             String8 tagString = String8::format("%s%s", "[GT]", _rfx_tag); \
-            mtkLogW(tagString, __VA_ARGS__); \
-        } else {\
-            mtkLogW(_rfx_tag, __VA_ARGS__); \
-        }\
+            mtkLogW(tagString, __VA_ARGS__);                               \
+        } else {                                                           \
+            mtkLogW(_rfx_tag, __VA_ARGS__);                                \
+        }                                                                  \
     } while (0)
 
 #endif
 
 #ifndef RFX_LOG_W_IF
 #define RFX_LOG_W_IF(cond, _rfx_tag, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)mtkLogW(_rfx_tag, __VA_ARGS__)) \
-    : (void)0 )
+    ((CONDITION(cond)) ? ((void)mtkLogW(_rfx_tag, __VA_ARGS__)) : (void)0)
 #endif
 
 /*
  * Simplified macro to send an error radio log message using the user given tag - _rfx_tag.
  */
 #ifndef RFX_LOG_E
-#define RFX_LOG_E(_rfx_tag, ...) \
-    do {\
-        if (__rfx_is_gt_mode()) {\
+#define RFX_LOG_E(_rfx_tag, ...)                                           \
+    do {                                                                   \
+        if (__rfx_is_gt_mode()) {                                          \
             String8 tagString = String8::format("%s%s", "[GT]", _rfx_tag); \
-            mtkLogE(tagString, __VA_ARGS__); \
-        } else {\
-            mtkLogE(_rfx_tag, __VA_ARGS__); \
-        }\
+            mtkLogE(tagString, __VA_ARGS__);                               \
+        } else {                                                           \
+            mtkLogE(_rfx_tag, __VA_ARGS__);                                \
+        }                                                                  \
     } while (0)
 
 #endif
 
 #ifndef RFX_LOG_E_IF
 #define RFX_LOG_E_IF(cond, _rfx_tag, ...) \
-    ( (CONDITION(cond)) \
-    ? ((void)mtkLogE(_rfx_tag, __VA_ARGS__)) \
-    : (void)0 )
+    ((CONDITION(cond)) ? ((void)mtkLogE(_rfx_tag, __VA_ARGS__)) : (void)0)
 #endif
 
 #ifndef RFX_ASSERT
-#define RFX_ASSERT(_expr)                                                         \
-    do {                                                                          \
-        if (!(_expr)) {                                                           \
-            RFX_LOG_E("RFX_ASSERT", "RFX_ASSERT:%s, %d", __FILE__, __LINE__);     \
-            mtkAssert(NULL);                                                      \
-            exit(0);                                                              \
-        }                                                                         \
-    } while(0)
+#define RFX_ASSERT(_expr)                                                     \
+    do {                                                                      \
+        if (!(_expr)) {                                                       \
+            RFX_LOG_E("RFX_ASSERT", "RFX_ASSERT:%s, %d", __FILE__, __LINE__); \
+            mtkAssert(NULL);                                                  \
+            exit(0);                                                          \
+        }                                                                     \
+    } while (0)
 #endif
 
 #endif /* __RFX_LOG_H__ */

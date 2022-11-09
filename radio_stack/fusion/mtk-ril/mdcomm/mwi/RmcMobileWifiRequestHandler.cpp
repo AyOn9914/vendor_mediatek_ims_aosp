@@ -29,7 +29,7 @@
 
 #define RFX_LOG_TAG "RmcMwi"
 
- // register handler to channel
+// register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcMobileWifiRequestHandler, RIL_CMD_PROXY_1);
 
 // register request to RfxData
@@ -39,45 +39,44 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_WIFI_SIGNAL_LEVEL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_GEO_LOCATION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_WIFI_IP_ADDRESS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_EMERGENCY_ADDRESS_ID);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_NATT_KEEP_ALIVE_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_EMERGENCY_ADDRESS_ID);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_NATT_KEEP_ALIVE_STATUS);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_WIFI_PING_RESULT);
-///M: Notify ePDG screen state
+/// M: Notify ePDG screen state
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_SSAC_STATUS);
 
-
 static const int requests[] = {
-    RFX_MSG_REQUEST_SET_WIFI_ENABLED,
-    RFX_MSG_REQUEST_SET_WIFI_ASSOCIATED,
-    RFX_MSG_REQUEST_SET_WFC_CONFIG,
-    RFX_MSG_REQUEST_SET_WIFI_SIGNAL_LEVEL,
-    RFX_MSG_REQUEST_SET_GEO_LOCATION,
-    RFX_MSG_REQUEST_SET_WIFI_IP_ADDRESS,
-    RFX_MSG_REQUEST_SET_EMERGENCY_ADDRESS_ID,
-    RFX_MSG_REQUEST_SET_NATT_KEEP_ALIVE_STATUS,
-    RFX_MSG_REQUEST_SET_WIFI_PING_RESULT,
-    ///M: Notify ePDG screen state
-    RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE,
-    RFX_MSG_REQUEST_QUERY_SSAC_STATUS,
+        RFX_MSG_REQUEST_SET_WIFI_ENABLED,
+        RFX_MSG_REQUEST_SET_WIFI_ASSOCIATED,
+        RFX_MSG_REQUEST_SET_WFC_CONFIG,
+        RFX_MSG_REQUEST_SET_WIFI_SIGNAL_LEVEL,
+        RFX_MSG_REQUEST_SET_GEO_LOCATION,
+        RFX_MSG_REQUEST_SET_WIFI_IP_ADDRESS,
+        RFX_MSG_REQUEST_SET_EMERGENCY_ADDRESS_ID,
+        RFX_MSG_REQUEST_SET_NATT_KEEP_ALIVE_STATUS,
+        RFX_MSG_REQUEST_SET_WIFI_PING_RESULT,
+        /// M: Notify ePDG screen state
+        RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE,
+        RFX_MSG_REQUEST_QUERY_SSAC_STATUS,
 };
 
-typedef enum{
+typedef enum {
     WFC_SETTING_WIFI_UEMAC = 0,
     WFC_SETTING_LOCATION_SETTING = 1,
-}WfcConfigType;
+} WfcConfigType;
 
-RmcMobileWifiRequestHandler::RmcMobileWifiRequestHandler(
-    int slot_id, int channel_id) : RfxBaseHandler(slot_id, channel_id) {
+RmcMobileWifiRequestHandler::RmcMobileWifiRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     // register to handle request
     registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcMobileWifiRequestHandler::~RmcMobileWifiRequestHandler() {
-}
+RmcMobileWifiRequestHandler::~RmcMobileWifiRequestHandler() {}
 
-void RmcMobileWifiRequestHandler::onHandleTimer() {
-}
+void RmcMobileWifiRequestHandler::onHandleTimer() {}
 
 void RmcMobileWifiRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int requestId = msg->getId();
@@ -110,7 +109,7 @@ void RmcMobileWifiRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) 
         case RFX_MSG_REQUEST_SET_WIFI_PING_RESULT:
             setWifiPingResult(msg);
             break;
-        ///M: Notify ePDG screen state
+        /// M: Notify ePDG screen state
         case RFX_MSG_REQUEST_NOTIFY_EPDG_SCREEN_STATE:
             notifyEPDGScreenState(msg);
             break;
@@ -129,7 +128,7 @@ void RmcMobileWifiRequestHandler::setWifiEnabled(const sp<RfxMclMessage>& msg) {
      * <flightModeOn>: 0 = disable; 1 = enable
      */
     char** params = (char**)msg->getData()->getData();
-    int dataLen =  msg->getData()->getDataLength() / sizeof(char*);
+    int dataLen = msg->getData()->getDataLength() / sizeof(char*);
     logD(RFX_LOG_TAG, "setWifiEnabled dataLen: %d", dataLen);
 
     char* atWifiEnCmd = AT_SET_WIFI_ENABLE;
@@ -143,19 +142,20 @@ void RmcMobileWifiRequestHandler::setWifiEnabled(const sp<RfxMclMessage>& msg) {
         String8 cmd = String8::format("%s=\"%s\",%d", atWifiEnCmd, ifname, enabled);
         handleCmdWithVoidResponse(msg, cmd);
     } else if (dataLen == 3) {
-
         int allCause = atoi(params[2]);
 
         if ((allCause & EWIFIEN_NEED_SEND_WIFI_ENABLED) == EWIFIEN_NEED_SEND_WIFI_ENABLED) {
             int cause = (allCause & (EWIFIEN_CAUSE)) == EWIFIEN_CAUSE ? 1 : 0;
-            int wifiEnabled = (allCause & (EWIFIEN_WIFI_ENABLED_STATE)) == EWIFIEN_WIFI_ENABLED_STATE ? 1 : 0;
-            String8 cmd = String8::format("%s=\"%s\",%d,%d",
-                    atWifiEnCmd, ifname, wifiEnabled, cause);
+            int wifiEnabled =
+                    (allCause & (EWIFIEN_WIFI_ENABLED_STATE)) == EWIFIEN_WIFI_ENABLED_STATE ? 1 : 0;
+            String8 cmd =
+                    String8::format("%s=\"%s\",%d,%d", atWifiEnCmd, ifname, wifiEnabled, cause);
             handleCmdWithVoidResponse(msg, cmd);
         }
 
         if ((allCause & EWIFIEN_NEED_SEND_AP_MODE) == EWIFIEN_NEED_SEND_AP_MODE) {
-            int flightModeOn = (allCause & (EWIFIEN_AP_MODE_STATE)) == EWIFIEN_AP_MODE_STATE ? 1 : 0;
+            int flightModeOn =
+                    (allCause & (EWIFIEN_AP_MODE_STATE)) == EWIFIEN_AP_MODE_STATE ? 1 : 0;
             String8 apCmd = String8::format("%s=%d", atAPMCmd, flightModeOn);
             p_response = atSendCommand(apCmd);
             if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
@@ -179,17 +179,17 @@ void RmcMobileWifiRequestHandler::setWifiAssociated(const sp<RfxMclMessage>& msg
     char* atCmd = AT_SET_WIFI_ASSOCIATED;
     char* ifname = params[0];
     const char* assoc = params[1];
-    char* ssid = (atoi(assoc) == 0)? (char*)"0": params[2];
-    char* ap_mac = (atoi(assoc) == 0)? (char*)"0": params[3];
-    char* mtu = (atoi(assoc) == 0)? (char*)"0": params[4];
-    char* ue_mac = (params[5])? params[5]: (char*)"0";
-    char defaultWifiType[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char* ssid = (atoi(assoc) == 0) ? (char*)"0" : params[2];
+    char* ap_mac = (atoi(assoc) == 0) ? (char*)"0" : params[3];
+    char* mtu = (atoi(assoc) == 0) ? (char*)"0" : params[4];
+    char* ue_mac = (params[5]) ? params[5] : (char*)"0";
+    char defaultWifiType[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.test.wifi.type", defaultWifiType, "802.11n");
     char* type = defaultWifiType;
 
     // TODO: Need to check modem generation before sync to trunk
     if (atoi(assoc) == 0) {
-        type = (char*) "";
+        type = (char*)"";
     } else {
         int ioctl_sock = socket(AF_INET, SOCK_DGRAM, 0);
         if (ioctl_sock >= 0) {
@@ -197,7 +197,7 @@ void RmcMobileWifiRequestHandler::setWifiAssociated(const sp<RfxMclMessage>& msg
             struct priv_driver_cmd_t priv_cmd;
             int ret;
 
-            memset(&priv_cmd,0x00,sizeof(priv_cmd));
+            memset(&priv_cmd, 0x00, sizeof(priv_cmd));
             priv_cmd.used_len = strlen(priv_cmd.buf);
             priv_cmd.total_len = PRIV_CMD_SIZE;
 
@@ -208,30 +208,30 @@ void RmcMobileWifiRequestHandler::setWifiAssociated(const sp<RfxMclMessage>& msg
 
             ret = ioctl(ioctl_sock, IOCTL_SET_STRUCT_FOR_EM, &wrq);
             if ((ret == 0) && (wrq.u.data.length > 1)) {
-                //ALOGI("get wifi type ok: [%s]", wrq.u.data.pointer);
+                // ALOGI("get wifi type ok: [%s]", wrq.u.data.pointer);
                 logD(RFX_LOG_TAG, "get wifi type ok: [%s]", (char*)wrq.u.data.pointer);
-                type = (char*) wrq.u.data.pointer;
+                type = (char*)wrq.u.data.pointer;
             } else {
-                //ALOGI("get wifi type fail: %d\n", ret);
+                // ALOGI("get wifi type fail: %d\n", ret);
                 logD(RFX_LOG_TAG, "get wifi type fail: %d, len = %d", ret, wrq.u.data.length);
             }
             close(ioctl_sock);
         } else {
-            logE(RFX_LOG_TAG, "setWifiAssociatedWithMtu() ioctl_sock = %d %s",
-                    ioctl_sock, strerror(errno));
+            logE(RFX_LOG_TAG, "setWifiAssociatedWithMtu() ioctl_sock = %d %s", ioctl_sock,
+                 strerror(errno));
         }
     }
 
-    String8 cmd = String8::format("%s=\"%s\",%s,\"%s\",\"%s\",\"%s\",%s,\"%s\"",
-                                   atCmd, ifname, assoc, ssid, ap_mac, type, mtu, ue_mac);
+    String8 cmd = String8::format("%s=\"%s\",%s,\"%s\",\"%s\",\"%s\",%s,\"%s\"", atCmd, ifname,
+                                  assoc, ssid, ap_mac, type, mtu, ue_mac);
     handleCmdWithVoidResponse(msg, cmd);
 }
 
 void RmcMobileWifiRequestHandler::setWfcConfig(const sp<RfxMclMessage>& msg) {
     char** params = (char**)msg->getData()->getData();
     char* setting = params[0];
-    char* param1 = params[1]? params[1]: (char*)"" ;
-    char* param2 = params[2]? params[2]: (char*)"" ;
+    char* param1 = params[1] ? params[1] : (char*)"";
+    char* param2 = params[2] ? params[2] : (char*)"";
     logD(RFX_LOG_TAG, "setWfcConfig: %s, %s, %s", setting, param1, param2);
     switch (atoi(setting)) {
         case WFC_SETTING_WIFI_UEMAC:
@@ -256,9 +256,9 @@ void RmcMobileWifiRequestHandler::setWfcConfig_WifiUeMac(const sp<RfxMclMessage>
 void RmcMobileWifiRequestHandler::setWfcConfig_LocationSetting(const sp<RfxMclMessage>& msg) {
     char* atCmd = AT_SET_LOCATION_ENABLE;
     char** params = (char**)msg->getData()->getData();
-    char* configType = params[0]; //WFC Config Type
-    char* iFname = params[1]? params[1]: (char*)"" ; //ifName. e.g. ""locenable""
-    char* setting = params[2]? params[2]: (char*)"" ; //setting value
+    char* configType = params[0];                       // WFC Config Type
+    char* iFname = params[1] ? params[1] : (char*)"";   // ifName. e.g. ""locenable""
+    char* setting = params[2] ? params[2] : (char*)"";  // setting value
     int enabled = atoi(setting);
 
     logD(RFX_LOG_TAG, "setWfcConfig_LocationSetting: %s, %s, %s", configType, iFname, setting);
@@ -305,19 +305,17 @@ void RmcMobileWifiRequestHandler::setWifiIpAddress(const sp<RfxMclMessage>& msg)
     char* ipv4 = (params[1] == NULL) ? (char*)"" : params[1];
     char* ipv6 = (params[2] == NULL) ? (char*)"" : params[2];
     char* ipv4PrefixLen = (params[3] == NULL) ? (char*)"-1" : params[3];
-    if (strncmp(ipv4PrefixLen,"-1", 2) == 0) ipv4PrefixLen = (char*)"";
+    if (strncmp(ipv4PrefixLen, "-1", 2) == 0) ipv4PrefixLen = (char*)"";
     char* ipv6PrefixLen = (params[4] == NULL) ? (char*)"-1" : params[4];
-    if (strncmp(ipv6PrefixLen,"-1", 2) == 0) ipv6PrefixLen = (char*)"";
+    if (strncmp(ipv6PrefixLen, "-1", 2) == 0) ipv6PrefixLen = (char*)"";
     char* ipv4gateway = (params[5] == NULL) ? (char*)"" : params[5];
     char* ipv6gateway = (params[6] == NULL) ? (char*)"" : params[6];
     char* dnsCount = (params[7] == NULL) ? (char*)"0" : params[7];
     char* dnsAddresses = (params[8] == NULL) ? (char*)"" : params[8];
 
-    String8 cmd = String8::format("%s=\"%s\",\"%s\",\"%s\",%s,%s,\"%s\",\"%s\",%s,%s",
-            atCmd, ifname, ipv4, ipv6,
-            ipv4PrefixLen, ipv6PrefixLen,
-            ipv4gateway, ipv6gateway,
-            dnsCount, dnsAddresses);
+    String8 cmd = String8::format("%s=\"%s\",\"%s\",\"%s\",%s,%s,\"%s\",\"%s\",%s,%s", atCmd,
+                                  ifname, ipv4, ipv6, ipv4PrefixLen, ipv6PrefixLen, ipv4gateway,
+                                  ipv6gateway, dnsCount, dnsAddresses);
     handleCmdWithVoidResponse(msg, cmd);
 }
 
@@ -337,7 +335,7 @@ void RmcMobileWifiRequestHandler::setGeoLocation(const sp<RfxMclMessage>& msg) {
      */
     char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_SET_GEO_LOCATION;
-    int dataLen =  msg->getData()->getDataLength() / sizeof(char*);
+    int dataLen = msg->getData()->getDataLength() / sizeof(char*);
 
     logD(RFX_LOG_TAG, "setGeoLocation dataLen: %d", dataLen);
 
@@ -350,14 +348,14 @@ void RmcMobileWifiRequestHandler::setGeoLocation(const sp<RfxMclMessage>& msg) {
 
     if (dataLen == 10) {
         String8 cmd = String8::format("%s=%s,%s,%s,%s,%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"", atCmd,
-            params[0], params[1], params[2], params[3], params[4],
-            method, city, state, zip, country);
+                                      params[0], params[1], params[2], params[3], params[4], method,
+                                      city, state, zip, country);
         handleCmdWithVoidResponse(msg, cmd);
     } else if (dataLen == 11) {
         char* ueWlanMac = (params[10] == NULL) ? (char*)"" : params[10];
-        String8 cmd = String8::format("%s=%s,%s,%s,%s,%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"", atCmd,
-            params[0], params[1], params[2], params[3], params[4],
-            method, city, state, zip, country, ueWlanMac);
+        String8 cmd = String8::format("%s=%s,%s,%s,%s,%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                                      atCmd, params[0], params[1], params[2], params[3], params[4],
+                                      method, city, state, zip, country, ueWlanMac);
         handleCmdWithVoidResponse(msg, cmd);
     }
 }
@@ -386,12 +384,11 @@ void RmcMobileWifiRequestHandler::setNattKeepAliveStatus(const sp<RfxMclMessage>
     char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_SET_NATT_KEEP_ALIVE_STATUS;
 
-    String8 cmd = String8::format("%s=\"%s\",%s,\"%s\",%s,\"%s\",%s", atCmd,
-        params[0], params[1], params[2], params[3], params[4], params[5]);
+    String8 cmd = String8::format("%s=\"%s\",%s,\"%s\",%s,\"%s\",%s", atCmd, params[0], params[1],
+                                  params[2], params[3], params[4], params[5]);
 
     handleCmdWithVoidResponse(msg, cmd);
 }
-
 
 void RmcMobileWifiRequestHandler::setWifiPingResult(const sp<RfxMclMessage>& msg) {
     /* AT+EIWLPING= <rat_type>,<ave_latency>,<loss_rate>
@@ -400,21 +397,21 @@ void RmcMobileWifiRequestHandler::setWifiPingResult(const sp<RfxMclMessage>& msg
      * <loss_rate>: percentage packet loss rate of ping
      */
     char* atCmd = AT_SET_WIFI_PING_RESULT;
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
-    logD(RFX_LOG_TAG, "setWifiPingResult: rat:%d, latency:%d, packetloss:%d",
-            params[0], params[1], params[2]);
+    logD(RFX_LOG_TAG, "setWifiPingResult: rat:%d, latency:%d, packetloss:%d", params[0], params[1],
+         params[2]);
     String8 cmd = String8::format("%s = %d, %d, %d", atCmd, params[0], params[1], params[2]);
     handleCmdWithVoidResponse(msg, cmd);
 }
 
-///M: Notify ePDG screen state
+/// M: Notify ePDG screen state
 void RmcMobileWifiRequestHandler::notifyEPDGScreenState(const sp<RfxMclMessage>& msg) {
     /* AT+ESCREENSTATE= <state>
      * <state>: Screen state
      */
     char* atCmd = AT_SET_EPDG_SCREEN_STATE;
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
     logD(RFX_LOG_TAG, "notifyEPDGScreenState: state:%d", params[0]);
     String8 cmd = String8::format("%s = %d", atCmd, params[0]);
@@ -429,7 +426,7 @@ void RmcMobileWifiRequestHandler::querySsacStatus(const sp<RfxMclMessage>& msg) 
     char* atCmd = AT_QUERY_SSAC;
     sp<RfxAtResponse> p_response;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int responses[4] = {0};
 
@@ -477,8 +474,8 @@ void RmcMobileWifiRequestHandler::querySsacStatus(const sp<RfxMclMessage>& msg) 
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to Telcore
     responseToTelCore(response);

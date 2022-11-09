@@ -22,25 +22,22 @@
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_GET_XCAP_STATUS);
 
-static const int requests[] = {
-    RFX_MSG_REQUEST_GET_XCAP_STATUS
-};
+static const int requests[] = {RFX_MSG_REQUEST_GET_XCAP_STATUS};
 
 // register handler to non real time channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcSuppServRequestNRTHandler, RIL_CMD_PROXY_8);
 
-RmcSuppServRequestNRTHandler::RmcSuppServRequestNRTHandler(int slot_id, int channel_id) :
-    RfxBaseHandler(slot_id, channel_id) {
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+RmcSuppServRequestNRTHandler::RmcSuppServRequestNRTHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcSuppServRequestNRTHandler::~RmcSuppServRequestNRTHandler() {
-}
+RmcSuppServRequestNRTHandler::~RmcSuppServRequestNRTHandler() {}
 
 void RmcSuppServRequestNRTHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_GET_XCAP_STATUS:
             requestGetXcapStatus(msg);
             break;
@@ -121,8 +118,8 @@ void RmcSuppServRequestNRTHandler::requestGetXcapStatus(const sp<RfxMclMessage>&
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);

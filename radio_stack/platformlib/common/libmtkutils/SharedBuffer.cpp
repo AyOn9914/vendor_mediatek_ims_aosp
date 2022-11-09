@@ -27,14 +27,13 @@
 
 namespace android {
 
-SharedBuffer* SharedBuffer::alloc(size_t size)
-{
+SharedBuffer* SharedBuffer::alloc(size_t size) {
     // Don't overflow if the combined size of the buffer / header is larger than
     // size_max.
-    LOG_ALWAYS_FATAL_IF((size >= (SIZE_MAX - sizeof(SharedBuffer))),
-                        "Invalid buffer size %zu", size);
+    LOG_ALWAYS_FATAL_IF((size >= (SIZE_MAX - sizeof(SharedBuffer))), "Invalid buffer size %zu",
+                        size);
 
-    SharedBuffer* sb = static_cast<SharedBuffer *>(malloc(sizeof(SharedBuffer) + size));
+    SharedBuffer* sb = static_cast<SharedBuffer*>(malloc(sizeof(SharedBuffer) + size));
     if (sb) {
         // Should be std::atomic_init(&sb->mRefs, 1);
         // But that generates a warning with some compilers.
@@ -45,14 +44,11 @@ SharedBuffer* SharedBuffer::alloc(size_t size)
     return sb;
 }
 
-
-void SharedBuffer::dealloc(const SharedBuffer* released)
-{
+void SharedBuffer::dealloc(const SharedBuffer* released) {
     free(const_cast<SharedBuffer*>(released));
 }
 
-SharedBuffer* SharedBuffer::edit() const
-{
+SharedBuffer* SharedBuffer::edit() const {
     if (onlyOwner()) {
         return const_cast<SharedBuffer*>(this);
     }
@@ -64,8 +60,7 @@ SharedBuffer* SharedBuffer::edit() const
     return sb;
 }
 
-SharedBuffer* SharedBuffer::editResize(size_t newSize) const
-{
+SharedBuffer* SharedBuffer::editResize(size_t newSize) const {
     if (onlyOwner()) {
         SharedBuffer* buf = const_cast<SharedBuffer*>(this);
         if (buf->mSize == newSize) return buf;
@@ -89,16 +84,14 @@ SharedBuffer* SharedBuffer::editResize(size_t newSize) const
     return sb;
 }
 
-SharedBuffer* SharedBuffer::attemptEdit() const
-{
+SharedBuffer* SharedBuffer::attemptEdit() const {
     if (onlyOwner()) {
         return const_cast<SharedBuffer*>(this);
     }
     return 0;
 }
 
-SharedBuffer* SharedBuffer::reset(size_t new_size) const
-{
+SharedBuffer* SharedBuffer::reset(size_t new_size) const {
     // cheap-o-reset.
     SharedBuffer* sb = alloc(new_size);
     if (sb) {
@@ -107,12 +100,9 @@ SharedBuffer* SharedBuffer::reset(size_t new_size) const
     return sb;
 }
 
-void SharedBuffer::acquire() const {
-    mRefs.fetch_add(1, std::memory_order_relaxed);
-}
+void SharedBuffer::acquire() const { mRefs.fetch_add(1, std::memory_order_relaxed); }
 
-int32_t SharedBuffer::release(uint32_t flags) const
-{
+int32_t SharedBuffer::release(uint32_t flags) const {
     const bool useDealloc = ((flags & eKeepStorage) == 0);
     if (onlyOwner()) {
         // Since we're the only owner, our reference count goes to zero.
@@ -135,5 +125,4 @@ int32_t SharedBuffer::release(uint32_t flags) const
     return prevRefCount;
 }
 
-
-}; // namespace android
+};  // namespace android

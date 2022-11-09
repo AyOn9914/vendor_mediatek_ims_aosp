@@ -31,67 +31,66 @@
 #include <string.h>
 #include <dlfcn.h>
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData,  RfxVoidData, RFX_MSG_REQUEST_SEND_USSD);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSD);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_CLIR);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoData, RfxVoidData, RFX_MSG_REQUEST_SET_CALL_FORWARD);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoExData, RfxVoidData, RFX_MSG_REQUEST_SET_CALL_FORWARD_IN_TIME_SLOT);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_CALL_WAITING);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_CHANGE_BARRING_PASSWORD);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxIntsData, RFX_MSG_REQUEST_QUERY_CLIP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_CLIP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_SUPP_SVC_NOTIFICATION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxIntsData, RFX_MSG_REQUEST_GET_COLP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_COLP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxIntsData, RFX_MSG_REQUEST_GET_COLR);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_COLR);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxIntsData, RFX_MSG_REQUEST_SEND_CNAP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData,  RfxVoidData, RFX_MSG_REQUEST_SEND_USSI);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSI);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData,    RfxVoidData, RFX_MSG_REQUEST_SET_CALL_WAITING_ATCI);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxVoidData, RFX_MSG_REQUEST_RESET_SUPP_SERV);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SETUP_XCAP_USER_AGENT_STRING);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_SEND_USSD);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSD);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_CLIR);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_CALL_FORWARD);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoExData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_CALL_FORWARD_IN_TIME_SLOT);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_CALL_WAITING);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_CHANGE_BARRING_PASSWORD);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_CLIP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_CLIP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_SUPP_SVC_NOTIFICATION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_COLP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_COLP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_COLR);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_COLR);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_SEND_CNAP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_SEND_USSI);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_CANCEL_USSI);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_CALL_WAITING_ATCI);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_RESET_SUPP_SERV);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SETUP_XCAP_USER_AGENT_STRING);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_SS_PROPERTY);
 
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringsData, RFX_MSG_EVENT_SET_XCAP_CONFIG);
 
-static const int requests[] = {
-    RFX_MSG_REQUEST_SEND_USSD,
-    RFX_MSG_REQUEST_CANCEL_USSD,
-    RFX_MSG_REQUEST_SET_CLIR,
-    RFX_MSG_REQUEST_SET_CALL_FORWARD,
-    RFX_MSG_REQUEST_SET_CALL_FORWARD_IN_TIME_SLOT,
-    RFX_MSG_REQUEST_SET_CALL_WAITING,
-    RFX_MSG_REQUEST_CHANGE_BARRING_PASSWORD,
-    RFX_MSG_REQUEST_QUERY_CLIP,
-    RFX_MSG_REQUEST_SET_CLIP,
-    RFX_MSG_REQUEST_SET_SUPP_SVC_NOTIFICATION,
-    RFX_MSG_REQUEST_GET_COLP,
-    RFX_MSG_REQUEST_SET_COLP,
-    RFX_MSG_REQUEST_GET_COLR,
-    RFX_MSG_REQUEST_SET_COLR,
-    RFX_MSG_REQUEST_SEND_CNAP,
-    RFX_MSG_REQUEST_SEND_USSI,
-    RFX_MSG_REQUEST_CANCEL_USSI,
-    RFX_MSG_REQUEST_SET_CALL_WAITING_ATCI,
-    RFX_MSG_REQUEST_RESET_SUPP_SERV,
-    RFX_MSG_REQUEST_SETUP_XCAP_USER_AGENT_STRING,
-    RFX_MSG_REQUEST_SET_SS_PROPERTY
-};
+static const int requests[] = {RFX_MSG_REQUEST_SEND_USSD,
+                               RFX_MSG_REQUEST_CANCEL_USSD,
+                               RFX_MSG_REQUEST_SET_CLIR,
+                               RFX_MSG_REQUEST_SET_CALL_FORWARD,
+                               RFX_MSG_REQUEST_SET_CALL_FORWARD_IN_TIME_SLOT,
+                               RFX_MSG_REQUEST_SET_CALL_WAITING,
+                               RFX_MSG_REQUEST_CHANGE_BARRING_PASSWORD,
+                               RFX_MSG_REQUEST_QUERY_CLIP,
+                               RFX_MSG_REQUEST_SET_CLIP,
+                               RFX_MSG_REQUEST_SET_SUPP_SVC_NOTIFICATION,
+                               RFX_MSG_REQUEST_GET_COLP,
+                               RFX_MSG_REQUEST_SET_COLP,
+                               RFX_MSG_REQUEST_GET_COLR,
+                               RFX_MSG_REQUEST_SET_COLR,
+                               RFX_MSG_REQUEST_SEND_CNAP,
+                               RFX_MSG_REQUEST_SEND_USSI,
+                               RFX_MSG_REQUEST_CANCEL_USSI,
+                               RFX_MSG_REQUEST_SET_CALL_WAITING_ATCI,
+                               RFX_MSG_REQUEST_RESET_SUPP_SERV,
+                               RFX_MSG_REQUEST_SETUP_XCAP_USER_AGENT_STRING,
+                               RFX_MSG_REQUEST_SET_SS_PROPERTY};
 
-static const int event[] = {
-    RFX_MSG_EVENT_SET_XCAP_CONFIG
-};
+static const int event[] = {RFX_MSG_EVENT_SET_XCAP_CONFIG};
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcSuppServRequestHandler, RIL_CMD_PROXY_6);
 
-RmcSuppServRequestHandler::RmcSuppServRequestHandler(int slot_id, int channel_id) :
-    RmcSuppServRequestBaseHandler(slot_id, channel_id),
-    m_UssdHandler(NULL) {
-
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
-    registerToHandleEvent(event, sizeof(event)/sizeof(int));
+RmcSuppServRequestHandler::RmcSuppServRequestHandler(int slot_id, int channel_id)
+    : RmcSuppServRequestBaseHandler(slot_id, channel_id), m_UssdHandler(NULL) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
+    registerToHandleEvent(event, sizeof(event) / sizeof(int));
 
     isResetSession = false;
 
@@ -116,17 +115,15 @@ RmcSuppServRequestHandler::RmcSuppServRequestHandler(int slot_id, int channel_id
     }
 
     // Create RmcSuppServUssdBaseHandler instance
-    if (getFeatureVersion((char *) FEATURE_MD_USSD_DOMAIN_SELECTION, 0) == 1) {
+    if (getFeatureVersion((char*)FEATURE_MD_USSD_DOMAIN_SELECTION, 0) == 1) {
         logD(TAG, "Create RmcSuppServUssdHandler");
-        RFX_HANDLER_CREATE(m_UssdHandler, RmcSuppServUssdHandler,
-                (m_slot_id, m_channel_id));
+        RFX_HANDLER_CREATE(m_UssdHandler, RmcSuppServUssdHandler, (m_slot_id, m_channel_id));
 
         /*  Enable USSI URC */
         atSendCommand("AT+ECUSD=2,4,\"\",72,\"\"");
     } else {
         logD(TAG, "Create RmcSuppServUssdDomainSelector");
-        RFX_HANDLER_CREATE(m_UssdHandler, RmcSuppServUssdDomainSelector,
-                (m_slot_id, m_channel_id));
+        RFX_HANDLER_CREATE(m_UssdHandler, RmcSuppServUssdDomainSelector, (m_slot_id, m_channel_id));
 
         /*  Enable USSI URC */
         atSendCommand("AT+EIUSD=2,4,1,\"\",\"\",0");
@@ -165,7 +162,7 @@ RmcSuppServRequestHandler::~RmcSuppServRequestHandler() {
 void RmcSuppServRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SEND_USSD:
             requestSendUSSD(msg);
             break;
@@ -220,7 +217,7 @@ void RmcSuppServRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
             break;
 
         case RFX_MSG_REQUEST_SEND_CNAP:
-            ///M: For query CNAP
+            /// M: For query CNAP
             requestSendCNAP(msg);
             break;
 
@@ -255,7 +252,7 @@ void RmcSuppServRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcSuppServRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_EVENT_SET_XCAP_CONFIG:
             requestSetXcapConfig(msg);
             break;
@@ -286,7 +283,7 @@ void RmcSuppServRequestHandler::requestSetCallWaiting(const sp<RfxMclMessage>& m
 }
 
 void RmcSuppServRequestHandler::requestChangeBarringPassword(const sp<RfxMclMessage>& msg) {
-    const char** strings = (const char**) (msg->getData()->getData());
+    const char** strings = (const char**)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
@@ -301,24 +298,24 @@ void RmcSuppServRequestHandler::requestChangeBarringPassword(const sp<RfxMclMess
      * ((const char **)data)[3] = new password confirmed
      */
     if (msg->getData()->getDataLength() == 3 * sizeof(char*)) {
-        if (strings[0] == NULL || strlen(strings[0]) == 0 ||
-            strings[1] == NULL || strlen(strings[1]) == 0 ||
-            strings[2] == NULL || strlen(strings[2]) == 0) {
+        if (strings[0] == NULL || strlen(strings[0]) == 0 || strings[1] == NULL ||
+            strlen(strings[1]) == 0 || strings[2] == NULL || strlen(strings[2]) == 0) {
             logE(TAG, "ChangeBarringPassword: Null parameters.");
             ret = RIL_E_INVALID_ARGUMENTS;
             goto error;
         }
-        asprintf(&cmd, "AT+ECUSD=1,1,\"**03*%s*%s*%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]), strings[1], strings[2], strings[2]);
+        asprintf(&cmd, "AT+ECUSD=1,1,\"**03*%s*%s*%s*%s#\"",
+                 callBarFacToServiceCodeStrings(strings[0]), strings[1], strings[2], strings[2]);
     } else if (msg->getData()->getDataLength() == 4 * sizeof(char*)) {
-        if (strings[0] == NULL || strlen(strings[0]) == 0 ||
-            strings[1] == NULL || strlen(strings[1]) == 0 ||
-            strings[2] == NULL || strlen(strings[2]) == 0 ||
+        if (strings[0] == NULL || strlen(strings[0]) == 0 || strings[1] == NULL ||
+            strlen(strings[1]) == 0 || strings[2] == NULL || strlen(strings[2]) == 0 ||
             strings[3] == NULL || strlen(strings[3]) == 0) {
             logE(TAG, "ChangeBarringPassword: Null parameters.");
             ret = RIL_E_INVALID_ARGUMENTS;
             goto error;
         }
-        asprintf(&cmd, "AT+ECUSD=1,1,\"**03*%s*%s*%s*%s#\"", callBarFacToServiceCodeStrings(strings[0]), strings[1], strings[2], strings[3]);
+        asprintf(&cmd, "AT+ECUSD=1,1,\"**03*%s*%s*%s*%s#\"",
+                 callBarFacToServiceCodeStrings(strings[0]), strings[1], strings[2], strings[3]);
     } else {
         goto error;
     }
@@ -361,8 +358,8 @@ void RmcSuppServRequestHandler::requestChangeBarringPassword(const sp<RfxMclMess
     }
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -410,9 +407,9 @@ void RmcSuppServRequestHandler::requestSetColr(const sp<RfxMclMessage>& msg) {
 void RmcSuppServRequestHandler::requestSendCNAP(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
-    int responses[2]={0};
+    int responses[2] = {0};
 
     /**
      * AT+ECUSD=<m>,<n>,<str>
@@ -424,31 +421,31 @@ void RmcSuppServRequestHandler::requestSendCNAP(const sp<RfxMclMessage>& msg) {
 
     err = p_response->getError();
     if (err < 0 || p_response == NULL) {
-       logE(TAG, "requestSendCNAP Fail");
-       goto error;
+        logE(TAG, "requestSendCNAP Fail");
+        goto error;
     }
 
     switch (p_response->atGetCmeError()) {
-       case CME_SUCCESS:
-          break;
-       case CME_CALL_BARRED:
-       case CME_OPR_DTR_BARRING:
-          ret = RIL_E_CALL_BARRED;
-          break;
-       case CME_PHB_FDN_BLOCKED:
-          ret = RIL_E_FDN_CHECK_FAILURE;
-          break;
-       case CME_OPERATION_NOT_SUPPORTED:
-          ret = RIL_E_REQUEST_NOT_SUPPORTED;
-          break;
-       case CME_844_UNPROVISIONED:
-          ret = RIL_E_REQUEST_NOT_SUPPORTED;
-          break;
-       case CME_845_NO_DATA_CONNECTION:
-          ret = RIL_E_845_NO_DATA_CONNECTION;
-          break;
-       default:
-          goto error;
+        case CME_SUCCESS:
+            break;
+        case CME_CALL_BARRED:
+        case CME_OPR_DTR_BARRING:
+            ret = RIL_E_CALL_BARRED;
+            break;
+        case CME_PHB_FDN_BLOCKED:
+            ret = RIL_E_FDN_CHECK_FAILURE;
+            break;
+        case CME_OPERATION_NOT_SUPPORTED:
+            ret = RIL_E_REQUEST_NOT_SUPPORTED;
+            break;
+        case CME_844_UNPROVISIONED:
+            ret = RIL_E_REQUEST_NOT_SUPPORTED;
+            break;
+        case CME_845_NO_DATA_CONNECTION:
+            ret = RIL_E_845_NO_DATA_CONNECTION;
+            break;
+        default:
+            goto error;
     }
 
     if (p_response->getIntermediates() != NULL) {
@@ -484,8 +481,8 @@ void RmcSuppServRequestHandler::requestSendCNAP(const sp<RfxMclMessage>& msg) {
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses)/sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -494,12 +491,12 @@ error:
 void RmcSuppServRequestHandler::requestQueryClip(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_INTERNAL_ERR;
-    int responses[2]={0};
+    int responses[2] = {0};
     int result = 0;
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     /**
      * AT+ECUSD=<m>,<n>,<str>
@@ -514,7 +511,6 @@ void RmcSuppServRequestHandler::requestQueryClip(const sp<RfxMclMessage>& msg) {
         logE(TAG, "requestQueryClip Fail");
         goto error;
     }
-
 
     switch (p_response->atGetCmeError()) {
         case CME_SUCCESS:
@@ -536,7 +532,7 @@ void RmcSuppServRequestHandler::requestQueryClip(const sp<RfxMclMessage>& msg) {
             ret = RIL_E_404_NOT_FOUND;
             goto error;
             break;
-        case CME_409_CONFLICT:{
+        case CME_409_CONFLICT: {
             if (SSConfig::convert409ToNotSupportCallerID(currentMccmnc)) {
                 ret = RIL_E_REQUEST_NOT_SUPPORTED;
                 goto error;
@@ -571,7 +567,7 @@ void RmcSuppServRequestHandler::requestQueryClip(const sp<RfxMclMessage>& msg) {
             goto error;
     }
 
-    if ( p_response->getIntermediates() != NULL ) {
+    if (p_response->getIntermediates() != NULL) {
         line = p_response->getIntermediates();
         line->atTokStart(&err);
         if (err < 0) {
@@ -611,23 +607,23 @@ void RmcSuppServRequestHandler::requestQueryClip(const sp<RfxMclMessage>& msg) {
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(&result, sizeof(result)/sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(&result, sizeof(result) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcSuppServRequestHandler::requestSetClip(const sp<RfxMclMessage>& msg) {
-    int *n = (int *) (msg->getData()->getData());
+    int* n = (int*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response = NULL;
-    int err = 0; //Coverity, follow the err init value in at_send_command_full_nolock().
+    int err = 0;  // Coverity, follow the err init value in at_send_command_full_nolock().
     char* cmd = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
-    int responses[2]={0};
-    String8 currentMccmnc = getMclStatusManager()->
-            getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
+    int responses[2] = {0};
+    String8 currentMccmnc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8("0"));
 
     if (msg->getData()->getDataLength() != 0) {
         /**
@@ -711,8 +707,8 @@ void RmcSuppServRequestHandler::requestSetClip(const sp<RfxMclMessage>& msg) {
 
 error:
     /* For SET CLIP responseVoid will ignore the responses */
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxIntsData(responses, sizeof(responses) / sizeof(int)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -729,7 +725,7 @@ void RmcSuppServRequestHandler::requestCancelUssi(const sp<RfxMclMessage>& msg) 
 }
 
 void RmcSuppServRequestHandler::requestSetupXcapUserAgentString(const sp<RfxMclMessage>& msg) {
-    const char** params = (const char**) (msg->getData()->getData());
+    const char** params = (const char**)(msg->getData()->getData());
     sp<RfxAtResponse> p_response = NULL;
     int err = 0;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
@@ -766,19 +762,19 @@ void RmcSuppServRequestHandler::requestSetupXcapUserAgentString(const sp<RfxMclM
     }
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcSuppServRequestHandler::requestSetSuppSvcNotification(const sp<RfxMclMessage>& msg) {
-    int *n = (int *) (msg->getData()->getData());
+    int* n = (int*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
 
-    //asprintf(&cmd, "AT+ECUSD=1,1,\"%s\",72", p_ussdRequest); /* <dcs> = 0x48 */
+    // asprintf(&cmd, "AT+ECUSD=1,1,\"%s\",72", p_ussdRequest); /* <dcs> = 0x48 */
     asprintf(&cmd, "AT+CSSN=%d,%d", n[0], n[0]);
 
     p_response = atSendCommand(cmd);
@@ -787,21 +783,21 @@ void RmcSuppServRequestHandler::requestSetSuppSvcNotification(const sp<RfxMclMes
 
     err = p_response->getError();
     if (err < 0 || p_response == NULL) {
-       logE(TAG, "requestSetSuppSvcNotification Fail");
-       goto error;
+        logE(TAG, "requestSetSuppSvcNotification Fail");
+        goto error;
     }
 
     switch (p_response->atGetCmeError()) {
-       case CME_SUCCESS:
-          ret = RIL_E_SUCCESS;
-          break;
-       default:
-          break;
+        case CME_SUCCESS:
+            ret = RIL_E_SUCCESS;
+            break;
+        default:
+            break;
     }
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -813,7 +809,7 @@ void* RmcSuppServRequestHandler::startUtInterface(const char* libutinterfacePath
     logD(TAG, "startUtInterface(): %s", libutinterfacePath);
 
     hDll = dlopen(libutinterfacePath, RTLD_NOW);
-    if(hDll) {
+    if (hDll) {
         fnstartUtInterface = (void (*)())dlsym(hDll, "startUtInterface");
         if ((dllerror = (char*)dlerror()) != NULL) {
             logE(TAG, "dlerror: %s", dllerror);
@@ -836,12 +832,12 @@ void* RmcSuppServRequestHandler::startUtInterface(const char* libutinterfacePath
 }
 
 void RmcSuppServRequestHandler::requestSetSuppServProperty(const sp<RfxMclMessage>& msg) {
-    const char** strings = (const char**) (msg->getData()->getData());
+    const char** strings = (const char**)(msg->getData()->getData());
     rfx_property_set(strings[0], strings[1]);
     logD(TAG, "requestSetSuppServProperty: name = %s, value = %s", strings[0], strings[1]);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -849,11 +845,11 @@ void RmcSuppServRequestHandler::requestSetSuppServProperty(const sp<RfxMclMessag
 
 void RmcSuppServRequestHandler::requestGetSuppServProperty(const sp<RfxMclMessage>& msg) {
     // For 95 modem
-    const char *string = (const char*)msg->getData()->getData();
+    const char* string = (const char*)msg->getData()->getData();
     logD(TAG, "requestGetSuppServProperty: name = %s", string);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -864,7 +860,7 @@ void RmcSuppServRequestHandler::requestGetModemVersion() {
     int err, version;
     char* cmd = NULL;
     char* version_string = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
 
     asprintf(&cmd, "AT+EXCAPCFGGET=\"version\"");
 
@@ -884,12 +880,12 @@ void RmcSuppServRequestHandler::requestGetModemVersion() {
     }
 
     /**
-    * +EXCAPCFGGET: "version","1"
-    * <m> version string
-    * <n> version
-    *     1 : 95modem
-    *     0 : Non-95 modem
-    */
+     * +EXCAPCFGGET: "version","1"
+     * <m> version string
+     * <n> version
+     *     1 : 95modem
+     *     0 : Non-95 modem
+     */
 
     if (p_response->getIntermediates() != NULL) {
         line = p_response->getIntermediates();
@@ -919,15 +915,15 @@ void RmcSuppServRequestHandler::requestSetXcapConfig(const sp<RfxMclMessage>& ms
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
 
-    char **data = (char **)msg->getData()->getData();
+    char** data = (char**)msg->getData()->getData();
 
-    char modem_version[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char modem_version[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_MODEM_VERSION, modem_version, "0");
 
-    const char *delim = ",";
+    const char* delim = ",";
     char* name = strtok(data[1], delim);
     char* value = strtok(NULL, delim);
     logD(TAG, "requestSetXcapConfig: name = %s, value = %s", name, value);
@@ -941,7 +937,7 @@ void RmcSuppServRequestHandler::requestSetXcapConfig(const sp<RfxMclMessage>& ms
         int name_length = strlen(name);
         int prefix_length = strlen("persist.vendor.ss.");
         int config_length = name_length - prefix_length;
-        char* config_name = (char *) alloca(config_length + 1);
+        char* config_name = (char*)alloca(config_length + 1);
         if (config_name == NULL) {
             logE(TAG, "Out of memory");
             goto error;
@@ -985,7 +981,7 @@ void RmcSuppServRequestHandler::requestSetXcapConfig(const sp<RfxMclMessage>& ms
             goto error;
         }
 
-        if(strStartsWith(p_response->getFinalResponse()->getLine(), "ERROR")) {
+        if (strStartsWith(p_response->getFinalResponse()->getLine(), "ERROR")) {
             logE(TAG, "requestSetXcapConfig Error.");
             goto error;
         }
@@ -999,8 +995,7 @@ void RmcSuppServRequestHandler::requestSetXcapConfig(const sp<RfxMclMessage>& ms
 error:
     logD(TAG, "requestSetXcapConfig: pRequest = %d, token = %d", msg->getId(), msg->getToken());
     int msgid = RFX_MSG_REQUEST_OEM_HOOK_STRINGS;
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msgid, ret,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msgid, ret, RfxVoidData(), msg);
 
     responseToTelCore(response);
 }
@@ -1009,7 +1004,7 @@ void RmcSuppServRequestHandler::syncCLIRToStatusManager() {
     char clir_n[MTK_PROPERTY_VALUE_MAX];
 
     snprintf(clir_n, sizeof(clir_n), "0");
-    getMSimProperty(m_slot_id, (char *) PROPERTY_TBCLIR_N, clir_n);
+    getMSimProperty(m_slot_id, (char*)PROPERTY_TBCLIR_N, clir_n);
 
     logD(TAG, "syncCLIRToStatusManager, clir_n = %s", clir_n);
 

@@ -28,24 +28,22 @@
  *****************************************************************************/
 
 class RmcGsmSmsRequestHandler : public RmcGsmSmsBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsRequestHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsRequestHandler);
 
-public:
+  public:
     RmcGsmSmsRequestHandler(int slot_id, int channel_id);
 
-
-// Override
-protected:
+    // Override
+  protected:
     // Process Request here
     virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-    virtual void onHandleEvent(const sp < RfxMclMessage > & msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     // Utility functions
-    void setTag(String8 tag) {mTag = tag;}
+    void setTag(String8 tag) { mTag = tag; }
     void sendNewSmsErrorAck(const sp<RfxMclMessage>& msg);
-    RIL_GSM_BroadcastSmsConfigInfo **convertChStringToGsmCbCfgInfo(char* channels,
-            int *count);
+    RIL_GSM_BroadcastSmsConfigInfo** convertChStringToGsmCbCfgInfo(char* channels, int* count);
 
     // Request handlers
     void handleSendSms(const sp<RfxMclMessage>& msg);
@@ -67,7 +65,7 @@ private:
     void handleGetSmsParams(const sp<RfxMclMessage>& msg);
     void handleSetSmsParams(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     String8 mTag;
 };
 #endif /* __RMC_GSM_SMS_REQUEST_HANDLER_H__ */

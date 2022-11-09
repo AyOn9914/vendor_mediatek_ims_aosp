@@ -30,16 +30,16 @@
 class RmcOpRatSwitchHandler : public RmcNetworkHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpRatSwitchHandler);
 
-    public:
-        RmcOpRatSwitchHandler(int slot_id, int channel_id);
-        virtual ~RmcOpRatSwitchHandler();
+  public:
+    RmcOpRatSwitchHandler(int slot_id, int channel_id);
+    virtual ~RmcOpRatSwitchHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestSetDisable2G(const sp<RfxMclMessage>& msg);
-        void requestGetDisable2G(const sp<RfxMclMessage>& msg);
+  private:
+    void requestSetDisable2G(const sp<RfxMclMessage>& msg);
+    void requestGetDisable2G(const sp<RfxMclMessage>& msg);
 };
 
 #endif

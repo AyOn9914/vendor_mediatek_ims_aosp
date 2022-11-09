@@ -20,14 +20,14 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhoneCapabilityData);
 
-RfxPhoneCapabilityData::RfxPhoneCapabilityData(void *data, int length) : RfxBaseData(data, length)  {
+RfxPhoneCapabilityData::RfxPhoneCapabilityData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
     m_data = NULL;
     if (data != NULL) {
-        RIL_PhoneCapability *dupData;
+        RIL_PhoneCapability* dupData;
         RIL_PhoneCapability* srcData = (RIL_PhoneCapability*)data;
 
-        dupData = (RIL_PhoneCapability *) calloc(1, sizeof(RIL_PhoneCapability));
+        dupData = (RIL_PhoneCapability*)calloc(1, sizeof(RIL_PhoneCapability));
         RFX_ASSERT(dupData != NULL);
         memcpy(dupData, srcData, sizeof(RIL_PhoneCapability));
         m_data = dupData;
@@ -35,7 +35,7 @@ RfxPhoneCapabilityData::RfxPhoneCapabilityData(void *data, int length) : RfxBase
 }
 
 RfxPhoneCapabilityData::~RfxPhoneCapabilityData() {
-    RIL_PhoneCapability *pCur = (RIL_PhoneCapability *) m_data;
+    RIL_PhoneCapability* pCur = (RIL_PhoneCapability*)m_data;
 
     if (m_data != NULL) {
         free(pCur);

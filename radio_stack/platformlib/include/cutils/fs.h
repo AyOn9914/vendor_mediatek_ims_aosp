@@ -27,12 +27,14 @@
  */
 #ifndef TEMP_FAILURE_RETRY
 /* Used to retry syscalls that can return EINTR. */
-#define TEMP_FAILURE_RETRY(exp) ({         \
-    typeof (exp) _rc;                      \
-    do {                                   \
-        _rc = (exp);                       \
-    } while (_rc == -1 && errno == EINTR); \
-    _rc; })
+#define TEMP_FAILURE_RETRY(exp)                \
+    ({                                         \
+        typeof(exp) _rc;                       \
+        do {                                   \
+            _rc = (exp);                       \
+        } while (_rc == -1 && errno == EINTR); \
+        _rc;                                   \
+    })
 #endif
 
 #ifdef __cplusplus
@@ -56,7 +58,6 @@ extern int fs_prepare_dir_strict(const char* path, mode_t mode, uid_t uid, gid_t
  * with different owners, they are not fixed and -1 is returned.
  */
 extern int fs_prepare_file_strict(const char* path, mode_t mode, uid_t uid, gid_t gid);
-
 
 /*
  * Read single plaintext integer from given file, correctly handling files

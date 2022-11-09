@@ -38,27 +38,27 @@ namespace android {
 // F(b) = (((b - b_zero) * a_to_b_denom) / a_to_b_numer) + a_zero;
 //
 struct LinearTransform {
-  int64_t  a_zero;
-  int64_t  b_zero;
-  int32_t  a_to_b_numer;
-  uint32_t a_to_b_denom;
+    int64_t a_zero;
+    int64_t b_zero;
+    int32_t a_to_b_numer;
+    uint32_t a_to_b_denom;
 
-  // Transform from A->B
-  // Returns true on success, or false in the case of a singularity or an
-  // overflow.
-  bool doForwardTransform(int64_t a_in, int64_t* b_out) const;
+    // Transform from A->B
+    // Returns true on success, or false in the case of a singularity or an
+    // overflow.
+    bool doForwardTransform(int64_t a_in, int64_t* b_out) const;
 
-  // Transform from B->A
-  // Returns true on success, or false in the case of a singularity or an
-  // overflow.
-  bool doReverseTransform(int64_t b_in, int64_t* a_out) const;
+    // Transform from B->A
+    // Returns true on success, or false in the case of a singularity or an
+    // overflow.
+    bool doReverseTransform(int64_t b_in, int64_t* a_out) const;
 
-  // Helpers which will reduce the fraction N/D using Euclid's method.
-  template <class T> static void reduce(T* N, T* D);
-  static void reduce(int32_t* N, uint32_t* D);
+    // Helpers which will reduce the fraction N/D using Euclid's method.
+    template <class T>
+    static void reduce(T* N, T* D);
+    static void reduce(int32_t* N, uint32_t* D);
 };
 
-
-}
+}  // namespace android
 
 #endif  // _LIBS_UTILS_LINEAR_TRANSFORM_H

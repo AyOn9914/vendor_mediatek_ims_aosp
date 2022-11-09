@@ -24,60 +24,50 @@
 #include "RfxLog.h"
 
 class RfxAtLine {
-    public:
-        RfxAtLine() : m_line(NULL), m_pNext(NULL) {
-        }
+  public:
+    RfxAtLine() : m_line(NULL), m_pNext(NULL) {}
 
-        RfxAtLine(const char* line, RfxAtLine* next);
+    RfxAtLine(const char* line, RfxAtLine* next);
 
-        // copy constructor
-        RfxAtLine(const RfxAtLine &other);
+    // copy constructor
+    RfxAtLine(const RfxAtLine& other);
 
-        ~RfxAtLine();
+    ~RfxAtLine();
 
-        RfxAtLine &operator=(const RfxAtLine &other);
-    public:
-        RfxAtLine* getNext() const {
-            return m_pNext;
-        }
-        void setNext(RfxAtLine* next) {
-            m_pNext = next;
-        }
-        char *getLine() const {
-            return m_line;
-        }
-        void setLine(char* line) {
-            m_line = line;
-        }
-        char *getCurrentLine() {
-            return m_pCur;
-        }
-        void atTokStart(int *err);
-        int atTokNextint(int *err);
-        int atTokNexthexint(int *err);
-        bool atTokNextbool(int *err);
-        char* atTokNextstr(int *err);
-        int atTokHasmore();
-        char* atTokChar(int *err);
-        void atTokEqual(int *err);
-        long long atTokNextlonglong(int *err);
-        int isFinalResponseSuccess();
-        int isFinalResponseErrorEx(int channel_id);
-        int isIntermediatePattern();
-        bool isFinalResponseSuccessInNumeric();
-        bool isFinalResponseErrorInNumeric();
-        bool isAckResponse();
+    RfxAtLine& operator=(const RfxAtLine& other);
 
-    private:
-        void skipWhiteSpace();
-        void skipNextComma();
-        int atTokNextintBase(int base, int  uns, int *err);
-        long long atTokNextlonglongBase(int base, int  uns, int *err);
-        char* nextTok();
+  public:
+    RfxAtLine* getNext() const { return m_pNext; }
+    void setNext(RfxAtLine* next) { m_pNext = next; }
+    char* getLine() const { return m_line; }
+    void setLine(char* line) { m_line = line; }
+    char* getCurrentLine() { return m_pCur; }
+    void atTokStart(int* err);
+    int atTokNextint(int* err);
+    int atTokNexthexint(int* err);
+    bool atTokNextbool(int* err);
+    char* atTokNextstr(int* err);
+    int atTokHasmore();
+    char* atTokChar(int* err);
+    void atTokEqual(int* err);
+    long long atTokNextlonglong(int* err);
+    int isFinalResponseSuccess();
+    int isFinalResponseErrorEx(int channel_id);
+    int isIntermediatePattern();
+    bool isFinalResponseSuccessInNumeric();
+    bool isFinalResponseErrorInNumeric();
+    bool isAckResponse();
 
-    private:
-        char *m_line; // should dynamic allocate memory?
-        RfxAtLine *m_pNext;
-        char *m_pCur; // current position, initialize at atTokStart
+  private:
+    void skipWhiteSpace();
+    void skipNextComma();
+    int atTokNextintBase(int base, int uns, int* err);
+    long long atTokNextlonglongBase(int base, int uns, int* err);
+    char* nextTok();
+
+  private:
+    char* m_line;  // should dynamic allocate memory?
+    RfxAtLine* m_pNext;
+    char* m_pCur;  // current position, initialize at atTokStart
 };
 #endif

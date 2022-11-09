@@ -26,10 +26,10 @@
  * Class RmcOpDcReqHandler
  *****************************************************************************/
 
-RmcOpDcImsReqHandler::RmcOpDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager) :
-        RmcDcImsReqHandler(slot_id, channel_id, pdnManager) {
-    RFX_LOG_D(RFX_LOG_TAG, "RmcOpDcImsReqHandler Ctor, slot_id=%d, channel_id=%d", slot_id, channel_id);
+RmcOpDcImsReqHandler::RmcOpDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager)
+    : RmcDcImsReqHandler(slot_id, channel_id, pdnManager) {
+    RFX_LOG_D(RFX_LOG_TAG, "RmcOpDcImsReqHandler Ctor, slot_id=%d, channel_id=%d", slot_id,
+              channel_id);
 }
 
-RmcOpDcImsReqHandler::~RmcOpDcImsReqHandler() {
-}
+RmcOpDcImsReqHandler::~RmcOpDcImsReqHandler() {}

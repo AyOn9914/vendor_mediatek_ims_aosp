@@ -24,8 +24,7 @@
 extern "C" {
 #endif
 
-LIBCUTILS_HIDDEN int __android_get_control_from_env(const char* prefix,
-                                                    const char* name);
+LIBCUTILS_HIDDEN int __android_get_control_from_env(const char* prefix, const char* name);
 #ifdef __cplusplus
 }
 #endif

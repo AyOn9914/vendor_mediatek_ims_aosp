@@ -24,16 +24,13 @@
 
 #define RFX_LOG_TAG "RmcDcImsReqHandler"
 
-
 /*****************************************************************************
  * Class RmcDcImsReqHandler
  *****************************************************************************/
 RmcDcImsReqHandler::RmcDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager)
-: RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {
-}
+    : RmcDcCommonReqHandler(slot_id, channel_id, pdnManager) {}
 
-RmcDcImsReqHandler::~RmcDcImsReqHandler() {
-}
+RmcDcImsReqHandler::~RmcDcImsReqHandler() {}
 
 void RmcDcImsReqHandler::requestSetupDataCall(const sp<RfxMclMessage>& msg) {
     RmcDcCommonReqHandler::requestSetupDataCall(msg);

@@ -33,37 +33,36 @@ class RtcImsController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcImsController);
 
-public:
+  public:
     RtcImsController();
     virtual ~RtcImsController();
 
     void requestImsDisable(int slotId, const sp<RfxAction>& action);
     void requestImsResume(int slotId, const sp<RfxAction>& action);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-private:
+  private:
     // Private functions
     void handleImsRegStateRequest(const sp<RfxMessage>& message);
     void handleImsRegStateResponse(const sp<RfxMessage>& message);
-    void onRadioStateChanged(RfxStatusKeyEnum key,
-            RfxVariant oldValue, RfxVariant value);
+    void onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant value);
     bool responseToRilj(const sp<RfxMessage>& msg);
     /// M: add for op09 default volte setting @{
     void initOp09Ims();
     void deinitOp09Ims();
-    void onMainCapabilitySlotChanged(
-             RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant new_value);
+    void onMainCapabilitySlotChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                     RfxVariant new_value);
     void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     void onNoIccIdTimeout();
     void setDefaultVolteState(int slot_id, char new_iccid[], int card_type);
@@ -84,7 +83,7 @@ private:
     void handleImsRegInfoInd(const sp<RfxMessage>& message);
     void sendCachedImsRegInfo();
 
-private:
+  private:
     // Private members
     /// M: add for op09 default volte setting @{
     TimerHandle mNoIccidTimerHandle;
@@ -98,7 +97,7 @@ private:
     static bool sInitDone;
     /// @}
     static bool mImsDisByMms[4];
-    static int imscfgcache[4][6]; //[slot][params]
+    static int imscfgcache[4][6];  //[slot][params]
     sp<RfxMessage> mCachedXuiUrc;
 };
 

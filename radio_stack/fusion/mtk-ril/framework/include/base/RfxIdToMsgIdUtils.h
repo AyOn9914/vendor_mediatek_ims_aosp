@@ -18,16 +18,15 @@
 #define __RFX_ID_TO_MSG_ID_UTILS__
 
 class RfxIdToMsgIdUtils {
+  public:
+    // libril -> vendor ril
+    static int idToMsgId(int id);
+    // vendor ril -> libril
+    static int msgIdToId(int msgId);
 
-    public:
-        // libril -> vendor ril
-        static int idToMsgId(int id);
-        // vendor ril -> libril
-        static int msgIdToId(int msgId);
-
-        // SAP
-        static int sapIdToMsgId(int id);
-        static int sapMsgIdToId(int msgId);
+    // SAP
+    static int sapIdToMsgId(int id);
+    static int sapMsgIdToId(int msgId);
 };
 
 #endif

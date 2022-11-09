@@ -47,28 +47,26 @@
 RFX_IMPLEMENT_HANDLER_CLASS(RmcVtCommonReqHandler, RIL_CMD_PROXY_2);
 
 RmcVtCommonReqHandler::RmcVtCommonReqHandler(int slot_id, int channel_id)
-: RfxBaseHandler(slot_id, channel_id) {
-
-    RFX_LOG_I(RFX_LOG_TAG, "[RMC VT REQ HDLR] RmcVtCommonReqHandler create (slot_id = %d)", slot_id);
+    : RfxBaseHandler(slot_id, channel_id) {
+    RFX_LOG_I(RFX_LOG_TAG, "[RMC VT REQ HDLR] RmcVtCommonReqHandler create (slot_id = %d)",
+              slot_id);
 
     const int CommonEventList[] = {
-        RFX_MSG_EVENT_REPORT_ANBR,
+            RFX_MSG_EVENT_REPORT_ANBR,
     };
 
     registerToHandleEvent(CommonEventList, sizeof(CommonEventList) / sizeof(int));
 
     const int requestList[] = {
-        RFX_MSG_REQUEST_ENABLE_ANBR,
+            RFX_MSG_REQUEST_ENABLE_ANBR,
     };
 
-    registerToHandleRequest(requestList, sizeof(requestList)/sizeof(int));
+    registerToHandleRequest(requestList, sizeof(requestList) / sizeof(int));
 }
 
-RmcVtCommonReqHandler::~RmcVtCommonReqHandler() {
-}
+RmcVtCommonReqHandler::~RmcVtCommonReqHandler() {}
 
 void RmcVtCommonReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
-
     int request = msg->getId();
 
     RFX_LOG_I(RFX_LOG_TAG, "[Handle REQ] request = %d", request);
@@ -84,8 +82,7 @@ void RmcVtCommonReqHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcVtCommonReqHandler::onHandleEvent(const sp<RfxMclMessage> & msg) {
-
+void RmcVtCommonReqHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int event = msg->getId();
 
     RFX_LOG_I(RFX_LOG_TAG, "[Handle EVT] event = %d", event);
@@ -103,24 +100,27 @@ void RmcVtCommonReqHandler::onHandleEvent(const sp<RfxMclMessage> & msg) {
 }
 
 void RmcVtCommonReqHandler::handleReportANBR(const sp<RfxMclMessage>& msg) {
-
     char* cmd = NULL;
     sp<RfxAtResponse> p_response;
 
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int is_ul = pInt[0];
     int ebi = pInt[1];
     int bitrate = pInt[2];
     int bearer_id = pInt[3];
     int pdu_session_id = pInt[4];
-    int ext_param = pInt[5];; //for future usage
+    int ext_param = pInt[5];
+    ;  // for future usage
 
-    RFX_LOG_I(RFX_LOG_TAG, "[handleReportANBR] is_ul = %d, ebi = %d, bitrate = %d, bearer_id = %d, pdu_session_id = %d, ext_param = %d\n",
-            is_ul, ebi, bitrate, bearer_id, pdu_session_id, ext_param);
+    RFX_LOG_I(RFX_LOG_TAG,
+              "[handleReportANBR] is_ul = %d, ebi = %d, bitrate = %d, bearer_id = %d, "
+              "pdu_session_id = %d, ext_param = %d\n",
+              is_ul, ebi, bitrate, bearer_id, pdu_session_id, ext_param);
 
-    asprintf(&cmd, "AT+EANBR=2,%d,%d,%d,%d,%d,%d", ebi, is_ul, bitrate, bearer_id, pdu_session_id, ext_param);
-    //test
-    //asprintf(&cmd, "ATI");
+    asprintf(&cmd, "AT+EANBR=2,%d,%d,%d,%d,%d,%d", ebi, is_ul, bitrate, bearer_id, pdu_session_id,
+             ext_param);
+    // test
+    // asprintf(&cmd, "ATI");
 
     // send AT command
     p_response = atSendCommand(cmd);
@@ -131,15 +131,13 @@ void RmcVtCommonReqHandler::handleReportANBR(const sp<RfxMclMessage>& msg) {
     if (p_response->getSuccess() != 1) {
         RFX_LOG_I(RFX_LOG_TAG, "[handleReportANBR] response error");
     }
-
 }
 
 void RmcVtCommonReqHandler::handleEnableANBR(const sp<RfxMclMessage>& msg) {
-
     char* cmd = NULL;
     sp<RfxAtResponse> p_response;
 
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int enable = pInt[0];
 
     RFX_LOG_I(RFX_LOG_TAG, "[handleEnableANBR] enable = %d\n", enable);

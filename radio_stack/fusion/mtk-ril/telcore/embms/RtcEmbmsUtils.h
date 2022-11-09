@@ -31,25 +31,24 @@
  *****************************************************************************/
 
 class RtcEmbmsUtils {
-public:
+  public:
     RtcEmbmsUtils();
     virtual ~RtcEmbmsUtils();
 
-    static RtcEmbmsSessionInfo* findSessionByTransId(
-                        Vector<RtcEmbmsSessionInfo*>* list, int trans_id, int* index);
-    static RtcEmbmsSessionInfo* findSessionByTmgi(
-                        Vector<RtcEmbmsSessionInfo*>* list, int tmgi_len, char* pTmgi, int* index);
+    static RtcEmbmsSessionInfo* findSessionByTransId(Vector<RtcEmbmsSessionInfo*>* list,
+                                                     int trans_id, int* index);
+    static RtcEmbmsSessionInfo* findSessionByTmgi(Vector<RtcEmbmsSessionInfo*>* list, int tmgi_len,
+                                                  char* pTmgi, int* index);
 
     static void freeSessionList(Vector<RtcEmbmsSessionInfo*>* list);
     static int getDefaultDataSlotId();
-    static bool revertTmgi(const uint8_t* input, char * output, int length);
-    static bool convertTmgi(const char * input, uint8_t* output);
+    static bool revertTmgi(const uint8_t* input, char* output, int length);
+    static bool convertTmgi(const char* input, uint8_t* output);
     static bool isEmbmsSupport();
     static bool isAtCmdEnableSupport();
     static bool isRjilSupport();
     static bool isDualLteSupport();
     static char* addLogMask(int i);
 };
-
 
 #endif /* __RTC_EMBMS_UTILS_H__ */

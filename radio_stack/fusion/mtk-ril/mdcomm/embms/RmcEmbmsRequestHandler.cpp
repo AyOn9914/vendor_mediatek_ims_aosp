@@ -24,24 +24,23 @@
 #include <stdint.h>
 #include <time.h>
 
-
 static const int request[] = {
-    RFX_MSG_REQUEST_EMBMS_AT_CMD,
-    RFX_MSG_REQUEST_EMBMS_ENABLE,
-    RFX_MSG_REQUEST_EMBMS_DISABLE,
-    RFX_MSG_REQUEST_EMBMS_START_SESSION,
-    RFX_MSG_REQUEST_EMBMS_STOP_SESSION,
-    RFX_MSG_REQUEST_EMBMS_GET_TIME,
-    RFX_MSG_REQUEST_EMBMS_SET_E911,
-    RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE,
-    RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY,
+        RFX_MSG_REQUEST_EMBMS_AT_CMD,
+        RFX_MSG_REQUEST_EMBMS_ENABLE,
+        RFX_MSG_REQUEST_EMBMS_DISABLE,
+        RFX_MSG_REQUEST_EMBMS_START_SESSION,
+        RFX_MSG_REQUEST_EMBMS_STOP_SESSION,
+        RFX_MSG_REQUEST_EMBMS_GET_TIME,
+        RFX_MSG_REQUEST_EMBMS_SET_E911,
+        RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE,
+        RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY,
 };
 
 static const int events[] = {
-    RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE,
-    RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPDATE,
-    RFX_MSG_EVENT_EMBMS_POST_SAI_UPDATE,
-    RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE,
+        RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE,
+        RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPDATE,
+        RFX_MSG_EVENT_EMBMS_POST_SAI_UPDATE,
+        RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE,
 };
 
 // register handler to channel
@@ -53,25 +52,24 @@ int RmcEmbmsRequestHandler::embms_sock6_fd;
 
 int VDBG = 1;
 
-RmcEmbmsRequestHandler::RmcEmbmsRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcEmbmsRequestHandler::RmcEmbmsRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(LOG_TAG, "VDBG = %d", VDBG);
 
     RmcEmbmsRequestHandler::embms_sock_fd = 0;
     RmcEmbmsRequestHandler::embms_sock6_fd = 0;
     memset(&g_active_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
     memset(&g_available_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
-    registerToHandleEvent(events, sizeof(events)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
+    registerToHandleEvent(events, sizeof(events) / sizeof(int));
 }
 
-RmcEmbmsRequestHandler::~RmcEmbmsRequestHandler() {
-}
+RmcEmbmsRequestHandler::~RmcEmbmsRequestHandler() {}
 
 void RmcEmbmsRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     if (VDBG) logV(LOG_TAG, "onHandleRequest: %s", idToString(msg->getId()));
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_EMBMS_AT_CMD:
             requestEmbmsAt(msg);
             break;
@@ -109,7 +107,7 @@ void RmcEmbmsRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 void RmcEmbmsRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     if (VDBG) logV(LOG_TAG, "onHandleEvent: %s", idToString(msg->getId()));
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE:
             postEpsNetworkUpdate(msg);
             break;
@@ -152,8 +150,7 @@ void RmcEmbmsRequestHandler::postSessionListUpdate(const sp<RfxMclMessage>& msg)
     p_response = atSendCommandMultiline("AT+EMSLU?", "+EMSLU");
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         logE(LOG_TAG, "AT+EMSLU? Fail");
         return;
     }
@@ -172,7 +169,7 @@ void RmcEmbmsRequestHandler::postSessionListUpdate(const sp<RfxMclMessage>& msg)
         line->atTokStart(&err);
         if (err < 0) goto error;
         // <num_sessions>
-        if ( num_sessions == -1 ) {
+        if (num_sessions == -1) {
             num_sessions = line->atTokNextint(&err);
             if (err < 0) goto error;
             logD(LOG_TAG, "num_sessions:%d", num_sessions);
@@ -182,12 +179,12 @@ void RmcEmbmsRequestHandler::postSessionListUpdate(const sp<RfxMclMessage>& msg)
             if (err < 0) goto error;
         }
 
-        if ( index < num_sessions ) {
+        if (index < num_sessions) {
             // <x>
             skip = line->atTokNextint(&err);
             if (err < 0) goto error;
             // x should be index+1
-            if (skip != (index+1)) {
+            if (skip != (index + 1)) {
                 logE(LOG_TAG, "x(%d)!=index(%d)+1", skip, index);
             }
 
@@ -205,14 +202,14 @@ void RmcEmbmsRequestHandler::postSessionListUpdate(const sp<RfxMclMessage>& msg)
             if (tmp_status == 0 || tmp_status == 1) {
                 strncpy(available_session.tmgix[available_count], tmp_tmgi, EMBMS_MAX_LEN_TMGI);
                 strncpy(available_session.session_idx[available_count], tmp_session_id,
-                    EMBMS_LEN_SESSION_IDX);
+                        EMBMS_LEN_SESSION_IDX);
                 available_count++;
                 available_session.tmgi_info_count = available_count;
             }
             if (tmp_status == 1) {
                 strncpy(active_session.tmgix[active_count], tmp_tmgi, EMBMS_MAX_LEN_TMGI);
                 strncpy(active_session.session_idx[active_count], tmp_session_id,
-                    EMBMS_LEN_SESSION_IDX);
+                        EMBMS_LEN_SESSION_IDX);
                 active_count++;
                 active_session.tmgi_info_count = active_count;
             }
@@ -221,20 +218,21 @@ void RmcEmbmsRequestHandler::postSessionListUpdate(const sp<RfxMclMessage>& msg)
     }
 
     logI(LOG_TAG, "active_session_count=%d, available_session_count=%d",
-                        active_session.tmgi_info_count, available_session.tmgi_info_count);
+         active_session.tmgi_info_count, available_session.tmgi_info_count);
 
     if (memcmp(&g_active_session, &active_session, sizeof(RIL_EMBMS_LocalSessionNotify)) != 0) {
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_ACTIVE_SESSION,
-            msg->getSlotId(), RfxEmbmsLocalSessionNotifyData(&active_session,
-            sizeof(active_session)));
+        response = RfxMclMessage::obtainUrc(
+                RFX_MSG_URC_EMBMS_ACTIVE_SESSION, msg->getSlotId(),
+                RfxEmbmsLocalSessionNotifyData(&active_session, sizeof(active_session)));
         responseToTelCore(response);
         memcpy(&g_active_session, &active_session, sizeof(RIL_EMBMS_LocalSessionNotify));
     }
 
-    if (memcmp(&g_available_session, &available_session, sizeof(RIL_EMBMS_LocalSessionNotify)) != 0) {
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_AVAILABLE_SESSION,
-            msg->getSlotId(), RfxEmbmsLocalSessionNotifyData(&available_session,
-            sizeof(available_session)));
+    if (memcmp(&g_available_session, &available_session, sizeof(RIL_EMBMS_LocalSessionNotify)) !=
+        0) {
+        response = RfxMclMessage::obtainUrc(
+                RFX_MSG_URC_EMBMS_AVAILABLE_SESSION, msg->getSlotId(),
+                RfxEmbmsLocalSessionNotifyData(&available_session, sizeof(available_session)));
         responseToTelCore(response);
         memcpy(&g_available_session, &available_session, sizeof(RIL_EMBMS_LocalSessionNotify));
     }
@@ -257,8 +255,7 @@ void RmcEmbmsRequestHandler::postSaiListUpdate(const sp<RfxMclMessage>& msg) {
     p_response = atSendCommandMultiline("AT+EMSAIL?", "+EMSAIL");
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         return;
     }
 
@@ -266,14 +263,15 @@ void RmcEmbmsRequestHandler::postSaiListUpdate(const sp<RfxMclMessage>& msg) {
         return;
     }
 
-    response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_SAI_LIST_NOTIFICATION,
-        msg->getSlotId(), RfxEmbmsLocalSaiNotifyData(&embms_sailit, sizeof(embms_sailit)));
+    response = RfxMclMessage::obtainUrc(
+            RFX_MSG_URC_EMBMS_SAI_LIST_NOTIFICATION, msg->getSlotId(),
+            RfxEmbmsLocalSaiNotifyData(&embms_sailit, sizeof(embms_sailit)));
     responseToTelCore(response);
     return;
 }
 
 void RmcEmbmsRequestHandler::postHvolteUpdate(const sp<RfxMclMessage>& msg) {
-    char *urc = (char *)msg->getData()->getData();
+    char* urc = (char*)msg->getData()->getData();
     RfxAtLine* atline = new RfxAtLine(urc, NULL);
     RfxAtLine* atline_free = atline;
     logV(LOG_TAG, "postHvolteUpdate urc=%s", urc);
@@ -308,7 +306,7 @@ void RmcEmbmsRequestHandler::postHvolteUpdate(const sp<RfxMclMessage>& msg) {
     return;
 
 error:
-    if ( atline_free != NULL ) {
+    if (atline_free != NULL) {
         delete atline_free;
     }
     logE(LOG_TAG, "Error during postHvolteUpdate");
@@ -333,7 +331,7 @@ int RmcEmbmsRequestHandler::convertLteRegState(int status, int eAct) {
 }
 
 void RmcEmbmsRequestHandler::postEpsNetworkUpdate(const sp<RfxMclMessage>& msg) {
-    char *urc = (char *)msg->getData()->getData();
+    char* urc = (char*)msg->getData()->getData();
     RfxAtLine* atline = new RfxAtLine(urc, NULL);
     RfxAtLine* atline_free = atline;
     logV(LOG_TAG, "postEpsNetworkUpdate urc=%s", urc);
@@ -351,22 +349,17 @@ void RmcEmbmsRequestHandler::postEpsNetworkUpdate(const sp<RfxMclMessage>& msg) 
     char* cell_id_mask = NULL;
     int eAct;
     /*
-    +EGREG: <stat>[,[<lac>],[<ci>],[<eAct>][,<existence >,<roam_indicator>]][,<cause_type>,<reject_cause>]]
-    List of <stat>:
-        0 : not registered, MT is not currently searching an operator to register to
-        1 : registered, home network (applicable also when <eAct> indicates 1xRTT/HRPD/eHRPD)
-        2 : not registered, but MT is currently trying to attach or searching an operator
-        3 : registration denied
-        4 : unknown
-        5 : registered, roaming (applicable also when <eAct> indicates 1xRTT/HRPD/eHRPD)
-        6 : registered for "SMS only", home network (not applicable)
-        7 : registered for "SMS only", roaming (not applicable)
-        8 : attached for emergency bearer services only (see NOTE 2)
-            (applicable only when <eAct> indicates 2,4,5,6)
-        9 : registered for "CSFB not preferred", home network (not applicable)
-        10: registered for "CSFB not preferred", roaming (not applicable)
-        101:no NW, but need to find  NW (Mapping to C2K AT Command ^mode:0, +ECGREG:0)
-        102:not registered, but MT find 1X NW existence (Mapping to C2K AT command ^mode:2)
+    +EGREG: <stat>[,[<lac>],[<ci>],[<eAct>][,<existence
+    >,<roam_indicator>]][,<cause_type>,<reject_cause>]] List of <stat>: 0 : not registered, MT is
+    not currently searching an operator to register to 1 : registered, home network (applicable also
+    when <eAct> indicates 1xRTT/HRPD/eHRPD) 2 : not registered, but MT is currently trying to attach
+    or searching an operator 3 : registration denied 4 : unknown 5 : registered, roaming (applicable
+    also when <eAct> indicates 1xRTT/HRPD/eHRPD) 6 : registered for "SMS only", home network (not
+    applicable) 7 : registered for "SMS only", roaming (not applicable) 8 : attached for emergency
+    bearer services only (see NOTE 2) (applicable only when <eAct> indicates 2,4,5,6) 9 : registered
+    for "CSFB not preferred", home network (not applicable) 10: registered for "CSFB not preferred",
+    roaming (not applicable) 101:no NW, but need to find  NW (Mapping to C2K AT Command ^mode:0,
+    +ECGREG:0) 102:not registered, but MT find 1X NW existence (Mapping to C2K AT command ^mode:2)
         103:not registered, but MT find Do NW existence (Mapping to C2K AT Command ^mode:4)
         104:not registered, but MT find Do&1X NW existence (Mapping to C2K AT Command ^mode:8)
     <eAct>:
@@ -430,8 +423,7 @@ void RmcEmbmsRequestHandler::postEpsNetworkUpdate(const sp<RfxMclMessage>& msg) 
 
     p_response = atSendCommandSingleline("AT+EOPS?", "+EOPS:");
     err = p_response->getError();
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -467,9 +459,9 @@ void RmcEmbmsRequestHandler::postEpsNetworkUpdate(const sp<RfxMclMessage>& msg) 
     if (cell_id != 0x0fffffff && plmn != NULL && strlen(plmn) > 0) {
         intdata[0] = cell_id;
         intdata[1] = status;
-        intdata[2] = (plmn == NULL)? 0:atoi(plmn);
+        intdata[2] = (plmn == NULL) ? 0 : atoi(plmn);
         response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_CELL_INFO_NOTIFICATION,
-            msg->getSlotId(), RfxIntsData(intdata, 3));
+                                            msg->getSlotId(), RfxIntsData(intdata, 3));
         responseToTelCore(response);
     } else {
         cell_id_mask = RmcEmbmsUtils::addLogMask(cell_id);
@@ -489,7 +481,7 @@ error:
 }
 
 bool RmcEmbmsRequestHandler::parseSailist(sp<RfxAtResponse> p_response,
-    RIL_EMBMS_LocalSaiNotify* p_embms_sailist) {
+                                          RIL_EMBMS_LocalSaiNotify* p_embms_sailist) {
     RfxAtLine* line;
     int err = 0, count = 0, value = 0;
     int nfreq_index = 0, emsailcf_done = 0;
@@ -509,7 +501,8 @@ bool RmcEmbmsRequestHandler::parseSailist(sp<RfxAtResponse> p_response,
 
         if (!emsailcf_done) {
             int cfreq_index = 0;
-            // +EMSAILCF: <num_intra_freq>[,<freq_1>[,<freq_2>[...]],<num_sais>,<sai_1>[,<sai_2>[...]]]
+            // +EMSAILCF:
+            // <num_intra_freq>[,<freq_1>[,<freq_2>[...]],<num_sais>,<sai_1>[,<sai_2>[...]]]
             count = line->atTokNextint(&err);
 
             if (err < 0) return false;
@@ -553,7 +546,7 @@ bool RmcEmbmsRequestHandler::parseSailist(sp<RfxAtResponse> p_response,
                 }
 
                 p_embms_sailist->curSaiData[i] = value;
-                if (VDBG) logV(LOG_TAG, "s sai[%d] = %d" , i, value);
+                if (VDBG) logV(LOG_TAG, "s sai[%d] = %d", i, value);
             }
         } else {
             // +EMSAILNF: <num_nf>,[<x>,<nfx>[,<num_bands_nfx>[,<band1_nfx>[,<band2_nfx>[,<...>]]]]
@@ -599,7 +592,6 @@ bool RmcEmbmsRequestHandler::parseSailist(sp<RfxAtResponse> p_response,
                     logW(LOG_TAG, "Warning! nsai_count_per_group is full");
                 }
 
-
                 for (i = 0; i < count; i++) {
                     value = line->atTokNextint(&err);
                     if (err < 0) {
@@ -614,10 +606,10 @@ bool RmcEmbmsRequestHandler::parseSailist(sp<RfxAtResponse> p_response,
                     p_embms_sailist->neiSaiData[p_embms_sailist->nsai_total + i] = value;
                 }
             } else {
-                //Force break for loop to prevent p_cur not end due to unknown reason
+                // Force break for loop to prevent p_cur not end due to unknown reason
                 break;
             }
-            logD(LOG_TAG, "n sai[%d] = %d" , p_embms_sailist->nsai_total + i, value);
+            logD(LOG_TAG, "n sai[%d] = %d", p_embms_sailist->nsai_total + i, value);
             p_embms_sailist->nsai_total += count;
         }
     }
@@ -635,14 +627,13 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList_old(const sp<RfxMclMessage>& ms
     RIL_EMBMS_LocalSaiNotify embms_sailit;
     sp<RfxMclMessage> response;
     memset(&embms_sailit, 0, sizeof(embms_sailit));
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtGetSaiList]%s", data);
 
     p_response = atSendCommandMultiline("AT+EMSAIL?", "+EMSAIL");
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -654,14 +645,14 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList_old(const sp<RfxMclMessage>& ms
     cmdline.append(String8::format("%d", embms_sailit.csai_total));
 
     // csai1
-    for (i = 0; i < (int) embms_sailit.csai_total; i++) {
+    for (i = 0; i < (int)embms_sailit.csai_total; i++) {
         cmdline.append(String8::format(",%d", embms_sailit.curSaiData[i]));
     }
 
     // n-SAI_COUNT
     cmdline.append(String8::format(",%d", embms_sailit.nsai_total));
 
-    for (i = 0; i < (int) embms_sailit.nsai_total; i++) {
+    for (i = 0; i < (int)embms_sailit.nsai_total; i++) {
         cmdline.append(String8::format(",%d", embms_sailit.neiSaiData[i]));
     }
 
@@ -669,8 +660,9 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList_old(const sp<RfxMclMessage>& ms
     // OK/ERROR
     response_str = String8::format("%%MBMSCMD:%s\nOK\n", cmdline.string());
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -679,12 +671,12 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList_old(const sp<RfxMclMessage>& ms
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
-
 }
 
 void RmcEmbmsRequestHandler::requestAtGetSaiList(const sp<RfxMclMessage>& msg) {
@@ -697,13 +689,12 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList(const sp<RfxMclMessage>& msg) {
     RIL_EMBMS_LocalSaiNotify embms_sailit;
     sp<RfxMclMessage> response;
     memset(&embms_sailit, 0, sizeof(embms_sailit));
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtGetSaiList]%s", data);
 
     p_response = atSendCommandMultiline("AT+EMSAIL?", "+EMSAIL");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -720,21 +711,21 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList(const sp<RfxMclMessage>& msg) {
     cmdline.append(String8::format("%d", embms_sailit.csai_total));
 
     // csai1
-    for (i = 0; i < (int) embms_sailit.csai_total; i++) {
+    for (i = 0; i < (int)embms_sailit.csai_total; i++) {
         cmdline.append(String8::format(",%d", embms_sailit.curSaiData[i]));
     }
 
     // INTER_FREQUENCY_COUNT
     cmdline.append(String8::format(",%d", embms_sailit.nf_total));
 
-    for (i = 0; i < (int) embms_sailit.nf_total; i++) {
+    for (i = 0; i < (int)embms_sailit.nf_total; i++) {
         // <Frequency_1>, <SAI_COUNT_1>
         cmdline.append(String8::format(",%d,%d", embms_sailit.neiFreqData[i],
-                        embms_sailit.nsai_count_per_group[i]));
+                                       embms_sailit.nsai_count_per_group[i]));
 
         // <nsai11>
-        for (j = 0; j < (int) embms_sailit.nsai_count_per_group[i]; j++) {
-            cmdline.append(String8::format(",%d", embms_sailit.neiSaiData[tail_index+j]));
+        for (j = 0; j < (int)embms_sailit.nsai_count_per_group[i]; j++) {
+            cmdline.append(String8::format(",%d", embms_sailit.neiSaiData[tail_index + j]));
         }
         tail_index += embms_sailit.nsai_count_per_group[i];
     }
@@ -742,16 +733,18 @@ void RmcEmbmsRequestHandler::requestAtGetSaiList(const sp<RfxMclMessage>& msg) {
     // OK/ERROR
     response_str = String8::format("%%MBMSCMD:%s\nOK\n", cmdline.string());
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
     return;
 error:
     response_str = String8("ERROR\n");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -766,7 +759,7 @@ void RmcEmbmsRequestHandler::requestAtNetworkInfo(const sp<RfxMclMessage>& msg) 
     unsigned int cell_id = 0x0fffffff;
     int skip;
     char* plmn = NULL;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     sp<RfxMclMessage> response;
     logI(LOG_TAG, "[requestAtNetworkInfo]%s", data);
 
@@ -779,8 +772,8 @@ void RmcEmbmsRequestHandler::requestAtNetworkInfo(const sp<RfxMclMessage>& msg) 
     //              [<nwk_existence>],[<roam_indicator>][,<cause_type>,<reject_cause>]]
     //  <n> = 3, +EGREG: <n>,<stat>[,[<lac>],[<ci>],[<eAcT>],[<rac>][,<cause_type>,<reject_cause>]]
 
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL)
+        goto error;
 
     line = p_response->getIntermediates();
     if (!parseCellId(line, &skip, &cell_id)) {
@@ -792,8 +785,7 @@ void RmcEmbmsRequestHandler::requestAtNetworkInfo(const sp<RfxMclMessage>& msg) 
 
     p_response = atSendCommandSingleline("AT+EOPS?", "+EOPS:");
     err = p_response->getError();
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -833,8 +825,9 @@ void RmcEmbmsRequestHandler::requestAtNetworkInfo(const sp<RfxMclMessage>& msg) 
         goto error;
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -843,27 +836,31 @@ void RmcEmbmsRequestHandler::requestAtNetworkInfo(const sp<RfxMclMessage>& msg) 
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-int RmcEmbmsRequestHandler::getSignalStrength(RfxAtLine *line, int* rssi) {
+int RmcEmbmsRequestHandler::getSignalStrength(RfxAtLine* line, int* rssi) {
     int err;
     int skip;
     int act;
     int rsrp_in_qdbm;
     int rsrq_in_qdbm;
 
-    //Use int max, as -1 is a valid value in signal strength
+    // Use int max, as -1 is a valid value in signal strength
     int INVALID = 0x7FFFFFFF;
 
     // 93 modem <LWG, C2K, EVDO>
-    // +ECSQ: <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<Act>,<sig3>,<serv_band>
-    // +ECSQ: <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<256>,<sig3>,<serv_band>
-    // +ECSQ: <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<Act_EvDo>,<sig3>,<serv_band>
+    // +ECSQ:
+    // <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<Act>,<sig3>,<serv_band>
+    // +ECSQ:
+    // <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<256>,<sig3>,<serv_band>
+    // +ECSQ:
+    // <sig1>,<sig2>,<rssi_in_qdbm>,<rscp_in_qdbm>,<ecn0_in_qdbm>,<rsrq_in_qdbm>,<rsrp_in_qdbm>,<Act_EvDo>,<sig3>,<serv_band>
 
     // go to start position
     line->atTokStart(&err);
@@ -898,14 +895,14 @@ int RmcEmbmsRequestHandler::getSignalStrength(RfxAtLine *line, int* rssi) {
     // 0x0004     L4C_UMTS_SUPPORT
     // 0x0008     L4C_HSDPA_SUPPORT
     if ((act == 0x1000) || (act == 0x2000)) {
-        rsrq_in_qdbm = (rsrq_in_qdbm/4) * (-1);
+        rsrq_in_qdbm = (rsrq_in_qdbm / 4) * (-1);
         if (rsrq_in_qdbm > 20) {
             rsrq_in_qdbm = 20;
         } else if (rsrq_in_qdbm < 3) {
             rsrq_in_qdbm = 3;
         }
 
-        rsrp_in_qdbm = (rsrp_in_qdbm/4) * (-1);
+        rsrp_in_qdbm = (rsrp_in_qdbm / 4) * (-1);
         if (rsrp_in_qdbm > 140) {
             rsrp_in_qdbm = 140;
         } else if (rsrp_in_qdbm < 44) {
@@ -930,13 +927,12 @@ void RmcEmbmsRequestHandler::requestAtBssiSignalLevel(const sp<RfxMclMessage>& m
     String8 response_str("");
     sp<RfxMclMessage> response;
     int bssi = 0;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtBssiSignalLevel]%s", data);
 
     p_response = atSendCommandMultiline("AT+ECSQ", "+ECSQ:");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -949,8 +945,9 @@ void RmcEmbmsRequestHandler::requestAtBssiSignalLevel(const sp<RfxMclMessage>& m
     // OK/ERROR
     response_str = String8::format("%%MBMSCMD:%d\nOK\n", bssi);
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -959,8 +956,9 @@ void RmcEmbmsRequestHandler::requestAtBssiSignalLevel(const sp<RfxMclMessage>& m
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -968,8 +966,9 @@ error:
 
 void RmcEmbmsRequestHandler::dummyOkResponse(const sp<RfxMclMessage>& msg) {
     String8 response_str("OK\n");
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -982,12 +981,11 @@ void RmcEmbmsRequestHandler::requestAtModemStatus(const sp<RfxMclMessage>& msg) 
     RfxAtLine* line;
     String8 response_str("");
     sp<RfxMclMessage> response;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtModemStatus]%s", data);
     p_response = atSendCommandSingleline("AT+CFUN?", "+CFUN:");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -996,8 +994,9 @@ void RmcEmbmsRequestHandler::requestAtModemStatus(const sp<RfxMclMessage>& msg) 
 
     // AT+CFUN?
     // OK/ERROR
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1006,8 +1005,9 @@ void RmcEmbmsRequestHandler::requestAtModemStatus(const sp<RfxMclMessage>& msg) 
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1021,7 +1021,7 @@ void RmcEmbmsRequestHandler::requestAtEnableUrcEvents(const sp<RfxMclMessage>& m
     sp<RfxAtResponse> p_response;
     String8 response_str("");
     sp<RfxMclMessage> response;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtEnableUrcEvents]%s", data);
 
     RfxAtLine* atline = new RfxAtLine(data, NULL);
@@ -1061,8 +1061,9 @@ void RmcEmbmsRequestHandler::requestAtEnableUrcEvents(const sp<RfxMclMessage>& m
 
     response_str = String8("OK\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1076,8 +1077,9 @@ error:
     }
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1097,15 +1099,14 @@ void RmcEmbmsRequestHandler::requestAtAvailService(const sp<RfxMclMessage>& msg)
     char* tmpBuffer;
     sp<RfxMclMessage> response;
     int err = 0;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtAvailService]%s", data);
     memset(current_session_tmgis, 0, sizeof(current_session_tmgis));
     memset(current_session_ids, 0, sizeof(current_session_ids));
 
     p_response = atSendCommandMultiline("AT+EMSLU?", "+EMSLU");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         logE(LOG_TAG, "AT+EMSLU? Fail");
         goto error;
     }
@@ -1165,7 +1166,7 @@ void RmcEmbmsRequestHandler::requestAtAvailService(const sp<RfxMclMessage>& msg)
             // skip status, both active and available are counted as available
 
             index++;
-          }
+        }
     }
 
     // %MBMSCMD: <TMGI>[,<SessionID>]
@@ -1179,23 +1180,25 @@ void RmcEmbmsRequestHandler::requestAtAvailService(const sp<RfxMclMessage>& msg)
             if (session_ids_len == 0) {
                 cmdline.append(String8::format("%%MBMSCMD: %s\n", tmpBuffer));
             } else {
-                char *endptr = NULL;
-                int sessionId = (int) strtol(current_session_ids[i], &endptr, 16);
+                char* endptr = NULL;
+                int sessionId = (int)strtol(current_session_ids[i], &endptr, 16);
                 cmdline.append(String8::format("%%MBMSCMD: %s,%d\n", tmpBuffer, sessionId));
             }
         }
     }
     response_str = String8::format("%sOK\n", cmdline.string());
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
     return;
 error:
     response_str = String8("ERROR\n");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1204,7 +1207,7 @@ error:
 void RmcEmbmsRequestHandler::requestAtDeviceInfo(const sp<RfxMclMessage>& msg) {
     int fd;
     struct ifreq ifr;
-    unsigned char *mac;
+    unsigned char* mac;
     String8 response_str("");
     sp<RfxMclMessage> response;
 
@@ -1217,20 +1220,22 @@ void RmcEmbmsRequestHandler::requestAtDeviceInfo(const sp<RfxMclMessage>& msg) {
         }
         ioctl(fd, SIOCGIFHWADDR, &ifr);
         close(fd);
-        mac = (unsigned char *)ifr.ifr_hwaddr.sa_data;
-        response_str = String8::format("%%MBMSCMD:%.2X:%.2X:%.2X:%.2X:%.2X:%.2X\nOK\n",
-            mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        mac = (unsigned char*)ifr.ifr_hwaddr.sa_data;
+        response_str = String8::format("%%MBMSCMD:%.2X:%.2X:%.2X:%.2X:%.2X:%.2X\nOK\n", mac[0],
+                                       mac[1], mac[2], mac[3], mac[4], mac[5]);
         logD(LOG_TAG, "mac address:%s", response_str.string());
 
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
+                RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
         // response to TeleCore
         responseToTelCore(response);
     } else {
         response_str = String8("ERROR\n");
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
+                RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
         // response to TeleCore
         responseToTelCore(response);
@@ -1245,7 +1250,7 @@ void RmcEmbmsRequestHandler::requestAtSetPreference(const sp<RfxMclMessage>& msg
     String8 response_str("");
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
 
     logI(LOG_TAG, "[requestAtSetPreference]%s", data);
     RfxAtLine* atline = new RfxAtLine(data, NULL);
@@ -1271,8 +1276,9 @@ void RmcEmbmsRequestHandler::requestAtSetPreference(const sp<RfxMclMessage>& msg
     }
 
     response_str = String8("OK\n");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1285,8 +1291,9 @@ error:
         delete atline_free;
     }
     response_str = String8("ERROR\n");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1301,12 +1308,11 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegSupport(const sp<RfxMclMessage>&
     RfxAtLine* line;
     String8 response_str("");
     sp<RfxMclMessage> response;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtNetworkRegSupport]%s", data);
     p_response = atSendCommandSingleline("AT+EGREG=?", "+EGREG:");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -1319,8 +1325,9 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegSupport(const sp<RfxMclMessage>&
     line->atTokStart(&err);
     response_str = String8::format("+CEREG:%s\nOK\n", line->getCurrentLine());
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1329,8 +1336,9 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegSupport(const sp<RfxMclMessage>&
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1344,12 +1352,11 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegStatus(const sp<RfxMclMessage>& 
     RfxAtLine* line;
     String8 response_str("");
     sp<RfxMclMessage> response;
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "[requestAtNetworkRegStatus]%s", data);
     p_response = atSendCommandSingleline("AT+EGREG?", "+EGREG:");
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
     // AT+CEREG?
@@ -1362,8 +1369,9 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegStatus(const sp<RfxMclMessage>& 
 
     // AT+CFUN?
     // OK/ERROR
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -1372,20 +1380,21 @@ void RmcEmbmsRequestHandler::requestAtNetworkRegStatus(const sp<RfxMclMessage>& 
 error:
     response_str = String8("ERROR\n");
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData((void *)response_str.string(), response_str.length()), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxStringData((void*)response_str.string(), response_str.length()), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcEmbmsRequestHandler::requestEmbmsAt(const sp<RfxMclMessage>& msg) {
-    char *data = (char *)msg->getData()->getData();
+    char* data = (char*)msg->getData()->getData();
     logI(LOG_TAG, "requestEmbmsAt:%s", (char*)data);
 
     if (data == NULL) {
         logE(LOG_TAG, "Error!! requestEmbmsAt: get null!!");
-    // for RJIL old middleware version, and this only occur from v1.8
+        // for RJIL old middleware version, and this only occur from v1.8
     } else if (strStartsWith(data, "AT%MBMSCMD=\"CURRENT_SAI_LIST\"")) {
         if (isRjilSupport()) {
             requestAtGetSaiList_old(msg);
@@ -1426,7 +1435,7 @@ void RmcEmbmsRequestHandler::requestEmbmsAt(const sp<RfxMclMessage>& msg) {
 }
 
 bool RmcEmbmsRequestHandler::parseCellId(RfxAtLine* p_response, int* status,
-                                        unsigned int* cell_id) {
+                                         unsigned int* cell_id) {
     RfxAtLine* line;
     int skip;
     int err;
@@ -1527,7 +1536,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     char* plmn = NULL;
     int intdata[3];
 
-    int *data = (int *)msg->getData()->getData();
+    int* data = (int*)msg->getData()->getData();
     // initial
     enable_response.trans_id = data[0];
     enable_response.response = EMBMS_GENERAL_FAIL;  // default fail
@@ -1535,7 +1544,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     logI(LOG_TAG, "[requestLocalEmbmsEnable]:%d, r_trans_id:%d", type, enable_response.trans_id);
 
     sendEvent(RFX_MSG_EVENT_EMBMS_INITIAL_VARIABLE, RfxVoidData(), RIL_CMD_PROXY_URC,
-        msg->getSlotId());
+              msg->getSlotId());
 
     memset(&g_active_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
     memset(&g_available_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
@@ -1547,7 +1556,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
 
     // get interface index
 
-    int result = sprintf(enable_response.interface_name, "%s%d", CCMNI_IFNAME_CCMNI, EMBMS_IFACE_ID - 1);
+    int result =
+            sprintf(enable_response.interface_name, "%s%d", CCMNI_IFNAME_CCMNI, EMBMS_IFACE_ID - 1);
     if (result < 0) {
         logE(LOG_TAG, "sprintf fail for enable_response.interface_name");
     }
@@ -1573,14 +1583,13 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     err = p_response->getError();
 
     // Real bind
-    p_response = atSendCommand(String8::format("AT+EMBIND=%d,\"M-LHIF\",%d",
-        enable, EMBMS_IFACE_ID));
+    p_response =
+            atSendCommand(String8::format("AT+EMBIND=%d,\"M-LHIF\",%d", enable, EMBMS_IFACE_ID));
     err = p_response->getError();
     if (err != 0 || p_response->getSuccess() == 0) {
         logE(LOG_TAG, "AT+EMBIND=%d Fail", enable);
         goto error;
     }
-
 
     // enable eMBMS Service
     p_response = atSendCommand(String8::format("AT+EMSEN=%d", enable));
@@ -1591,7 +1600,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     }
 
     // priority
-    if(type == EMBMS_COMMAND_RIL || !isAtCmdEnableSupport()) {
+    if (type == EMBMS_COMMAND_RIL || !isAtCmdEnableSupport()) {
         p_response = atSendCommand("AT+EMPRI=1");
         err = p_response->getError();
         if (err != 0 || p_response->getSuccess() == 0) {
@@ -1624,8 +1633,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     //              [<nwk_existence>],[<roam_indicator>][,<cause_type>,<reject_cause>]]
     //  <n> = 3, +EGREG: <n>,<stat>[,[<lac>],[<ci>],[<eAcT>],[<rac>][,<cause_type>,<reject_cause>]]
 
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL)
+        goto error;
 
     line = p_response->getIntermediates();
     if (!parseCellId(line, &status, &cell_id)) {
@@ -1634,8 +1643,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
 
     p_response = atSendCommandSingleline("AT+EOPS?", "+EOPS:");
     err = p_response->getError();
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) {
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -1669,16 +1677,17 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     if (cell_id != 0x0fffffff && plmn != NULL && strlen(plmn) > 0) {
         intdata[0] = cell_id;
         intdata[1] = status;
-        intdata[2] = (plmn == NULL)? 0:atoi(plmn);
+        intdata[2] = (plmn == NULL) ? 0 : atoi(plmn);
         urc_response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_CELL_INFO_NOTIFICATION,
-            msg->getSlotId(), RfxIntsData(intdata, 3));
+                                                msg->getSlotId(), RfxIntsData(intdata, 3));
         responseToTelCore(urc_response);
     }
 
     // OK / ERROR
     enable_response.response = EMBMS_GENERAL_SUCCESS;
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsLocalEnableRespData(&enable_response, sizeof(enable_response)), msg, false);
 
     // response to TeleCore
@@ -1686,7 +1695,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsEnable(const sp<RfxMclMessage>& ms
     return;
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsLocalEnableRespData(&enable_response, sizeof(enable_response)), msg, false);
 
     // response to TeleCore
@@ -1695,10 +1705,9 @@ error:
 
 /* For setting IFF_UP: ril_data_setflags(s, &ifr, IFF_UP, 0) */
 /* For setting IFF_DOWN: ril_data_setflags(s, &ifr, 0, IFF_UP) */
-void RmcEmbmsRequestHandler::ril_data_setflags(int s, struct ifreq *ifr, int set, int clr)
-{
+void RmcEmbmsRequestHandler::ril_data_setflags(int s, struct ifreq* ifr, int set, int clr) {
     int ret = 0;
-    char *flag = NULL;
+    char* flag = NULL;
 
     ret = ioctl(s, SIOCGIFFLAGS, ifr);
     asprintf(&flag, "SIOCGIFFLAGS");
@@ -1719,14 +1728,14 @@ void RmcEmbmsRequestHandler::ril_data_setflags(int s, struct ifreq *ifr, int set
 
     return;
 terminate:
-    logE(LOG_TAG, "ril_data_setflags: error in set %s:%d - %d:%s", flag, ret, errno, strerror(errno));
+    logE(LOG_TAG, "ril_data_setflags: error in set %s:%d - %d:%s", flag, ret, errno,
+         strerror(errno));
     free(flag);
     return;
 }
 
 void RmcEmbmsRequestHandler::ril_embms_ioctl_init() {
-    if (RmcEmbmsRequestHandler::embms_sock_fd > 0)
-        close(RmcEmbmsRequestHandler::embms_sock_fd);
+    if (RmcEmbmsRequestHandler::embms_sock_fd > 0) close(RmcEmbmsRequestHandler::embms_sock_fd);
 
     RmcEmbmsRequestHandler::embms_sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -1735,20 +1744,19 @@ void RmcEmbmsRequestHandler::ril_embms_ioctl_init() {
     else
         logD(LOG_TAG, "Allocate embms_sock_fd=%d", RmcEmbmsRequestHandler::embms_sock_fd);
 
-    if (RmcEmbmsRequestHandler::embms_sock6_fd > 0)
-        close(RmcEmbmsRequestHandler::embms_sock6_fd);
+    if (RmcEmbmsRequestHandler::embms_sock6_fd > 0) close(RmcEmbmsRequestHandler::embms_sock6_fd);
 
     RmcEmbmsRequestHandler::embms_sock6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
 
     if (RmcEmbmsRequestHandler::embms_sock6_fd < 0) {
-        RmcEmbmsRequestHandler::embms_sock6_fd = -errno;    /* save errno for later */
+        RmcEmbmsRequestHandler::embms_sock6_fd = -errno; /* save errno for later */
         logE(LOG_TAG, "Couldn't create IPv6 socket: errno=%d", errno);
     } else {
         logD(LOG_TAG, "Allocate embms_sock6_fd=%d", RmcEmbmsRequestHandler::embms_sock6_fd);
     }
 }
 
-void RmcEmbmsRequestHandler::setNwIntfDown(const char * pzIfName) {
+void RmcEmbmsRequestHandler::setNwIntfDown(const char* pzIfName) {
     logV(LOG_TAG, "setNwIntfDown %s", pzIfName);
     ifc_reset_connections(pzIfName, RESET_ALL_ADDRESSES);
     ifc_remove_default_route(pzIfName);
@@ -1758,7 +1766,8 @@ void RmcEmbmsRequestHandler::setNwIntfDown(const char * pzIfName) {
 void RmcEmbmsRequestHandler::configureEmbmsNetworkInterface(int interfaceId, int isUp) {
     struct ifreq ifr;
 
-    logI(LOG_TAG, "configureNetworkInterface interface %d to %s", interfaceId, isUp ? "UP" : "DOWN");
+    logI(LOG_TAG, "configureNetworkInterface interface %d to %s", interfaceId,
+         isUp ? "UP" : "DOWN");
     memset(&ifr, 0, sizeof(struct ifreq));
     int result = sprintf(ifr.ifr_name, "%s%d", CCMNI_IFNAME_CCMNI, EMBMS_IFACE_ID - 1);
     if (result < 0) {
@@ -1794,7 +1803,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsDisable(const sp<RfxMclMessage>& m
     int type;
     sp<RfxMclMessage> response;
 
-    int *data = (int *)msg->getData()->getData();
+    int* data = (int*)msg->getData()->getData();
     // initial
     disable_response.trans_id = data[0];
     disable_response.response = EMBMS_GENERAL_FAIL;  // default fail
@@ -1802,16 +1811,16 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsDisable(const sp<RfxMclMessage>& m
     logI(LOG_TAG, "[requestLocalEmbmsDisable]:%d, r_trans_id:%d", type, disable_response.trans_id);
 
     sendEvent(RFX_MSG_EVENT_EMBMS_INITIAL_VARIABLE, RfxVoidData(), RIL_CMD_PROXY_URC,
-        msg->getSlotId());
+              msg->getSlotId());
 
     memset(&g_active_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
     memset(&g_available_session, 0xff, sizeof(RIL_EMBMS_LocalSessionNotify));
 
     // setNetworkInterface to ccmni7
-    configureEmbmsNetworkInterface(EMBMS_IFACE_ID -1 , enable);
+    configureEmbmsNetworkInterface(EMBMS_IFACE_ID - 1, enable);
 
-    p_response = atSendCommand(String8::format("AT+EMBIND=%d,\"M-LHIF\",%d"
-                                , enable, EMBMS_IFACE_ID));
+    p_response =
+            atSendCommand(String8::format("AT+EMBIND=%d,\"M-LHIF\",%d", enable, EMBMS_IFACE_ID));
     err = p_response->getError();
     if (err != 0 || p_response->getSuccess() == 0) {
         logE(LOG_TAG, "ignore AT+EMBIND=%d Fail to finish other command", enable);
@@ -1837,7 +1846,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsDisable(const sp<RfxMclMessage>& m
 
     // OK / ERROR
     disable_response.response = EMBMS_GENERAL_SUCCESS;
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsDisableRespData(&disable_response, sizeof(disable_response)), msg, false);
 
     // response to TeleCore
@@ -1845,7 +1855,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsDisable(const sp<RfxMclMessage>& m
     return;
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsDisableRespData(&disable_response, sizeof(disable_response)), msg, false);
 
     // response to TeleCore
@@ -1862,8 +1873,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStartSession(const sp<RfxMclMessag
     sp<RfxMclMessage> response;
 
     logI(LOG_TAG, "[requestLocalEmbmsStartSession]");
-    RIL_EMBMS_LocalStartSessionReq* request = (RIL_EMBMS_LocalStartSessionReq*)
-                                                msg->getData()->getData();
+    RIL_EMBMS_LocalStartSessionReq* request =
+            (RIL_EMBMS_LocalStartSessionReq*)msg->getData()->getData();
 
     RIL_EMBMS_LocalStartSessionResp response_data;
 
@@ -1879,7 +1890,6 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStartSession(const sp<RfxMclMessag
     //  session_id
     if (request->saiList_count > 0 || request->earfcnlist_count > 0 || request->session_id > 0) {
         cmdline.append(String8(","));
-
     }
     if (request->session_id > 0) {  // !=INVALID_EMBMS_SESSION_ID
         cmdline.append(String8::format("\"%02X\"", request->session_id));
@@ -1921,26 +1931,24 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStartSession(const sp<RfxMclMessag
     response_data.tmgi_info_valid = 1;
     strncpy(response_data.tmgi, request->tmgi, EMBMS_MAX_LEN_TMGI);
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxEmbmsLocalStartSessionRespData(&response_data,
-                sizeof(response_data)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxEmbmsLocalStartSessionRespData(&response_data, sizeof(response_data)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
     return;
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxEmbmsLocalStartSessionRespData(&response_data,
-                sizeof(response_data)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxEmbmsLocalStartSessionRespData(&response_data, sizeof(response_data)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
-int RmcEmbmsRequestHandler::isTmgiEmpty(char * tmgi) {
-    return(strlen(tmgi) == 0);
-}
+int RmcEmbmsRequestHandler::isTmgiEmpty(char* tmgi) { return (strlen(tmgi) == 0); }
 
 void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
@@ -1952,8 +1960,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
 
     logI(LOG_TAG, "[requestLocalEmbmsStopSession]");
 
-    RIL_EMBMS_LocalStopSessionReq* request = (RIL_EMBMS_LocalStopSessionReq*)
-                                                msg->getData()->getData();
+    RIL_EMBMS_LocalStopSessionReq* request =
+            (RIL_EMBMS_LocalStopSessionReq*)msg->getData()->getData();
     RIL_EMBMS_LocalStartSessionResp response_data;
 
     // initial
@@ -1973,7 +1981,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
         char* session_id;
         int status;
         RfxAtLine* line;
-        //RfxAtLine* p_cur;
+        // RfxAtLine* p_cur;
         char current_session_tmgis[EMBMS_MAX_NUM_EMSLUI][EMBMS_MAX_LEN_TMGI + 1];
         memset(current_session_tmgis, 0, sizeof(current_session_tmgis));
 
@@ -1993,7 +2001,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
             goto error;
         }
 
-        //  [+EMSLUI: <num_sessions>,<x>,<tmgix>,[<session_idx>],<statusx>][...repeat num_sessions times]
+        //  [+EMSLUI: <num_sessions>,<x>,<tmgix>,[<session_idx>],<statusx>][...repeat num_sessions
+        //  times]
         line = line->getNext();
 
         for (; line != NULL; line = line->getNext()) {
@@ -2039,7 +2048,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
 
                 logV(LOG_TAG, "tmpBuffer = %s, status =%d", tmpBuffer, status);
                 if (status) {
-                    strlcpy(current_session_tmgis[active_num_sessions], tmpBuffer, EMBMS_MAX_LEN_TMGI);
+                    strlcpy(current_session_tmgis[active_num_sessions], tmpBuffer,
+                            EMBMS_MAX_LEN_TMGI);
                     active_num_sessions++;
                 }
                 index++;
@@ -2060,15 +2070,16 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
         }
 
         response_data.response = EMBMS_SESSION_SUCCESS;
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxEmbmsLocalStartSessionRespData(&response_data,
-                    sizeof(response_data)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
+                RfxEmbmsLocalStartSessionRespData(&response_data, sizeof(response_data)), msg,
+                false);
 
         // response to TeleCore
         responseToTelCore(response);
         return;
 
-    } else {  // EMBMS_DEACTIVE_SESSION
+    } else {                            // EMBMS_DEACTIVE_SESSION
         if (request->session_id > 0) {  // !=INVALID_EMBMS_SESSION_ID
             cmdline.append(String8(","));
             cmdline.append(String8::format("\"%02X\"", request->session_id));
@@ -2084,9 +2095,10 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
         response_data.tmgi_info_valid = 1;
         strncpy(response_data.tmgi, request->tmgi, EMBMS_MAX_LEN_TMGI);
 
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxEmbmsLocalStartSessionRespData(&response_data,
-                    sizeof(response_data)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
+                RfxEmbmsLocalStartSessionRespData(&response_data, sizeof(response_data)), msg,
+                false);
 
         // response to TeleCore
         responseToTelCore(response);
@@ -2094,17 +2106,17 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsStopSession(const sp<RfxMclMessage
     }
 
 error:
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxEmbmsLocalStartSessionRespData(&response_data,
-                    sizeof(response_data)), msg, false);
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxEmbmsLocalStartSessionRespData(&response_data, sizeof(response_data)), msg, false);
 
-        // response to TeleCore
-        responseToTelCore(response);
+    // response to TeleCore
+    responseToTelCore(response);
 }
 
 //  Parse SAIs list
 bool RmcEmbmsRequestHandler::parseSIB16Time(sp<RfxAtResponse> p_response,
-    RIL_EMBMS_GetTimeResp* time_response) {
+                                            RIL_EMBMS_GetTimeResp* time_response) {
     RfxAtLine* line;
     uint64_t utc_time;
     int err = 0;
@@ -2154,7 +2166,7 @@ error:
 
 //  Parse NITZ list
 bool RmcEmbmsRequestHandler::parseNitzTime(sp<RfxAtResponse> p_response,
-    RIL_EMBMS_GetTimeResp* time_response) {
+                                           RIL_EMBMS_GetTimeResp* time_response) {
     // +EMTSI: 2[,[<dst>],<lto>,<year>,<month>,<day>,<hour>,<min>,<sec>]
     RfxAtLine* line;
     int err = 0;
@@ -2242,7 +2254,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsGetNetworkTime(const sp<RfxMclMess
     int err = 0;
     RIL_EMBMS_GetTimeResp time_response;
     sp<RfxMclMessage> response;
-    int *data = (int *)msg->getData()->getData();
+    int* data = (int*)msg->getData()->getData();
 
     logI(LOG_TAG, "[requestLocalEmbmsGetNetworkTime]");
 
@@ -2256,8 +2268,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsGetNetworkTime(const sp<RfxMclMess
     p_response = atSendCommandSingleline("AT+EMTSI", "+EMTSI:");
     err = p_response->getError();
     // +EMTSI: <dst>,<ls>,<lto>,<ut>
-    if (err < 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates()  == NULL) {
+    if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
         time_response.response = EMBMS_GET_TIME_ERROR;
     } else if (parseSIB16Time(p_response, &time_response)) {
         time_response.response = EMBMS_GET_TIME_SIB16;
@@ -2271,8 +2282,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsGetNetworkTime(const sp<RfxMclMess
         // Try to get NITZ time
         p_response = atSendCommandSingleline("AT+EMTSI=2", "+EMTSI:");
         err = p_response->getError();
-        if (err < 0 || p_response->getSuccess() == 0 ||
-                p_response->getIntermediates()  == NULL) {
+        if (err < 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL) {
             time_response.response = EMBMS_GET_TIME_ERROR;
         } else if (parseNitzTime(p_response, &time_response)) {
             time_response.response = EMBMS_GET_TIME_NITZ;
@@ -2281,7 +2291,8 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsGetNetworkTime(const sp<RfxMclMess
         }
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsGetTimeRespData(&time_response, sizeof(time_response)), msg, false);
 
     // response to TeleCore
@@ -2292,7 +2303,7 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsGetNetworkTime(const sp<RfxMclMess
 void RmcEmbmsRequestHandler::requestLocalEmbmsSetCoverageStatus(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     int err = 0;
-    int *data = (int *)msg->getData()->getData();
+    int* data = (int*)msg->getData()->getData();
     int scenario = data[0];
     int status = data[1];
     sp<RfxMclMessage> response;
@@ -2308,14 +2319,14 @@ void RmcEmbmsRequestHandler::requestLocalEmbmsSetCoverageStatus(const sp<RfxMclM
         goto error;
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                             msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
@@ -2330,7 +2341,7 @@ void RmcEmbmsRequestHandler::requestEmbmsGetCoverageStatus(const sp<RfxMclMessag
 
     logI(LOG_TAG, "[requestEmbmsGetCoverageStatus]:");
 
-    int *data = (int *)msg->getData()->getData();
+    int* data = (int*)msg->getData()->getData();
 
     // initial
     coverage_response.trans_id = data[0];
@@ -2366,16 +2377,19 @@ void RmcEmbmsRequestHandler::requestEmbmsGetCoverageStatus(const sp<RfxMclMessag
     coverage_response.coverage_state_valid = 1;
     // Let ril-proxy do the value transform
     coverage_response.coverage_state = srv_status;
-    // 0: No service, 1:only unicast available, 2:in eMBMS supporting area 3:e911 4:hVolte 5:flight mode
+    // 0: No service, 1:only unicast available, 2:in eMBMS supporting area 3:e911 4:hVolte 5:flight
+    // mode
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsGetCoverageRespData(&coverage_response, sizeof(coverage_response)), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
     return;
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+    response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
             RfxEmbmsGetCoverageRespData(&coverage_response, sizeof(coverage_response)), msg, false);
 
     // response to TeleCore
@@ -2401,8 +2415,8 @@ void RmcEmbmsRequestHandler::requestLocalTriggerCellInfoNotify(const sp<RfxMclMe
     p_response = atSendCommandSingleline("AT+EGREG?", "+EGREG:");
     err = p_response->getError();
 
-    if (err != 0 || p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response->getSuccess() == 0 || p_response->getIntermediates() == NULL)
+        goto error;
 
     line = p_response->getIntermediates();
     if (!parseCellId(line, &status, &cell_id)) {
@@ -2410,20 +2424,21 @@ void RmcEmbmsRequestHandler::requestLocalTriggerCellInfoNotify(const sp<RfxMclMe
     }
 
     responseStr = String8::format("+CEREG:%d\n", status);
-    urc_response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_AT_INFO,
-        msg->getSlotId(), RfxStringData((void *)responseStr.string(), responseStr.length()));
+    urc_response = RfxMclMessage::obtainUrc(
+            RFX_MSG_URC_EMBMS_AT_INFO, msg->getSlotId(),
+            RfxStringData((void*)responseStr.string(), responseStr.length()));
     responseToTelCore(urc_response);
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
     return;
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg, false);
+    response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -2432,7 +2447,7 @@ error:
 // Debug usage
 void RmcEmbmsRequestHandler::forceEnableMdEmbms(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
-    char *cmd;
+    char* cmd;
     RFX_UNUSED(msg);
     atSendCommand(String8("AT+ESBP=5,\"SBP_LTE_MBMS\",1"));
     atSendCommand(String8("AT+ESBP=5,\"SBP_LTE_MBMS_COUNTING\",1"));

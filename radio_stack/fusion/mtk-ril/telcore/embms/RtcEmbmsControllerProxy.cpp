@@ -62,27 +62,25 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxStringData, RFX_MSG_REQUEST_EM
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_URC_EMBMS_AT_INFO);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_RTC_EMBMS_SESSION_STATUS);
 
-
 // between Rtc and Rmc layer
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxEmbmsLocalEnableRespData,
-    RFX_MSG_REQUEST_EMBMS_ENABLE);
+                                RFX_MSG_REQUEST_EMBMS_ENABLE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxEmbmsDisableRespData,
-    RFX_MSG_REQUEST_EMBMS_DISABLE);
+                                RFX_MSG_REQUEST_EMBMS_DISABLE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxEmbmsLocalStartSessionReqData, RfxEmbmsLocalStartSessionRespData,
-    RFX_MSG_REQUEST_EMBMS_START_SESSION);
+                                RFX_MSG_REQUEST_EMBMS_START_SESSION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxEmbmsLocalStopSessionReqData, RfxEmbmsLocalStartSessionRespData,
-    RFX_MSG_REQUEST_EMBMS_STOP_SESSION);
+                                RFX_MSG_REQUEST_EMBMS_STOP_SESSION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxEmbmsGetTimeRespData,
-    RFX_MSG_REQUEST_EMBMS_GET_TIME);
+                                RFX_MSG_REQUEST_EMBMS_GET_TIME);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxEmbmsGetCoverageRespData,
-    RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-    RFX_MSG_REQUEST_EMBMS_SET_E911);
+                                RFX_MSG_REQUEST_RTC_EMBMS_GET_COVERAGE_STATE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_EMBMS_SET_E911);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
-    RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY);
+                                RFX_MSG_REQUEST_EMBMS_TRIGGER_CELL_INFO_NOTIFY);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxEmbmsLocalStartSessionRespData,
-    RFX_MSG_URC_EMBMS_START_SESSION_RESPONSE);
+                            RFX_MSG_URC_EMBMS_START_SESSION_RESPONSE);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_EMBMS_CELL_INFO_NOTIFICATION);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_EMBMS_COVERAGE_STATE);
 RFX_REGISTER_DATA_TO_URC_ID(RfxEmbmsLocalSessionNotifyData, RFX_MSG_URC_EMBMS_ACTIVE_SESSION);
@@ -97,23 +95,21 @@ RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringData, RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPD
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_EMBMS_POST_SAI_UPDATE);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE);
 
-RtcEmbmsControllerProxy::RtcEmbmsControllerProxy() :
-        mActiveEmbmsController(NULL) {
-}
+RtcEmbmsControllerProxy::RtcEmbmsControllerProxy() : mActiveEmbmsController(NULL) {}
 
-RtcEmbmsControllerProxy::~RtcEmbmsControllerProxy() {
-}
+RtcEmbmsControllerProxy::~RtcEmbmsControllerProxy() {}
 
 void RtcEmbmsControllerProxy::onInit() {
     RfxController::onInit();  // Required: invoke super class implementation
 
-    RtcEmbmsAtController *p;
+    RtcEmbmsAtController* p;
     RFX_OBJ_CREATE(p, RtcEmbmsAtController, this);
-    mActiveEmbmsController = (RfxController *) p;
+    mActiveEmbmsController = (RfxController*)p;
     logD(RFX_LOG_TAG, "onInit to TK-AT: ctrl = %p.", mActiveEmbmsController);
 
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_RADIO_STATE,
-        RfxStatusChangeCallback(this, &RtcEmbmsControllerProxy::onRadioStateChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_RADIO_STATE,
+            RfxStatusChangeCallback(this, &RtcEmbmsControllerProxy::onRadioStateChanged));
 }
 
 void RtcEmbmsControllerProxy::onDeinit() {
@@ -121,13 +117,13 @@ void RtcEmbmsControllerProxy::onDeinit() {
     RfxController::onDeinit();
 }
 
-void RtcEmbmsControllerProxy::onRadioStateChanged(RfxStatusKeyEnum key,
-    RfxVariant old_value, RfxVariant value) {
+void RtcEmbmsControllerProxy::onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                  RfxVariant value) {
     char defaultData[RFX_PROPERTY_VALUE_MAX] = {0};
     RFX_UNUSED(key);
     RFX_UNUSED(old_value);
 
-    RIL_RadioState radioState = (RIL_RadioState) value.asInt();
+    RIL_RadioState radioState = (RIL_RadioState)value.asInt();
     logD(RFX_LOG_TAG, "radioState %d", radioState);
 
     if (radioState == RADIO_STATE_ON) {
@@ -138,12 +134,12 @@ void RtcEmbmsControllerProxy::onRadioStateChanged(RfxStatusKeyEnum key,
 
         int trans_id;
         int intdata[2];
-        intdata[0] = 0; // trans_id
+        intdata[0] = 0;  // trans_id
         intdata[1] = EMBMS_COMMAND_RIL;
 
-        sp<RfxMessage> newMsg = RfxMessage::obtainRequest(getSlotId(),
-            RFX_MSG_REQUEST_EMBMS_ENABLE, RfxIntsData(intdata, 2),
-            RADIO_TECH_GROUP_GSM);
+        sp<RfxMessage> newMsg =
+                RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_EMBMS_ENABLE,
+                                          RfxIntsData(intdata, 2), RADIO_TECH_GROUP_GSM);
 
         requestToMcl(newMsg);
     }

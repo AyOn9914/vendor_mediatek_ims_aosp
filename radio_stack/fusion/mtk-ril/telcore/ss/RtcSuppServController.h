@@ -41,29 +41,29 @@ class RtcSuppServController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcSuppServController);
 
-public:
+  public:
     RtcSuppServController();
     virtual ~RtcSuppServController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
     virtual void onDeinit();
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onHandleAtciRequest(const sp<RfxMessage>& message);
 
-private:
+  private:
     void handleSSRequest(const sp<RfxMessage>& message);
     void handleSSResponse(const sp<RfxMessage>& message);
     void handleUssdDomainInfoReqResponse(const sp<RfxMessage>& message);
     bool handleAtciCallWaitingRequest(const sp<RfxMessage>& message);
     void responseToAtci(const sp<RfxMessage>& message);
     void onSimIccidChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
-    RtcSuppServQueue *mQueue;
+    RtcSuppServQueue* mQueue;
 
     // An USSD may be sent from GSM or IMS. We need a private variable to remember where it
     // comes from. Then RILD can return the following USSD URC to correct place.
@@ -72,7 +72,7 @@ private:
     // Operation of UssdDestination
     UssdDestination getUssdDestination();
     void setUssdDestination(UssdDestination destination);
-    const char *ussdDestinationToString(UssdDestination destination);
+    const char* ussdDestinationToString(UssdDestination destination);
 };
 
 #endif /* __RFX_SUPP_SERV_CONTROLLER_H__ */

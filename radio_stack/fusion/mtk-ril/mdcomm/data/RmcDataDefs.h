@@ -38,14 +38,14 @@
 
 #define MAX_APN_NAME_LENGTH 100
 
-#define AUTHTYPE_NONE       0
-#define AUTHTYPE_PAP        1
-#define AUTHTYPE_CHAP       2
-#define AUTHTYPE_PAP_CHAP   3
+#define AUTHTYPE_NONE 0
+#define AUTHTYPE_PAP 1
+#define AUTHTYPE_CHAP 2
+#define AUTHTYPE_PAP_CHAP 3
 
-#define SETUP_DATA_PROTOCOL_IP      "IP"
-#define SETUP_DATA_PROTOCOL_IPV6    "IPV6"
-#define SETUP_DATA_PROTOCOL_IPV4V6  "IPV4V6"
+#define SETUP_DATA_PROTOCOL_IP "IP"
+#define SETUP_DATA_PROTOCOL_IPV6 "IPV6"
+#define SETUP_DATA_PROTOCOL_IPV4V6 "IPV4V6"
 
 #define INVALID_AID -1
 #define INVALID_INTERFACE_ID -1
@@ -54,16 +54,16 @@
 #define INVALID_VALUE -1
 
 #define INVALID_PDN_TYPE 0
-#define IPV4        1
-#define IPV6        2
-#define IPV4V6      3
+#define IPV4 1
+#define IPV6 2
+#define IPV4V6 3
 
 #define NULL_IPV4_ADDRESS "0.0.0.0"
 #define MAX_IPV4_ADDRESS_LENGTH 17
-//xxx.xxx.xxx.xxx
+// xxx.xxx.xxx.xxx
 #define MAX_IPV6_ADDRESS_LENGTH 65
-//xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx
-//xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx
+// xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx
+// xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx
 
 #define MAX_NUM_IPV6_ADDRESS_NUMBER 2
 #define MAX_NUM_DNS_ADDRESS_NUMBER 3
@@ -104,13 +104,13 @@
 #define NO_REASON 0
 
 // Fast dormancy begin
-#define PROPERTY_MTK_FD_SUPPORT    "ro.vendor.mtk_fd_support"
-#define PROPERTY_FD_ON_ONLY_R8_NETWORK  "persist.vendor.radio.fd.on.only.r8"
-#define PROPERTY_RIL_FD_MODE       "vendor.ril.fd.mode"
+#define PROPERTY_MTK_FD_SUPPORT "ro.vendor.mtk_fd_support"
+#define PROPERTY_FD_ON_ONLY_R8_NETWORK "persist.vendor.radio.fd.on.only.r8"
+#define PROPERTY_RIL_FD_MODE "vendor.ril.fd.mode"
 
-#define PROPERTY_FD_SCREEN_ON_TIMER     "persist.vendor.radio.fd.counter"
-#define PROPERTY_FD_SCREEN_ON_R8_TIMER  "persist.vendor.radio.fd.r8.counter"
-#define PROPERTY_FD_SCREEN_OFF_TIMER    "persist.vendor.radio.fd.off.counter"
+#define PROPERTY_FD_SCREEN_ON_TIMER "persist.vendor.radio.fd.counter"
+#define PROPERTY_FD_SCREEN_ON_R8_TIMER "persist.vendor.radio.fd.r8.counter"
+#define PROPERTY_FD_SCREEN_OFF_TIMER "persist.vendor.radio.fd.off.counter"
 #define PROPERTY_FD_SCREEN_OFF_R8_TIMER "persist.vendor.radio.fd.off.r8.counter"
 
 /* Fast dormancy related timer: units: 0.1 sec */
@@ -120,11 +120,8 @@
 #define DEFAULT_FD_SCREEN_OFF_R8_TIMER "50"
 
 static const char PROPERTY_FD_TIMER[4][50] = {
-    PROPERTY_FD_SCREEN_OFF_TIMER,
-    PROPERTY_FD_SCREEN_ON_TIMER,
-    PROPERTY_FD_SCREEN_OFF_R8_TIMER,
-    PROPERTY_FD_SCREEN_ON_R8_TIMER
-};
+        PROPERTY_FD_SCREEN_OFF_TIMER, PROPERTY_FD_SCREEN_ON_TIMER, PROPERTY_FD_SCREEN_OFF_R8_TIMER,
+        PROPERTY_FD_SCREEN_ON_R8_TIMER};
 
 #define FASTDORMANCY_ON 0x3FFFFF
 #define FASTDORMANCY_LEGACY_OFF 0x400000
@@ -134,27 +131,27 @@ static const char PROPERTY_FD_TIMER[4][50] = {
 
 #define BTOS(x) ((x) ? "true" : "false")
 
-#define AT_LINE_FREE(line)   \
-if (line) {                  \
-    delete line;             \
-    line = NULL;             \
-}
+#define AT_LINE_FREE(line) \
+    if (line) {            \
+        delete line;       \
+        line = NULL;       \
+    }
 
 #define FREEIF(data)    \
-if (data != NULL) {     \
-    free(data);         \
-    data = NULL;        \
-}
+    if (data != NULL) { \
+        free(data);     \
+        data = NULL;    \
+    }
 
-#define UNSPECIFIED_IPV6_GATEWAY    "::"
+#define UNSPECIFIED_IPV6_GATEWAY "::"
 
-#define SM_CAUSE_BASE 0xC00 // Defined in AT_DOCUMENT_full.doc
+#define SM_CAUSE_BASE 0xC00  // Defined in AT_DOCUMENT_full.doc
 #define SM_CAUSE_END SM_CAUSE_BASE + 0x72
-#define ESM_CAUSE_BASE 0xD00 // ESM cause
+#define ESM_CAUSE_BASE 0xD00  // ESM cause
 #define ESM_CAUSE_END ESM_CAUSE_BASE + 0xFF
-#define PAM_CAUSE_BASE 0x1200 // PAM cause
+#define PAM_CAUSE_BASE 0x1200  // PAM cause
 #define PAM_CAUSE_END PAM_CAUSE_BASE + 0xC9
-#define CME_CAUSE_BASE_V14 0x64 // Defined in 3GPP TS 27.007 V14
+#define CME_CAUSE_BASE_V14 0x64  // Defined in 3GPP TS 27.007 V14
 #define CME_CAUSE_END_V14 CME_CAUSE_BASE_V14 + 0x64
 
 // SSC Mode3 PDU
@@ -162,20 +159,20 @@ if (data != NULL) {     \
 #define MTK_DEFAULT_LIFE_TIME 0xA8C0
 
 const char PROPERTY_ICCID_SIM[MAX_SIM_COUNT][25] = {
-    "vendor.ril.iccid.sim1",
-    "vendor.ril.iccid.sim2",
-    "vendor.ril.iccid.sim3",
-    "vendor.ril.iccid.sim4",
+        "vendor.ril.iccid.sim1",
+        "vendor.ril.iccid.sim2",
+        "vendor.ril.iccid.sim3",
+        "vendor.ril.iccid.sim4",
 };
 
 typedef struct {
-    int transIntfId; // trans_id * 100 + interface_id
+    int transIntfId;  // trans_id * 100 + interface_id
     int primaryAid;
     int aid;
     int ddcId;  // for dedicate bearer
     int isDedicateBearer;
     int isEmergency;  // 0: normal, 1: emergency PDN
-    int active;  // 0: inactive, 1: link down, 2: active
+    int active;       // 0: inactive, 1: link down, 2: active
     int signalingFlag;
     char apn[MAX_APN_NAME_LENGTH];
     char addressV4[MAX_IPV4_ADDRESS_LENGTH];
@@ -185,11 +182,11 @@ typedef struct {
     int bearerId;
     char pcscf[MAX_PCSCF_NUMBER][MAX_IPV6_ADDRESS_LENGTH];
     int mtu;
-    int rat;    /* 0: UNSPEC, 1: MOBILE_3GPP, 2: WIFI, 3: MOBILE_3GPP2
-                   4: TYPE_MAX, 0xFE: RDS_RAN_NONE, 0xFF: RDS_RAN_DENY */
-    int reason;  // -1: no cause, 0: ipv4 only, 1: ipv6 only, 2: single bearer only allowed
+    int rat;          /* 0: UNSPEC, 1: MOBILE_3GPP, 2: WIFI, 3: MOBILE_3GPP2
+                         4: TYPE_MAX, 0xFE: RDS_RAN_NONE, 0xFF: RDS_RAN_DENY */
+    int reason;       // -1: no cause, 0: ipv4 only, 1: ipv6 only, 2: single bearer only allowed
     int deactReason;  // for pdn deact reason
-    int pdnType; //for pdn type
+    int pdnType;      // for pdn type
     int profileId;
     int sscMode;
 } PdnInfo;
@@ -199,11 +196,7 @@ typedef struct {
     int reason;
 } MePdnActiveInfo;
 
-typedef enum {
-    DATA_STATE_INACTIVE = 0,
-    DATA_STATE_LINKDOWN = 1,
-    DATA_STATE_ACTIVE = 2
-} PDN_STATUS;
+typedef enum { DATA_STATE_INACTIVE = 0, DATA_STATE_LINKDOWN = 1, DATA_STATE_ACTIVE = 2 } PDN_STATUS;
 
 typedef enum {
     NO_CAUSE = -1,
@@ -220,22 +213,16 @@ typedef enum {
 } PDN_SETUP_STATUS;
 
 typedef enum {
-    NETAGENT_ADDR_TYPE_UNKNOWN    = 0,
-    NETAGENT_ADDR_TYPE_IPV4       = 1,
-    NETAGENT_ADDR_TYPE_IPV6       = 2,
-    NETAGENT_ADDR_TYPE_IPV4V6     = 3,
-    NETAGENT_ADDR_TYPE_ANY        = 4
+    NETAGENT_ADDR_TYPE_UNKNOWN = 0,
+    NETAGENT_ADDR_TYPE_IPV4 = 1,
+    NETAGENT_ADDR_TYPE_IPV6 = 2,
+    NETAGENT_ADDR_TYPE_IPV4V6 = 3,
+    NETAGENT_ADDR_TYPE_ANY = 4
 } NETAGENT_ADDR_TYPE;
 
-typedef enum {
-    NETAGENT_IFST_NONE        = 0,
-    NETAGENT_IFST_UP          = 16
-} NETAGENT_IFST_STATUS;
+typedef enum { NETAGENT_IFST_NONE = 0, NETAGENT_IFST_UP = 16 } NETAGENT_IFST_STATUS;
 
-typedef enum {
-    IMS_RELEASE_PDN = 0,
-    IMS_REQUEST_PDN = 1
-} IMS_NOTIFY_TYPE;
+typedef enum { IMS_RELEASE_PDN = 0, IMS_REQUEST_PDN = 1 } IMS_NOTIFY_TYPE;
 
 typedef enum {
     ADDRESS_NULL = 0,
@@ -248,7 +235,7 @@ typedef enum {
 
 typedef enum {
     DC_EVENT_UNKNOWN = 0x0,
-    DC_EVENT_DATA_RESET_NOTIFY = 0x81, //129
+    DC_EVENT_DATA_RESET_NOTIFY = 0x81,  // 129
     DC_EVENT_IP_NORMAL_CHANGE = 0x100,
     DC_EVENT_NO_RA = 0x101,
     DC_EVENT_HANDOVER_NORMAL_CHANGE = 0x200
@@ -310,13 +297,15 @@ typedef enum {
  * both AP and MD.
  */
 typedef enum {
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DONT_CARE = 0, //EGACT_CAUSE_DONT_CARE
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_NORMAL = 1, //EGACT_CAUSE_DEACT_NORMAL
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_INITIAL_ERROR = 2, //EGACT_CAUSE_DEACT_RA_INITIAL_ERROR
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_NO_PCSCF = 3, //EGACT_CAUSE_DEACT_NO_PCSCF
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_REFRESH_ERROR = 4, //EGACT_CAUSE_DEACT_RA_REFRESH_ERROR
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_ERROR = 5, //EGACT_CAUSE_DEACT_RA_ERROR
-    ATCMD_DEACT_CAUSE_EGACT_CAUSE_USER_FORCE_TO_LOCAL_RELEASE = 6, //Used in user wants to deact a PDN immediately (without peer to peer air message waiting)
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DONT_CARE = 0,               // EGACT_CAUSE_DONT_CARE
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_NORMAL = 1,            // EGACT_CAUSE_DEACT_NORMAL
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_INITIAL_ERROR = 2,  // EGACT_CAUSE_DEACT_RA_INITIAL_ERROR
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_NO_PCSCF = 3,          // EGACT_CAUSE_DEACT_NO_PCSCF
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_REFRESH_ERROR = 4,  // EGACT_CAUSE_DEACT_RA_REFRESH_ERROR
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_DEACT_RA_ERROR = 5,          // EGACT_CAUSE_DEACT_RA_ERROR
+    ATCMD_DEACT_CAUSE_EGACT_CAUSE_USER_FORCE_TO_LOCAL_RELEASE =
+            6,  // Used in user wants to deact a PDN immediately (without peer to peer air message
+                // waiting)
     ATCMD_DEACT_CAUSE_EGACT_CAUSE_AOSP_SHUTDOWN = 7,
     ATCMD_DEACT_CAUSE_EGACT_CAUSE_AOSP_HANDOVER = 8,
     ATCMD_DEACT_CAUSE_EGACT_CAUSE_APN_CHANGED = 9,

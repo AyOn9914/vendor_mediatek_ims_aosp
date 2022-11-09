@@ -23,9 +23,10 @@
 class RfxEmbmsLocalSaiNotifyData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsLocalSaiNotifyData);
 
-    public:
-        RfxEmbmsLocalSaiNotifyData(RIL_EMBMS_LocalSaiNotify* data, int length);
-    private:
-        void copyData(RIL_EMBMS_LocalSaiNotify *data, int length);
+  public:
+    RfxEmbmsLocalSaiNotifyData(RIL_EMBMS_LocalSaiNotify* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_LocalSaiNotify* data, int length);
 };
 #endif /*RFX_EMBMS_LOCAL_SAINOTIFY_DATA__H*/

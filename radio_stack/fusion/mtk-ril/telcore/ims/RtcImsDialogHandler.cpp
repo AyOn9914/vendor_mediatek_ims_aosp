@@ -37,24 +37,22 @@ const string RtcImsDialogHandler::TAG_NEXT_LINE("<ascii_10>");
 const string RtcImsDialogHandler::TAG_RETURN("<ascii_13>");
 const string RtcImsDialogHandler::TAG_DOUBLE_QUOTE("<ascii_34>");
 
-RtcImsDialogHandler::RtcImsDialogHandler(int slot){
+RtcImsDialogHandler::RtcImsDialogHandler(int slot) {
     mSlot = slot;
     RFX_LOG_D(RFX_LOG_TAG, "RtcImsDialogHandler()");
 }
 
-RtcImsDialogHandler::~RtcImsDialogHandler() {
-}
+RtcImsDialogHandler::~RtcImsDialogHandler() {}
 
-//Handle IMS Dialog event package raw data.
+// Handle IMS Dialog event package raw data.
 void RtcImsDialogHandler::handleImsDialogMessage(const sp<RfxMessage>& message) {
     RFX_LOG_D(RFX_LOG_TAG, "handleImsDialogMessage");
     /*
      * +EIMSEVTPKG: <call_id>,<type>,<urc_index>,<total_urc_count>,<data>
      * <call_id>:  0~255
-     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event Package
-     * <urc_index>: 1~255, the index of URC part
-     * <total_urc_count>: 1~255
-     * <data>: xml raw data, max length = 1950
+     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event
+     * Package <urc_index>: 1~255, the index of URC part <total_urc_count>: 1~255 <data>: xml raw
+     * data, max length = 1950
      */
 
     RfxStringsData* data = (RfxStringsData*)message->getData();
@@ -68,7 +66,7 @@ void RtcImsDialogHandler::handleImsDialogMessage(const sp<RfxMessage>& message) 
     bool isFirstPkt = (index == 1);
     mDepData = concatData(isFirstPkt, mDepData, rawData);
     if (index != count) {
-        //do nothing
+        // do nothing
         return;
     }
     mDepData = recoverDataFromAsciiTag(mDepData);
@@ -91,8 +89,8 @@ void RtcImsDialogHandler::handleImsDialogMessage(const sp<RfxMessage>& message) 
     int size = dialogList.size();
     RFX_LOG_D(RFX_LOG_TAG, "dialog_info size: %d", size);
     if (size > 0) {
-        RIL_DialogInfo ** dialogInfo = (RIL_DialogInfo **) alloca(size * sizeof(RIL_DialogInfo*));
-        RIL_DialogInfo * dialogs = (RIL_DialogInfo *) alloca(size * sizeof(RIL_DialogInfo));
+        RIL_DialogInfo** dialogInfo = (RIL_DialogInfo**)alloca(size * sizeof(RIL_DialogInfo*));
+        RIL_DialogInfo* dialogs = (RIL_DialogInfo*)alloca(size * sizeof(RIL_DialogInfo));
 
         /* init the pointer array */
         for (int i = 0; i < size; i++) {
@@ -107,38 +105,39 @@ void RtcImsDialogHandler::handleImsDialogMessage(const sp<RfxMessage>& message) 
             dialogInfo[i]->isPullable = dialogList[i]->isPullable();
             dialogInfo[i]->isMt = dialogList[i]->isMt();
             int len = strlen(dialogList[i]->getAddress().c_str());
-            dialogInfo[i]->address = (char *) alloca((len + 1)* sizeof(char));
+            dialogInfo[i]->address = (char*)alloca((len + 1) * sizeof(char));
             memset(dialogInfo[i]->address, 0, len + 1);
             strncpy(dialogInfo[i]->address, dialogList[i]->getAddress().c_str(), len);
 
             len = strlen(dialogList[i]->getRemoteAddress().c_str());
-            dialogInfo[i]->remoteAddress = (char *) alloca((len + 1)* sizeof(char));
+            dialogInfo[i]->remoteAddress = (char*)alloca((len + 1) * sizeof(char));
             memset(dialogInfo[i]->remoteAddress, 0, len + 1);
             strncpy(dialogInfo[i]->remoteAddress, dialogList[i]->getRemoteAddress().c_str(), len);
             RFX_LOG_D(RFX_LOG_TAG, "dialog_info copy data end: dialogId:%d, addr:%s, remoteAddr:%s",
-                    dialogInfo[i]->dialogId, RfxRilUtils::pii(RFX_LOG_TAG, dialogInfo[i]->address),
-                    RfxRilUtils::pii(RFX_LOG_TAG, dialogInfo[i]->remoteAddress));
+                      dialogInfo[i]->dialogId,
+                      RfxRilUtils::pii(RFX_LOG_TAG, dialogInfo[i]->address),
+                      RfxRilUtils::pii(RFX_LOG_TAG, dialogInfo[i]->remoteAddress));
         }
         RFX_LOG_D(RFX_LOG_TAG, "dialog_info to obtainRequest");
-        sp<RfxMessage> msg = RfxMessage::obtainUrc(mSlot, RFX_MSG_URC_IMS_DIALOG_INDICATION,
-                RfxDialogInfoData(dialogInfo, size * sizeof(RIL_DialogInfo*)),
-                message->getSource());
+        sp<RfxMessage> msg =
+                RfxMessage::obtainUrc(mSlot, RFX_MSG_URC_IMS_DIALOG_INDICATION,
+                                      RfxDialogInfoData(dialogInfo, size * sizeof(RIL_DialogInfo*)),
+                                      message->getSource());
 
-        RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-        RtcImsConferenceController *ctrl =
-                (RtcImsConferenceController *)root->findController(mSlot,
-                        RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
+        RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+        RtcImsConferenceController* ctrl = (RtcImsConferenceController*)root->findController(
+                mSlot, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
         ctrl->responseToRilj(msg);
         RFX_LOG_D(RFX_LOG_TAG, "send a RFX_MSG_URC_IMS_DIALOG_INDICATION");
     } else {
         RFX_LOG_D(RFX_LOG_TAG, "dialog_info to obtainRequest");
-        sp<RfxMessage> msg = RfxMessage::obtainUrc(mSlot, RFX_MSG_URC_IMS_DIALOG_INDICATION,
-                RfxDialogInfoData(NULL, 0), message->getSource());
+        sp<RfxMessage> msg =
+                RfxMessage::obtainUrc(mSlot, RFX_MSG_URC_IMS_DIALOG_INDICATION,
+                                      RfxDialogInfoData(NULL, 0), message->getSource());
 
-        RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-        RtcImsConferenceController *ctrl =
-                (RtcImsConferenceController *)root->findController(mSlot,
-                        RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
+        RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+        RtcImsConferenceController* ctrl = (RtcImsConferenceController*)root->findController(
+                mSlot, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
         ctrl->responseToRilj(msg);
         RFX_LOG_D(RFX_LOG_TAG, "send a RFX_MSG_URC_IMS_DIALOG_INDICATION");
     }
@@ -160,10 +159,11 @@ string RtcImsDialogHandler::recoverDataFromAsciiTag(string data) {
     return data;
 }
 
-string RtcImsDialogHandler::replaceAll(string &str, const string &old_value, const string &new_value) {
-    while(true) {
+string RtcImsDialogHandler::replaceAll(string& str, const string& old_value,
+                                       const string& new_value) {
+    while (true) {
         string::size_type pos(0);
-        if((pos=str.find(old_value)) != string::npos) {
+        if ((pos = str.find(old_value)) != string::npos) {
             str.replace(pos, old_value.length(), new_value);
         } else {
             break;
@@ -191,7 +191,6 @@ const string DepMessageHandler::DIRECTION("direction");
 const string DepMessageHandler::INITIATOR("initiator");
 const string DepMessageHandler::RECEIVER("receiver");
 
-
 const string DepMessageHandler::PARAM("param");
 const string DepMessageHandler::PNAME("pname");
 const string DepMessageHandler::PVAL("pval");
@@ -203,10 +202,13 @@ const string DepMessageHandler::PORT0("port0");
 
 const string DepMessageHandler::TRUE("true");
 
-DepMessageHandler::DepMessageHandler() :
-    mDialogStart(false), mLocalStart(false), mMediaAttrStart(false),
-    mRemoteStart(false), mVersion(-1), mDepState(DEP_STATE_UNKNOWN) {
-}
+DepMessageHandler::DepMessageHandler()
+    : mDialogStart(false),
+      mLocalStart(false),
+      mMediaAttrStart(false),
+      mRemoteStart(false),
+      mVersion(-1),
+      mDepState(DEP_STATE_UNKNOWN) {}
 
 DepMessageHandler::~DepMessageHandler() {
     for (sp<RfxDialog> dialog : mDialogInfo) {
@@ -219,20 +221,16 @@ DepMessageHandler::~DepMessageHandler() {
  * To retrieve all dialog info.
  * @return all dialog info
  */
-vector<sp<RfxDialog>> DepMessageHandler::getDialogInfo() {
-    return mDialogInfo;
-}
+vector<sp<RfxDialog>> DepMessageHandler::getDialogInfo() { return mDialogInfo; }
 
 /**
  * To get dialog version
  * @return the dialog version
  */
-int DepMessageHandler::getVersion() const {
-    return mVersion;
-}
+int DepMessageHandler::getVersion() const { return mVersion; }
 
 void DepMessageHandler::startElement(string nodeName, string nodeValue, string attributeName,
-        string attributeValue) {
+                                     string attributeValue) {
     if (nodeName == DIALOG_INFO) {
         if (attributeName == VERSION) {
             mVersion = atoi(attributeValue.c_str());
@@ -267,12 +265,12 @@ void DepMessageHandler::startElement(string nodeName, string nodeValue, string a
     } else if (mLocalStart && nodeName == IDENTITY) {
         mDialog->identity = nodeValue;
         RFX_LOG_D(RFX_LOG_TAG, "startElement identity: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, nodeValue.c_str()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, nodeValue.c_str()));
     } else if (mLocalStart && nodeName == TARGET) {
         if (attributeName == URI) {
             mDialog->targetUri = attributeValue;
             RFX_LOG_D(RFX_LOG_TAG, "startElement targetUri: %s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, attributeValue.c_str()));
+                      RfxRilUtils::pii(RFX_LOG_TAG, attributeValue.c_str()));
         }
     } else if (mLocalStart && nodeName == MEDIA_ATTRIBUTES) {
         if (!mMediaAttrStart) {
@@ -305,12 +303,12 @@ void DepMessageHandler::startElement(string nodeName, string nodeValue, string a
     } else if (mRemoteStart && nodeName == IDENTITY) {
         mDialog->remoteIdentity = nodeValue;
         RFX_LOG_D(RFX_LOG_TAG, "startElement remoteIdentity: %s",
-                RfxRilUtils::pii(RFX_LOG_TAG, nodeValue.c_str()));
+                  RfxRilUtils::pii(RFX_LOG_TAG, nodeValue.c_str()));
     } else if (mRemoteStart && nodeName == TARGET) {
         if (attributeName == URI) {
             mDialog->remoteTargetUri = attributeValue;
             RFX_LOG_D(RFX_LOG_TAG, "startElement remoteTargetUri: %s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, attributeValue.c_str()));
+                      RfxRilUtils::pii(RFX_LOG_TAG, attributeValue.c_str()));
         }
     } else if (mRemoteStart && nodeName == PARAM) {
         // Param

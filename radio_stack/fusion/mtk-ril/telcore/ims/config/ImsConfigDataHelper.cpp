@@ -18,34 +18,33 @@
 #include "RtcImsConfigDef.h"
 #include "telephony/mtk_ims_config.h"
 
-using std::vector;
-using std::shared_ptr;
 using std::make_shared;
 using std::map;
+using std::shared_ptr;
 using std::string;
+using std::vector;
 
-map<int,ConfigSettings> ImsConfigDataHelper::sConfigData = {
+map<int, ConfigSettings> ImsConfigDataHelper::sConfigData = {
 #include "ImsConfigData.h"
 };
 
 vector<shared_ptr<ConfigValue>> ImsConfigDataHelper::getConfigData(int operatorId) {
-
-    vector <ConfigValue> opData;
+    vector<ConfigValue> opData;
     if (operatorId == Operator::OP_06) {
         opData = {
-        #include "op/Op06ImsConfigData.h"
+#include "op/Op06ImsConfigData.h"
         };
     } else if (operatorId == Operator::OP_08) {
         opData = {
-        #include "op/Op08ImsConfigData.h"
+#include "op/Op08ImsConfigData.h"
         };
     } else if (operatorId == Operator::OP_12) {
         opData = {
-        #include "op/Op12ImsConfigData.h"
+#include "op/Op12ImsConfigData.h"
         };
     } else if (operatorId == Operator::OP_236) {
         opData = {
-        #include "op/Op236ImsConfigData.h"
+#include "op/Op236ImsConfigData.h"
         };
     }
 
@@ -53,7 +52,7 @@ vector<shared_ptr<ConfigValue>> ImsConfigDataHelper::getConfigData(int operatorI
     map<int, ConfigSettings>::iterator iter;
     iter = sConfigData.begin();
     for (int i = 0; i < (int)sConfigData.size(); i++, iter++) {
-        shared_ptr <ConfigValue> data = make_shared<ConfigValue>();
+        shared_ptr<ConfigValue> data = make_shared<ConfigValue>();
         data->configId = iter->first;
         data->unit = IMS_CONFIG_UNIT_NONE;
         data->provsionValue = IMS_CONFIG_VALUE_NO_DEFAULT;
@@ -68,9 +67,7 @@ vector<shared_ptr<ConfigValue>> ImsConfigDataHelper::getConfigData(int operatorI
     return configData;
 }
 
-int ImsConfigDataHelper::getConfigDataType(int configId) {
-    return sConfigData[configId].mimeType;
-}
+int ImsConfigDataHelper::getConfigDataType(int configId) { return sConfigData[configId].mimeType; }
 
 bool ImsConfigDataHelper::isProvisionToModem(int configId) {
     return !sConfigData[configId].provsionStr.empty();
@@ -89,5 +86,4 @@ int ImsConfigDataHelper::getConfigId(string provisionStr) {
         }
     }
     return -1;
-
 };

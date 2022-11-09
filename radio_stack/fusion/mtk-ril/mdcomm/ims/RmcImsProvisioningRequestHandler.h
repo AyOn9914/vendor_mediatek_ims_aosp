@@ -27,14 +27,17 @@
 
 class RmcImsProvisioningRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsProvisioningRequestHandler);
-    public:
-        RmcImsProvisioningRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcImsProvisioningRequestHandler();
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-    private:
-        void requestGetProvisionValue(const sp<RfxMclMessage>& msg);
-        void requestSetProvisionValue(const sp<RfxMclMessage>& msg);
+
+  public:
+    RmcImsProvisioningRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcImsProvisioningRequestHandler();
+
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+
+  private:
+    void requestGetProvisionValue(const sp<RfxMclMessage>& msg);
+    void requestSetProvisionValue(const sp<RfxMclMessage>& msg);
 };
 
 #endif

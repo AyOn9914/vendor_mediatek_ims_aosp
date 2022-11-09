@@ -22,19 +22,19 @@
 class RmcModemRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcModemRequestHandler);
 
-    public:
-        RmcModemRequestHandler(int slotId, int channelId);
-        virtual ~RmcModemRequestHandler();
+  public:
+    RmcModemRequestHandler(int slotId, int channelId);
+    virtual ~RmcModemRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestModemPowerOn(const sp<RfxMclMessage> &msg);
+  private:
+    void requestModemPowerOn(const sp<RfxMclMessage>& msg);
 
-        void requestModemPowerOff(const sp<RfxMclMessage> &msg);
+    void requestModemPowerOff(const sp<RfxMclMessage>& msg);
 
-        void requestResetRadio(const sp<RfxMclMessage> &msg);
+    void requestResetRadio(const sp<RfxMclMessage>& msg);
 };
 
 #endif

@@ -27,7 +27,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
 /**
  * Each OMX header must include all required header files to allow the
  * header to compile without errors.  The includes below are required
@@ -46,21 +45,22 @@ extern "C" {
  * Enumeration used to define the possible image compression coding.
  */
 typedef enum OMX_IMAGE_CODINGTYPE {
-    OMX_IMAGE_CodingUnused,      /**< Value when format is N/A */
-    OMX_IMAGE_CodingAutoDetect,  /**< Auto detection of image format */
-    OMX_IMAGE_CodingJPEG,        /**< JPEG/JFIF image format */
-    OMX_IMAGE_CodingJPEG2K,      /**< JPEG 2000 image format */
-    OMX_IMAGE_CodingEXIF,        /**< EXIF image format */
-    OMX_IMAGE_CodingTIFF,        /**< TIFF image format */
-    OMX_IMAGE_CodingGIF,         /**< Graphics image format */
-    OMX_IMAGE_CodingPNG,         /**< PNG image format */
-    OMX_IMAGE_CodingLZW,         /**< LZW image format */
-    OMX_IMAGE_CodingBMP,         /**< Windows Bitmap format */
-    OMX_IMAGE_CodingKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
-    OMX_IMAGE_CodingVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_IMAGE_CodingUnused,     /**< Value when format is N/A */
+    OMX_IMAGE_CodingAutoDetect, /**< Auto detection of image format */
+    OMX_IMAGE_CodingJPEG,       /**< JPEG/JFIF image format */
+    OMX_IMAGE_CodingJPEG2K,     /**< JPEG 2000 image format */
+    OMX_IMAGE_CodingEXIF,       /**< EXIF image format */
+    OMX_IMAGE_CodingTIFF,       /**< TIFF image format */
+    OMX_IMAGE_CodingGIF,        /**< Graphics image format */
+    OMX_IMAGE_CodingPNG,        /**< PNG image format */
+    OMX_IMAGE_CodingLZW,        /**< LZW image format */
+    OMX_IMAGE_CodingBMP,        /**< Windows Bitmap format */
+    OMX_IMAGE_CodingKhronosExtensions =
+            0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
+    OMX_IMAGE_CodingVendorStartUnused =
+            0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_IMAGE_CodingMax = 0x7FFFFFFF
 } OMX_IMAGE_CODINGTYPE;
-
 
 /**
  * Data structure used to define an image path. The number of image paths
@@ -116,7 +116,6 @@ typedef struct OMX_IMAGE_PORTDEFINITIONTYPE {
     OMX_NATIVE_WINDOWTYPE pNativeWindow;
 } OMX_IMAGE_PORTDEFINITIONTYPE;
 
-
 /**
  * Port format parameter.  This structure is used to enumerate the various
  * data input/output format supported by the port.
@@ -141,7 +140,6 @@ typedef struct OMX_IMAGE_PARAM_PORTFORMATTYPE {
     OMX_COLOR_FORMATTYPE eColorFormat;
 } OMX_IMAGE_PARAM_PORTFORMATTYPE;
 
-
 /**
  * Flash control type
  *
@@ -155,11 +153,12 @@ typedef enum OMX_IMAGE_FLASHCONTROLTYPE {
     OMX_IMAGE_FlashControlRedEyeReduction,
     OMX_IMAGE_FlashControlFillin,
     OMX_IMAGE_FlashControlTorch,
-    OMX_IMAGE_FlashControlKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
-    OMX_IMAGE_FlashControlVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_IMAGE_FlashControlKhronosExtensions =
+            0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
+    OMX_IMAGE_FlashControlVendorStartUnused =
+            0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_IMAGE_FlashControlMax = 0x7FFFFFFF
 } OMX_IMAGE_FLASHCONTROLTYPE;
-
 
 /**
  * Flash control configuration
@@ -177,7 +176,6 @@ typedef struct OMX_IMAGE_PARAM_FLASHCONTROLTYPE {
     OMX_IMAGE_FLASHCONTROLTYPE eFlashControl;
 } OMX_IMAGE_PARAM_FLASHCONTROLTYPE;
 
-
 /**
  * Focus control type
  */
@@ -186,11 +184,12 @@ typedef enum OMX_IMAGE_FOCUSCONTROLTYPE {
     OMX_IMAGE_FocusControlOff,
     OMX_IMAGE_FocusControlAuto,
     OMX_IMAGE_FocusControlAutoLock,
-    OMX_IMAGE_FocusControlKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
-    OMX_IMAGE_FocusControlVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_IMAGE_FocusControlKhronosExtensions =
+            0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
+    OMX_IMAGE_FocusControlVendorStartUnused =
+            0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_IMAGE_FocusControlMax = 0x7FFFFFFF
 } OMX_IMAGE_FOCUSCONTROLTYPE;
-
 
 /**
  * Focus control configuration
@@ -212,7 +211,6 @@ typedef struct OMX_IMAGE_CONFIG_FOCUSCONTROLTYPE {
     OMX_U32 nFocusSteps;
     OMX_U32 nFocusStepIndex;
 } OMX_IMAGE_CONFIG_FOCUSCONTROLTYPE;
-
 
 /**
  * Q Factor for JPEG compression, which controls the tradeoff between image
@@ -245,8 +243,10 @@ typedef enum OMX_IMAGE_QUANTIZATIONTABLETYPE {
     OMX_IMAGE_QuantizationTableChroma,
     OMX_IMAGE_QuantizationTableChromaCb,
     OMX_IMAGE_QuantizationTableChromaCr,
-    OMX_IMAGE_QuantizationTableKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
-    OMX_IMAGE_QuantizationTableVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_IMAGE_QuantizationTableKhronosExtensions =
+            0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
+    OMX_IMAGE_QuantizationTableVendorStartUnused =
+            0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_IMAGE_QuantizationTableMax = 0x7FFFFFFF
 } OMX_IMAGE_QUANTIZATIONTABLETYPE;
 
@@ -275,7 +275,6 @@ typedef struct OMX_IMAGE_PARAM_QUANTIZATIONTABLETYPE {
     OMX_U8 nQuantizationMatrix[64];
 } OMX_IMAGE_PARAM_QUANTIZATIONTABLETYPE;
 
-
 /**
  * Huffman table type, the same Huffman table is applied for chroma and
  * luma component
@@ -287,8 +286,10 @@ typedef enum OMX_IMAGE_HUFFMANTABLETYPE {
     OMX_IMAGE_HuffmanTableACChroma,
     OMX_IMAGE_HuffmanTableDCLuma,
     OMX_IMAGE_HuffmanTableDCChroma,
-    OMX_IMAGE_HuffmanTableKhronosExtensions = 0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
-    OMX_IMAGE_HuffmanTableVendorStartUnused = 0x7F000000, /**< Reserved region for introducing Vendor Extensions */
+    OMX_IMAGE_HuffmanTableKhronosExtensions =
+            0x6F000000, /**< Reserved region for introducing Khronos Standard Extensions */
+    OMX_IMAGE_HuffmanTableVendorStartUnused =
+            0x7F000000, /**< Reserved region for introducing Vendor Extensions */
     OMX_IMAGE_HuffmanTableMax = 0x7FFFFFFF
 } OMX_IMAGE_HUFFMANTABLETYPE;
 
@@ -312,7 +313,7 @@ typedef struct OMX_IMAGE_PARAM_HUFFMANTTABLETYPE {
     OMX_IMAGE_HUFFMANTABLETYPE eHuffmanTable;
     OMX_U8 nNumberOfHuffmanCodeOfLength[16];
     OMX_U8 nHuffmanTable[256];
-}OMX_IMAGE_PARAM_HUFFMANTTABLETYPE;
+} OMX_IMAGE_PARAM_HUFFMANTTABLETYPE;
 
 /** @} */
 #ifdef __cplusplus

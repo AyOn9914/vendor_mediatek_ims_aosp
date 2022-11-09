@@ -23,30 +23,26 @@
  * Register Data Class
  *****************************************************************************/
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaGetRuimSmsMemReq, RmcCdmaGetRuimSmsMemRsp, RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaGetRuimSmsMemReq, RmcCdmaGetRuimSmsMemRsp,
+                                RFX_MSG_REQUEST_GET_SMS_RUIM_MEM_STATUS);
 
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaGetRuimSmsMemReq);
-RmcCdmaGetRuimSmsMemReq::RmcCdmaGetRuimSmsMemReq(void *data, int length):
-        RmcSingleAtReq(data, length), m_used(0), m_total(0) {
-}
+RmcCdmaGetRuimSmsMemReq::RmcCdmaGetRuimSmsMemReq(void* data, int length)
+    : RmcSingleAtReq(data, length), m_used(0), m_total(0) {}
 
+RmcCdmaGetRuimSmsMemReq::~RmcCdmaGetRuimSmsMemReq() {}
 
-RmcCdmaGetRuimSmsMemReq::~RmcCdmaGetRuimSmsMemReq() {
-}
-
-
-RmcAtSendInfo* RmcCdmaGetRuimSmsMemReq::onGetAtInfo(RfxBaseHandler *h) {
+RmcAtSendInfo* RmcCdmaGetRuimSmsMemReq::onGetAtInfo(RfxBaseHandler* h) {
     RFX_UNUSED(h);
     String8 cmd("AT+EC2KCPMS?");
     String8 responsePrefix("+EC2KCPMS:");
     return new RmcSingleLineAtSendInfo(cmd, responsePrefix);
 }
 
-bool RmcCdmaGetRuimSmsMemReq::onHandleIntermediates(RfxAtLine * line,RfxBaseHandler * h) {
+bool RmcCdmaGetRuimSmsMemReq::onHandleIntermediates(RfxAtLine* line, RfxBaseHandler* h) {
     RFX_UNUSED(h);
     int err;
     line->atTokNextstr(&err);
@@ -65,39 +61,33 @@ bool RmcCdmaGetRuimSmsMemReq::onHandleIntermediates(RfxAtLine * line,RfxBaseHand
     return true;
 }
 
-
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemRsp
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaGetRuimSmsMemRsp);
-RmcCdmaGetRuimSmsMemRsp::RmcCdmaGetRuimSmsMemRsp(void *data, int length):
-        RmcVoidRsp(data, length) {
+RmcCdmaGetRuimSmsMemRsp::RmcCdmaGetRuimSmsMemRsp(void* data, int length)
+    : RmcVoidRsp(data, length) {
     if (data != NULL) {
-        m_info = *((MemInfo *)data);
-        m_data = (void *)&m_info;
+        m_info = *((MemInfo*)data);
+        m_data = (void*)&m_info;
         m_length = length;
     }
 }
 
 RmcCdmaGetRuimSmsMemRsp::RmcCdmaGetRuimSmsMemRsp(int total, int used, RIL_Errno e)
-        :RmcVoidRsp(e), m_info(total, used) {
+    : RmcVoidRsp(e), m_info(total, used) {
     if (e == RIL_E_SUCCESS) {
-        m_data = (void *)&m_info;
+        m_data = (void*)&m_info;
         m_length = sizeof(m_info);
     }
 }
 
-
-RmcCdmaGetRuimSmsMemRsp::~RmcCdmaGetRuimSmsMemRsp() {
-}
+RmcCdmaGetRuimSmsMemRsp::~RmcCdmaGetRuimSmsMemRsp() {}
 
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemHdlr
  *****************************************************************************/
-RmcBaseRspData *RmcCdmaGetRuimSmsMemHdlr::onGetRspData(RmcBaseReqData* req) {
-    RmcCdmaGetRuimSmsMemReq * memReq = (RmcCdmaGetRuimSmsMemReq *)req;
-    return new RmcCdmaGetRuimSmsMemRsp(
-            memReq->getTotal(),
-            memReq->getUsed(),
-            req->getError());
+RmcBaseRspData* RmcCdmaGetRuimSmsMemHdlr::onGetRspData(RmcBaseReqData* req) {
+    RmcCdmaGetRuimSmsMemReq* memReq = (RmcCdmaGetRuimSmsMemReq*)req;
+    return new RmcCdmaGetRuimSmsMemRsp(memReq->getTotal(), memReq->getUsed(), req->getError());
 }

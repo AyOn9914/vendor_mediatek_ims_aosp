@@ -17,8 +17,8 @@
 #ifndef CONFIG_UTIL
 #define CONFIG_UTIL
 
-void skipWhiteSpace(char **p_cur);
-void skipNextComma(char **p_cur);
-char* nextTok(char **p_cur);
+void skipWhiteSpace(char** p_cur);
+void skipNextComma(char** p_cur);
+char* nextTok(char** p_cur);
 
 #endif /* CONFIG_UTIL */

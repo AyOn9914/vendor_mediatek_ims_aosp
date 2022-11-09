@@ -44,25 +44,15 @@ RtcSuppServQueue::~RtcSuppServQueue() {
     delete mInstance;
 }
 
-void RtcSuppServQueue::add(RtcSSEntry ssEntry) {
-    mSuspendedMsgQueue.add(ssEntry);
-}
+void RtcSuppServQueue::add(RtcSSEntry ssEntry) { mSuspendedMsgQueue.add(ssEntry); }
 
-void RtcSuppServQueue::clear() {
-    mSuspendedMsgQueue.clear();
-}
+void RtcSuppServQueue::clear() { mSuspendedMsgQueue.clear(); }
 
-void RtcSuppServQueue::removeFront() {
-    mSuspendedMsgQueue.removeAt(0);
-}
+void RtcSuppServQueue::removeFront() { mSuspendedMsgQueue.removeAt(0); }
 
-bool RtcSuppServQueue::isEmpty() {
-    return mSuspendedMsgQueue.isEmpty();
-}
+bool RtcSuppServQueue::isEmpty() { return mSuspendedMsgQueue.isEmpty(); }
 
-const RtcSSEntry& RtcSuppServQueue::itemAt(int index) {
-    return mSuspendedMsgQueue.itemAt(index);
-}
+const RtcSSEntry& RtcSuppServQueue::itemAt(int index) { return mSuspendedMsgQueue.itemAt(index); }
 
 void RtcSuppServQueue::setSSLock(SSLockState lock) {
     RFX_LOG_D(RFX_LOG_TAG, "setSSLock: %s -> %s", lockToString(mSSLock), lockToString(lock));
@@ -72,11 +62,9 @@ void RtcSuppServQueue::setSSLock(SSLockState lock) {
     mSSLock = lock;
 }
 
-SSLockState RtcSuppServQueue::getSSLock() {
-    return mSSLock;
-}
+SSLockState RtcSuppServQueue::getSSLock() { return mSSLock; }
 
-const char *RtcSuppServQueue::lockToString(SSLockState lock) {
+const char* RtcSuppServQueue::lockToString(SSLockState lock) {
     switch (lock) {
         case SS_UNLOCKED:
             return "SS_UNLOCKED";

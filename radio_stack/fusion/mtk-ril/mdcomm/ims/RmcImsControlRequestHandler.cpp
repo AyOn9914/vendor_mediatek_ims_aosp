@@ -24,19 +24,19 @@
 #include "ImsCustomizedUtils.h"
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_SET_VOLTE_ENABLE,           //AT+EIMSVOLTE
-    RFX_MSG_REQUEST_SET_WFC_ENABLE,             //AT+EIMSWFC
-    RFX_MSG_REQUEST_SET_VILTE_ENABLE,           //AT+EIMSVILTE
-    RFX_MSG_REQUEST_SET_VIWIFI_ENABLE,          //AT+EIMSVIWIFI
-    RFX_MSG_REQUEST_SET_IMSCFG,                 //AT+EIMSCFG
-    RFX_MSG_REQUEST_SET_MD_IMSCFG,              //AT+ECFGSET,AT+EWOCFGSET,AT+EIWLCFGSET
-    RFX_MSG_REQUEST_SET_WFC_PROFILE,            //AT+EWFCP
-    RFX_MSG_REQUEST_IMS_REGISTRATION_STATE,     //AT+CIREG
-    RFX_MSG_REQUEST_SET_IMS_ENABLE,             //AT+EIMS
-    RFX_MSG_REQUEST_IMS_DEREG_NOTIFICATION,     //AT+EIMSDEREG
-    RFX_MSG_REQUEST_SET_IMS_REGISTRATION_REPORT,  //AT+CIREG=2
-    RFX_MSG_REQUEST_SET_IMS_RTP_REPORT,         // AT+EIMSRTPTS=<default_ebi>,<network_id>,<timer>
-    RFX_MSG_REQUEST_QUERY_VOPS_STATUS,          // AT+CIREP
+        RFX_MSG_REQUEST_SET_VOLTE_ENABLE,             // AT+EIMSVOLTE
+        RFX_MSG_REQUEST_SET_WFC_ENABLE,               // AT+EIMSWFC
+        RFX_MSG_REQUEST_SET_VILTE_ENABLE,             // AT+EIMSVILTE
+        RFX_MSG_REQUEST_SET_VIWIFI_ENABLE,            // AT+EIMSVIWIFI
+        RFX_MSG_REQUEST_SET_IMSCFG,                   // AT+EIMSCFG
+        RFX_MSG_REQUEST_SET_MD_IMSCFG,                // AT+ECFGSET,AT+EWOCFGSET,AT+EIWLCFGSET
+        RFX_MSG_REQUEST_SET_WFC_PROFILE,              // AT+EWFCP
+        RFX_MSG_REQUEST_IMS_REGISTRATION_STATE,       // AT+CIREG
+        RFX_MSG_REQUEST_SET_IMS_ENABLE,               // AT+EIMS
+        RFX_MSG_REQUEST_IMS_DEREG_NOTIFICATION,       // AT+EIMSDEREG
+        RFX_MSG_REQUEST_SET_IMS_REGISTRATION_REPORT,  // AT+CIREG=2
+        RFX_MSG_REQUEST_SET_IMS_RTP_REPORT,  // AT+EIMSRTPTS=<default_ebi>,<network_id>,<timer>
+        RFX_MSG_REQUEST_QUERY_VOPS_STATUS,   // AT+CIREP
 };
 
 // register data
@@ -50,17 +50,18 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_WF
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_IMS_REGISTRATION_STATE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_IMS_ENABLE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_IMS_DEREG_NOTIFICATION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_SET_IMS_REGISTRATION_REPORT);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_IMS_REGISTRATION_REPORT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_IMS_RTP_REPORT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_VOPS_STATUS);
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcImsControlRequestHandler, RIL_CMD_PROXY_1);
 
-RmcImsControlRequestHandler::RmcImsControlRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcImsControlRequestHandler::RmcImsControlRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcImsControlRequestHandler constructor");
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
     enableImsRegistrationReport(NULL);
     // enableImsEccSupportReport();
     requestMultiImsSupportCount();
@@ -74,7 +75,7 @@ RmcImsControlRequestHandler::RmcImsControlRequestHandler(int slot_id, int channe
     static bool initDone = false;
     if (initDone == false) {
         initDone = true;
-        char ctVolteSupport[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char ctVolteSupport[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("persist.vendor.mtk_ct_volte_support", ctVolteSupport, "0");
         if (atoi(ctVolteSupport) == 1) {
             atSendCommand(String8::format("AT+ECFGSET=\"mtk_ct_volte_support\",\"1\""));
@@ -90,18 +91,17 @@ RmcImsControlRequestHandler::RmcImsControlRequestHandler(int slot_id, int channe
     /// @}
 }
 
-#define RIL_WIFI_PREFERRED     1
+#define RIL_WIFI_PREFERRED 1
 #define RIL_CELLULAR_PREFERRED 2
-#define RIL_WIFI_ONLY          3
-#define RIL_4G_PREFERRED       4
+#define RIL_WIFI_ONLY 3
+#define RIL_4G_PREFERRED 4
 
-RmcImsControlRequestHandler::~RmcImsControlRequestHandler() {
-}
+RmcImsControlRequestHandler::~RmcImsControlRequestHandler() {}
 
 void RmcImsControlRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
-    //logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
+    // logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SET_VOLTE_ENABLE:
             requestSetVolteEnabled(msg);
             break;
@@ -148,8 +148,8 @@ void RmcImsControlRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) 
 }
 
 void RmcImsControlRequestHandler::requestSetVolteEnabled(const sp<RfxMclMessage>& msg) {
-    int *enable = (int*)msg->getData()->getData();
-    char *cmd;
+    int* enable = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -162,16 +162,16 @@ void RmcImsControlRequestHandler::requestSetVolteEnabled(const sp<RfxMclMessage>
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcImsControlRequestHandler::requestSetWfcEnabled(const sp<RfxMclMessage>& msg) {
-    int *enable = (int*)msg->getData()->getData();
-    char *cmd;
+    int* enable = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -184,16 +184,16 @@ void RmcImsControlRequestHandler::requestSetWfcEnabled(const sp<RfxMclMessage>& 
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcImsControlRequestHandler::requestSetVilteEnabled(const sp<RfxMclMessage>& msg) {
-    int *enable = (int*)msg->getData()->getData();
-    char *cmd;
+    int* enable = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -206,17 +206,16 @@ void RmcImsControlRequestHandler::requestSetVilteEnabled(const sp<RfxMclMessage>
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
-
 }
 
 void RmcImsControlRequestHandler::requestSetViwifiEnabled(const sp<RfxMclMessage>& msg) {
-    int *enable = (int*)msg->getData()->getData();
-    char *cmd;
+    int* enable = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -229,16 +228,16 @@ void RmcImsControlRequestHandler::requestSetViwifiEnabled(const sp<RfxMclMessage
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcImsControlRequestHandler::requestSetImsCfg(const sp<RfxMclMessage>& msg) {
-    int *params = (int *)msg->getData()->getData();
-    char *cmd;
+    int* params = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -274,10 +273,12 @@ void RmcImsControlRequestHandler::requestSetImsCfg(const sp<RfxMclMessage>& msg)
         requestSetSipUserAgent();
 
         // send AT command
-        logD(RFX_LOG_TAG, "requestSetImsCfg volte:%d, vilte:%d, vowifi:%d, viwifi:%d, sms:%d, \
-                imsTestMode:%d, eims:%d", volte, vilte, vowifi, viwifi, sms, imsTestMode, eims);
-        p_response = atSendCommand(String8::format("AT+EIMSCFG=%d,%d,%d,%d,%d,%d",
-                volte, vilte, vowifi, viwifi, sms, eims));
+        logD(RFX_LOG_TAG,
+             "requestSetImsCfg volte:%d, vilte:%d, vowifi:%d, viwifi:%d, sms:%d, \
+                imsTestMode:%d, eims:%d",
+             volte, vilte, vowifi, viwifi, sms, imsTestMode, eims);
+        p_response = atSendCommand(String8::format("AT+EIMSCFG=%d,%d,%d,%d,%d,%d", volte, vilte,
+                                                   vowifi, viwifi, sms, eims));
 
         // set result
         if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
@@ -288,8 +289,8 @@ void RmcImsControlRequestHandler::requestSetImsCfg(const sp<RfxMclMessage>& msg)
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -303,16 +304,16 @@ void RmcImsControlRequestHandler::requestSetModemImsCfg(const sp<RfxMclMessage>&
     RIL_Errno ril_errno = RIL_E_GENERIC_FAILURE;
     int len, i;
 
-    char **params = (char **)msg->getData()->getData();
+    char** params = (char**)msg->getData()->getData();
 
-    char *key_token = NULL;
-    char *val_token = NULL;
+    char* key_token = NULL;
+    char* val_token = NULL;
 
-    char *p_key_cur = (char *) calloc(strlen(params[0]) + 1, sizeof(char));
-    char *p_val_cur = (char *) calloc(strlen(params[1]) + 1, sizeof(char));
+    char* p_key_cur = (char*)calloc(strlen(params[0]) + 1, sizeof(char));
+    char* p_val_cur = (char*)calloc(strlen(params[1]) + 1, sizeof(char));
 
-    char *p_key_temp= p_key_cur;
-    char *p_val_temp= p_val_cur;
+    char* p_key_temp = p_key_cur;
+    char* p_val_temp = p_val_cur;
 
     if ((p_key_cur == NULL) || (p_val_cur == NULL)) {
         logD(RFX_LOG_TAG, "requestSetMdImsCfg calloc failed!");
@@ -332,32 +333,30 @@ void RmcImsControlRequestHandler::requestSetModemImsCfg(const sp<RfxMclMessage>&
     strncpy(p_val_cur, params[1], strlen(params[1]));
 
     std::string result = "";
-    char *rsp_string;
+    char* rsp_string;
 
     int type = atoi(params[2]);
 
     if (type >= 0 && type < MAX_MD_CFGTYPE_NUM) {
         while ((key_token = nextTok(&p_key_cur)) != NULL) {
             if ((val_token = nextTok(&p_val_cur)) != NULL) {
-
                 // send AT command, default send AT+ECFGSET (type is 0)
                 logD(RFX_LOG_TAG, "requestSetMdImsCfg key:%s, value:%s", key_token, val_token);
 
                 if (type == ECFGSET) {
-                    p_response = atSendCommand(
-                            String8::format("%s=\"%s\",\"%s\"", cfgAtCmd[ECFGSET], key_token, val_token));
-                } else if(type == EWOCFGSET) {
-                    p_response = atSendCommand(
-                            String8::format("%s=\"%s\",\"%s\"", cfgAtCmd[EWOCFGSET], key_token, val_token));
-                } else if(type == EIWLCFGSET) {
-                    p_response = atSendCommand(
-                            String8::format("%s=\"%s\",\"%s\"", cfgAtCmd[EIWLCFGSET], key_token, val_token));
+                    p_response = atSendCommand(String8::format(
+                            "%s=\"%s\",\"%s\"", cfgAtCmd[ECFGSET], key_token, val_token));
+                } else if (type == EWOCFGSET) {
+                    p_response = atSendCommand(String8::format(
+                            "%s=\"%s\",\"%s\"", cfgAtCmd[EWOCFGSET], key_token, val_token));
+                } else if (type == EIWLCFGSET) {
+                    p_response = atSendCommand(String8::format(
+                            "%s=\"%s\",\"%s\"", cfgAtCmd[EIWLCFGSET], key_token, val_token));
                 }
 
                 // set result
-                if (p_response == NULL ||
-                        p_response->getError() != 0 ||
-                        p_response->getSuccess() != 1) {
+                if (p_response == NULL || p_response->getError() != 0 ||
+                    p_response->getSuccess() != 1) {
                     // default return fail, should return fail final if all fail
                     if (result.empty()) {
                         result += std::string("-1");
@@ -387,8 +386,8 @@ void RmcImsControlRequestHandler::requestSetModemImsCfg(const sp<RfxMclMessage>&
     std::copy(result.begin(), result.end(), rsp_string);
     rsp_string[result.size()] = '\0';
 
-    responseMsg = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxStringData(rsp_string, strlen(rsp_string)), msg, false);
+    responseMsg = RfxMclMessage::obtainResponse(
+            msg->getId(), ril_errno, RfxStringData(rsp_string, strlen(rsp_string)), msg, false);
     // response to TeleCore
     responseToTelCore(responseMsg);
 
@@ -398,8 +397,8 @@ void RmcImsControlRequestHandler::requestSetModemImsCfg(const sp<RfxMclMessage>&
 }
 
 void RmcImsControlRequestHandler::requestSendWfcProfile(const sp<RfxMclMessage>& msg) {
-    int *preference = (int*)msg->getData()->getData();
-    char *cmd;
+    int* preference = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -414,8 +413,8 @@ void RmcImsControlRequestHandler::requestSendWfcProfile(const sp<RfxMclMessage>&
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -434,9 +433,9 @@ void RmcImsControlRequestHandler::enableImsRegistrationReport(const sp<RfxMclMes
         logE(RFX_LOG_TAG, "Enable +CIREGU report error: %d", p_response->getError());
     }
 
-    if(msg != NULL){
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    if (msg != NULL) {
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
         // response to TeleCore
         responseToTelCore(response);
@@ -455,10 +454,9 @@ void RmcImsControlRequestHandler::requestImsRegistrationState(const sp<RfxMclMes
 
     /* +CIREG: <n>,<reg_info>[,<ext_info>] */
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto error;
 
     // handle intermediate
     line = p_response->getIntermediates();
@@ -469,18 +467,18 @@ void RmcImsControlRequestHandler::requestImsRegistrationState(const sp<RfxMclMes
 
     /* <mode> */
     skip = line->atTokNextint(&err);
-    if (err < 0 || skip < 0 ) {
+    if (err < 0 || skip < 0) {
         logE(RFX_LOG_TAG, "The <mode> is an invalid value!!!");
         goto error;
     } else {
         /* <reg_info> value 0: not registered , 1: registered */
         response[0] = line->atTokNextint(&err);
-        if (err < 0 ) goto error;
+        if (err < 0) goto error;
 
-        response[1] = 1; // RADIO_TECH_3GPP
+        response[1] = 1;  // RADIO_TECH_3GPP
     }
     responseMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(response, 2), msg, false);
+                                                RfxIntsData(response, 2), msg, false);
     // response to TeleCore
     responseToTelCore(responseMsg);
 
@@ -488,14 +486,14 @@ void RmcImsControlRequestHandler::requestImsRegistrationState(const sp<RfxMclMes
 error:
     logE(RFX_LOG_TAG, "requestImsRegistrationState must not return error when radio is on");
     responseMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(response, 2), msg, false);
+                                                RfxIntsData(response, 2), msg, false);
     // response to TeleCore
     responseToTelCore(responseMsg);
 }
 
 void RmcImsControlRequestHandler::requestSetImsEnabled(const sp<RfxMclMessage>& msg) {
-    int *enable = (int*)msg->getData()->getData();
-    char *cmd;
+    int* enable = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -508,16 +506,16 @@ void RmcImsControlRequestHandler::requestSetImsEnabled(const sp<RfxMclMessage>& 
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
 }
 
 void RmcImsControlRequestHandler::requestImsDereg(const sp<RfxMclMessage>& msg) {
-    int *cause = (int*)msg->getData()->getData();
-    char *cmd;
+    int* cause = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -530,8 +528,8 @@ void RmcImsControlRequestHandler::requestImsDereg(const sp<RfxMclMessage>& msg) 
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -550,25 +548,25 @@ void RmcImsControlRequestHandler::enableImsEccSupportReport() {
 }
 
 void RmcImsControlRequestHandler::requestSetImsRtpReport(const sp<RfxMclMessage>& msg) {
-    int *params = (int *)msg->getData()->getData();
-    char *cmd;
+    int* params = (int*)msg->getData()->getData();
+    char* cmd;
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
     // send AT command
     // AT+EIMSRTPTS=<default_ebi>,<network_id>,<timer>
-    logD(RFX_LOG_TAG, "requestSetImsRtpReport pdn_id:%d, network_id:%d, timer:%d",
-            params[0], params[1], params[2]);
-    p_response = atSendCommand(String8::format("AT+EIMSRTPTS=%d,%d,%d",
-            params[0], params[1], params[2]));
+    logD(RFX_LOG_TAG, "requestSetImsRtpReport pdn_id:%d, network_id:%d, timer:%d", params[0],
+         params[1], params[2]);
+    p_response = atSendCommand(
+            String8::format("AT+EIMSRTPTS=%d,%d,%d", params[0], params[1], params[2]));
 
     // set result
     if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
         rilErrNo = RIL_E_GENERIC_FAILURE;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg, false);
 
     // response to TeleCore
     responseToTelCore(response);
@@ -582,8 +580,8 @@ void RmcImsControlRequestHandler::requestMultiImsSupportCount() {
     RfxAtLine* line;
 
     // use AP side system property as default return value.
-    char sApMultiImsCount[RFX_PROPERTY_VALUE_MAX] = { 0 };
-    char sMdMultiImsCount[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char sApMultiImsCount[RFX_PROPERTY_VALUE_MAX] = {0};
+    char sMdMultiImsCount[RFX_PROPERTY_VALUE_MAX] = {0};
     const char* PROP_AP_MULTI_IMS_SUPPORT = "persist.vendor.mims_support";
     const char* PROP_MD_MULTI_IMS_SUPPORT = "ro.vendor.md_mims_support";
 
@@ -597,10 +595,9 @@ void RmcImsControlRequestHandler::requestMultiImsSupportCount() {
     p_response = atSendCommandSingleline("AT+EMULTIIMS?", "+EMULTIIMS:");
 
     err = p_response->getError();
-    if (err != 0 ||
-            p_response == NULL ||
-            p_response->getSuccess() == 0 ||
-            p_response->getIntermediates() == NULL) goto error;
+    if (err != 0 || p_response == NULL || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL)
+        goto error;
 
     // handle intermediate
     line = p_response->getIntermediates();
@@ -622,20 +619,19 @@ void RmcImsControlRequestHandler::requestMultiImsSupportCount() {
 error:
     if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
         logE(RFX_LOG_TAG, "Request +EMULTIIMS count error: %d", p_response->getError());
-         switch (p_response->atGetCmeError()) {
-             logD(RFX_LOG_TAG, "+EMULTIIMS CME error p_response = %d",
-                    p_response->atGetCmeError());
-             case CME_SUCCESS:
-                 logD(RFX_LOG_TAG, "+EMULTIIMS generic failure p_response: CME_SUCCESS");
-                 break;
-             case CME_UNKNOWN:
-                 logD(RFX_LOG_TAG, "+EMULTIIMS error p_response: CME_UNKNOWN");
-                 // if MD not support +EMULTIIMS, return default MIMS count
-                 rfx_property_set("ro.vendor.md_mims_support", sApMultiImsCount);
-                 break;
-             default:
-                 return;
-         }
+        switch (p_response->atGetCmeError()) {
+            logD(RFX_LOG_TAG, "+EMULTIIMS CME error p_response = %d", p_response->atGetCmeError());
+            case CME_SUCCESS:
+                logD(RFX_LOG_TAG, "+EMULTIIMS generic failure p_response: CME_SUCCESS");
+                break;
+            case CME_UNKNOWN:
+                logD(RFX_LOG_TAG, "+EMULTIIMS error p_response: CME_UNKNOWN");
+                // if MD not support +EMULTIIMS, return default MIMS count
+                rfx_property_set("ro.vendor.md_mims_support", sApMultiImsCount);
+                break;
+            default:
+                return;
+        }
     } else {
         logE(RFX_LOG_TAG, "handle response data count error: %d", err);
     }
@@ -644,11 +640,10 @@ error:
 void RmcImsControlRequestHandler::enableImsRcsStateFeature() {
     static bool initOnce[MAX_SIM_COUNT] = {false};
 
-    if (initOnce[m_slot_id])
-        return;
+    if (initOnce[m_slot_id]) return;
 
     // is rcs ua support?
-    char property_value[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[MTK_PROPERTY_VALUE_MAX] = {0};
     int isRcsUaProxySupport = 0;
     rfx_property_get("persist.vendor.mtk_rcs_ua_support", property_value, "0");
     isRcsUaProxySupport = atoi(property_value);
@@ -705,7 +700,7 @@ void RmcImsControlRequestHandler::enableImsRcsStateFeature() {
 
     if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
         logE(RFX_LOG_TAG, "enableImsRcsStateFeature(): AT+EIMSRCS error: %d",
-            p_response->getError());
+             p_response->getError());
     }
     initOnce[m_slot_id] = true;
 }
@@ -713,22 +708,22 @@ void RmcImsControlRequestHandler::enableImsRcsStateFeature() {
 void RmcImsControlRequestHandler::requestSetSipUserAgent() {
     logD(RFX_LOG_TAG, "requestSetSipUserAgent enter:");
     int err;
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxAtResponse> p_response = NULL;
-    RIL_Errno rilErrNo =  RIL_E_GENERIC_FAILURE;
-    char *value = NULL;
+    RIL_Errno rilErrNo = RIL_E_GENERIC_FAILURE;
+    char* value = NULL;
     bool isReset = false;
     char feature[] = "ECFGRESET Supported";
 
     if (getFeatureVersion(feature) <= 0 || !ImsCustomizedUtils::isSupportCustomizedUserAgent()) {
-        return ;
+        return;
     }
 
-    String8 format = getMclStatusManager()->getString8Value(
-            RFX_STATUS_KEY_CUSTOMIZED_USER_AGENT_FORMAT);
+    String8 format =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_CUSTOMIZED_USER_AGENT_FORMAT);
 
     logI(RFX_LOG_TAG, "requestSetSipUserAgent format: old=%s, new = %s; reset version=%d",
-            userAgentformat.string(), format.string(), getFeatureVersion(feature));
+         userAgentformat.string(), format.string(), getFeatureVersion(feature));
 
     while (rilErrNo == RIL_E_GENERIC_FAILURE) {
         // Check if the format already be set before
@@ -754,8 +749,8 @@ void RmcImsControlRequestHandler::requestSetSipUserAgent() {
             } else {
                 String8 newValue = ImsCustomizedUtils::getCustomizedUserAgent(format, m_slot_id);
 
-                p_response = atSendCommandSingleline(
-                                   String8::format("AT+ECFGGET=\"user_agent\""),"+ECFGGET");
+                p_response = atSendCommandSingleline(String8::format("AT+ECFGGET=\"user_agent\""),
+                                                     "+ECFGGET");
 
                 if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
                     logD(RFX_LOG_TAG, "Query user agent error: %d", p_response->getError());
@@ -766,20 +761,23 @@ void RmcImsControlRequestHandler::requestSetSipUserAgent() {
 
                 // Move to first
                 line->atTokStart(&err);
-                if (err < 0) break;;
+                if (err < 0) break;
+                ;
 
                 // Read Key
-                char *key= line->atTokNextstr(&err);
-                if (err < 0) break;;
+                char* key = line->atTokNextstr(&err);
+                if (err < 0) break;
+                ;
                 if (strcmp("user_agent", key) != 0) break;
 
                 value = line->atTokNextstr(&err);
                 if (err < 0) break;
 
-                logD(RFX_LOG_TAG, "requestSetSipUserAgent value = %s, newValue = %s", value, newValue.string());
+                logD(RFX_LOG_TAG, "requestSetSipUserAgent value = %s, newValue = %s", value,
+                     newValue.string());
 
                 // If Value is not changed
-                if(strcmp(newValue.string(), value) == 0) {
+                if (strcmp(newValue.string(), value) == 0) {
                     rilErrNo = RIL_E_SUCCESS;
                     break;
                 }
@@ -800,7 +798,8 @@ void RmcImsControlRequestHandler::requestSetSipUserAgent() {
 
     if (rilErrNo == RIL_E_SUCCESS) {
         userAgentformat = format;
-        logI(RFX_LOG_TAG, "requestSetSipUserAgent update userAgentformat to %s", userAgentformat.string());
+        logI(RFX_LOG_TAG, "requestSetSipUserAgent update userAgentformat to %s",
+             userAgentformat.string());
     }
 
     logD(RFX_LOG_TAG, "requestSetSipUserAgent done (isReset = %d).", isReset);
@@ -809,14 +808,14 @@ void RmcImsControlRequestHandler::requestSetSipUserAgent() {
 bool RmcImsControlRequestHandler::isCurrentSlotSupportIms() {
     bool result = false;
 
-    char isImsSupport[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char isImsSupport[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.ims_support", isImsSupport, "0");
 
     if (atoi(isImsSupport) == 0) {
         return result;
     }
 
-    char imsCount[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char imsCount[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.mims_support", imsCount, "1");
 
     if (atoi(imsCount) == 1) {
@@ -836,7 +835,7 @@ bool RmcImsControlRequestHandler::isCurrentSlotSupportIms() {
 void RmcImsControlRequestHandler::queryVopsStatus(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int responses[2] = {0};
     sp<RfxMclMessage> rsp = NULL;
@@ -857,7 +856,7 @@ void RmcImsControlRequestHandler::queryVopsStatus(const sp<RfxMclMessage>& msg) 
     switch (p_response->atGetCmeError()) {
         case CME_SUCCESS:
             break;
-        default:     // AT CMD format error, should not be here
+        default:  // AT CMD format error, should not be here
             goto error;
     }
 

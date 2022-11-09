@@ -32,23 +32,13 @@ const int SmsAddress::TON_SUBSCRIBER = 4;
 const int SmsAddress::TON_ALPHANUMERIC = 5;
 const int SmsAddress::TON_ABBREVIATED = 6;
 
-SmsAddress::SmsAddress() :
-        mTon(0),
-        mAddress(""),
-        mOrigBytes(NULL) {
-}
+SmsAddress::SmsAddress() : mTon(0), mAddress(""), mOrigBytes(NULL) {}
 
-string SmsAddress::getAddressString() {
-    return mAddress;
-}
+string SmsAddress::getAddressString() { return mAddress; }
 
-bool SmsAddress::isAlphanumeric() {
-    return mTon == TON_ALPHANUMERIC;
-}
+bool SmsAddress::isAlphanumeric() { return mTon == TON_ALPHANUMERIC; }
 
-bool SmsAddress::isNetworkSpecific() {
-    return mTon == TON_NETWORK;
-}
+bool SmsAddress::isNetworkSpecific() { return mTon == TON_NETWORK; }
 
 bool SmsAddress::couldBeEmailGateway() {
     return mAddress.length() <= SMS_ADDR_EMAIL_GATEWAY_MAX_LEN;

@@ -21,7 +21,6 @@
 // #include <utils/TypeHelpers.h>
 #include <TypeHelpers.h>
 
-
 /*
  * Contains some bit manipulation helpers.
  */
@@ -32,8 +31,8 @@ namespace android {
 struct BitSet32 {
     uint32_t value;
 
-    inline BitSet32() : value(0UL) { }
-    explicit inline BitSet32(uint32_t value) : value(value) { }
+    inline BitSet32() : value(0UL) {}
+    explicit inline BitSet32(uint32_t value) : value(value) {}
 
     // Gets the value associated with a particular bit index.
     static inline uint32_t valueForBit(uint32_t n) { return 0x80000000UL >> n; }
@@ -51,7 +50,7 @@ struct BitSet32 {
     // Returns true if the bit set does not contain any marked bits.
     inline bool isEmpty() const { return isEmpty(value); }
 
-    static inline bool isEmpty(uint32_t value) { return ! value; }
+    static inline bool isEmpty(uint32_t value) { return !value; }
 
     // Returns true if the bit set does not contain any unmarked bits.
     inline bool isFull() const { return isFull(value); }
@@ -66,12 +65,12 @@ struct BitSet32 {
     // Marks the specified bit.
     inline void markBit(uint32_t n) { markBit(value, n); }
 
-    static inline void markBit (uint32_t& value, uint32_t n) { value |= valueForBit(n); }
+    static inline void markBit(uint32_t& value, uint32_t n) { value |= valueForBit(n); }
 
     // Clears the specified bit.
     inline void clearBit(uint32_t n) { clearBit(value, n); }
 
-    static inline void clearBit(uint32_t& value, uint32_t n) { value &= ~ valueForBit(n); }
+    static inline void clearBit(uint32_t& value, uint32_t n) { value &= ~valueForBit(n); }
 
     // Finds the first marked bit in the set.
     // Result is undefined if all bits are unmarked.
@@ -83,7 +82,7 @@ struct BitSet32 {
     // Result is undefined if all bits are marked.
     inline uint32_t firstUnmarkedBit() const { return firstUnmarkedBit(value); }
 
-    static inline uint32_t firstUnmarkedBit(uint32_t value) { return clz_checked(~ value); }
+    static inline uint32_t firstUnmarkedBit(uint32_t value) { return clz_checked(~value); }
 
     // Finds the last marked bit in the set.
     // Result is undefined if all bits are unmarked.
@@ -123,32 +122,26 @@ struct BitSet32 {
 
     // Gets the index of the specified bit in the set, which is the number of
     // marked bits that appear before the specified bit.
-    inline uint32_t getIndexOfBit(uint32_t n) const {
-        return getIndexOfBit(value, n);
-    }
+    inline uint32_t getIndexOfBit(uint32_t n) const { return getIndexOfBit(value, n); }
 
     static inline uint32_t getIndexOfBit(uint32_t value, uint32_t n) {
         return __builtin_popcountl(value & ~(0xffffffffUL >> n));
     }
 
-    inline bool operator== (const BitSet32& other) const { return value == other.value; }
-    inline bool operator!= (const BitSet32& other) const { return value != other.value; }
-    inline BitSet32 operator& (const BitSet32& other) const {
-        return BitSet32(value & other.value);
-    }
-    inline BitSet32& operator&= (const BitSet32& other) {
+    inline bool operator==(const BitSet32& other) const { return value == other.value; }
+    inline bool operator!=(const BitSet32& other) const { return value != other.value; }
+    inline BitSet32 operator&(const BitSet32& other) const { return BitSet32(value & other.value); }
+    inline BitSet32& operator&=(const BitSet32& other) {
         value &= other.value;
         return *this;
     }
-    inline BitSet32 operator| (const BitSet32& other) const {
-        return BitSet32(value | other.value);
-    }
-    inline BitSet32& operator|= (const BitSet32& other) {
+    inline BitSet32 operator|(const BitSet32& other) const { return BitSet32(value | other.value); }
+    inline BitSet32& operator|=(const BitSet32& other) {
         value |= other.value;
         return *this;
     }
 
-private:
+  private:
     // We use these helpers as the signature of __builtin_c{l,t}z has "unsigned int" for the
     // input, which is only guaranteed to be 16b, not 32. The compiler should optimize this away.
     static inline uint32_t clz_checked(uint32_t value) {
@@ -174,8 +167,8 @@ ANDROID_BASIC_TYPES_TRAITS(BitSet32)
 struct BitSet64 {
     uint64_t value;
 
-    inline BitSet64() : value(0ULL) { }
-    explicit inline BitSet64(uint64_t value) : value(value) { }
+    inline BitSet64() : value(0ULL) {}
+    explicit inline BitSet64(uint64_t value) : value(value) {}
 
     // Gets the value associated with a particular bit index.
     static inline uint64_t valueForBit(uint32_t n) { return 0x8000000000000000ULL >> n; }
@@ -193,7 +186,7 @@ struct BitSet64 {
     // Returns true if the bit set does not contain any marked bits.
     inline bool isEmpty() const { return isEmpty(value); }
 
-    static inline bool isEmpty(uint64_t value) { return ! value; }
+    static inline bool isEmpty(uint64_t value) { return !value; }
 
     // Returns true if the bit set does not contain any unmarked bits.
     inline bool isFull() const { return isFull(value); }
@@ -213,7 +206,7 @@ struct BitSet64 {
     // Clears the specified bit.
     inline void clearBit(uint32_t n) { clearBit(value, n); }
 
-    static inline void clearBit(uint64_t& value, uint32_t n) { value &= ~ valueForBit(n); }
+    static inline void clearBit(uint64_t& value, uint32_t n) { value &= ~valueForBit(n); }
 
     // Finds the first marked bit in the set.
     // Result is undefined if all bits are unmarked.
@@ -225,7 +218,7 @@ struct BitSet64 {
     // Result is undefined if all bits are marked.
     inline uint32_t firstUnmarkedBit() const { return firstUnmarkedBit(value); }
 
-    static inline uint32_t firstUnmarkedBit(uint64_t value) { return __builtin_clzll(~ value); }
+    static inline uint32_t firstUnmarkedBit(uint64_t value) { return __builtin_clzll(~value); }
 
     // Finds the last marked bit in the set.
     // Result is undefined if all bits are unmarked.
@@ -271,19 +264,15 @@ struct BitSet64 {
         return __builtin_popcountll(value & ~(0xffffffffffffffffULL >> n));
     }
 
-    inline bool operator== (const BitSet64& other) const { return value == other.value; }
-    inline bool operator!= (const BitSet64& other) const { return value != other.value; }
-    inline BitSet64 operator& (const BitSet64& other) const {
-        return BitSet64(value & other.value);
-    }
-    inline BitSet64& operator&= (const BitSet64& other) {
+    inline bool operator==(const BitSet64& other) const { return value == other.value; }
+    inline bool operator!=(const BitSet64& other) const { return value != other.value; }
+    inline BitSet64 operator&(const BitSet64& other) const { return BitSet64(value & other.value); }
+    inline BitSet64& operator&=(const BitSet64& other) {
         value &= other.value;
         return *this;
     }
-    inline BitSet64 operator| (const BitSet64& other) const {
-        return BitSet64(value | other.value);
-    }
-    inline BitSet64& operator|= (const BitSet64& other) {
+    inline BitSet64 operator|(const BitSet64& other) const { return BitSet64(value | other.value); }
+    inline BitSet64& operator|=(const BitSet64& other) {
         value |= other.value;
         return *this;
     }
@@ -291,6 +280,6 @@ struct BitSet64 {
 
 ANDROID_BASIC_TYPES_TRAITS(BitSet64)
 
-} // namespace android
+}  // namespace android
 
-#endif // UTILS_BITSET_H
+#endif  // UTILS_BITSET_H

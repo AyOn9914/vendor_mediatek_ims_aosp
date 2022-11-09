@@ -20,33 +20,31 @@
 #include <CommandRespondor.h>
 #include <CommandDispatch.h>
 
-typedef std::list<android::netdagent::CommandRespondor *> tCommandRespondorList;
-typedef std::list<android::netdagent::CommandDispatch *> tCommandDispatchList;
+typedef std::list<android::netdagent::CommandRespondor*> tCommandRespondorList;
+typedef std::list<android::netdagent::CommandDispatch*> tCommandDispatchList;
 
 namespace android {
 namespace netdagent {
 
 class CommandListener {
-public:
-	CommandListener(const char *socketName);
+  public:
+    CommandListener(const char* socketName);
     virtual ~CommandListener();
-	int startListener();
+    int startListener();
 
-private:
-	void init(const char *socketName, int socket);
-	void registerCmd(CommandDispatch *cmd) {
-		mCommandDispatchList->push_back(cmd);
-	}
-	static void* threadStart(void *obj);
-	void runListener();
-	bool handleEvents(CommandRespondor *cr);
-	void releaseSockets(CommandRespondor *cr);
+  private:
+    void init(const char* socketName, int socket);
+    void registerCmd(CommandDispatch* cmd) { mCommandDispatchList->push_back(cmd); }
+    static void* threadStart(void* obj);
+    void runListener();
+    bool handleEvents(CommandRespondor* cr);
+    void releaseSockets(CommandRespondor* cr);
 
-	const char *mListenSocketName;
-	int mListenSocket;
-    pthread_t  mThread;
-	tCommandRespondorList *mCommandRespondorList;
-	tCommandDispatchList *mCommandDispatchList;
+    const char* mListenSocketName;
+    int mListenSocket;
+    pthread_t mThread;
+    tCommandRespondorList* mCommandRespondorList;
+    tCommandDispatchList* mCommandDispatchList;
 };
 
 }  // namespace netdagent

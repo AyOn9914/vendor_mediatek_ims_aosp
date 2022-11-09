@@ -33,7 +33,7 @@
  *****************************************************************************/
 
 class RtcDataUtils {
-public:
+  public:
     RtcDataUtils() {}
     virtual ~RtcDataUtils() {}
     static bool isOp12Support();
@@ -73,8 +73,7 @@ inline bool RtcDataUtils::isSupportTemporaryDisableIms() {
 // 3. Support restore data allow state and data connection when call end.
 inline bool RtcDataUtils::isSupportTempDataSwitchFromOem() {
     char support_value[RFX_PROPERTY_VALUE_MAX] = {0};
-    rfx_property_get("persist.vendor.radio.data_incall_ext",
-            support_value, "0");
+    rfx_property_get("persist.vendor.radio.data_incall_ext", support_value, "0");
     int value = atoi(support_value);
     return value == 1;
 }

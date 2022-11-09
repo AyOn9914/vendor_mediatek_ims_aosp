@@ -20,14 +20,13 @@
 #include "RilClient.h"
 
 class RilAtciClient : public RilClient {
-public:
+  public:
     RilAtciClient(int identity, char* socketName);
     virtual ~RilAtciClient();
-    virtual void processCommands(void *buffer, size_t buflen, int clientId);
-    virtual void requestComplete(RIL_Token token, RIL_Errno e, void *response,
-            size_t responselen);
-    virtual void handleUnsolicited(int slotId, int unsolResponse, void *data,
-            size_t datalen, UrcDispatchRule rule);
+    virtual void processCommands(void* buffer, size_t buflen, int clientId);
+    virtual void requestComplete(RIL_Token token, RIL_Errno e, void* response, size_t responselen);
+    virtual void handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                   UrcDispatchRule rule);
 };
 
 #endif

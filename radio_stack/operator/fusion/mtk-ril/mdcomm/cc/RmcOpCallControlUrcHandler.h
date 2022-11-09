@@ -22,16 +22,16 @@
 class RmcOpCallControlUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpCallControlUrcHandler);
 
-    public:
-        RmcOpCallControlUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcOpCallControlUrcHandler();
+  public:
+    RmcOpCallControlUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcOpCallControlUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void onQueryTrnIndication(const sp<RfxMclMessage>& msg);
+  private:
+    void onQueryTrnIndication(const sp<RfxMclMessage>& msg);
 };
 
 #endif

@@ -22,43 +22,41 @@
  *****************************************************************************/
 #include "RmcSimBaseHandler.h"
 
-
 /*****************************************************************************
  * Class RpSimController
  *****************************************************************************/
 
 class RmcGsmSimUrcHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcGsmSimUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcGsmSimUrcHandler);
 
-public:
+  public:
     RmcGsmSimUrcHandler(int slot_id, int channel_id);
     virtual ~RmcGsmSimUrcHandler();
 
     // Process URC here
-    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
     // Check if the handler have to process the URC or not
     virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
     // Return the list which you want to reqister
-    virtual const char** queryUrcTable(int *record_num);
+    virtual const char** queryUrcTable(int* record_num);
 
-private:
+  private:
     // Utility function
     int parseSimIndication(RfxStatusKeyEnum key, RfxAtLine* atLine);
 
     void handleMccMnc(const sp<RfxMclMessage>& msg);
-    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-typedef enum {
-    FIELD_SPN,
-    FIELD_IMSI,
-    FIELD_GID1,
-    FIELD_PNN,
-    FIELD_IMPI,
+    typedef enum {
+        FIELD_SPN,
+        FIELD_IMSI,
+        FIELD_GID1,
+        FIELD_PNN,
+        FIELD_IMPI,
 
-    FIELD_END
-} SimInfoFields;
-
+        FIELD_END
+    } SimInfoFields;
 };
 #endif /* __RMC_GSM_SIM_URC_HANDLER_H__ */

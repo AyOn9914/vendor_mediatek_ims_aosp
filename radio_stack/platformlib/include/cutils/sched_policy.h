@@ -23,15 +23,15 @@ extern "C" {
 
 /* Keep in sync with THREAD_GROUP_* in frameworks/base/core/java/android/os/Process.java */
 typedef enum {
-    SP_DEFAULT    = -1,
+    SP_DEFAULT = -1,
     SP_BACKGROUND = 0,
     SP_FOREGROUND = 1,
-    SP_SYSTEM     = 2,  // can't be used with set_sched_policy()
-    SP_AUDIO_APP  = 3,
-    SP_AUDIO_SYS  = 4,
-    SP_TOP_APP    = 5,
+    SP_SYSTEM = 2,  // can't be used with set_sched_policy()
+    SP_AUDIO_APP = 3,
+    SP_AUDIO_SYS = 4,
+    SP_TOP_APP = 5,
     SP_CNT,
-    SP_MAX        = SP_CNT - 1,
+    SP_MAX = SP_CNT - 1,
     SP_SYSTEM_DEFAULT = SP_FOREGROUND,
 } SchedPolicy;
 
@@ -49,13 +49,13 @@ extern int set_sched_policy(int tid, SchedPolicy policy);
  * On platforms which support gettid(), zero tid means current thread.
  * Return value: 0 for success, or -1 for error and set errno.
  */
-extern int get_sched_policy(int tid, SchedPolicy *policy);
+extern int get_sched_policy(int tid, SchedPolicy* policy);
 
 /* Return a displayable string corresponding to policy.
  * Return value: non-NULL NUL-terminated name of unspecified length;
  * the caller is responsible for displaying the useful part of the string.
  */
-extern const char *get_sched_policy_name(SchedPolicy policy);
+extern const char* get_sched_policy_name(SchedPolicy policy);
 
 #ifdef __cplusplus
 }

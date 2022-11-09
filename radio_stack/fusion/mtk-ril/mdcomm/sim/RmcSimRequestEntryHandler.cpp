@@ -26,7 +26,6 @@
 #include "RfxOpUtils.h"
 #include <stdio.h>
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
@@ -39,13 +38,13 @@ RFX_REGISTER_HANDLER_CLASS(RmcSimRequestEntryHandler, RIL_CMD_PROXY_11);
 // External SIM [End]
 RFX_REGISTER_HANDLER_CLASS(RmcSimRequestEntryHandler, RIL_CMD_PROXY_7);
 
-RmcSimRequestEntryHandler::RmcSimRequestEntryHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id) {
+RmcSimRequestEntryHandler::RmcSimRequestEntryHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcSimBaseRequest"));
     // Create Gsm SIM Controller and C2K SIM Controller
     if (RfxOpUtils::getOpHandler() != NULL) {
-        mGsmReqHandler = (RmcGsmSimRequestHandler*)RfxOpUtils::getSimOpHandler(
-                MTK_RIL_SIM_GSM_REQ, slot_id, channel_id);
+        mGsmReqHandler = (RmcGsmSimRequestHandler*)RfxOpUtils::getSimOpHandler(MTK_RIL_SIM_GSM_REQ,
+                                                                               slot_id, channel_id);
         mCdmaReqHandler = (RmcCdmaSimRequestHandler*)RfxOpUtils::getSimOpHandler(
                 MTK_RIL_SIM_CDMA_REQ, slot_id, channel_id);
         mCommReqHandler = (RmcCommSimRequestHandler*)RfxOpUtils::getSimOpHandler(
@@ -144,8 +143,7 @@ RmcSimRequestEntryHandler::RmcSimRequestEntryHandler(int slot_id, int channel_id
     // External SIM [End]
 }
 
-RmcSimRequestEntryHandler::~RmcSimRequestEntryHandler() {
-}
+RmcSimRequestEntryHandler::~RmcSimRequestEntryHandler() {}
 
 void RmcSimRequestEntryHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
@@ -155,18 +153,18 @@ void RmcSimRequestEntryHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
         mGsmReqHandler->handleRequest(msg);
     } else if (mCdmaReqHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         mCdmaReqHandler->handleRequest(msg);
-    // External SIM [Start]
+        // External SIM [Start]
 #ifdef MTK_EXTERNAL_SIM_SUPPORT
     } else if (mVsimReqHandler != NULL &&
                mVsimReqHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         mVsimReqHandler->handleRequest(msg);
 #endif
-    // External SIM [End]
+        // External SIM [End]
     } else {
         // Impossible case
         logE(mTag, "Not support the request!");
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(request, RIL_E_SIM_ERR,
-                RfxVoidData(), msg, false);
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(request, RIL_E_SIM_ERR, RfxVoidData(), msg, false);
         responseToTelCore(response);
     }
 }
@@ -180,13 +178,13 @@ void RmcSimRequestEntryHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
         mGsmReqHandler->handleEvent(msg);
     } else if (mCdmaReqHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         mCdmaReqHandler->handleEvent(msg);
-    // External SIM [Start]
+        // External SIM [Start]
 #ifdef MTK_EXTERNAL_SIM_SUPPORT
     } else if (mVsimReqHandler != NULL &&
                mVsimReqHandler->needHandle(msg) == RmcSimBaseHandler::RESULT_NEED) {
         mVsimReqHandler->handleEvent(msg);
 #endif
-    // External SIM [End]
+        // External SIM [End]
     } else {
         logD(mTag, "No one handle the event!");
     }

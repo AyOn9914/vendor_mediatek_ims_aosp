@@ -28,13 +28,11 @@ namespace VTService {
 sp<IVTClient> gVTSClient = NULL;
 sp<VTCore> VTService::mVTCore = NULL;
 
-extern void vt_callback(int type, void *data, int len);
+extern void vt_callback(int type, void* data, int len);
 extern vt_srv_cntx_struct g_vt;
 extern vt_srv_msg_struct g_vt_srv_msg_hdr;
 
-static int getCallingPid() {
-    return IPCThreadState::self()->getCallingPid();
-}
+static int getCallingPid() { return IPCThreadState::self()->getCallingPid(); }
 
 void VTService_instantiate() {
     VT_LOGE("[VTS] before addService");
@@ -53,23 +51,22 @@ void VTService_instantiate() {
 }
 
 void VTService::binderDied(const wp<IBinder>& who) {
-
     RFX_UNUSED(who);
 
     if (NULL != g_vt.core.get()) {
         // Do not close socket when binder died. Beacause after phone process
         // crash, will binder die. But no need close socket in this case.
-        //VT_Close();
+        // VT_Close();
 
         g_vt.core->clearAll();
 
         // for IPO case, won't call VTService_instantiate() again
         // so we just need to clear, not free it
-        //mVTCore = NULL;
+        // mVTCore = NULL;
     }
 }
 
-status_t VTService::setupVTService(const sp<IVTClient> & client) {
+status_t VTService::setupVTService(const sp<IVTClient>& client) {
     VT_LOGD("[VTS] setupVTService+");
 
     sp<IServiceManager> sm = defaultServiceManager();
@@ -97,7 +94,6 @@ void VTService::releaseVTService() {
 }
 
 status_t VTService::initialization(int mode, int id, int sim_id) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -107,7 +103,6 @@ status_t VTService::initialization(int mode, int id, int sim_id) {
 }
 
 status_t VTService::finalization(int id) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -117,7 +112,6 @@ status_t VTService::finalization(int id) {
 }
 
 status_t VTService::setCamera(int id, int cam) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -126,8 +120,7 @@ status_t VTService::setCamera(int id, int cam) {
     return g_vt.core->setCamera(id, cam);
 }
 
-status_t VTService::setPreviewSurface(int id, const sp<VTSurface> & surface) {
-
+status_t VTService::setPreviewSurface(int id, const sp<VTSurface>& surface) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -136,8 +129,7 @@ status_t VTService::setPreviewSurface(int id, const sp<VTSurface> & surface) {
     return g_vt.core->setPreviewSurface(id, surface);
 }
 
-status_t VTService::setDisplaySurface(int id, const sp<VTSurface> & surface) {
-
+status_t VTService::setDisplaySurface(int id, const sp<VTSurface>& surface) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -146,8 +138,7 @@ status_t VTService::setDisplaySurface(int id, const sp<VTSurface> & surface) {
     return g_vt.core->setDisplaySurface(id, surface);
 }
 
-status_t VTService::setCameraParameters(int sim_id, int sensorCnt, sensor_info_vilte_t *sensor) {
-
+status_t VTService::setCameraParameters(int sim_id, int sensorCnt, sensor_info_vilte_t* sensor) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -156,8 +147,7 @@ status_t VTService::setCameraParameters(int sim_id, int sensorCnt, sensor_info_v
     return g_vt.core->setCameraParameters(sim_id, sensorCnt, sensor);
 }
 
-status_t VTService::setCameraParametersOnly(int sensorCnt, sensor_info_vilte_t *sensor) {
-
+status_t VTService::setCameraParametersOnly(int sensorCnt, sensor_info_vilte_t* sensor) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -166,8 +156,8 @@ status_t VTService::setCameraParametersOnly(int sensorCnt, sensor_info_vilte_t *
     return g_vt.core->setCameraParametersOnly(sensorCnt, sensor);
 }
 
-status_t VTService::setCameraParametersWithSim(int sim_id, int major_sim_id, int sensorCnt, sensor_info_vilte_t *sensor) {
-
+status_t VTService::setCameraParametersWithSim(int sim_id, int major_sim_id, int sensorCnt,
+                                               sensor_info_vilte_t* sensor) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -177,7 +167,6 @@ status_t VTService::setCameraParametersWithSim(int sim_id, int major_sim_id, int
 }
 
 status_t VTService::setDeviceOrientation(int id, int rotation) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -187,7 +176,6 @@ status_t VTService::setDeviceOrientation(int id, int rotation) {
 }
 
 status_t VTService::setUIMode(int id, VT_SRV_UI_MODE mode) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -196,8 +184,7 @@ status_t VTService::setUIMode(int id, VT_SRV_UI_MODE mode) {
     return g_vt.core->setUIMode(id, mode);
 }
 
-status_t VTService::requestSessionModify(int id, const String8 &  config) {
-
+status_t VTService::requestSessionModify(int id, const String8& config) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -206,8 +193,7 @@ status_t VTService::requestSessionModify(int id, const String8 &  config) {
     return g_vt.core->requestSessionModify(id, config);
 }
 
-status_t VTService::responseSessionModify(int id, const String8 &  config) {
-
+status_t VTService::responseSessionModify(int id, const String8& config) {
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -217,7 +203,6 @@ status_t VTService::responseSessionModify(int id, const String8 &  config) {
 }
 
 status_t VTService::snapshot(int id, VT_SRV_SNAPSHOT_TYPE type, String8 savingImgURI) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -227,7 +212,6 @@ status_t VTService::snapshot(int id, VT_SRV_SNAPSHOT_TYPE type, String8 savingIm
 }
 
 status_t VTService::startRecording(int id, VT_SRV_RECORD_TYPE type, String8 path, int maxSize) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -237,7 +221,6 @@ status_t VTService::startRecording(int id, VT_SRV_RECORD_TYPE type, String8 path
 }
 
 status_t VTService::stopRecording(int id) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -247,7 +230,6 @@ status_t VTService::stopRecording(int id) {
 }
 
 status_t VTService::switchFeature(int id, int feature, int isOn) {
-
     if (g_vt.core.get() == NULL) {
         VT_LOGE("[VTS] g_vt.core == NULL");
         return NO_INIT;
@@ -265,16 +247,9 @@ status_t VTService::updateNetworkTable(bool is_add, int network_id, String8 if_n
     return g_vt.core->updateNetworkTable(is_add, network_id, if_name);
 }
 
-void VTService::notifyCallback(
-        int32_t id,
-        int32_t msgType,
-        int32_t arg1,
-        int32_t arg2,
-        int32_t arg3,
-        const String8 & obj1,
-        const String8 & obj2,
-        const sp<IGraphicBufferProducer> & obj3) {
-
+void VTService::notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
+                               int32_t arg3, const String8& obj1, const String8& obj2,
+                               const sp<IGraphicBufferProducer>& obj3) {
     // Sometimes message notify before gVTSClient connected, we must wait here
     int count = 0;
     while (gVTSClient == 0) {
@@ -301,25 +276,23 @@ sp<IVTClient> VTService::getClient() {
     return client;
 }
 
-status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply, uint32_t flags) {
+status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel* reply, uint32_t flags) {
     int sensorCnt = 0;
-    sensor_info_vilte_t *sensor = NULL;
+    sensor_info_vilte_t* sensor = NULL;
 
     switch (code) {
         case SETUP_SERVICE: {
             CHECK_INTERFACE(IVTService, data, reply);
-            sp<IVTClient> VTClient = interface_cast<IVTClient> (data.readStrongBinder());
+            sp<IVTClient> VTClient = interface_cast<IVTClient>(data.readStrongBinder());
             reply->writeInt32(setupVTService(VTClient));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case RELEASE_SERVICE: {
             CHECK_INTERFACE(IVTService, data, reply);
             releaseVTService();
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case INITIALIZATION: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -328,16 +301,14 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             int sim_id = data.readInt32();
             initialization(mode, id, sim_id);
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case FINALIZATION: {
             CHECK_INTERFACE(IVTService, data, reply);
             int id = data.readInt32();
             finalization(id);
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_CAMERA: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -345,8 +316,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             int cam = data.readInt32();
             reply->writeInt32(setCamera(id, cam));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_LOCAL_SURFACE: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -361,12 +331,12 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
              */
             int id = data.readInt32();
             bool bIsSurfaceNotNull = id & 0x100;
-            (bIsSurfaceNotNull)? id = (id & (~0x100)) : id;
+            (bIsSurfaceNotNull) ? id = (id & (~0x100)) : id;
 
             VT_LOGD("[VTS] SET_LOCAL_SURFACE: id = %d", id);
             if (bIsSurfaceNotNull) {
-                sp<IGraphicBufferProducer> localGraphicBuffer
-                        = interface_cast<IGraphicBufferProducer> (data.readStrongBinder());
+                sp<IGraphicBufferProducer> localGraphicBuffer =
+                        interface_cast<IGraphicBufferProducer>(data.readStrongBinder());
                 sp<VTSurface> localSurface = new VTSurface(localGraphicBuffer);
                 VT_LOGD("[VTS] SET_LOCAL_SURFACE: surface = %p", localSurface.get());
                 reply->writeInt32(setPreviewSurface(id, localSurface));
@@ -377,8 +347,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
                 reply->writeInt32(setPreviewSurface(id, NULL));
                 return NO_ERROR;
             }
-        }
-        break;
+        } break;
 
         case SET_PEER_SURFACE: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -393,12 +362,12 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
              */
             int id = data.readInt32();
             bool bIsSurfaceNotNull = id & 0x100;
-            (bIsSurfaceNotNull)? id = (id & (~0x100)) : id;
+            (bIsSurfaceNotNull) ? id = (id & (~0x100)) : id;
 
             VT_LOGD("[VTS] SET_PEER_SURFACE: id = %d", id);
             if (bIsSurfaceNotNull) {
-                sp<IGraphicBufferProducer> localGraphicBuffer
-                        = interface_cast<IGraphicBufferProducer> (data.readStrongBinder());
+                sp<IGraphicBufferProducer> localGraphicBuffer =
+                        interface_cast<IGraphicBufferProducer>(data.readStrongBinder());
                 sp<VTSurface> peerSurface = new VTSurface(localGraphicBuffer);
                 VT_LOGD("[VTS] SET_PEER_SURFACE: surface = %p", peerSurface.get());
                 reply->writeInt32(setDisplaySurface(id, peerSurface));
@@ -409,8 +378,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
                 reply->writeInt32(setDisplaySurface(id, NULL));
                 return NO_ERROR;
             }
-        }
-        break;
+        } break;
 
         case SET_CAMERA_PARAM: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -418,15 +386,14 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             sensorCnt = data.readInt32();
             if (sensorCnt != 0) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
-                data.read(sensor, sizeof(sensor_info_vilte_t)*sensorCnt);
+                data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParameters(sim_id, sensorCnt, sensor));
             if (sensorCnt != 0) {
-                delete [] sensor;
+                delete[] sensor;
             }
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_CAMERA_PARAM_WITH_SIM: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -435,30 +402,28 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             sensorCnt = data.readInt32();
             if (sensorCnt != 0) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
-                data.read(sensor, sizeof(sensor_info_vilte_t)*sensorCnt);
+                data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParametersWithSim(sim_id, major_sim_id, sensorCnt, sensor));
             if (sensorCnt != 0) {
-                delete [] sensor;
+                delete[] sensor;
             }
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_CAMERA_PARAM_ONLY: {
             CHECK_INTERFACE(IVTService, data, reply);
             sensorCnt = data.readInt32();
             if (sensorCnt != 0) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
-                data.read(sensor, sizeof(sensor_info_vilte_t)*sensorCnt);
+                data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParametersOnly(sensorCnt, sensor));
             if (sensorCnt != 0) {
-                delete [] sensor;
+                delete[] sensor;
             }
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_ROTATION: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -466,17 +431,15 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             int rotation = data.readInt32();
             reply->writeInt32(setDeviceOrientation(id, rotation));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SET_UI_MODE: {
             CHECK_INTERFACE(IVTService, data, reply);
             int id = data.readInt32();
-            VT_SRV_UI_MODE mode = (VT_SRV_UI_MODE) data.readInt32();
+            VT_SRV_UI_MODE mode = (VT_SRV_UI_MODE)data.readInt32();
             reply->writeInt32(setUIMode(id, mode));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case REQ_SESSION_MODIFY: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -484,8 +447,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             const String8 config(data.readString8());
             reply->writeInt32(requestSessionModify(id, config));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case RES_SESSION_MODIFY: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -493,8 +455,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             const String8 config(data.readString8());
             reply->writeInt32(responseSessionModify(id, config));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SNAPSHOT: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -503,8 +464,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             String8 savingImgURI(data.readString8());
             reply->writeInt32(snapshot(id, type, savingImgURI));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case START_RECORD: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -514,16 +474,14 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             int maxSize = data.readInt32();
             reply->writeInt32(startRecording(id, type, path, maxSize));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case STOP_RECORD: {
             CHECK_INTERFACE(IVTService, data, reply);
             int id = data.readInt32();
             reply->writeInt32(stopRecording(id));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case SWITCH_FEATURE: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -532,8 +490,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             int isOn = data.readInt32();
             reply->writeInt32(switchFeature(id, feature, isOn));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         case UPDATE_NETWORK_TABLE: {
             CHECK_INTERFACE(IVTService, data, reply);
@@ -542,8 +499,7 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel * reply
             String8 if_name(data.readString8());
             reply->writeInt32(updateNetworkTable(is_add, network_id, if_name));
             return NO_ERROR;
-        }
-        break;
+        } break;
 
         default:
             return BnVTService::onTransact(code, data, reply, flags);

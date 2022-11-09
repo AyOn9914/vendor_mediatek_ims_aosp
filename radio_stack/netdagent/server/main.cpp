@@ -31,8 +31,8 @@
 #include "CommandListener.h"
 #include "CommandService.h"
 
-using android::netdagent::CommandListener;
 using android::netdagent::CommandController;
+using android::netdagent::CommandListener;
 using android::netdagent::CommandService;
 using android::netdagent::gCtls;
 
@@ -43,8 +43,7 @@ static void blockSigpipe() {
 
     sigemptyset(&mask);
     sigaddset(&mask, SIGPIPE);
-    if (sigprocmask(SIG_BLOCK, &mask, NULL) != 0)
-        ALOGW("WARNING: SIGPIPE not blocked\n");
+    if (sigprocmask(SIG_BLOCK, &mask, NULL) != 0) ALOGW("WARNING: SIGPIPE not blocked\n");
 }
 
 int main() {
@@ -67,16 +66,14 @@ int main() {
     }
 #endif
 
-
     gCs = new CommandService(HWBINDER_MAXTHREAD);
     ALOGI(" Create CommandService  successfully");
-    if (gCs->startService()) {  //fork thread to run hwbinder service
+    if (gCs->startService()) {  // fork thread to run hwbinder service
         ALOGE("Unable to start CommandService");
         exit(1);
     }
 
-    while(1)
-        sleep(30);   //main thread blocking
+    while (1) sleep(30);  // main thread blocking
     ALOGI("Netdagent exiting");
     exit(0);
 }

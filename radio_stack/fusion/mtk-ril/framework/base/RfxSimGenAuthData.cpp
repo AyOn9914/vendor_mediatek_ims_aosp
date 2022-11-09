@@ -19,17 +19,17 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimGenAuthData);
 
-RfxSimGenAuthData::RfxSimGenAuthData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimGenAuthData::RfxSimGenAuthData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SimAuthStructure *pSimAuth = (RIL_SimAuthStructure*)_data;
-        RIL_SimAuthStructure *pData = (RIL_SimAuthStructure *)calloc(1,
-                sizeof(RIL_SimAuthStructure));
+        RIL_SimAuthStructure* pSimAuth = (RIL_SimAuthStructure*)_data;
+        RIL_SimAuthStructure* pData =
+                (RIL_SimAuthStructure*)calloc(1, sizeof(RIL_SimAuthStructure));
         RFX_ASSERT(pData != NULL);
         pData->sessionId = pSimAuth->sessionId;
         pData->mode = pSimAuth->mode;
         pData->tag = pSimAuth->tag;
 
-        if (pSimAuth->param1!= NULL) {
+        if (pSimAuth->param1 != NULL) {
             asprintf(&pData->param1, "%s", pSimAuth->param1);
         }
         if (pSimAuth->param2 != NULL) {
@@ -44,7 +44,7 @@ RfxSimGenAuthData::RfxSimGenAuthData(void *_data, int _length) : RfxBaseData(_da
 RfxSimGenAuthData::~RfxSimGenAuthData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SimAuthStructure *pData = (RIL_SimAuthStructure*)m_data;
+        RIL_SimAuthStructure* pData = (RIL_SimAuthStructure*)m_data;
         if (pData->param1 != NULL) {
             free(pData->param1);
             pData->param1 = NULL;

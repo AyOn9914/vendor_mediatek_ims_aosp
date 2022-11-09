@@ -31,14 +31,13 @@ const int MtkPhoneNumberUtils::MIN_MATCH = 7;
 const int MtkPhoneNumberUtils::MIN_MATCH_CTA = 11;
 
 static const char PROPERTY_SPECIAL_ECC_LIST[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.special.ecclist",
-    "vendor.ril.special.ecclist1",
-    "vendor.ril.special.ecclist2",
-    "vendor.ril.special.ecclist3",
+        "vendor.ril.special.ecclist",
+        "vendor.ril.special.ecclist1",
+        "vendor.ril.special.ecclist2",
+        "vendor.ril.special.ecclist3",
 };
 
-MtkPhoneNumberUtils::~MtkPhoneNumberUtils() {
-}
+MtkPhoneNumberUtils::~MtkPhoneNumberUtils() {}
 
 bool MtkPhoneNumberUtils::compareLoosely(string a, string b) {
     int ia = 0;
@@ -91,7 +90,7 @@ bool MtkPhoneNumberUtils::compareLoosely(string a, string b) {
     if (matched < minMatchLen) {
         int effectiveAlen = a.length() - numberNonDialableCharsInA;
         int effectiveBlen = b.length() - numberNonDialableCharsInB;
-        //if the mumber of dialable chars in a and b match, but the matched chars < MIN_MATCH,
+        // if the mumber of dialable chars in a and b match, but the matched chars < MIN_MATCH,
         if (effectiveAlen == effectiveBlen && effectiveAlen == matched) {
             return true;
         }
@@ -131,7 +130,7 @@ string MtkPhoneNumberUtils::getUsernameFromUriNumber(string number) {
         delimiterIndex = number.find("%40");
     }
     if (delimiterIndex < 0) {
-        //Logw("getUsernameFromUriNumber: no delimiter found in SIP addr" + number)
+        // Logw("getUsernameFromUriNumber: no delimiter found in SIP addr" + number)
         delimiterIndex = number.length();
     }
     return number.substr(0, delimiterIndex);
@@ -139,13 +138,13 @@ string MtkPhoneNumberUtils::getUsernameFromUriNumber(string number) {
 
 // Check if the number is special emergency number (show as emergency call
 // but dial using normal call flow)
-bool MtkPhoneNumberUtils::isSpecialEmergencyNumber(int slotId, const char *number) {
+bool MtkPhoneNumberUtils::isSpecialEmergencyNumber(int slotId, const char* number) {
     char specialEccList[MTK_PROPERTY_VALUE_MAX] = {0};
 
     mtk_property_get(PROPERTY_SPECIAL_ECC_LIST[slotId], specialEccList, "");
     mtkLogD(LOG_TAG, "[isSpecialEmergencyNumber] specialEccList: %s", specialEccList);
 
-    char *p = NULL;
+    char* p = NULL;
     p = strtok(specialEccList, ",");
     while (p) {
         if (strcmp(p, number) == 0) {
@@ -181,18 +180,17 @@ int MtkPhoneNumberUtils::indexOfLastNetworkChar(string a) {
 int MtkPhoneNumberUtils::minPositive(int a, int b) {
     if (a >= 0 && b >= 0) {
         return (a < b) ? a : b;
-    } else if (a >= 0) {/*&& b < 0*/
+    } else if (a >= 0) { /*&& b < 0*/
         return a;
-    } else if (b >= 0) {/*&& a < 0*/
+    } else if (b >= 0) { /*&& a < 0*/
         return b;
-    } else {/* a < 0 && b < 0*/
+    } else { /* a < 0 && b < 0*/
         return -1;
     }
 }
 
 bool MtkPhoneNumberUtils::isDialable(char c) {
-    return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+'
-            || c == WILD;
+    return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+' || c == WILD;
 }
 
 bool MtkPhoneNumberUtils::matchIntlPrefix(string a, int len) {
@@ -202,32 +200,31 @@ bool MtkPhoneNumberUtils::matchIntlPrefix(string a, int len) {
     for (int i = 0; i < len; i++) {
         char c = a[i];
         switch (state) {
-        case 0:
-            if (c == '+')
-                state = 1;
-            else if (c == '0')
-                state = 2;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 2:
-            if (c == '0')
-                state = 3;
-            else if (c == '1')
-                state = 4;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 4:
-            if (c == '1')
-                state = 5;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        default:
-            if (isNonSeparator(c))
-                return false;
-            break;
+            case 0:
+                if (c == '+')
+                    state = 1;
+                else if (c == '0')
+                    state = 2;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 2:
+                if (c == '0')
+                    state = 3;
+                else if (c == '1')
+                    state = 4;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 4:
+                if (c == '1')
+                    state = 5;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            default:
+                if (isNonSeparator(c)) return false;
+                break;
         }
     }
     return state == 1 || state == 3 || state == 5;
@@ -253,57 +250,54 @@ bool MtkPhoneNumberUtils::matchIntlPrefixAndCC(string a, int len) {
     for (int i = 0; i < len; i++) {
         char c = a[i];
         switch (state) {
-        case 0:
-            if (c == '+')
-                state = 1;
-            else if (c == '0')
-                state = 2;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 2:
-            if (c == '0')
-                state = 3;
-            else if (c == '1')
-                state = 4;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 4:
-            if (c == '1')
-                state = 5;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 1:
-        case 3:
-        case 5:
-            if (isISODigit(c))
-                state = 6;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        case 6:
-        case 7:
-            if (isISODigit(c))
-                state++;
-            else if (isNonSeparator(c))
-                return false;
-            break;
-        default:
-            if (isNonSeparator(c))
-                return false;
-            break;
+            case 0:
+                if (c == '+')
+                    state = 1;
+                else if (c == '0')
+                    state = 2;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 2:
+                if (c == '0')
+                    state = 3;
+                else if (c == '1')
+                    state = 4;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 4:
+                if (c == '1')
+                    state = 5;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 1:
+            case 3:
+            case 5:
+                if (isISODigit(c))
+                    state = 6;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            case 6:
+            case 7:
+                if (isISODigit(c))
+                    state++;
+                else if (isNonSeparator(c))
+                    return false;
+                break;
+            default:
+                if (isNonSeparator(c)) return false;
+                break;
         }
     }
     return state == 6 || state == 7 || state == 8;
 }
 
 bool MtkPhoneNumberUtils::isNonSeparator(char c) {
-    return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+'
-            || c == WILD || c == WAIT || c == PAUSE;
+    return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+' || c == WILD || c == WAIT ||
+           c == PAUSE;
 }
 
-bool MtkPhoneNumberUtils::isISODigit(char c) {
-    return c >= '0' && c <= '9';
-}
+bool MtkPhoneNumberUtils::isISODigit(char c) { return c >= '0' && c <= '9'; }

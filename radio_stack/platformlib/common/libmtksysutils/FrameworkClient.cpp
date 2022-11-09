@@ -34,7 +34,7 @@ FrameworkClient::FrameworkClient(int socket) {
     pthread_mutex_init(&mWriteMutex, NULL);
 }
 
-int FrameworkClient::sendMsg(const char *msg) {
+int FrameworkClient::sendMsg(const char* msg) {
     int ret;
     if (mSocket < 0) {
         errno = EHOSTUNREACH;
@@ -42,7 +42,7 @@ int FrameworkClient::sendMsg(const char *msg) {
     }
 
     pthread_mutex_lock(&mWriteMutex);
-    ret = TEMP_FAILURE_RETRY(write(mSocket, msg, strlen(msg) +1));
+    ret = TEMP_FAILURE_RETRY(write(mSocket, msg, strlen(msg) + 1));
     if (ret < 0) {
         SLOGW("Unable to send msg '%s' (%s)", msg, strerror(errno));
     }
@@ -50,9 +50,9 @@ int FrameworkClient::sendMsg(const char *msg) {
     return 0;
 }
 
-int FrameworkClient::sendMsg(const char *msg, const char *data) {
+int FrameworkClient::sendMsg(const char* msg, const char* data) {
     size_t bufflen = strlen(msg) + strlen(data) + 1;
-    char *buffer = (char *) alloca(bufflen);
+    char* buffer = (char*)alloca(bufflen);
     if (!buffer) {
         errno = -ENOMEM;
         return -1;

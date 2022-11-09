@@ -48,57 +48,55 @@
 /*
  * <classx> is a sum of integers each representing a class of information (default 7):
  * 1    voice (telephony)
- * 2    data (refers to all bearer services; with <mode>=2 this may refer only to some bearer service if TA does not support values 16, 32, 64 and 128)
- * 4    fax (facsimile services)
- * 8    short message service
- * 16   data circuit sync
- * 32   data circuit async
- * 64   dedicated packet access
- * 128  dedicated PAD access
+ * 2    data (refers to all bearer services; with <mode>=2 this may refer only to some bearer
+ * service if TA does not support values 16, 32, 64 and 128) 4    fax (facsimile services) 8 short
+ * message service 16   data circuit sync 32   data circuit async 64   dedicated packet access 128
+ * dedicated PAD access
  */
 typedef enum {
-    CLASS_NONE                      = 0,
-    CLASS_VOICE                     = 1,
-    CLASS_DATA                      = 2,
-    CLASS_FAX                       = 4,
-    CLASS_DEFAULT                   = 7,
-    CLASS_SMS                       = 8,
-    CLASS_DATA_SYNC                 = 16,
-    CLASS_DATA_ASYNC                = 32,
-    CLASS_DEDICATED_PACKET_ACCESS   = 64,
-    CLASS_DEDICATED_PAD_ACCESS      = 128,
-    CLASS_MTK_LINE2                 = 256,
-    CLASS_MTK_VIDEO                 = 512
+    CLASS_NONE = 0,
+    CLASS_VOICE = 1,
+    CLASS_DATA = 2,
+    CLASS_FAX = 4,
+    CLASS_DEFAULT = 7,
+    CLASS_SMS = 8,
+    CLASS_DATA_SYNC = 16,
+    CLASS_DATA_ASYNC = 32,
+    CLASS_DEDICATED_PACKET_ACCESS = 64,
+    CLASS_DEDICATED_PAD_ACCESS = 128,
+    CLASS_MTK_LINE2 = 256,
+    CLASS_MTK_VIDEO = 512
 } AtInfoClassE;
 
 typedef enum {
-    BS_ALL_E                        = 0,
-    BS_TELE_ALL_E                   = 10,
-    BS_TELEPHONY_E                  = 11,
-    BS_TELE_DATA_ALL_E              = 12,
-    BS_TELE_FAX_E                   = 13,
-    BS_TELE_SMS_E                   = 16,
-    BS_TELE_VGCS_E                  = 17, /* Not supported by framework */
-    BS_TELE_VBS_E                   = 18, /* Not supported by framework */
-    BS_TELE_ALL_EXCEPT_SMS_E        = 19,
-    BS_DATA_ALL_E                   = 20,
-    BS_DATA_ASYNC_ALL_E             = 21,
-    BS_DATA_SYNC_ALL_E              = 22,
-    BS_DATA_CIRCUIT_SYNC_E          = 24,
-    BS_DATA_CIRCUIT_ASYNC_E         = 25,
-    BS_DATA_SYNC_TELE_E             = 26, /* Supported by framework */
-    BS_GPRS_ALL_E                   = 99
+    BS_ALL_E = 0,
+    BS_TELE_ALL_E = 10,
+    BS_TELEPHONY_E = 11,
+    BS_TELE_DATA_ALL_E = 12,
+    BS_TELE_FAX_E = 13,
+    BS_TELE_SMS_E = 16,
+    BS_TELE_VGCS_E = 17, /* Not supported by framework */
+    BS_TELE_VBS_E = 18,  /* Not supported by framework */
+    BS_TELE_ALL_EXCEPT_SMS_E = 19,
+    BS_DATA_ALL_E = 20,
+    BS_DATA_ASYNC_ALL_E = 21,
+    BS_DATA_SYNC_ALL_E = 22,
+    BS_DATA_CIRCUIT_SYNC_E = 24,
+    BS_DATA_CIRCUIT_ASYNC_E = 25,
+    BS_DATA_SYNC_TELE_E = 26, /* Supported by framework */
+    BS_GPRS_ALL_E = 99
 } BsCodeE;
 
 /***
  * "AO"    BAOC (Barr All Outgoing Calls) (refer 3GPP TS 22.088 [6] clause 1)
  * "OI"    BOIC (Barr Outgoing International Calls) (refer 3GPP TS 22.088 [6] clause 1)
- * "OX"    BOIC exHC (Barr Outgoing International Calls except to Home Country) (refer 3GPP TS 22.088 [6] clause 1)
- * "AI"    BAIC (Barr All Incoming Calls) (refer 3GPP TS 22.088 [6] clause 2)
- * "IR"    BIC Roam (Barr Incoming Calls when Roaming outside the home country) (refer 3GPP TS 22.088 [6] clause 2)
- * "AB"    All Barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
- * "AG"    All outGoing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
- * "AC"    All inComing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
+ * "OX"    BOIC exHC (Barr Outgoing International Calls except to Home Country) (refer 3GPP
+ * TS 22.088 [6] clause 1) "AI"    BAIC (Barr All Incoming Calls) (refer 3GPP TS 22.088 [6] clause
+ * 2) "IR"    BIC Roam (Barr Incoming Calls when Roaming outside the home country) (refer 3GPP
+ * TS 22.088 [6] clause 2) "AB"    All Barring services (refer 3GPP TS 22.030 [19]) (applicable only
+ * for <mode>=0) "AG"    All outGoing barring services (refer 3GPP TS 22.030 [19]) (applicable only
+ * for <mode>=0) "AC"    All inComing barring services (refer 3GPP TS 22.030 [19]) (applicable only
+ * for <mode>=0)
  */
 
 typedef enum {
@@ -114,21 +112,11 @@ typedef enum {
     CB_SUPPORT_NUM
 } CallBarServicesE;
 
+typedef enum { CCFC_E_QUERY, CCFC_E_SET } CallForwardOperationE;
 
-typedef enum {
-    CCFC_E_QUERY,
-    CCFC_E_SET
-} CallForwardOperationE;
+typedef enum { CB_E_QUERY, CB_E_SET } CallBarringOperationE;
 
-typedef enum {
-    CB_E_QUERY,
-    CB_E_SET
-} CallBarringOperationE;
-
-typedef enum {
-    CW_E_QUERY,
-    CW_E_SET
-} CallWaitingOperationE;
+typedef enum { CW_E_QUERY, CW_E_SET } CallWaitingOperationE;
 
 /*
  * 0    unconditional
@@ -139,12 +127,12 @@ typedef enum {
  * 5    all conditional call forwarding (refer 3GPP TS 22.030 [19])
  */
 typedef enum {
-    CF_U         = 0,
-    CF_BUSY      = 1,
-    CF_NORPLY    = 2,
-    CF_NOTREACH  = 3,
-    CF_ALL       = 4,
-    CF_ALLCOND   = 5,
+    CF_U = 0,
+    CF_BUSY = 1,
+    CF_NORPLY = 2,
+    CF_NOTREACH = 3,
+    CF_ALL = 4,
+    CF_ALLCOND = 5,
     CF_NOTREGIST = 6
 } CallForwardReasonE;
 
@@ -155,21 +143,16 @@ typedef enum {
  * 2 = interrogate
  * 3 = registeration
  * 4 = erasure
-*/
+ */
 typedef enum {
-    SS_DEACTIVATE   = 0,    // disable
-    SS_ACTIVATE     = 1,    // enable
-    SS_INTERROGATE  = 2,    // interrogate
-    SS_REGISTER     = 3,    // registeration
-    SS_ERASE        = 4     // erasure
+    SS_DEACTIVATE = 0,   // disable
+    SS_ACTIVATE = 1,     // enable
+    SS_INTERROGATE = 2,  // interrogate
+    SS_REGISTER = 3,     // registeration
+    SS_ERASE = 4         // erasure
 } SsStatusE;
 
-typedef enum {
-    HAS_NONE    = 0,
-    HAS_SIA     = 1,
-    HAS_SIB     = 2,
-    HAS_SIC     = 4
-} HasSIFlagE;
+typedef enum { HAS_NONE = 0, HAS_SIA = 1, HAS_SIB = 2, HAS_SIC = 4 } HasSIFlagE;
 
 /*
  * Check if CBS data coding scheme is UCS2 3GPP 23.038
@@ -205,11 +188,11 @@ typedef enum {
  *
  *              0001 UCS2; message preceded by language indication
  *
- *                   The message starts with a two GSM 7-bit default alphabet character representation
- *                   of the language encoded according to ISO 639 [12]. This is padded to the octet
- *                   boundary with two bits set to 0 and then followed by 40 characters of UCS2-encoded message.
- *                   An MS not supporting UCS2 coding will present the two character language identifier followed
- *                   by improperly interpreted user data.
+ *                   The message starts with a two GSM 7-bit default alphabet character
+ * representation of the language encoded according to ISO 639 [12]. This is padded to the octet
+ *                   boundary with two bits set to 0 and then followed by 40 characters of
+ * UCS2-encoded message. An MS not supporting UCS2 coding will present the two character language
+ * identifier followed by improperly interpreted user data.
  *
  *              0010..1111 Reserved
  *
@@ -229,10 +212,11 @@ typedef enum {
  *              Bits 5..0 indicate the following:
  *
  *              Bit 5, if set to 0, indicates the text is uncompressed
- *              Bit 5, if set to 1, indicates the text is compressed using the compression algorithm defined in 3GPP TS 23.042 [13]
+ *              Bit 5, if set to 1, indicates the text is compressed using the compression algorithm
+ * defined in 3GPP TS 23.042 [13]
  *
- *              Bit 4, if set to 0, indicates that bits 1 to 0 are reserved and have no message class meaning
- *              Bit 4, if set to 1, indicates that bits 1 to 0 have a message class meaning:
+ *              Bit 4, if set to 0, indicates that bits 1 to 0 are reserved and have no message
+ * class meaning Bit 4, if set to 1, indicates that bits 1 to 0 have a message class meaning:
  *
  *              Bit 1  Bit 0  Message Class:
  *              0      0      Class 0
@@ -285,13 +269,8 @@ typedef enum {
  *              1      1      Class 3
  *              default meaning: TE specific
  *              (see 3GPP TS 27.005 [8])
-*/
-typedef enum {
-    DCS_GSM7,
-    DCS_8BIT,
-    DCS_UCS2,
-    MAX_DCS_SUPPORT
-} GsmCbsDcsE;
+ */
+typedef enum { DCS_GSM7, DCS_8BIT, DCS_UCS2, MAX_DCS_SUPPORT } GsmCbsDcsE;
 
 /*
  * 0   unconditional call forwarding is active
@@ -303,17 +282,17 @@ typedef enum {
  * 6   incoming calls are barred
  * 7   CLIR suppression rejected
  * 8   call has been deflected
-*/
+ */
 typedef enum {
     CODE_IMS_MO_UNCONDITIONAL_CF_ACTIVE = 100,
-    CODE_IMS_MO_SOME_CF_ACTIVE,              //101
-    CODE_IMS_MO_CALL_FORWARDED,              //102
-    CODE_IMS_MO_CALL_IS_WAITING,             //103
-    CODE_IMS_MO_CUG_CALL,                    //104
-    CODE_IMS_MO_OUTGOING_CALLS_BARRED,       //105
-    CODE_IMS_MO_INCOMING_CALLS_BARRED,       //106
-    CODE_IMS_MO_CLIR_SUPPRESSION_REJECTED,   //107
-    CODE_IMS_MO_CALL_DEFLECTED               //108
+    CODE_IMS_MO_SOME_CF_ACTIVE,             // 101
+    CODE_IMS_MO_CALL_FORWARDED,             // 102
+    CODE_IMS_MO_CALL_IS_WAITING,            // 103
+    CODE_IMS_MO_CUG_CALL,                   // 104
+    CODE_IMS_MO_OUTGOING_CALLS_BARRED,      // 105
+    CODE_IMS_MO_INCOMING_CALLS_BARRED,      // 106
+    CODE_IMS_MO_CLIR_SUPPRESSION_REJECTED,  // 107
+    CODE_IMS_MO_CALL_DEFLECTED              // 108
 } NotificationCodeImsMoE;
 
 /*
@@ -324,68 +303,65 @@ typedef enum {
  * 4   multiparty call entered (during a voice call)
  * 5   call on hold has been released (this is not a SS notification) (during a voice call)
  * 6   forward check SS message received (can be received whenever)
- * 7   call is being connected (alerting) with the remote party in alerting state in explicit call transfer operation (during a voice call)
- * 8   call has been connected with the other remote party in explicit call transfer operation (also number and subaddress parameters may be present) (during a voice call or MT call setup)
- * 9   this is a deflected call (MT call setup)
- * 10  additional incoming call forwarded
- * 11  MT is a forwarded call (CF)
- * 12  MT is a forwarded call (CFU)
- * 13  MT is a forwarded call (CFC)
- * 14  MT is a forwarded call (CFB)
- * 15  MT is a forwarded call (CFNRy)
- * 16  MT is a forwarded call (CFNRc)
-*/
+ * 7   call is being connected (alerting) with the remote party in alerting state in explicit call
+ * transfer operation (during a voice call) 8   call has been connected with the other remote party
+ * in explicit call transfer operation (also number and subaddress parameters may be present)
+ * (during a voice call or MT call setup) 9   this is a deflected call (MT call setup) 10 additional
+ * incoming call forwarded 11  MT is a forwarded call (CF) 12  MT is a forwarded call (CFU) 13  MT
+ * is a forwarded call (CFC) 14  MT is a forwarded call (CFB) 15  MT is a forwarded call (CFNRy) 16
+ * MT is a forwarded call (CFNRc)
+ */
 typedef enum {
     CODE_IMS_MT_FORWARDED_CALL = 100,
-    CODE_IMS_MT_CUG_CALL,                   //101
-    CODE_IMS_MT_CALL_ON_HOLD,               //102
-    CODE_IMS_MT_CALL_RETRIEVED,             //103
-    CODE_IMS_MT_MULTI_PARTY_CALL,           //104
-    CODE_IMS_MT_ON_HOLD_CALL_RELEASED,      //105
-    CODE_IMS_MT_FORWARD_CHECK_RECEIVED,     //106
-    CODE_IMS_MT_CALL_CONNECTING_ECT,        //107
-    CODE_IMS_MT_CALL_CONNECTED_ECT,         //108
-    CODE_IMS_MT_DEFLECTED_CALL,             //109
-    CODE_IMS_MT_ADDITIONAL_CALL_FORWARDED,  //110
-    CODE_IMS_MT_FORWARDED_CF,               //111
-    CODE_IMS_MT_FORWARDED_CF_UNCOND,        //112
-    CODE_IMS_MT_FORWARDED_CF_COND,          //113
-    CODE_IMS_MT_FORWARDED_CF_BUSY,          //114
-    CODE_IMS_MT_FORWARDED_CF_NO_REPLY,      //115
-    CODE_IMS_MT_FORWARDED_CF_NOT_REACHABLE  //116
+    CODE_IMS_MT_CUG_CALL,                   // 101
+    CODE_IMS_MT_CALL_ON_HOLD,               // 102
+    CODE_IMS_MT_CALL_RETRIEVED,             // 103
+    CODE_IMS_MT_MULTI_PARTY_CALL,           // 104
+    CODE_IMS_MT_ON_HOLD_CALL_RELEASED,      // 105
+    CODE_IMS_MT_FORWARD_CHECK_RECEIVED,     // 106
+    CODE_IMS_MT_CALL_CONNECTING_ECT,        // 107
+    CODE_IMS_MT_CALL_CONNECTED_ECT,         // 108
+    CODE_IMS_MT_DEFLECTED_CALL,             // 109
+    CODE_IMS_MT_ADDITIONAL_CALL_FORWARDED,  // 110
+    CODE_IMS_MT_FORWARDED_CF,               // 111
+    CODE_IMS_MT_FORWARDED_CF_UNCOND,        // 112
+    CODE_IMS_MT_FORWARDED_CF_COND,          // 113
+    CODE_IMS_MT_FORWARDED_CF_BUSY,          // 114
+    CODE_IMS_MT_FORWARDED_CF_NO_REPLY,      // 115
+    CODE_IMS_MT_FORWARDED_CF_NOT_REACHABLE  // 116
 } NotificationCodeImsMtE;
 
-#define SS_OP_DEACTIVATION     "#"
-#define SS_OP_ACTIVATION       "*"
-#define SS_OP_INTERROGATION    "*#"
-#define SS_OP_REGISTRATION     "**"
-#define SS_OP_ERASURE          "##"
+#define SS_OP_DEACTIVATION "#"
+#define SS_OP_ACTIVATION "*"
+#define SS_OP_INTERROGATION "*#"
+#define SS_OP_REGISTRATION "**"
+#define SS_OP_ERASURE "##"
 
-#define BS_ALL                   ""
-#define BS_TELE_ALL              "10"
-#define BS_TELEPHONY             "11"
-#define BS_TELE_DATA_ALL         "12"
-#define BS_TELE_FAX              "13"
-#define BS_TELE_SMS              "16"
-#define BS_TELE_VGCS             "17" /* Not supported by framework */
-#define BS_TELE_VBS              "18" /* Not supported by framework */
-#define BS_TELE_ALL_EXCEPT_SMS   "19"
-#define BS_DATA_ALL              "20"
-#define BS_DATA_ASYNC_ALL        "21"
-#define BS_DATA_SYNC_ALL         "22"
-#define BS_DATA_CIRCUIT_SYNC     "24" /* This is also for VT call */
-#define BS_DATA_CIRCUIT_ASYNC    "25"
-#define BS_DATA_SYNC_TELE        "26" /* Supported by framework */
-#define BS_GPRS_ALL              "99"
+#define BS_ALL ""
+#define BS_TELE_ALL "10"
+#define BS_TELEPHONY "11"
+#define BS_TELE_DATA_ALL "12"
+#define BS_TELE_FAX "13"
+#define BS_TELE_SMS "16"
+#define BS_TELE_VGCS "17" /* Not supported by framework */
+#define BS_TELE_VBS "18"  /* Not supported by framework */
+#define BS_TELE_ALL_EXCEPT_SMS "19"
+#define BS_DATA_ALL "20"
+#define BS_DATA_ASYNC_ALL "21"
+#define BS_DATA_SYNC_ALL "22"
+#define BS_DATA_CIRCUIT_SYNC "24" /* This is also for VT call */
+#define BS_DATA_CIRCUIT_ASYNC "25"
+#define BS_DATA_SYNC_TELE "26" /* Supported by framework */
+#define BS_GPRS_ALL "99"
 
-#define CALL_FORWAED_NONE               ""
-#define CALL_FORWARD_UNCONDITIONAL      "21"
-#define CALL_FORWARD_BUSY               "67"
-#define CALL_FORWARD_NOREPLY            "61"
-#define CALL_FORWARD_NOT_REACHABLE      "62"
-#define CALL_FORWARD_ALL                "002"
-#define CALL_FORWARD_ALL_CONDITIONAL    "004"
-#define CALL_FORWARD_NOT_REGISTERED     "68"
+#define CALL_FORWAED_NONE ""
+#define CALL_FORWARD_UNCONDITIONAL "21"
+#define CALL_FORWARD_BUSY "67"
+#define CALL_FORWARD_NOREPLY "61"
+#define CALL_FORWARD_NOT_REACHABLE "62"
+#define CALL_FORWARD_ALL "002"
+#define CALL_FORWARD_ALL_CONDITIONAL "004"
+#define CALL_FORWARD_NOT_REGISTERED "68"
 
 #define TYPE_ADDRESS_INTERNATIONAL 145
 
@@ -394,12 +370,12 @@ typedef enum {
 /* PROPERTY_TBCW_MODE is the mode for the terminal-based call waiting. */
 #define PROPERTY_TBCW_MODE "persist.vendor.radio.terminal-based.cw"
 #define TBCW_DISABLED "disabled_tbcw"
-#define TBCW_ON       "enabled_tbcw_on"
-#define TBCW_OFF      "enabled_tbcw_off"
-#define TBCW_ON_VOLTE_ONLY  "tbcw_on_volte_only"
+#define TBCW_ON "enabled_tbcw_on"
+#define TBCW_OFF "enabled_tbcw_off"
+#define TBCW_ON_VOLTE_ONLY "tbcw_on_volte_only"
 #define TBCW_OFF_VOLTE_ONLY "tbcw_off_volte_only"
 
-#define TBCW_VOLTE_ONLY   1
+#define TBCW_VOLTE_ONLY 1
 #define TBCW_VOLTE_AND_CS 0
 
 /* PROPERTY_TBCLIR_x is the mode for the terminal-based CLIR. */

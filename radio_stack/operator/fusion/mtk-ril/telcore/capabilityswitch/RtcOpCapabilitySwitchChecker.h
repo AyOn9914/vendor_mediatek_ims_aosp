@@ -30,7 +30,6 @@
 #include "RfxVoidData.h"
 #include "RtcCapabilitySwitchChecker.h"
 
-
 /*****************************************************************************
  * Define
  *****************************************************************************/
@@ -46,7 +45,7 @@ class RtcOpCapabilitySwitchChecker : public RtcCapabilitySwitchChecker {
     RtcOpCapabilitySwitchChecker();
     virtual ~RtcOpCapabilitySwitchChecker();
 
-  // Override
+    // Override
   protected:
     virtual int getHigherPrioritySlot();
     virtual bool isSkipCapabilitySwitch(int new_major_slot);

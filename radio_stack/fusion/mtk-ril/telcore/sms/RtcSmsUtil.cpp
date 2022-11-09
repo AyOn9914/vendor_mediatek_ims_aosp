@@ -25,18 +25,16 @@
  * Class RtcSmsParsingMessage
  *****************************************************************************/
 RtcSmsParsingMessage::~RtcSmsParsingMessage() {
-    RFX_LOG_V(SMS_TAG, "[RtcSmsParsingMessage]destroyMessage %d, 0x%zu",
-            m_id, (size_t)m_parcel);
+    RFX_LOG_V(SMS_TAG, "[RtcSmsParsingMessage]destroyMessage %d, 0x%zu", m_id, (size_t)m_parcel);
     if (m_parcel != NULL) {
-        delete(m_parcel);
+        delete (m_parcel);
         m_parcel = NULL;
     }
 }
 
 sp<RtcSmsParsingMessage> RtcSmsParsingMessage::obtainMessage(int32_t id, Parcel* parcel) {
     sp<RtcSmsParsingMessage> new_msg = new RtcSmsParsingMessage();
-    RFX_LOG_V(SMS_TAG, "[RtcSmsParsingMessage]obtainMessage %d, 0x%zu",
-            id, (size_t)parcel);
+    RFX_LOG_V(SMS_TAG, "[RtcSmsParsingMessage]obtainMessage %d, 0x%zu", id, (size_t)parcel);
     new_msg->m_id = id;
     new_msg->m_parcel = parcel;
     return new_msg;
@@ -45,19 +43,16 @@ sp<RtcSmsParsingMessage> RtcSmsParsingMessage::obtainMessage(int32_t id, Parcel*
 /*****************************************************************************
  * Class RtcSmsHandler
  *****************************************************************************/
-void RtcSmsHandler::sendMessage(sp<Looper> looper) {
-    looper->sendMessage(this, m_dummyMsg);
-}
-
+void RtcSmsHandler::sendMessage(sp<Looper> looper) { looper->sendMessage(this, m_dummyMsg); }
 
 /*****************************************************************************
  * Class RtcSmsParsingThreadHandler
  *****************************************************************************/
 void RtcSmsParsingThreadHandler::handleMessage(const Message& message) {
     RFX_UNUSED(message);
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    RtcSmsNSlotController *ctrl = (RtcSmsNSlotController *)root->findController(
-            RFX_OBJ_CLASS_INFO(RtcSmsNSlotController));
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RtcSmsNSlotController* ctrl =
+            (RtcSmsNSlotController*)root->findController(RFX_OBJ_CLASS_INFO(RtcSmsNSlotController));
     if (ctrl != NULL) {
         ctrl->onHandleSmsMessage(m_msg);
     }

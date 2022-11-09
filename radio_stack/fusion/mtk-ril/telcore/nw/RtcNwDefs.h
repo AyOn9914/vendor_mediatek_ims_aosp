@@ -29,7 +29,7 @@
 /* Define the combined preferred network type. */
 typedef enum {
     RAT_SWITCH_FAIL = -1,  // RAT switch failed
-    RAT_SWITCH_SUCC = 0,  // RAT switch success
+    RAT_SWITCH_SUCC = 0,   // RAT switch success
 } RatSwitchResult;
 
 typedef enum {
@@ -39,29 +39,28 @@ typedef enum {
 
 /* Define the network selecting mode. */
 typedef enum {
-    NWS_MODE_UNKNOWN    = -1, // for CSFB (GSM) network selecting mode
-    NWS_MODE_CDMALTE    = 0,  // for CDMALTE (CDMA) network selecting mode
-    NWS_MODE_CSFB       = 1,  // for CSFB (GSM) network selecting mode
+    NWS_MODE_UNKNOWN = -1,  // for CSFB (GSM) network selecting mode
+    NWS_MODE_CDMALTE = 0,   // for CDMALTE (CDMA) network selecting mode
+    NWS_MODE_CSFB = 1,      // for CSFB (GSM) network selecting mode
 } NwsMode;
-
 
 /* Define the network selecting mode. */
 typedef enum {
-    GMSS_RAT_3GPP2    = 0,    // Any RAT in 3GPP2 RAT group depend on other information.
-    GMSS_RAT_3GPP     = 1,    // Any RAT in 3GPP RAT group depend on other information.
-    GMSS_RAT_C2K1X    = 2,    // CDMA2000 1x
-    GMSS_RAT_C2KHRPD  = 3,    // CDMA2000 HRPD
-    GMSS_RAT_GSM      = 4,    // GERAN (GSM)
-    GMSS_RAT_WCDMA    = 5,    // UTRAN (WCDMA)
-    GMSS_RAT_LTE      = 6,    // EUTRAN (LTE)
-    GMSS_RAT_INVALID  = 7     // Invalid  RAT
+    GMSS_RAT_3GPP2 = 0,    // Any RAT in 3GPP2 RAT group depend on other information.
+    GMSS_RAT_3GPP = 1,     // Any RAT in 3GPP RAT group depend on other information.
+    GMSS_RAT_C2K1X = 2,    // CDMA2000 1x
+    GMSS_RAT_C2KHRPD = 3,  // CDMA2000 HRPD
+    GMSS_RAT_GSM = 4,      // GERAN (GSM)
+    GMSS_RAT_WCDMA = 5,    // UTRAN (WCDMA)
+    GMSS_RAT_LTE = 6,      // EUTRAN (LTE)
+    GMSS_RAT_INVALID = 7   // Invalid  RAT
 } GmssRat;
 
 /* Define the GMSS status. */
 typedef enum {
-    GMSS_STATUS_SELECT,   // GMSS select.
-    GMSS_STATUS_ATTACHED, // GMSS attached.
-    GMSS_STATUS_ECC       // GMSS ECC.
+    GMSS_STATUS_SELECT,    // GMSS select.
+    GMSS_STATUS_ATTACHED,  // GMSS attached.
+    GMSS_STATUS_ECC        // GMSS ECC.
 } GmssStatus;
 
 /*  <MSPL_set> integer type;
@@ -90,14 +89,14 @@ typedef enum {
  */
 
 typedef enum {
-    MSPL_RAT_NONE     = 0,
-    MSPL_RAT_GSM      = 1 << 0,  // 1
-    MSPL_RAT_UMTS     = 1 << 1,  // 2
-    MSPL_RAT_LTE      = 1 << 2,  // 4
-    MSPL_RAT_COM_GSM  = 1 << 3,  // 8
-    MSPL_RAT_C2K      = 1 << 4,  // 16
-    MSPL_RAT_1xRTT    = 1 << 5,  // 32
-    MSPL_RAT_HRPD     = 1 << 6   // 64
+    MSPL_RAT_NONE = 0,
+    MSPL_RAT_GSM = 1 << 0,      // 1
+    MSPL_RAT_UMTS = 1 << 1,     // 2
+    MSPL_RAT_LTE = 1 << 2,      // 4
+    MSPL_RAT_COM_GSM = 1 << 3,  // 8
+    MSPL_RAT_C2K = 1 << 4,      // 16
+    MSPL_RAT_1xRTT = 1 << 5,    // 32
+    MSPL_RAT_HRPD = 1 << 6      // 64
 } MSPL;
 
 typedef struct {

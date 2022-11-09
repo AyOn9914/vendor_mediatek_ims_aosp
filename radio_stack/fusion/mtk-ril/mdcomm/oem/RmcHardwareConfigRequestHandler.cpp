@@ -25,28 +25,22 @@
 
 // register data
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxHardwareConfigData,
-        RFX_MSG_REQUEST_GET_HARDWARE_CONFIG);
-RFX_REGISTER_DATA_TO_URC_ID(RfxHardwareConfigData,
-        RFX_MSG_UNSOL_HARDWARE_CONFIG_CHANGED);
+                                RFX_MSG_REQUEST_GET_HARDWARE_CONFIG);
+RFX_REGISTER_DATA_TO_URC_ID(RfxHardwareConfigData, RFX_MSG_UNSOL_HARDWARE_CONFIG_CHANGED);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_CAPABILITY_INIT_DONE);
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcHardwareConfigRequestHandler, RIL_CMD_PROXY_1);
 
-RmcHardwareConfigRequestHandler::RmcHardwareConfigRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-    const int request[] = {
-        RFX_MSG_REQUEST_GET_HARDWARE_CONFIG
-    };
+RmcHardwareConfigRequestHandler::RmcHardwareConfigRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const int request[] = {RFX_MSG_REQUEST_GET_HARDWARE_CONFIG};
 
-    const int eventList[] = {
-        RFX_MSG_EVENT_CAPABILITY_INIT_DONE
-    };
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    const int eventList[] = {RFX_MSG_EVENT_CAPABILITY_INIT_DONE};
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     registerToHandleEvent(eventList, sizeof(eventList) / sizeof(int));
 }
 
-RmcHardwareConfigRequestHandler::~RmcHardwareConfigRequestHandler() {
-}
+RmcHardwareConfigRequestHandler::~RmcHardwareConfigRequestHandler() {}
 
 void RmcHardwareConfigRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
@@ -79,8 +73,9 @@ void RmcHardwareConfigRequestHandler::handleHardwareConfigRequest(const sp<RfxMc
     logD(RFX_LOG_TAG, "handleHardwareConfigRequest: m_slot_id:%d", m_slot_id);
     getHardwareConfig(hardwareConfigs);
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxHardwareConfigData((void *)hardwareConfigs, sizeof(hardwareConfigs)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), RIL_E_SUCCESS,
+            RfxHardwareConfigData((void*)hardwareConfigs, sizeof(hardwareConfigs)), msg, false);
     responseToTelCore(response);
     sendHardwareConfigUrc();
 }
@@ -90,12 +85,13 @@ void RmcHardwareConfigRequestHandler::sendHardwareConfigUrc() {
     logD(RFX_LOG_TAG, "sendHardwareConfigUrc: m_slot_id:%d", m_slot_id);
     getHardwareConfig(hardwareConfigs);
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_HARDWARE_CONFIG_CHANGED,
-                m_slot_id, RfxHardwareConfigData((void *)hardwareConfigs, sizeof(hardwareConfigs)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_HARDWARE_CONFIG_CHANGED, m_slot_id,
+            RfxHardwareConfigData((void*)hardwareConfigs, sizeof(hardwareConfigs)));
     responseToTelCore(urc);
 }
 
-void RmcHardwareConfigRequestHandler::getHardwareConfig(RIL_HardwareConfig *hardwareConfigs) {
+void RmcHardwareConfigRequestHandler::getHardwareConfig(RIL_HardwareConfig* hardwareConfigs) {
     char logicalModemId[MAX_UUID_LENGTH];
     RfxRilUtils::getLogicalModemId(logicalModemId, sizeof(logicalModemId), m_slot_id);
 

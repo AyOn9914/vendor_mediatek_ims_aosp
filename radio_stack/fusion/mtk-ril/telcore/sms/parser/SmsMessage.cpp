@@ -25,34 +25,33 @@
 #include "SmsParserUtils.h"
 #include "RfxLog.h"
 
-#define RFX_LOG_TAG   "SmsMessage"
+#define RFX_LOG_TAG "SmsMessage"
 /*****************************************************************************
  * Class SmsMessage
  *****************************************************************************/
-SmsMessage::SmsMessage() :
-        mPdu(NULL),
-        mScAddress(""),
-        mMti(0),
-        mReplyPathPresent(false),
-        mProtocolIdentifier(0),
-        mOriginatingAddress(NULL),
-        mScTimeMillis(0),
-        mDataCodingScheme(0),
-        mIsMwi(false),
-        mMwiSense(false),
-        mMwiDontStore(false),
-        mVoiceMailCount(-1),
-        mUserData(NULL),
-        mUserDataLength(0),
-        mUserDataHeader(NULL),
-        mMessageClass(CLASS_UNKNOWN),
-        mEmailFrom(""),
-        mEmailBody(""),
-        mMessageBody(""),
-        mIsEmail(false),
-        mCur(0),
-        mEncodingType(ENCODING_UNKNOWN) {
-}
+SmsMessage::SmsMessage()
+    : mPdu(NULL),
+      mScAddress(""),
+      mMti(0),
+      mReplyPathPresent(false),
+      mProtocolIdentifier(0),
+      mOriginatingAddress(NULL),
+      mScTimeMillis(0),
+      mDataCodingScheme(0),
+      mIsMwi(false),
+      mMwiSense(false),
+      mMwiDontStore(false),
+      mVoiceMailCount(-1),
+      mUserData(NULL),
+      mUserDataLength(0),
+      mUserDataHeader(NULL),
+      mMessageClass(CLASS_UNKNOWN),
+      mEmailFrom(""),
+      mEmailBody(""),
+      mMessageBody(""),
+      mIsEmail(false),
+      mCur(0),
+      mEncodingType(ENCODING_UNKNOWN) {}
 
 SmsMessage::~SmsMessage() {
     if (mPdu != NULL) {
@@ -72,18 +71,18 @@ SmsMessage::~SmsMessage() {
         mUserData = NULL;
     }
 }
-SmsMessage* SmsMessage::createFromPdu(BYTE *pdu, int length) {
+SmsMessage* SmsMessage::createFromPdu(BYTE* pdu, int length) {
     RFX_LOG_D(RFX_LOG_TAG, "createFromPdu begin");
-    SmsMessage *smsMessage = new SmsMessage();
+    SmsMessage* smsMessage = new SmsMessage();
     smsMessage->parsePdu(pdu, length);
     RFX_LOG_D(RFX_LOG_TAG, "createFromPdu end");
     return smsMessage;
 }
 
-void SmsMessage::parsePdu(BYTE *pdu, int length) {
+void SmsMessage::parsePdu(BYTE* pdu, int length) {
     mPdu = pdu;
-    PduParser *parser = new PduParser(pdu, length);
-    mScAddress =  parser->getSCAddress();
+    PduParser* parser = new PduParser(pdu, length);
+    mScAddress = parser->getSCAddress();
     if (!mScAddress.empty()) {
         // log:
     }
@@ -111,7 +110,7 @@ void SmsMessage::parsePdu(BYTE *pdu, int length) {
     delete parser;
 }
 
-void SmsMessage::parseSmsDeliver(PduParser *parser, int firstByte) {
+void SmsMessage::parseSmsDeliver(PduParser* parser, int firstByte) {
     mReplyPathPresent = (firstByte & 0x80) == 0x80;
 
     mOriginatingAddress = parser->getAddress();
@@ -137,7 +136,7 @@ void SmsMessage::parseSmsDeliver(PduParser *parser, int firstByte) {
     RFX_LOG_D(RFX_LOG_TAG, "createFromPdu parseSmsDeliver end");
 }
 
-void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
+void SmsMessage::parseUserData(PduParser* parser, bool hasUserDataHeader) {
     bool hasMessageClass = false;
     bool userDataCompressed = false;
 
@@ -152,19 +151,19 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
             // print log
         } else {
             switch ((mDataCodingScheme >> 2) & 0x3) {
-            case 0:  // GSM 7 bit default alphabet
-                encodingType = ENCODING_7BIT;
-                break;
+                case 0:  // GSM 7 bit default alphabet
+                    encodingType = ENCODING_7BIT;
+                    break;
 
-            case 2:  // UCS 2 (16bit)
-                encodingType = ENCODING_16BIT;
-                break;
+                case 2:  // UCS 2 (16bit)
+                    encodingType = ENCODING_16BIT;
+                    break;
 
-            case 1:  // 8 bit data
-            case 3:  // reserved
-                // Print log
-                encodingType = ENCODING_8BIT;
-                break;
+                case 1:  // 8 bit data
+                case 3:  // reserved
+                    // Print log
+                    encodingType = ENCODING_8BIT;
+                    break;
             }
         }
     } else if ((mDataCodingScheme & 0xf0) == 0xf0) {
@@ -178,9 +177,8 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
             // 8 bit data
             encodingType = ENCODING_8BIT;
         }
-    } else if ((mDataCodingScheme & 0xF0) == 0xC0
-            || (mDataCodingScheme & 0xF0) == 0xD0
-            || (mDataCodingScheme & 0xF0) == 0xE0) {
+    } else if ((mDataCodingScheme & 0xF0) == 0xC0 || (mDataCodingScheme & 0xF0) == 0xD0 ||
+               (mDataCodingScheme & 0xF0) == 0xE0) {
         // 3GPP TS 23.038 V7.0.0 (2006-03) section 4
         // 0xC0 == 7 bit, don't store
         // 0xD0 == 7 bit, store
@@ -198,8 +196,8 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
 
         // VM - If TP-UDH is present, these values will be overwritten
         if ((mDataCodingScheme & 0x03) == 0x00) {
-            mIsMwi = true;  /* Indicates vmail */
-            mMwiSense = active;  /* Indicates vmail notification set/clear */
+            mIsMwi = true;      /* Indicates vmail */
+            mMwiSense = active; /* Indicates vmail notification set/clear */
             mMwiDontStore = ((mDataCodingScheme & 0xF0) == 0xC0);
 
             /* Set voice mail count based on notification bit */
@@ -225,8 +223,7 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
     }
     RFX_LOG_D(RFX_LOG_TAG, "parseUserData encodingType: %d", encodingType);
     // set both the user data and the user data header.
-    int count = parser->constructUserData(hasUserDataHeader,
-            encodingType == ENCODING_7BIT);
+    int count = parser->constructUserData(hasUserDataHeader, encodingType == ENCODING_7BIT);
     mUserData = parser->getUserData();
     mUserDataLength = parser->getUserDataLength();
     RFX_LOG_D(RFX_LOG_TAG, "parseUserData mUserDataLength: %d", mUserDataLength);
@@ -247,7 +244,7 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
      */
     if (hasUserDataHeader && (mUserDataHeader->mSpecialSmsMsgList.size() != 0)) {
         for (list<SpecialSmsMsg>::iterator iter = mUserDataHeader->mSpecialSmsMsgList.begin();
-                iter != mUserDataHeader->mSpecialSmsMsgList.end(); iter++) {
+             iter != mUserDataHeader->mSpecialSmsMsgList.end(); iter++) {
             SpecialSmsMsg msg = *iter;
             int msgInd = msg.msgIndType & 0xff;
             /*
@@ -269,9 +266,9 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
                      * the one indicates so.
                      * TS 23.040 V6.8.1 Sec 9.2.3.24.2
                      */
-                    if (!((((mDataCodingScheme & 0xF0) == 0xD0)
-                           || ((mDataCodingScheme & 0xF0) == 0xE0))
-                           && ((mDataCodingScheme & 0x03) == 0x00))) {
+                    if (!((((mDataCodingScheme & 0xF0) == 0xD0) ||
+                           ((mDataCodingScheme & 0xF0) == 0xE0)) &&
+                          ((mDataCodingScheme & 0x03) == 0x00))) {
                         /* Even DCS did not have voice mail with Storage bit
                          * 3GPP TS 23.038 V7.0.0 section 4
                          * So clear this flag*/
@@ -294,32 +291,32 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
                 // Print log
             }
         }  // end of for
-    }  // end of if UDH
+    }      // end of if UDH
     switch (encodingType) {
-    case ENCODING_UNKNOWN:
-        // mMessageBody = NULL;
-        break;
+        case ENCODING_UNKNOWN:
+            // mMessageBody = NULL;
+            break;
 
-    case ENCODING_8BIT:
-        // Support decoding the user data payload as pack GSM 8-bit (a GSM alphabet string
-        // that's stored in 8-bit unpacked format) characters.
-        // mMessageBody = parser.getUserDataGSM8bit(count);
-        break;
+        case ENCODING_8BIT:
+            // Support decoding the user data payload as pack GSM 8-bit (a GSM alphabet string
+            // that's stored in 8-bit unpacked format) characters.
+            // mMessageBody = parser.getUserDataGSM8bit(count);
+            break;
 
-    case ENCODING_7BIT:
-        // mMessageBody = parser.getUserDataGSM7Bit(count,
-                // hasUserDataHeader ? mUserDataHeader.mLanguageTable : 0,
-                // hasUserDataHeader ? mUserDataHeader.mLanguageShiftTable : 0);
-        break;
+        case ENCODING_7BIT:
+            // mMessageBody = parser.getUserDataGSM7Bit(count,
+            // hasUserDataHeader ? mUserDataHeader.mLanguageTable : 0,
+            // hasUserDataHeader ? mUserDataHeader.mLanguageShiftTable : 0);
+            break;
 
-    case ENCODING_16BIT:
-        // mMessageBody = parser.getUserDataUCS2(count);
-        break;
+        case ENCODING_16BIT:
+            // mMessageBody = parser.getUserDataUCS2(count);
+            break;
 
-    case ENCODING_KSC5601:
-        // mMessageBody = parser.getUserDataKSC5601(count);
-        // mMessageBody = NULL;
-        break;
+        case ENCODING_KSC5601:
+            // mMessageBody = parser.getUserDataKSC5601(count);
+            // mMessageBody = NULL;
+            break;
     }
 
     // if (VDBG) Rlog.v(LOG_TAG, "SMS message body (raw): '" + mMessageBody + "'");
@@ -332,41 +329,35 @@ void SmsMessage::parseUserData(PduParser *parser, bool hasUserDataHeader) {
         mMessageClass = CLASS_UNKNOWN;
     } else {
         switch (mDataCodingScheme & 0x3) {
-        case 0:
-            mMessageClass = CLASS_0;
-            break;
-        case 1:
-            mMessageClass = CLASS_1;
-            break;
-        case 2:
-            mMessageClass = CLASS_2;
-            break;
-        case 3:
-            mMessageClass = CLASS_3;
-            break;
+            case 0:
+                mMessageClass = CLASS_0;
+                break;
+            case 1:
+                mMessageClass = CLASS_1;
+                break;
+            case 2:
+                mMessageClass = CLASS_2;
+                break;
+            case 3:
+                mMessageClass = CLASS_3;
+                break;
         }
     }
     RFX_LOG_D(RFX_LOG_TAG, "parseUserData mMessageClass: %d", mMessageClass);
 }
 
 void SmsMessage::parseMessageBody() {
-    if (mOriginatingAddress != NULL && mOriginatingAddress->couldBeEmailGateway() &&
-            !isReplace()) {
+    if (mOriginatingAddress != NULL && mOriginatingAddress->couldBeEmailGateway() && !isReplace()) {
         extractEmailAddressFromMessageBody();
     }
 }
 bool SmsMessage::isReplace() {
-    return (mProtocolIdentifier & 0xc0) == 0x40
-            && (mProtocolIdentifier & 0x3f) > 0
-            && (mProtocolIdentifier & 0x3f) < 8;
+    return (mProtocolIdentifier & 0xc0) == 0x40 && (mProtocolIdentifier & 0x3f) > 0 &&
+           (mProtocolIdentifier & 0x3f) < 8;
 }
-BYTE* SmsMessage::getUserData() {
-    return mUserData;
-}
+BYTE* SmsMessage::getUserData() { return mUserData; }
 
-int SmsMessage::getUserDataLength() {
-    return mUserDataLength;
-}
+int SmsMessage::getUserDataLength() { return mUserDataLength; }
 
 int SmsMessage::getRefNumber() {
     if (mUserDataHeader != NULL) {
@@ -418,9 +409,8 @@ bool SmsMessage::isSmsForSUPL() {
 }
 
 bool SmsMessage::isConcentratedSms() {
-    return (mUserDataHeader != NULL) &&
-            ((mUserDataHeader->mConcatRef).msgCount != 0) &&
-            ((mUserDataHeader->mConcatRef).seqNumber != -1);
+    return (mUserDataHeader != NULL) && ((mUserDataHeader->mConcatRef).msgCount != 0) &&
+           ((mUserDataHeader->mConcatRef).seqNumber != -1);
 }
 
 const string WappushMessage::MIME_TYPE_SUPL = "application/vnd.omaloc-supl-init";
@@ -428,10 +418,8 @@ const string WappushMessage::XWAP_APP_ID_SUPL = "x-oma-application:ulp.ua";
 const string WappushMessage::MIME_TYPE_SUPL_HEX = "786";
 const string WappushMessage::XWAP_APP_ID_SUPL_HEX = "16";
 
-WappushMessage::WappushMessage(BYTE *pdu, int length) :
-        mPduLength(length),
-        mUserData(NULL),
-        mUserDataLength(0) {
+WappushMessage::WappushMessage(BYTE* pdu, int length)
+    : mPduLength(length), mUserData(NULL), mUserDataLength(0) {
     mTransactionId = -1;
     mPduType = -1;
     mWapAppId = -1;
@@ -457,10 +445,10 @@ void WappushMessage::parsePdu() {
     mPduType = mPdu[index++] & 0xFF;
     RFX_LOG_D(RFX_LOG_TAG, "parsePdu mTransactionId: %d, mPduType: %d", mTransactionId, mPduType);
     if ((mPduType != WappushPduParser::PDU_TYPE_PUSH) &&
-            (mPduType != WappushPduParser::PDU_TYPE_CONFIRMED_PUSH)) {
+        (mPduType != WappushPduParser::PDU_TYPE_CONFIRMED_PUSH)) {
         return;
     }
-    WappushPduParser *pduDecoder = new WappushPduParser(mPdu, mPduLength);
+    WappushPduParser* pduDecoder = new WappushPduParser(mPdu, mPduLength);
     /**
      * Parse HeaderLen(unsigned integer).
      * From wap-230-wsp-20010705-a section 8.1.2
@@ -471,7 +459,7 @@ void WappushMessage::parsePdu() {
         delete pduDecoder;
         return;
     }
-    int headerLength = (int) pduDecoder->getValue32();
+    int headerLength = (int)pduDecoder->getValue32();
     index += pduDecoder->getDecodedDataLength();
     RFX_LOG_D(RFX_LOG_TAG, "parsePdu headerLength: %d, index: %d", headerLength, index);
     int headerStartIndex = index;
@@ -496,7 +484,7 @@ void WappushMessage::parsePdu() {
     long binaryContentType = pduDecoder->getValue32();
     index += pduDecoder->getDecodedDataLength();
     RFX_LOG_D(RFX_LOG_TAG, "parsePdu mimeType: %s, binaryContentType: %d, index: %d",
-            mimeType.c_str(), (int)binaryContentType, index);
+              mimeType.c_str(), (int)binaryContentType, index);
     BYTE* header = new BYTE[headerLength];
     memcpy(header, mPdu + headerStartIndex, headerLength);
     pduDecoder->decodeHeaders(index, headerLength - index + headerStartIndex);
@@ -512,36 +500,33 @@ void WappushMessage::parsePdu() {
     }
     RFX_LOG_D(RFX_LOG_TAG, "parsePdu mUserDataLength: %d", mUserDataLength);
     if (pduDecoder->seekXWapApplicationId(index, index + headerLength - 1)) {
-        index = (int) pduDecoder->getValue32();
+        index = (int)pduDecoder->getValue32();
         pduDecoder->decodeXWapApplicationId(index);
         string wapAppId = pduDecoder->getValueString();
         if (wapAppId.empty()) {
-            wapAppId = PhoneNumberUtils::numToString((int) pduDecoder->getValue32());
+            wapAppId = PhoneNumberUtils::numToString((int)pduDecoder->getValue32());
         }
         mWapAppId = wapAppId;
 
-        mContentType = ((mimeType.empty()) ?
-                PhoneNumberUtils::numToString(binaryContentType) : mimeType);
-        RFX_LOG_D(RFX_LOG_TAG, "parsePdu mWapAppId: %s, mContentType: %s",
-                mWapAppId.c_str(), mContentType.c_str());
+        mContentType =
+                ((mimeType.empty()) ? PhoneNumberUtils::numToString(binaryContentType) : mimeType);
+        RFX_LOG_D(RFX_LOG_TAG, "parsePdu mWapAppId: %s, mContentType: %s", mWapAppId.c_str(),
+                  mContentType.c_str());
     }
     delete[] header;
     delete pduDecoder;
 }
 
 bool WappushMessage::isWapushForSUPL() {
-    if ((mContentType.compare(MIME_TYPE_SUPL) == 0 || mContentType.compare(MIME_TYPE_SUPL_HEX) == 0) &&
-            (mWapAppId.compare(XWAP_APP_ID_SUPL) == 0 ||
-            mWapAppId.compare(XWAP_APP_ID_SUPL_HEX) == 0)) {
+    if ((mContentType.compare(MIME_TYPE_SUPL) == 0 ||
+         mContentType.compare(MIME_TYPE_SUPL_HEX) == 0) &&
+        (mWapAppId.compare(XWAP_APP_ID_SUPL) == 0 ||
+         mWapAppId.compare(XWAP_APP_ID_SUPL_HEX) == 0)) {
         return true;
     }
     return false;
 }
 
-BYTE* WappushMessage::getUserData() {
-    return mUserData;
-}
+BYTE* WappushMessage::getUserData() { return mUserData; }
 
-int WappushMessage::getUserDataLength() {
-    return mUserDataLength;
-}
+int WappushMessage::getUserDataLength() { return mUserDataLength; }

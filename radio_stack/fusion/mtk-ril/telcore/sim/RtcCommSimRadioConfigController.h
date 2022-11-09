@@ -36,30 +36,27 @@ class RtcCommSimRadioConfigController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcCommSimRadioConfigController);
 
-public:
+  public:
     RtcCommSimRadioConfigController();
     virtual ~RtcCommSimRadioConfigController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-public:
-
-
-private:
-    RIL_SimSlotStatus **pp_slotStatus;
+  public:
+  private:
+    RIL_SimSlotStatus** pp_slotStatus;
     // bool need_send;
     int sending_count;
-
 };
 
 #endif /* __RFX_RC_CONTROLLER_H__ */

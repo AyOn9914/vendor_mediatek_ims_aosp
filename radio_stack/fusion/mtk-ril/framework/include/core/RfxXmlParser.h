@@ -25,26 +25,24 @@
 #include "utils/RefBase.h"
 #include "utils/String8.h"
 
-//using ::android::String8;
-using ::android::sp;
+// using ::android::String8;
 using ::android::RefBase;
+using ::android::sp;
 
 using namespace std;
 
 class DefaultHandler : public virtual RefBase {
-
-public:
+  public:
     virtual ~DefaultHandler(){};
-    virtual void startElement(string nodeName, string nodeValue,
-            string attributeName, string attributeValue) = 0;
+    virtual void startElement(string nodeName, string nodeValue, string attributeName,
+                              string attributeValue) = 0;
     virtual void endElement(string nodeName) = 0;
 };
 
-class RfxXmlParser : public virtual RefBase{
-
-public:
+class RfxXmlParser : public virtual RefBase {
+  public:
     virtual ~RfxXmlParser();
     void parse(DefaultHandler* parsedData, string xmlData);
-    void parseSubElement(TiXmlElement *subElement, DefaultHandler* parsedData);
+    void parseSubElement(TiXmlElement* subElement, DefaultHandler* parsedData);
 };
 #endif

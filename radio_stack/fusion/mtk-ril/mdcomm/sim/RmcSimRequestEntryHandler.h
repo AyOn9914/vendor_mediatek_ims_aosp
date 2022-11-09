@@ -29,7 +29,8 @@
 
 class RmcVsimRequestHandler : public RmcSimBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcVsimRequestHandler);
-public:
+
+  public:
     RmcVsimRequestHandler(int slot_id, int channel_id);
     virtual ~RmcVsimRequestHandler();
 };
@@ -39,27 +40,24 @@ public:
  *****************************************************************************/
 
 class RmcSimRequestEntryHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcSimRequestEntryHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcSimRequestEntryHandler);
 
-
-public:
+  public:
     RmcSimRequestEntryHandler(int slot_id, int channel_id);
     virtual ~RmcSimRequestEntryHandler();
 
-
-// Override
-protected:
+    // Override
+  protected:
     // Process Request here
     virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
     // Process event here
     virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    RmcGsmSimRequestHandler *mGsmReqHandler;
-    RmcCdmaSimRequestHandler *mCdmaReqHandler;
-    RmcCommSimRequestHandler *mCommReqHandler;
+    RmcGsmSimRequestHandler* mGsmReqHandler;
+    RmcCdmaSimRequestHandler* mCdmaReqHandler;
+    RmcCommSimRequestHandler* mCommReqHandler;
     // External SIM [Start]
-    RmcVsimRequestHandler *mVsimReqHandler;
+    RmcVsimRequestHandler* mVsimReqHandler;
     // External SIM [End]
-
 };
 #endif /* __RMC_SIM_REQUEST_ENTRY_HANDLER_H__ */

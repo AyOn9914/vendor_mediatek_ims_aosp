@@ -21,36 +21,38 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCallForwardInfosData);
 
-RfxCallForwardInfosData::RfxCallForwardInfosData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCallForwardInfosData::RfxCallForwardInfosData(void* data, int length)
+    : RfxBaseData(data, length) {
     m_length = length;
     m_data = NULL;
     if (data != NULL) {
-        int num = length / sizeof(RIL_CallForwardInfo *);
+        int num = length / sizeof(RIL_CallForwardInfo*);
 
         if (num > 0) {
-            RIL_CallForwardInfo **pTmp = (RIL_CallForwardInfo **) calloc(num, sizeof(RIL_CallForwardInfo *));
-            RIL_CallForwardInfo **pCur = (RIL_CallForwardInfo **) data;
+            RIL_CallForwardInfo** pTmp =
+                    (RIL_CallForwardInfo**)calloc(num, sizeof(RIL_CallForwardInfo*));
+            RIL_CallForwardInfo** pCur = (RIL_CallForwardInfo**)data;
 
             if (pTmp != NULL) {
                 m_length = length;
                 for (int i = 0; i < num; i++) {
-                    pTmp[i] = (RIL_CallForwardInfo *) calloc(1, sizeof(RIL_CallForwardInfo));
+                    pTmp[i] = (RIL_CallForwardInfo*)calloc(1, sizeof(RIL_CallForwardInfo));
 
                     if (pTmp[i] != NULL) {
-                        pTmp[i] -> status       = pCur[i] -> status;
-                        pTmp[i] -> reason       = pCur[i] -> reason;
-                        pTmp[i] -> serviceClass = pCur[i] -> serviceClass;
-                        pTmp[i] -> toa          = pCur[i] -> toa;
+                        pTmp[i]->status = pCur[i]->status;
+                        pTmp[i]->reason = pCur[i]->reason;
+                        pTmp[i]->serviceClass = pCur[i]->serviceClass;
+                        pTmp[i]->toa = pCur[i]->toa;
 
                         if (pCur[i]->number != NULL) {
                             int len = strlen(pCur[i]->number);
-                            pTmp[i]->number = (char *) calloc(len + 1, sizeof(char));
+                            pTmp[i]->number = (char*)calloc(len + 1, sizeof(char));
                             if (pTmp[i]->number != NULL) {
                                 strncpy(pTmp[i]->number, pCur[i]->number, len);
                             }
                         }
 
-                        pTmp[i] -> timeSeconds  = pCur[i] -> timeSeconds;
+                        pTmp[i]->timeSeconds = pCur[i]->timeSeconds;
                     }
                 }
                 m_data = pTmp;
@@ -60,13 +62,13 @@ RfxCallForwardInfosData::RfxCallForwardInfosData(void *data, int length) : RfxBa
 }
 
 RfxCallForwardInfosData::~RfxCallForwardInfosData() {
-    int num = m_length / sizeof(RIL_CallForwardInfo *);
-    RIL_CallForwardInfo **pCur = (RIL_CallForwardInfo **) m_data;
+    int num = m_length / sizeof(RIL_CallForwardInfo*);
+    RIL_CallForwardInfo** pCur = (RIL_CallForwardInfo**)m_data;
 
     if (m_data != NULL) {
         for (int i = 0; i < num; i++) {
             if (pCur[i]->number != NULL) {
-                free(pCur[i] -> number);
+                free(pCur[i]->number);
             }
             free(pCur[i]);
         }

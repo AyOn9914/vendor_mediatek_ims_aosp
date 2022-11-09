@@ -35,52 +35,36 @@ RfxCallState::RfxCallState(CallTypeEnum callType, CallStateEnum callState, int c
     mCallCount = callCount;
 }
 
-RfxCallState::~RfxCallState() {
-}
+RfxCallState::~RfxCallState() {}
 
-CallTypeEnum RfxCallState::getCallType() {
-    return mCallType;
-}
+CallTypeEnum RfxCallState::getCallType() { return mCallType; }
 
-CallStateEnum RfxCallState::getCallState() {
-    return mCallState;
-}
+CallStateEnum RfxCallState::getCallState() { return mCallState; }
 
-int RfxCallState::getCallCount() {
-    return mCallCount;
-}
+int RfxCallState::getCallCount() { return mCallCount; }
 
-void RfxCallState::setCallType(CallTypeEnum callType) {
-    mCallType = callType;
-}
+void RfxCallState::setCallType(CallTypeEnum callType) { mCallType = callType; }
 
-void RfxCallState::setCallState(CallStateEnum callState) {
-    mCallState = callState;
-}
+void RfxCallState::setCallState(CallStateEnum callState) { mCallState = callState; }
 
-void RfxCallState::setCallCount(int count) {
-    mCallCount = count;
-}
+void RfxCallState::setCallCount(int count) { mCallCount = count; }
 
 bool RfxCallState::hasConnectedC2kCall() {
-    return ((mCallType == CALL_TYPE_C2K) &&
-            (mCallState == CALL_STATE_CONNECTED) &&
+    return ((mCallType == CALL_TYPE_C2K) && (mCallState == CALL_STATE_CONNECTED) &&
             (mCallCount > 0));
 }
 
 bool RfxCallState::hasConnectedGsmCall() {
-    return ((mCallType == CALL_TYPE_GSM) &&
-            (mCallState == CALL_STATE_CONNECTED) &&
+    return ((mCallType == CALL_TYPE_GSM) && (mCallState == CALL_STATE_CONNECTED) &&
             (mCallCount > 0));
 }
 
 bool RfxCallState::hasConnectedImsCall() {
-    return ((mCallType == CALL_TYPE_IMS) &&
-            (mCallState == CALL_STATE_CONNECTED) &&
+    return ((mCallType == CALL_TYPE_IMS) && (mCallState == CALL_STATE_CONNECTED) &&
             (mCallCount > 0));
 }
 
 String8 RfxCallState::toString() {
-    return String8::format("call type=%d, call state=%d, call count=%d",
-            mCallType, mCallState, mCallCount);
+    return String8::format("call type=%d, call state=%d, call count=%d", mCallType, mCallState,
+                           mCallCount);
 }

@@ -23,19 +23,19 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsLocalEnableRespData);
 
 RfxEmbmsLocalEnableRespData::RfxEmbmsLocalEnableRespData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_LocalEnableResp*)data, length);
 }
 
 RfxEmbmsLocalEnableRespData::RfxEmbmsLocalEnableRespData(RIL_EMBMS_LocalEnableResp* data,
-    int length)
-    : RfxBaseData(data, length)  {
+                                                         int length)
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsLocalEnableRespData::copyData(RIL_EMBMS_LocalEnableResp *data, int length) {
+void RfxEmbmsLocalEnableRespData::copyData(RIL_EMBMS_LocalEnableResp* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_LocalEnableResp *) calloc(1, sizeof(RIL_EMBMS_LocalEnableResp));
+    m_data = (RIL_EMBMS_LocalEnableResp*)calloc(1, sizeof(RIL_EMBMS_LocalEnableResp));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

@@ -28,7 +28,7 @@
 
 using ::android::Mutex;
 
-RfxMclDispatcherThread *RfxMclDispatcherThread::s_self = NULL;
+RfxMclDispatcherThread* RfxMclDispatcherThread::s_self = NULL;
 
 static sem_t sWaitLooperSem;
 static bool sNeedWaitLooper = true;
@@ -37,9 +37,7 @@ static Mutex sWaitLooperMutex;
 /*****************************************************************************
  * Class RfxMclBaseMessenger
  *****************************************************************************/
-void RfxMclBaseMessenger::handleMessage(const Message& message) {
-    onHandleMessage(message);
-}
+void RfxMclBaseMessenger::handleMessage(const Message& message) { onHandleMessage(message); }
 
 /*****************************************************************************
  * Class RfxMclMessenger
@@ -47,24 +45,22 @@ void RfxMclBaseMessenger::handleMessage(const Message& message) {
 void RfxMclMessenger::onHandleMessage(const Message& message) {
     RFX_UNUSED(message);
     if (STATUS_SYNC == msg->getType()) {
-        RfxMclStatusManager* statusMgr = RfxMclStatusManager::getMclStatusManager(
-                msg->getSlotId());
-        statusMgr->setValueByRfx(msg->getStatusKey(), msg->getStatusValue(),
-                msg->getForceNotify(), msg->getIsDefault(), true, msg->getIsUpdateForMock());
+        RfxMclStatusManager* statusMgr = RfxMclStatusManager::getMclStatusManager(msg->getSlotId());
+        statusMgr->setValueByRfx(msg->getStatusKey(), msg->getStatusValue(), msg->getForceNotify(),
+                                 msg->getIsDefault(), true, msg->getIsUpdateForMock());
     } else {
         int channelId;
         if (msg->getSendToMainProtocol()) {
-            int mainSlotId =
-                    RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN)->getIntValue(
-                    RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+            int mainSlotId = RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN)
+                                     ->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
             RFX_LOG_I("RfxMclMessenger", "%s(%d) dispatchs to main protocol: %d",
-                    RFX_ID_TO_STR(msg->getId()), msg->getId(), mainSlotId);
-            channelId = RfxHandlerManager::findMsgChannel(msg->getType(), mainSlotId,
-                    msg->getId(), msg->getClientId(),
+                      RFX_ID_TO_STR(msg->getId()), msg->getId(), mainSlotId);
+            channelId = RfxHandlerManager::findMsgChannel(
+                    msg->getType(), mainSlotId, msg->getId(), msg->getClientId(),
                     (msg->getRawUrc() == NULL ? NULL : msg->getRawUrc()->getLine()));
         } else {
-            channelId = RfxHandlerManager::findMsgChannel(msg->getType(), msg->getSlotId(),
-                    msg->getId(), msg->getClientId(),
+            channelId = RfxHandlerManager::findMsgChannel(
+                    msg->getType(), msg->getSlotId(), msg->getId(), msg->getClientId(),
                     (msg->getRawUrc() == NULL ? NULL : msg->getRawUrc()->getLine()));
         }
         msg->setChannelId(channelId);
@@ -80,8 +76,8 @@ void RfxMclMessenger::onHandleMessage(const Message& message) {
         } else {
             RFX_LOG_D("RfxMclMessenger", "onHandleMessage, no one register id: %d", msg->getId());
             // send response with error code: not support
-            sp<RfxMclMessage> resMsg = RfxMclMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED,
-                    RfxVoidData(), msg);
+            sp<RfxMclMessage> resMsg =
+                    RfxMclMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg);
             RfxDispatchThread::enqueueResponseMessage(resMsg);
         }
     }
@@ -90,8 +86,7 @@ void RfxMclMessenger::onHandleMessage(const Message& message) {
 /*****************************************************************************
  * Class RfxMclDispatcherThread
  *****************************************************************************/
-RfxMclDispatcherThread::RfxMclDispatcherThread() {
-}
+RfxMclDispatcherThread::RfxMclDispatcherThread() {}
 
 void RfxMclDispatcherThread::init() {
     RFX_LOG_D(RFX_LOG_TAG, "init");
@@ -117,7 +112,7 @@ bool RfxMclDispatcherThread::threadLoop() {
         RFX_LOG_D(RFX_LOG_TAG, "threadLoop, result = %d", result);
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    RFX_ASSERT(0); // Can't go here
+    RFX_ASSERT(0);  // Can't go here
     return true;
 }
 

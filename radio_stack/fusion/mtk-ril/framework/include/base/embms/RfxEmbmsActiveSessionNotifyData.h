@@ -23,9 +23,10 @@
 class RfxEmbmsActiveSessionNotifyData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsActiveSessionNotifyData);
 
-    public:
-        RfxEmbmsActiveSessionNotifyData(RIL_EMBMS_ActiveSessionNotify* data, int length);
-    private:
-        void copyData(RIL_EMBMS_ActiveSessionNotify *data, int length);
+  public:
+    RfxEmbmsActiveSessionNotifyData(RIL_EMBMS_ActiveSessionNotify* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_ActiveSessionNotify* data, int length);
 };
 #endif /*RFX_EMBMS_ACTIVESESSION_NOTIFY_DATA__H*/

@@ -29,19 +29,11 @@
 #include "RfxRawData.h"
 #include "RfxRilUtils.h"
 
-
 using ::android::String8;
 
 static const char* gsmUrcList[] = {
-    "+CMT:",
-    "+EIMSCMT:",
-    "+CDS:",
-    "+EIMSCDS:",
-    "+CMTI:",
-    "+CIEV: 7",
-    "+CBM:",
-    "+ETWS:",
-    "+ECBMWAC:",
+        "+CMT:",    "+EIMSCMT:", "+CDS:",  "+EIMSCDS:", "+CMTI:",
+        "+CIEV: 7", "+CBM:",     "+ETWS:", "+ECBMWAC:",
 };
 
 RFX_IMPLEMENT_HANDLER_CLASS(RmcGsmSmsUrcHandler, RIL_CMD_PROXY_URC);
@@ -52,19 +44,18 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxEtwsNotiData, RFX_MSG_URC_RESPONSE_ETWS_NOTIFICAT
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_URC_SIM_SMS_STORAGE_FULL);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_URC_ME_SMS_STORAGE_FULL);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_RESPONSE_NEW_SMS_ON_SIM);
-RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, \
-        RFX_MSG_URC_RESPONSE_NEW_SMS_STATUS_REPORT);
+RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_URC_RESPONSE_NEW_SMS_STATUS_REPORT);
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcGsmSmsUrcHandler::RmcGsmSmsUrcHandler(int slot_id, int channel_id) :
-        RmcGsmSmsBaseHandler(slot_id, channel_id) {
-        setTag(String8("RmcGsmSmsUrc"));
-        const char **p = gsmUrcList;
-        if (RfxRilUtils::isSmsSupport()) {
-            registerToHandleURC(p, sizeof(gsmUrcList)/sizeof(char*));
-        }
+RmcGsmSmsUrcHandler::RmcGsmSmsUrcHandler(int slot_id, int channel_id)
+    : RmcGsmSmsBaseHandler(slot_id, channel_id) {
+    setTag(String8("RmcGsmSmsUrc"));
+    const char** p = gsmUrcList;
+    if (RfxRilUtils::isSmsSupport()) {
+        registerToHandleURC(p, sizeof(gsmUrcList) / sizeof(char*));
+    }
 }
 
 void RmcGsmSmsUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
@@ -92,8 +83,8 @@ void RmcGsmSmsUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
 void RmcGsmSmsUrcHandler::onNewSms(const sp<RfxMclMessage>& msg) {
     int length;
     int err;
-    RfxAtLine *pUrc = msg->getRawUrc();
-    RfxAtLine *smsPdu = msg->getRawUrc2();
+    RfxAtLine* pUrc = msg->getRawUrc();
+    RfxAtLine* smsPdu = msg->getRawUrc2();
     sp<RfxMclMessage> unsol;
 
     pUrc->atTokStart(&err);
@@ -107,8 +98,8 @@ void RmcGsmSmsUrcHandler::onNewSms(const sp<RfxMclMessage>& msg) {
     err = smsCheckReceivedPdu(length, smsPdu->getLine(), true);
     if (err < 0) goto error;
 
-    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS,
-            m_slot_id, RfxStringData(smsPdu->getLine(), strlen(smsPdu->getLine())));
+    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS, m_slot_id,
+                                     RfxStringData(smsPdu->getLine(), strlen(smsPdu->getLine())));
     responseToTelCore(unsol);
 
     return;
@@ -117,54 +108,55 @@ error:
     // Use the timer callback to send CNMA fail to modem and will reset the
     // sms_type value while the CNMA is sent
     int errAckType[1] = {ERR_ACK_CMT_ACK_RESET};
-    sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-            RIL_CMD_PROXY_1, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+              m_slot_id);
 
     logE(mTag, "onNewSms check fail.");
 }
 
 void RmcGsmSmsUrcHandler::handleNewSms(const sp<RfxMclMessage>& msg) {
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
 
     showCurrIncomingSmsType();
     if (smsType == SMS_INBOUND_NONE) {
-        getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_3GPP_CMT);
+        getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
+                                           SMS_INBOUND_3GPP_CMT);
         onNewSms(msg);
     } else {
         logE(mTag, "One 3G or IMS SMS on AP, reject");
         // Use the timer callback to send CNMA fail to modem and will reset the
         // sms_type value while the CNMA is sent
         int errAckType[1] = {ERR_ACK_CMT_ACK_ONLY};
-        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-                RIL_CMD_PROXY_1, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+                  m_slot_id);
     }
 }
 
 void RmcGsmSmsUrcHandler::handleNewImsSms(const sp<RfxMclMessage>& msg) {
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
 
     showCurrIncomingSmsType();
     if (smsType == SMS_INBOUND_NONE) {
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-                SMS_INBOUND_3GPP_CMT);
+                                           SMS_INBOUND_3GPP_CMT);
         onNewSms(msg);
     } else {
         logE(mTag, "One 3G or IMS SMS on AP, reject");
         // Use the timer callback to send CNMA fail to modem and will reset the
         // sms_type value while the CNMA is sent
         int errAckType[1] = {ERR_ACK_CMT_ACK_ONLY};
-        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-                RIL_CMD_PROXY_1, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+                  m_slot_id);
     }
 }
 
 void RmcGsmSmsUrcHandler::onNewSmsStatusReport(const sp<RfxMclMessage>& msg) {
     int length;
     int err;
-    RfxAtLine *pUrc = msg->getRawUrc();
-    RfxAtLine *smsPdu = msg->getRawUrc2();
+    RfxAtLine* pUrc = msg->getRawUrc();
+    RfxAtLine* smsPdu = msg->getRawUrc2();
     sp<RfxMclMessage> unsol;
 
     pUrc->atTokStart(&err);
@@ -174,8 +166,8 @@ void RmcGsmSmsUrcHandler::onNewSmsStatusReport(const sp<RfxMclMessage>& msg) {
     err = smsCheckReceivedPdu(length, smsPdu->getLine(), false);
     if (err < 0) goto error;
 
-    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS_STATUS_REPORT,
-            m_slot_id, RfxStringData(smsPdu->getLine(), strlen(smsPdu->getLine())));
+    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS_STATUS_REPORT, m_slot_id,
+                                     RfxStringData(smsPdu->getLine(), strlen(smsPdu->getLine())));
     responseToTelCore(unsol);
 
     return;
@@ -184,55 +176,56 @@ error:
     // Use the timer callback to send CNMA fail to modem and will reset the
     // sms_type value while the CNMA is sent
     int errAckType[1] = {ERR_ACK_CDS_ACK_RESET};
-    sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-            RIL_CMD_PROXY_1, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+              m_slot_id);
 
     logE(mTag, "onNewSmsStatusReport check fail.");
 }
 
 void RmcGsmSmsUrcHandler::handleNewSmsStatusReport(const sp<RfxMclMessage>& msg) {
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
 
     showCurrIncomingSmsType();
     if (smsType == SMS_INBOUND_NONE) {
-        getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_3GPP_CDS);
+        getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
+                                           SMS_INBOUND_3GPP_CDS);
         onNewSmsStatusReport(msg);
     } else {
         logE(mTag, "One 3G or IMS SMS report on AP, reject");
         // Use the timer callback to send CNMA fail to modem and will reset the
         // sms_type value while the CNMA is sent
         int errAckType[1] = {ERR_ACK_CDS_ACK_ONLY};
-        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-                RIL_CMD_PROXY_1, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+                  m_slot_id);
     }
 }
 
 void RmcGsmSmsUrcHandler::handleNewImsSmsStatusReport(const sp<RfxMclMessage>& msg) {
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
 
     showCurrIncomingSmsType();
     if (smsType == SMS_INBOUND_NONE) {
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-                SMS_INBOUND_3GPP_CDS);
+                                           SMS_INBOUND_3GPP_CDS);
         onNewSmsStatusReport(msg);
     } else {
         logE(mTag, "One 3G or IMS SMS report on AP, reject");
         // Use the timer callback to send CNMA fail to modem and will reset the
         // sms_type value while the CNMA is sent
         int errAckType[1] = {ERR_ACK_CDS_ACK_ONLY};
-        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1),
-                RIL_CMD_PROXY_1, m_slot_id);
+        sendEvent(RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK, RfxIntsData(errAckType, 1), RIL_CMD_PROXY_1,
+                  m_slot_id);
     }
 }
 
 void RmcGsmSmsUrcHandler::handleNewSmsOnSim(const sp<RfxMclMessage>& msg) {
     int err, index[1];
-    char *strPara = NULL;
+    char* strPara = NULL;
     String8 mem("");
     String8 storage("SM");
-    RfxAtLine *pUrc = msg->getRawUrc();
+    RfxAtLine* pUrc = msg->getRawUrc();
     sp<RfxMclMessage> unsol;
 
     pUrc->atTokStart(&err);
@@ -250,8 +243,8 @@ void RmcGsmSmsUrcHandler::handleNewSmsOnSim(const sp<RfxMclMessage>& msg) {
     index[0] = pUrc->atTokNextint(&err);
     if (err < 0) goto error;
 
-    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS_ON_SIM,
-            m_slot_id, RfxIntsData(index, 1));
+    unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_SMS_ON_SIM, m_slot_id,
+                                     RfxIntsData(index, 1));
     responseToTelCore(unsol);
 
     return;
@@ -264,7 +257,7 @@ void RmcGsmSmsUrcHandler::handleSimSmsStorageStatus(const sp<RfxMclMessage>& msg
     int err;
     int status, ciev_id;
     int urc_id = -1;
-    RfxAtLine *pUrc = msg->getRawUrc();
+    RfxAtLine* pUrc = msg->getRawUrc();
 
     pUrc->atTokStart(&err);
 
@@ -276,18 +269,19 @@ void RmcGsmSmsUrcHandler::handleSimSmsStorageStatus(const sp<RfxMclMessage>& msg
     if (err < 0) {
         logE(mTag, "There is something wrong with the URC: +CIEV:7, <%d>", status);
     } else {
-        switch(status) {
-            case 0: // available
+        switch (status) {
+            case 0:  // available
                 break;
-            case 1: // full
-            case 2: // SIM exceed
-                /* for mem1, mem2 and mem3, all are SIM card storage due to set as AT+CPMS="SM", "SM", "SM" */
+            case 1:  // full
+            case 2:  // SIM exceed
+                /* for mem1, mem2 and mem3, all are SIM card storage due to set as AT+CPMS="SM",
+                 * "SM", "SM" */
                 urc_id = RFX_MSG_URC_SIM_SMS_STORAGE_FULL;
                 break;
-            case 3: // ME exceed
+            case 3:  // ME exceed
             {
-                int phone_storage_status = getMclStatusManager()->getIntValue(
-                        RFX_STATUS_KEY_SMS_PHONE_STORAGE, 0);
+                int phone_storage_status =
+                        getMclStatusManager()->getIntValue(RFX_STATUS_KEY_SMS_PHONE_STORAGE, 0);
                 logD(mTag, "Phone storage status: %d", phone_storage_status);
                 if (phone_storage_status == 1) {
                     /*********************************************************
@@ -300,7 +294,8 @@ void RmcGsmSmsUrcHandler::handleSimSmsStorageStatus(const sp<RfxMclMessage>& msg
                      ********************************************************/
                     urc_id = RFX_MSG_URC_ME_SMS_STORAGE_FULL;
                 } else {
-                    /* for mem1, mem2 and mem3, all are SIM card storage due to set as AT+CPMS="SM", "SM", "SM" */
+                    /* for mem1, mem2 and mem3, all are SIM card storage due to set as AT+CPMS="SM",
+                     * "SM", "SM" */
                     urc_id = RFX_MSG_URC_SIM_SMS_STORAGE_FULL;
                 }
                 break;
@@ -318,10 +313,10 @@ void RmcGsmSmsUrcHandler::handleSimSmsStorageStatus(const sp<RfxMclMessage>& msg
 void RmcGsmSmsUrcHandler::handleNewBroadcastSms(const sp<RfxMclMessage>& msg) {
     int length;
     int err;
-    char *line = NULL;
-    char *byteSmsPdu;
-    RfxAtLine *pUrc = msg->getRawUrc();
-    RfxAtLine *pSmsPdu = msg->getRawUrc2();
+    char* line = NULL;
+    char* byteSmsPdu;
+    RfxAtLine* pUrc = msg->getRawUrc();
+    RfxAtLine* pSmsPdu = msg->getRawUrc2();
     sp<RfxMclMessage> unsol;
 
     pUrc->atTokStart(&err);
@@ -333,12 +328,12 @@ void RmcGsmSmsUrcHandler::handleNewBroadcastSms(const sp<RfxMclMessage>& msg) {
     free(line);
     if (err < 0) goto error;
     /* Transfer to byte array for responseRaw */
-    byteSmsPdu = (char*)calloc(1, sizeof(char)*length);
-    hexStringToBytes(pSmsPdu->getLine(), length*2, byteSmsPdu, length);
+    byteSmsPdu = (char*)calloc(1, sizeof(char) * length);
+    hexStringToBytes(pSmsPdu->getLine(), length * 2, byteSmsPdu, length);
     logD(mTag, "New CB bytes len %d", length);
 
     unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_NEW_BROADCAST_SMS, m_slot_id,
-            RfxRawData(byteSmsPdu, sizeof(char)*length));
+                                     RfxRawData(byteSmsPdu, sizeof(char) * length));
     responseToTelCore(unsol);
 
     free(byteSmsPdu);
@@ -350,12 +345,11 @@ error:
 
 void RmcGsmSmsUrcHandler::handleNewEtwsNotification(const sp<RfxMclMessage>& msg) {
     int err;
-    RfxAtLine *p_cur = msg->getRawUrc();
+    RfxAtLine* p_cur = msg->getRawUrc();
     sp<RfxMclMessage> unsol;
     RIL_CBEtwsNotification response;
 
     logD(mTag, "[ETWS: enter handleNewEtwsNotification");
-
 
     /*
      * +ETWS: <warning type>,<message ID>,<serial number>,<PLMN_ID>[,<security info>]
@@ -364,16 +358,16 @@ void RmcGsmSmsUrcHandler::handleNewEtwsNotification(const sp<RfxMclMessage>& msg
     if (err < 0) goto error;
 
     response.warningType = p_cur->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     response.messageId = p_cur->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     response.serialNumber = p_cur->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     response.plmnId = p_cur->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     if (p_cur->atTokHasmore()) {
         response.securityInfo = p_cur->atTokNextstr(&err);
@@ -383,7 +377,7 @@ void RmcGsmSmsUrcHandler::handleNewEtwsNotification(const sp<RfxMclMessage>& msg
     }
 
     unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_ETWS_NOTIFICATION, m_slot_id,
-            RfxEtwsNotiData(&response, sizeof(RIL_CBEtwsNotification)));
+                                     RfxEtwsNotiData(&response, sizeof(RIL_CBEtwsNotification)));
     responseToTelCore(unsol);
     return;
 

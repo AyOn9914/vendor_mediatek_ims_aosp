@@ -29,13 +29,11 @@
  * Class TimerHandler
  *****************************************************************************/
 class TimerHandler : public RfxMainHandler {
-public:
-
-    TimerHandler(const RfxCallback0 &_callback) : callback(_callback) {}
+  public:
+    TimerHandler(const RfxCallback0& _callback) : callback(_callback) {}
     virtual ~TimerHandler() {}
 
-protected:
-
+  protected:
     virtual void onHandleMessage(const Message& message) {
         RFX_UNUSED(message);
         RFX_LOG_D(RFX_LOG_TAG, "onHandleMessage() begin, this = %p", this);
@@ -46,8 +44,7 @@ protected:
         RFX_LOG_D(RFX_LOG_TAG, "onHandleMessage() end, this = %p", this);
     }
 
-private:
-
+  private:
     RfxCallback0 callback;
 };
 
@@ -55,9 +52,8 @@ private:
  * Class RfxTimer
  *****************************************************************************/
 
-TimerHandle RfxTimer::start(const RfxCallback0 &callback, nsecs_t time) {
-
-    Looper *looper = RfxMainThread::getLooper().get();
+TimerHandle RfxTimer::start(const RfxCallback0& callback, nsecs_t time) {
+    Looper* looper = RfxMainThread::getLooper().get();
 
     if (looper != NULL) {
         Message dummy_msg;
@@ -70,9 +66,8 @@ TimerHandle RfxTimer::start(const RfxCallback0 &callback, nsecs_t time) {
     }
 }
 
-
-void RfxTimer::stop(const TimerHandle &timer_handle) {
-    Looper *looper = RfxMainThread::getLooper().get();
+void RfxTimer::stop(const TimerHandle& timer_handle) {
+    Looper* looper = RfxMainThread::getLooper().get();
 
     if (looper != NULL) {
         RFX_LOG_D(RFX_LOG_TAG, "stop(), timer = %p", timer_handle.get());

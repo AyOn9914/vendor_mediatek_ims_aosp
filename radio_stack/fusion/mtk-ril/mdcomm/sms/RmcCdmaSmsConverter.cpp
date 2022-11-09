@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 
-
- /*****************************************************************************
-  * Include
-  *****************************************************************************/
+/*****************************************************************************
+ * Include
+ *****************************************************************************/
 #include "RmcCdmaSmsConverter.h"
 #include "rfx_properties.h"
 
-#define USER_DATA_ENCODING_BITS        5
-#define USER_DATA_NUM_FIELDS_BITS      8
-#define CDMA_SMS_SEPTETS_BITS          7
-#define CDMA_SMS_OCTETS_BITS           8
+#define USER_DATA_ENCODING_BITS 5
+#define USER_DATA_NUM_FIELDS_BITS 8
+#define CDMA_SMS_SEPTETS_BITS 7
+#define CDMA_SMS_OCTETS_BITS 8
 #define RFX_LOG_TAG "RmcCdmaSmsCvt"
-#define MIN(x, y)   ((x) <= (y))? (x): (y)
+#define MIN(x, y) ((x) <= (y)) ? (x) : (y)
 
 /*****************************************************************************
  * BitwiseOutputStream
  *****************************************************************************/
 
-BitwiseOutputStream::BitwiseOutputStream(int startLen)
-    :m_pos(0), m_end(startLen << 3) {
+BitwiseOutputStream::BitwiseOutputStream(int startLen) : m_pos(0), m_end(startLen << 3) {
     m_buf = new unsigned char[startLen];
     memset(m_buf, 0, startLen);
 }
 
-
-
 void BitwiseOutputStream::write(int bits, uint32_t data) {
-    RFX_ASSERT ((bits > 0) && (bits <= 8));
+    RFX_ASSERT((bits > 0) && (bits <= 8));
     RFX_ASSERT((m_pos + bits) < m_end);
     data &= (0xFFFFFFFFUL) >> (32 - bits);
     int index = m_pos >> 3;
@@ -54,7 +50,7 @@ void BitwiseOutputStream::write(int bits, uint32_t data) {
     }
 }
 
-void BitwiseOutputStream::writeByteArray(int bits, const Vector<unsigned char> &buf) {
+void BitwiseOutputStream::writeByteArray(int bits, const Vector<unsigned char>& buf) {
     Vector<unsigned char>::const_iterator it;
     int i = 0;
     for (it = buf.begin(); it != buf.end(); it++, i++) {
@@ -65,12 +61,10 @@ void BitwiseOutputStream::writeByteArray(int bits, const Vector<unsigned char> &
     }
 }
 
-
 int BitwiseOutputStream::getByteLen() const {
     int len = m_pos >> 3;
     return (m_pos & 0x7) ? (len + 1) : len;
 }
-
 
 /*****************************************************************************
  * BitwiseInputStream
@@ -79,7 +73,7 @@ unsigned char BitwiseInputStream::read(int bits) {
     RFX_ASSERT((bits > 0) && (bits <= 8));
     RFX_ASSERT((m_pos + bits) <= m_end);
     int index = m_pos >> 3;
-    int offset = 16 - (m_pos & 0x07) - bits; // &7 == % 8
+    int offset = 16 - (m_pos & 0x07) - bits;  // &7 == % 8
     unsigned int data = (m_buf[index] & 0xFF) << 8;
     if (offset < 8) data |= m_buf[index + 1] & 0xFF;
     data >>= offset;
@@ -88,12 +82,9 @@ unsigned char BitwiseInputStream::read(int bits) {
     return (unsigned char)data;
 }
 
-void BitwiseInputStream::skip(int bits) {
-    m_pos += bits;
-}
+void BitwiseInputStream::skip(int bits) { m_pos += bits; }
 
-
-void BitwiseInputStream::readByteArray(int bits, Vector<unsigned char> &buf) {
+void BitwiseInputStream::readByteArray(int bits, Vector<unsigned char>& buf) {
     int bytes = (bits >> 3) + ((bits & 0x07) > 0 ? 1 : 0);  // &7==%8
     for (int i = 0; i < bytes; i++) {
         int increment = MIN(8, bits - (i << 3));
@@ -112,11 +103,10 @@ CdmaSmsMessage::CdmaSmsMessage(const int type) : m_type(type), m_error(0) {
     }
 }
 
-
-CdmaSmsMessage::CdmaSmsMessage(const char* hexPdu, int len) : m_type(-1), m_error(0){
+CdmaSmsMessage::CdmaSmsMessage(const char* hexPdu, int len) : m_type(-1), m_error(0) {
     RFX_ASSERT(len == MESSAGE_TYPE_HEX_LEN);
     if (strncmp(hexPdu, "00", len) == 0) {
-        m_type =MESSAGE_TYPE_P2P;
+        m_type = MESSAGE_TYPE_P2P;
     } else if (strncmp(hexPdu, "01", len) == 0) {
         m_type = MESSAGE_TYPE_BC;
     } else {
@@ -124,30 +114,24 @@ CdmaSmsMessage::CdmaSmsMessage(const char* hexPdu, int len) : m_type(-1), m_erro
     }
 }
 
-
 String8 CdmaSmsMessage::toHexBody() {
-     String8 body;
-     for (RfxObject *i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
-        RmcTlvNode *pNode = RFX_OBJ_DYNAMIC_CAST(i, RmcTlvNode);
+    String8 body;
+    for (RfxObject* i = getFirstChildObj(); i != NULL; i = i->getNextObj()) {
+        RmcTlvNode* pNode = RFX_OBJ_DYNAMIC_CAST(i, RmcTlvNode);
         if (pNode != NULL) {
             body.append(pNode->toHexHeader());
             body.append(pNode->toHexBody());
         }
-     }
-     return body;
+    }
+    return body;
 }
-
-
-
 
 /*****************************************************************************
  * Node
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RmcTlvNode", RmcTlvNode, RfxObject);
 
-RmcTlvNode::RmcTlvNode(int tag, int length) :
-        m_tag(tag), m_length(length), m_error(0) {
-}
+RmcTlvNode::RmcTlvNode(int tag, int length) : m_tag(tag), m_length(length), m_error(0) {}
 
 RmcTlvNode::RmcTlvNode(const char* hexPdu, int len) : m_error(0) {
     hex2Bin(hexPdu, len);
@@ -155,8 +139,6 @@ RmcTlvNode::RmcTlvNode(const char* hexPdu, int len) : m_error(0) {
         m_error = -1;
     }
 }
-
-
 
 String8 RmcTlvNode::toHexBody() {
     Vector<unsigned char>::iterator it;
@@ -166,7 +148,6 @@ String8 RmcTlvNode::toHexBody() {
     }
     return hex;
 }
-
 
 char RmcTlvNode::char2Int(char c) {
     if (c >= '0' && c <= '9') {
@@ -181,8 +162,7 @@ char RmcTlvNode::char2Int(char c) {
     }
 }
 
-
-void RmcTlvNode::hex2Bin(const char *src, int len) {
+void RmcTlvNode::hex2Bin(const char* src, int len) {
     RFX_ASSERT(len % 2 == 0);
     RFX_ASSERT(len >= 6);
     for (int i = 0; i < len / 2; i++) {
@@ -200,24 +180,21 @@ void RmcTlvNode::hex2Bin(const char *src, int len) {
     }
 }
 
-
 /*****************************************************************************
  * TeleServiceId
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("TeleServiceId", TeleServiceId, RmcTlvNode);
 
 TeleServiceId::TeleServiceId(int id) : RmcTlvNode(TELESERVICE_ID, TELESERVICE_ID_LEN) {
-   m_value.push((id & 0xFFFF) >> 8);
-   m_value.push(id & 0xFF);
+    m_value.push((id & 0xFFFF) >> 8);
+    m_value.push(id & 0xFF);
 }
 
-
-TeleServiceId::TeleServiceId(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len){
+TeleServiceId::TeleServiceId(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if (m_tag != TELESERVICE_ID) {
         m_error = -1;
     }
 }
-
 
 int TeleServiceId::getTeleServiceId() {
     if (m_error < 0) {
@@ -228,18 +205,16 @@ int TeleServiceId::getTeleServiceId() {
     return teleServiceId;
 }
 
-
 /*****************************************************************************
  * ServiceCategory
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("ServiceCategory", ServiceCategory, RmcTlvNode);
 
-ServiceCategory::ServiceCategory(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len){
+ServiceCategory::ServiceCategory(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if (m_tag != SERVICE_CATEGORY) {
         m_error = -1;
     }
 }
-
 
 int ServiceCategory::getServiceCategory() {
     if (m_error < 0) {
@@ -250,13 +225,12 @@ int ServiceCategory::getServiceCategory() {
     return serviceCategory;
 }
 
-
 /*****************************************************************************
  * CdmaSmsAddress
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("CdmaSmsAddress", CdmaSmsAddress, RmcTlvNode);
 
-CdmaSmsAddress::CdmaSmsAddress(RIL_CDMA_SMS_Address &addr, bool isMo) :RmcTlvNode(-1, -1) {
+CdmaSmsAddress::CdmaSmsAddress(RIL_CDMA_SMS_Address& addr, bool isMo) : RmcTlvNode(-1, -1) {
     m_tag = isMo ? DEST_ADDRESS : ORIG_ADDRESS;
     BitwiseOutputStream body(40 * 8);
     body.write(1, (uint32_t)addr.digit_mode);
@@ -271,7 +245,7 @@ CdmaSmsAddress::CdmaSmsAddress(RIL_CDMA_SMS_Address &addr, bool isMo) :RmcTlvNod
     }
 
     body.write(8, addr.number_of_digits);
-    unsigned char number[ RIL_CDMA_SMS_ADDRESS_MAX];
+    unsigned char number[RIL_CDMA_SMS_ADDRESS_MAX];
     memcpy(number, addr.digits, sizeof(number));
     for (int i = 0; i < addr.number_of_digits; i++) {
         body.write(size, addr.digits[i]);
@@ -279,21 +253,19 @@ CdmaSmsAddress::CdmaSmsAddress(RIL_CDMA_SMS_Address &addr, bool isMo) :RmcTlvNod
             number[i] = dtmf2Char(addr.digits[i]);
         }
     }
-    m_number.setTo((const char* )number, addr.number_of_digits);
+    m_number.setTo((const char*)number, addr.number_of_digits);
     m_length = body.getByteLen();
     body.write(((m_length << 3) - body.getBitLen()), 0);
     m_value.appendArray(body.getBuf(), m_length);
 }
 
-
-CdmaSmsAddress::CdmaSmsAddress(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len) {
+CdmaSmsAddress::CdmaSmsAddress(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if ((m_tag != ORIG_ADDRESS) && (m_tag != DEST_ADDRESS)) {
         m_error = -1;
     }
 }
 
-
-bool CdmaSmsAddress::getAddress(RIL_CDMA_SMS_Address &addr) {
+bool CdmaSmsAddress::getAddress(RIL_CDMA_SMS_Address& addr) {
     if (m_error < 0) {
         return false;
     }
@@ -319,14 +291,13 @@ bool CdmaSmsAddress::getAddress(RIL_CDMA_SMS_Address &addr) {
     return true;
 }
 
-bool CdmaSmsAddress::getAddress(String8 &addr) {
+bool CdmaSmsAddress::getAddress(String8& addr) {
     addr.setTo(m_number);
     return true;
 }
 
-
 unsigned char CdmaSmsAddress::dtmf2Char(char unsigned dtmf) {
-    if (dtmf >0 && dtmf <=9 ) {
+    if (dtmf > 0 && dtmf <= 9) {
         return dtmf + '0';
     } else if (dtmf == 10) {
         return '0';
@@ -338,20 +309,18 @@ unsigned char CdmaSmsAddress::dtmf2Char(char unsigned dtmf) {
     return 0;
 }
 
-
 /*****************************************************************************
  * CdmaSmsSubAddress
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("CdmaSmsSubAddress", CdmaSmsSubAddress, RmcTlvNode);
 
-CdmaSmsSubAddress::CdmaSmsSubAddress(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len) {
+CdmaSmsSubAddress::CdmaSmsSubAddress(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if ((m_tag != ORIG_SUB_ADDR) && (m_tag != DEST_SUB_ADDR)) {
         m_error = -1;
     }
 }
 
-
-bool CdmaSmsSubAddress::getSubAddr(RIL_CDMA_SMS_Subaddress &subAddr) {
+bool CdmaSmsSubAddress::getSubAddr(RIL_CDMA_SMS_Subaddress& subAddr) {
     if (m_error < 0) {
         return false;
     }
@@ -371,43 +340,39 @@ bool CdmaSmsSubAddress::getSubAddr(RIL_CDMA_SMS_Subaddress &subAddr) {
     return true;
 }
 
-
 /*****************************************************************************
  * BearerReplyOpt
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("BearerReplyOpt", BearerReplyOpt, RmcTlvNode);
 
 BearerReplyOpt::BearerReplyOpt() : RmcTlvNode(BEARER_REPLY_OPT, BEARER_REPLY_OPT_LEN) {
-   m_value.push(0x00);
+    m_value.push(0x00);
 }
 
-
-BearerReplyOpt::BearerReplyOpt(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len) {
+BearerReplyOpt::BearerReplyOpt(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if (m_tag != BEARER_REPLY_OPT) {
         m_error = -1;
     }
 }
 
-
 int BearerReplyOpt::getReplySeq() {
-   if (m_error < 0) {
-       return -1;
-   }
-   return (m_value[0] >> 2) & 0x3F;
+    if (m_error < 0) {
+        return -1;
+    }
+    return (m_value[0] >> 2) & 0x3F;
 }
-
 
 /*****************************************************************************
  * CauseCode
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("CauseCode", CauseCode, RmcTlvNode);
 
-CauseCode::CauseCode(RIL_CDMA_SMS_Ack &ack, int replySeqNo) : RmcTlvNode(CAUSE_CODE, -1) {
+CauseCode::CauseCode(RIL_CDMA_SMS_Ack& ack, int replySeqNo) : RmcTlvNode(CAUSE_CODE, -1) {
     int errClass;
     if (ack.uErrorClass == RIL_CDMA_SMS_NO_ERROR) {
         m_length = CAUSE_CODE_NO_ERR_LEN;
         errClass = NO_ERR;
-    } else if (RIL_CDMA_SMS_ERROR == ack.uErrorClass){
+    } else if (RIL_CDMA_SMS_ERROR == ack.uErrorClass) {
         m_length = CAUSE_CODE_ERR_LEN;
         errClass = PERMANENT_ERR;
     } else if (RIL_CDMA_SMS_TEMP_ERROR == (int)ack.uErrorClass) {
@@ -416,13 +381,13 @@ CauseCode::CauseCode(RIL_CDMA_SMS_Ack &ack, int replySeqNo) : RmcTlvNode(CAUSE_C
     } else {
         RFX_ASSERT(0);
     }
-    m_value.push((unsigned char) ((replySeqNo << 2) | (errClass & 0x03)));
+    m_value.push((unsigned char)((replySeqNo << 2) | (errClass & 0x03)));
     if (errClass != NO_ERR) {
-        m_value.push((unsigned char) ack.uSMSCauseCode);
+        m_value.push((unsigned char)ack.uSMSCauseCode);
     }
 }
 
-CauseCode::CauseCode(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len) {
+CauseCode::CauseCode(const char* hexPdu, int len) : RmcTlvNode(hexPdu, len) {
     if (m_tag != CAUSE_CODE) {
         m_error = -1;
     }
@@ -433,8 +398,8 @@ CauseCode::CauseCode(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len) {
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("BearerData", BearerData, RmcTlvNode);
 
-BearerData::BearerData(unsigned char *data, int len, bool isMo) : RmcTlvNode(BEARER_DATA, len),
-        m_needStatusReport(false) {
+BearerData::BearerData(unsigned char* data, int len, bool isMo)
+    : RmcTlvNode(BEARER_DATA, len), m_needStatusReport(false) {
     if (isMo) {
         len = removeZero(data, len);
     }
@@ -442,17 +407,15 @@ BearerData::BearerData(unsigned char *data, int len, bool isMo) : RmcTlvNode(BEA
     m_value.appendArray(data, len);
 }
 
-
-BearerData::BearerData(const char* hexPdu, int len) :  RmcTlvNode(hexPdu, len),
-        m_needStatusReport(false) {
+BearerData::BearerData(const char* hexPdu, int len)
+    : RmcTlvNode(hexPdu, len), m_needStatusReport(false) {
     if (m_tag != BEARER_DATA) {
         m_error = -1;
         return;
     }
 }
 
-
-bool BearerData::getBearerData(bool isCtWap, unsigned char *bearerData, int *len) {
+bool BearerData::getBearerData(bool isCtWap, unsigned char* bearerData, int* len) {
     if (m_error < 0) {
         return false;
     }
@@ -495,7 +458,7 @@ void BearerData::decode() {
             int dataBits = paramBits - consumedBits;
             inStream.readByteArray(dataBits, m_UserData.userDataPayload);
         } else {
-            int subparamLen = inStream.read(8); // SUBPARAM_LEN
+            int subparamLen = inStream.read(8);  // SUBPARAM_LEN
             int paramBits = subparamLen * 8;
             if (paramBits <= inStream.available()) {
                 inStream.skip(paramBits);
@@ -519,7 +482,7 @@ void BearerData::decodeMessageId() {
             }
             break;
         } else {
-            int subparamLen = inStream.read(8); // SUBPARAM_LEN
+            int subparamLen = inStream.read(8);  // SUBPARAM_LEN
             int paramBits = subparamLen * 8;
             if (paramBits <= inStream.available()) {
                 inStream.skip(paramBits);
@@ -538,11 +501,11 @@ void BearerData::decodeReplyOpt() {
             if (paramBits >= EXPECTED_PARAM_SIZE) {
                 unsigned char userAckReq = inStream.read(1);
                 unsigned char deliveryAckReq = inStream.read(1);
-                m_needStatusReport = (deliveryAckReq==1);
+                m_needStatusReport = (deliveryAckReq == 1);
             }
             break;
         } else {
-            int subparamLen = inStream.read(8); // SUBPARAM_LEN
+            int subparamLen = inStream.read(8);  // SUBPARAM_LEN
             int paramBits = subparamLen * 8;
             if (paramBits <= inStream.available()) {
                 inStream.skip(paramBits);
@@ -565,7 +528,7 @@ int BearerData::specialProcessForCtWapPush(unsigned char* targetArray) {
             index += 8;
             while (index < endUserDataPos) {
                 targetArray[pos] = 0;
-                targetArray[pos] = (m_value[index] << 5) | (m_value[index+1] >> 3);
+                targetArray[pos] = (m_value[index] << 5) | (m_value[index + 1] >> 3);
                 index++;
                 pos++;
             }
@@ -577,7 +540,6 @@ int BearerData::specialProcessForCtWapPush(unsigned char* targetArray) {
     }
     return pos;
 }
-
 
 int BearerData::removeZero(unsigned char* bytePdu, unsigned short len) {
     unsigned char paramId;
@@ -604,20 +566,20 @@ int BearerData::removeZero(unsigned char* bytePdu, unsigned short len) {
     if (userDataPos != -1) {
         // 7bit ASCII encoding and last byte is zero
         if (((bytePdu[userDataPos] & 0xF8) == 0x10) &&
-                (bytePdu[userDataPos + userDataLen - 1] == 0)) {
+            (bytePdu[userDataPos + userDataLen - 1] == 0)) {
             unsigned char numFields = ((bytePdu[userDataPos] & 0x07) << USER_DATA_ENCODING_BITS) |
-                    (bytePdu[userDataPos + 1] >> 3);
+                                      (bytePdu[userDataPos + 1] >> 3);
             // User data length: [encoding(5)][num_fields(8)][CHARi(x)][reserved(0-7)]
             unsigned char reservedBits = userDataLen * CDMA_SMS_OCTETS_BITS -
-                    (numFields * CDMA_SMS_SEPTETS_BITS +
-                    USER_DATA_ENCODING_BITS + USER_DATA_NUM_FIELDS_BITS);
+                                         (numFields * CDMA_SMS_SEPTETS_BITS +
+                                          USER_DATA_ENCODING_BITS + USER_DATA_NUM_FIELDS_BITS);
             mtkLogI(RFX_LOG_TAG, "removeZero, numFields: %d, reservedBits: %d, userDataLen: %d",
                     numFields, reservedBits, userDataLen);
             if (reservedBits < CDMA_SMS_OCTETS_BITS) {
                 // no need remove reserved zero bits (Reserved bits length should be 0-7)
                 return len;
             }
-            pos =  userDataPos + userDataLen - 1;
+            pos = userDataPos + userDataLen - 1;
             bytePdu[userDataPos - 1] = bytePdu[userDataPos - 1] - 1;
             if (pos + 1 < len) {
                 memmove(&bytePdu[pos], &bytePdu[pos + 1], len - (pos + 1));
@@ -629,42 +591,37 @@ int BearerData::removeZero(unsigned char* bytePdu, unsigned short len) {
     return len;
 }
 
-
 /*****************************************************************************
  * Class RmcCdmaSmsConverter
  *****************************************************************************/
-bool RmcCdmaSmsConverter::toHexPdu(
-        RIL_CDMA_SMS_Message &message, String8 &hexPdu, String8 &address,
-        bool needBearerReplyOpt) {
+bool RmcCdmaSmsConverter::toHexPdu(RIL_CDMA_SMS_Message& message, String8& hexPdu, String8& address,
+                                   bool needBearerReplyOpt) {
     if (message.sAddress.number_of_digits > RIL_CDMA_SMS_ADDRESS_MAX ||
-            message.sSubAddress.number_of_digits > RIL_CDMA_SMS_SUBADDRESS_MAX ||
-            message.uBearerDataLen <= 0 ||
-            message.uBearerDataLen > RIL_CDMA_SMS_BEARER_DATA_MAX)
-    {
+        message.sSubAddress.number_of_digits > RIL_CDMA_SMS_SUBADDRESS_MAX ||
+        message.uBearerDataLen <= 0 || message.uBearerDataLen > RIL_CDMA_SMS_BEARER_DATA_MAX) {
         return false;
     }
 
-    CdmaSmsMessage *pMsg;
+    CdmaSmsMessage* pMsg;
     RFX_OBJ_CREATE_EX(pMsg, CdmaSmsMessage, NULL, (CdmaSmsMessage::MESSAGE_TYPE_P2P));
     RFX_ASSERT(pMsg != NULL);
 
-    TeleServiceId *pTId;
+    TeleServiceId* pTId;
     RFX_OBJ_CREATE_EX(pTId, TeleServiceId, pMsg, (message.uTeleserviceID));
     RFX_ASSERT(pTId != NULL);
 
-    CdmaSmsAddress *pAddr;
+    CdmaSmsAddress* pAddr;
     RFX_OBJ_CREATE_EX(pAddr, CdmaSmsAddress, pMsg, (message.sAddress, true));
     RFX_ASSERT(pAddr != NULL);
 
     if (needBearerReplyOpt) {
-        BearerReplyOpt *pOpt;
+        BearerReplyOpt* pOpt;
         RFX_OBJ_CREATE(pOpt, BearerReplyOpt, pMsg);
         RFX_ASSERT(pOpt != NULL);
     }
 
-    BearerData *pBearer;
-    RFX_OBJ_CREATE_EX(pBearer, BearerData, pMsg,
-     (message.aBearerData, message.uBearerDataLen));
+    BearerData* pBearer;
+    RFX_OBJ_CREATE_EX(pBearer, BearerData, pMsg, (message.aBearerData, message.uBearerDataLen));
     RFX_ASSERT(pBearer != NULL);
 
     pAddr->getAddress(address);
@@ -673,17 +630,16 @@ bool RmcCdmaSmsConverter::toHexPdu(
     return true;
 }
 
-
 bool RmcCdmaSmsConverter::toHexPdu(RIL_CDMA_SMS_Ack* pAck, int replySeqNo,
-     RIL_CDMA_SMS_Address* pAddress, String8 &hexPdu) {
+                                   RIL_CDMA_SMS_Address* pAddress, String8& hexPdu) {
     if (pAck == NULL || pAddress == NULL) {
         return false;
     }
-    CdmaSmsMessage *pMsg;
+    CdmaSmsMessage* pMsg;
     RFX_OBJ_CREATE_EX(pMsg, CdmaSmsMessage, NULL, (CdmaSmsMessage::MESSAGE_TYPE_ACK));
     RFX_ASSERT(pMsg != NULL);
 
-    CdmaSmsAddress *pAddr;
+    CdmaSmsAddress* pAddr;
     RFX_OBJ_CREATE_EX(pAddr, CdmaSmsAddress, pMsg, (*pAddress, true));
     RFX_ASSERT(pAddr != NULL);
 
@@ -696,11 +652,10 @@ bool RmcCdmaSmsConverter::toHexPdu(RIL_CDMA_SMS_Ack* pAck, int replySeqNo,
     return true;
 }
 
-
-bool RmcCdmaSmsConverter::toMessage(
-        RIL_CDMA_SMS_Message *pMessage, String8 &hexPdu, int *pReplySeqNo) {
-    const char *p = hexPdu.string();
-    const char *q = p;
+bool RmcCdmaSmsConverter::toMessage(RIL_CDMA_SMS_Message* pMessage, String8& hexPdu,
+                                    int* pReplySeqNo) {
+    const char* p = hexPdu.string();
+    const char* q = p;
     int size = hexPdu.size();
     if (size % 2 != 0 || size < 2) {
         return false;
@@ -709,9 +664,9 @@ bool RmcCdmaSmsConverter::toMessage(
     RFX_ASSERT(pReplySeqNo != NULL);
     *pReplySeqNo = -1;
     bool ret = false;
-    CdmaSmsMessage *pMsg;
+    CdmaSmsMessage* pMsg;
     RFX_OBJ_CREATE_EX(pMsg, CdmaSmsMessage, NULL, (p, 2));
-    p +=2;
+    p += 2;
     bool isCtWapPush = false;
     memset(pMessage, 0, sizeof(RIL_CDMA_SMS_Message));
     while ((p + 4 - q) < size) {
@@ -719,43 +674,42 @@ bool RmcCdmaSmsConverter::toMessage(
         int len = strtol(slen.string(), NULL, 16);
         len = len * 2 + 4;
         if (strncmp(p, "00", 2) == 0) {
-            TeleServiceId *pId;
+            TeleServiceId* pId;
             RFX_OBJ_CREATE_EX(pId, TeleServiceId, pMsg, (p, len));
             isCtWapPush = pId->isCtWapPush();
             pMessage->uTeleserviceID = isCtWapPush ? 0x1004 : pId->getTeleServiceId();
         } else if (strncmp(p, "01", 2) == 0) {
-            ServiceCategory *pSc;
+            ServiceCategory* pSc;
             RFX_OBJ_CREATE_EX(pSc, ServiceCategory, pMsg, (p, len));
             pMessage->bIsServicePresent = 1;
             pMessage->uServicecategory = pSc->getServiceCategory();
         } else if (strncmp(p, "02", 2) == 0) {
-            CdmaSmsAddress *pAddr;
+            CdmaSmsAddress* pAddr;
             RFX_OBJ_CREATE_EX(pAddr, CdmaSmsAddress, pMsg, (p, len));
             pAddr->getAddress(pMessage->sAddress);
         } else if (strncmp(p, "03", 2) == 0) {
-            CdmaSmsSubAddress *pSubAddr;
+            CdmaSmsSubAddress* pSubAddr;
             RFX_OBJ_CREATE_EX(pSubAddr, CdmaSmsSubAddress, pMsg, (p, len));
             pSubAddr->getSubAddr(pMessage->sSubAddress);
         } else if (strncmp(p, "04", 2) == 0) {
-            CdmaSmsAddress *pAddr;
+            CdmaSmsAddress* pAddr;
             RFX_OBJ_CREATE_EX(pAddr, CdmaSmsAddress, pMsg, (p, len));
         } else if (strncmp(p, "05", 2) == 0) {
-            CdmaSmsSubAddress *pSubAddr;
+            CdmaSmsSubAddress* pSubAddr;
             RFX_OBJ_CREATE_EX(pSubAddr, CdmaSmsSubAddress, pMsg, (p, len));
         } else if (strncmp(p, "06", 2) == 0) {
-            BearerReplyOpt *pOpt;
+            BearerReplyOpt* pOpt;
             RFX_OBJ_CREATE_EX(pOpt, BearerReplyOpt, pMsg, (p, len));
             *pReplySeqNo = pOpt->getReplySeq();
         } else if (strncmp(p, "07", 2) == 0) {
-            CauseCode *pCause;
+            CauseCode* pCause;
             RFX_OBJ_CREATE_EX(pCause, CauseCode, pMsg, (p, len));
         } else if (strncmp(p, "08", 2) == 0) {
-            BearerData *pBearer;
+            BearerData* pBearer;
             RFX_OBJ_CREATE_EX(pBearer, BearerData, pMsg, (p, len));
-            pBearer->getBearerData(isCtWapPush,
-                    pMessage->aBearerData, &pMessage->uBearerDataLen);
+            pBearer->getBearerData(isCtWapPush, pMessage->aBearerData, &pMessage->uBearerDataLen);
         } else {
-          break;
+            break;
         }
         p += len;
     }
@@ -763,37 +717,36 @@ bool RmcCdmaSmsConverter::toMessage(
     return ret;
 }
 
-bool RmcCdmaSmsConverter::isStatusReport(RIL_CDMA_SMS_Message *pMessage, int *pMessageId) {
-    BearerData *pBearer;
+bool RmcCdmaSmsConverter::isStatusReport(RIL_CDMA_SMS_Message* pMessage, int* pMessageId) {
+    BearerData* pBearer;
     RFX_OBJ_CREATE_EX(pBearer, BearerData, NULL,
-     (pMessage->aBearerData, pMessage->uBearerDataLen, false));
+                      (pMessage->aBearerData, pMessage->uBearerDataLen, false));
     RFX_ASSERT(pBearer != NULL);
     pBearer->decodeMessageId();
     *pMessageId = pBearer->getMessageId();
-    bool ret =  pBearer->isStatusReport();
+    bool ret = pBearer->isStatusReport();
     RFX_OBJ_CLOSE(pBearer);
     return ret;
 }
 
-bool RmcCdmaSmsConverter::isNeedStatusReport(RIL_CDMA_SMS_Message * pMessage) {
-    BearerData *pBearer;
-    RFX_OBJ_CREATE_EX(pBearer, BearerData, NULL,
-     (pMessage->aBearerData, pMessage->uBearerDataLen));
+bool RmcCdmaSmsConverter::isNeedStatusReport(RIL_CDMA_SMS_Message* pMessage) {
+    BearerData* pBearer;
+    RFX_OBJ_CREATE_EX(pBearer, BearerData, NULL, (pMessage->aBearerData, pMessage->uBearerDataLen));
     RFX_ASSERT(pBearer != NULL);
     pBearer->decodeReplyOpt();
-    bool ret= pBearer->isNeedStatusReport();
+    bool ret = pBearer->isNeedStatusReport();
     RFX_OBJ_CLOSE(pBearer);
     return ret;
 }
 
-void RmcCdmaSmsConverter::getInboundSmsInfo(RIL_CDMA_SMS_Message *pMessage, InboundSmsInfo *info) {
-    BearerData *pBearer;
+void RmcCdmaSmsConverter::getInboundSmsInfo(RIL_CDMA_SMS_Message* pMessage, InboundSmsInfo* info) {
+    BearerData* pBearer;
     RFX_OBJ_CREATE_EX(pBearer, BearerData, NULL,
-     (pMessage->aBearerData, pMessage->uBearerDataLen, false));
+                      (pMessage->aBearerData, pMessage->uBearerDataLen, false));
     RFX_ASSERT(pBearer != NULL);
     pBearer->decode();
     info->messageId = pBearer->getMessageId();
-    info->isStatusReport =  pBearer->isStatusReport();
+    info->isStatusReport = pBearer->isStatusReport();
     info->hasUserDataHeader = pBearer->hasUserDataHeader();
     info->userDataPayload = pBearer->getUserDataPayload();
     info->msgEncoding = pBearer->getMsgEncoding();
@@ -801,18 +754,18 @@ void RmcCdmaSmsConverter::getInboundSmsInfo(RIL_CDMA_SMS_Message *pMessage, Inbo
     RFX_OBJ_CLOSE(pBearer);
 }
 
-void RmcCdmaSmsConverter::encodeUserData(
-        Vector<unsigned char> &userData,
-        const Vector<unsigned char> &userDataPayload, int msgEncoding, int msgType, int numFields) {
+void RmcCdmaSmsConverter::encodeUserData(Vector<unsigned char>& userData,
+                                         const Vector<unsigned char>& userDataPayload,
+                                         int msgEncoding, int msgType, int numFields) {
     BitwiseOutputStream outStream(RIL_CDMA_SMS_USER_DATA_MAX * 8);
     int dataBits = userDataPayload.size() * 8;
     if ((msgEncoding == UserData::ENCODING_7BIT_ASCII) ||
-            (msgEncoding == UserData::ENCODING_GSM_7BIT_ALPHABET)) {
+        (msgEncoding == UserData::ENCODING_GSM_7BIT_ALPHABET)) {
         dataBits = numFields * 7;
     }
     int paramBits = dataBits + 13;
     if ((msgEncoding == UserData::ENCODING_IS91_EXTENDED_PROTOCOL) ||
-            (msgEncoding == UserData::ENCODING_GSM_DCS)) {
+        (msgEncoding == UserData::ENCODING_GSM_DCS)) {
         paramBits += 8;
     }
     int paramBytes = (paramBits / 8) + ((paramBits % 8) > 0 ? 1 : 0);
@@ -828,18 +781,16 @@ void RmcCdmaSmsConverter::encodeUserData(
     userData.appendArray(outStream.getBuf(), outStream.getByteLen());
 }
 
-bool RmcCdmaSmsConverter::replaceUserDataPayload(
-        RIL_CDMA_SMS_Message *pMessage,
-        const Vector<unsigned char> &userDataPayload, int msgEncoding, int msgType, int numFields) {
+bool RmcCdmaSmsConverter::replaceUserDataPayload(RIL_CDMA_SMS_Message* pMessage,
+                                                 const Vector<unsigned char>& userDataPayload,
+                                                 int msgEncoding, int msgType, int numFields) {
     Vector<unsigned char> userData;
     encodeUserData(userData, userDataPayload, msgEncoding, msgType, numFields);
-    return replaceUserData(pMessage, (unsigned char *)userData.array(), userData.size());
+    return replaceUserData(pMessage, (unsigned char*)userData.array(), userData.size());
 }
 
-bool RmcCdmaSmsConverter::replaceUserData(
-        RIL_CDMA_SMS_Message *pMessage,
-        unsigned char* userData,
-        int userDataLen) {
+bool RmcCdmaSmsConverter::replaceUserData(RIL_CDMA_SMS_Message* pMessage, unsigned char* userData,
+                                          int userDataLen) {
     int userDataPos = pMessage->uBearerDataLen;
     int nextSubParameterPos = -1;
     int leftDataLen = -1;
@@ -881,7 +832,7 @@ bool RmcCdmaSmsConverter::replaceUserData(
     // User data is not the last subparameter
     if (nextSubParameterPos != -1) {
         memmove(&pMessage->aBearerData[userDataPos + userDataLen],
-            &pMessage->aBearerData[nextSubParameterPos - 2], leftDataLen);
+                &pMessage->aBearerData[nextSubParameterPos - 2], leftDataLen);
     }
     memcpy(&pMessage->aBearerData[userDataPos], userData, userDataLen);
     pMessage->uBearerDataLen += userDataLenDiff;

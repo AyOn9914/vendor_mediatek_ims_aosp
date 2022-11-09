@@ -28,19 +28,21 @@
 // Enables debug output for the tokenizer.
 #define DEBUG_TOKENIZER 0
 
-
 namespace android {
 
 static inline bool isDelimiter(char ch, const char* delimiters) {
     return strchr(delimiters, ch) != NULL;
 }
 
-Tokenizer::Tokenizer(const String8& filename, FileMap* fileMap, char* buffer,
-        bool ownBuffer, size_t length) :
-        mFilename(filename), mFileMap(fileMap),
-        mBuffer(buffer), mOwnBuffer(ownBuffer), mLength(length),
-        mCurrent(buffer), mLineNumber(1) {
-}
+Tokenizer::Tokenizer(const String8& filename, FileMap* fileMap, char* buffer, bool ownBuffer,
+                     size_t length)
+    : mFilename(filename),
+      mFileMap(fileMap),
+      mBuffer(buffer),
+      mOwnBuffer(ownBuffer),
+      mLength(length),
+      mCurrent(buffer),
+      mLineNumber(1) {}
 
 Tokenizer::~Tokenizer() {
     delete mFileMap;
@@ -100,10 +102,10 @@ status_t Tokenizer::open(const String8& filename, Tokenizer** outTokenizer) {
     return result;
 }
 
-status_t Tokenizer::fromContents(const String8& filename,
-        const char* contents, Tokenizer** outTokenizer) {
-    *outTokenizer = new Tokenizer(filename, NULL,
-            const_cast<char*>(contents), false, strlen(contents));
+status_t Tokenizer::fromContents(const String8& filename, const char* contents,
+                                 Tokenizer** outTokenizer) {
+    *outTokenizer =
+            new Tokenizer(filename, NULL, const_cast<char*>(contents), false, strlen(contents));
     return OK;
 }
 
@@ -170,4 +172,4 @@ void Tokenizer::skipDelimiters(const char* delimiters) {
     }
 }
 
-} // namespace android
+}  // namespace android

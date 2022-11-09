@@ -30,41 +30,30 @@
 
 RFX_IMPLEMENT_CLASS("RtcCommSimOpController", RtcCommSimOpController, RtcCommSimController);
 
-RtcCommSimOpController::RtcCommSimOpController() {
-}
+RtcCommSimOpController::RtcCommSimOpController() {}
 
-RtcCommSimOpController::~RtcCommSimOpController() {
-}
+RtcCommSimOpController::~RtcCommSimOpController() {}
 
 void RtcCommSimOpController::onInit() {
     RtcCommSimController::onInit();
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_SEND_RSU_REQUEST,
-        RFX_MSG_REQUEST_GET_SHARED_KEY,
-        RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS,
-        RFX_MSG_REQUEST_GET_SIM_LOCK_INFO,
-        RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS,
-        RFX_MSG_REQUEST_GET_MODEM_STATUS,
-        RFX_MSG_REQUEST_ATT_GET_SHARED_KEY,
-        RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS,
-        RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION,
-        RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS,
-        RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS,
-        RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG,
-        RFX_MSG_REQUEST_ATT_GET_API_VERSION,
-        RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS,
+            RFX_MSG_REQUEST_SEND_RSU_REQUEST,         RFX_MSG_REQUEST_GET_SHARED_KEY,
+            RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS, RFX_MSG_REQUEST_GET_SIM_LOCK_INFO,
+            RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS,  RFX_MSG_REQUEST_GET_MODEM_STATUS,
+            RFX_MSG_REQUEST_ATT_GET_SHARED_KEY,       RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS,
+            RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION, RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS,
+            RFX_MSG_REQUEST_ATT_GET_MODEM_STATUS,     RFX_MSG_REQUEST_ATT_GET_MODEM_CONFIG,
+            RFX_MSG_REQUEST_ATT_GET_API_VERSION,      RFX_MSG_REQUEST_ATT_GET_SIM_SLOTS,
     };
 
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int), DEFAULT);
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int), DEFAULT);
 }
 
-void RtcCommSimOpController::onDeinit() {
-    RfxController::onDeinit();
-}
+void RtcCommSimOpController::onDeinit() { RfxController::onDeinit(); }
 
 bool RtcCommSimOpController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    switch(msg_id) {
+    switch (msg_id) {
         case RFX_MSG_REQUEST_SEND_RSU_REQUEST:
         case RFX_MSG_REQUEST_GET_SHARED_KEY:
         case RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS:
@@ -89,7 +78,7 @@ bool RtcCommSimOpController::onHandleRequest(const sp<RfxMessage>& message) {
 
 bool RtcCommSimOpController::onHandleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    switch(msg_id) {
+    switch (msg_id) {
         case RFX_MSG_REQUEST_SEND_RSU_REQUEST:
         case RFX_MSG_REQUEST_GET_SHARED_KEY:
         case RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS:
@@ -113,16 +102,14 @@ bool RtcCommSimOpController::onHandleResponse(const sp<RfxMessage>& message) {
 }
 
 bool RtcCommSimOpController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                    bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
     if (!isModemPowerOff && (radioState == (int)RADIO_STATE_OFF) &&
-        (msgId == RFX_MSG_REQUEST_SEND_RSU_REQUEST ||
-         msgId == RFX_MSG_REQUEST_GET_SHARED_KEY ||
+        (msgId == RFX_MSG_REQUEST_SEND_RSU_REQUEST || msgId == RFX_MSG_REQUEST_GET_SHARED_KEY ||
          msgId == RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS ||
          msgId == RFX_MSG_REQUEST_GET_SIM_LOCK_INFO ||
          msgId == RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS ||
-         msgId == RFX_MSG_REQUEST_GET_MODEM_STATUS ||
-         msgId == RFX_MSG_REQUEST_ATT_GET_SHARED_KEY ||
+         msgId == RFX_MSG_REQUEST_GET_MODEM_STATUS || msgId == RFX_MSG_REQUEST_ATT_GET_SHARED_KEY ||
          msgId == RFX_MSG_REQUEST_ATT_UPDATE_SIM_LOCK_SETTINGS ||
          msgId == RFX_MSG_REQUEST_ATT_GET_SIM_LOCK_VERSION ||
          msgId == RFX_MSG_REQUEST_ATT_RESET_SIM_LOCK_SETTINGS ||

@@ -28,16 +28,13 @@
 #define REGISTER_NFQUEUE_QNUM "90"
 #define REGISTER_ICMP_NFQUEUE_QNUM "91"
 
-
-#define MERGE_IPTABLE_ARG_OK      WPFA_REG_ACCPET
-#define MERGE_IPTABLE_ARG_FAILED  WPFA_RULE_ERROR
+#define MERGE_IPTABLE_ARG_OK WPFA_REG_ACCPET
+#define MERGE_IPTABLE_ARG_FAILED WPFA_RULE_ERROR
 
 int icmpMergeArgs(wifiProxy_filter_ip_ver_e ipType, WPFA_filter_reg_t filter, int operation);
 int espAhMergeArgs(wifiProxy_filter_ip_ver_e ipType, WPFA_filter_reg_t filter, int operation);
 int commonMergeArgs(wifiProxy_filter_ip_ver_e ipType, WPFA_filter_reg_t filter, int operation);
-void convertIpAddress(char *dst, uint8_t *ip, wifiProxy_filter_ip_ver_e ipType);
+void convertIpAddress(char* dst, uint8_t* ip, wifiProxy_filter_ip_ver_e ipType);
 int initIptablesChain();
 
-
-
-#endif // MERGERULE_H
+#endif  // MERGERULE_H

@@ -36,45 +36,39 @@
 #define ATRACE_TAG ATRACE_TAG_VIDEO
 #include <utils/Trace.h>
 
-namespace imsma
-{
+namespace imsma {
 
-//static const uint32_t kSourceID = 0xdeadbeef;
-//ToDo: whether all trackIndex change to uint32_t
-RTPSource::RTPSource(
-    uint32_t srcId,
-    rtp_rtcp_config_t* pConfigPram ,int32_t iTrackIndex,
-    sp<AMessage> &notify)
-{
-
-    ALOGI("%s,ssrc(0x%x),track(%d)",__FUNCTION__,srcId,iTrackIndex);
+// static const uint32_t kSourceID = 0xdeadbeef;
+// ToDo: whether all trackIndex change to uint32_t
+RTPSource::RTPSource(uint32_t srcId, rtp_rtcp_config_t* pConfigPram, int32_t iTrackIndex,
+                     sp<AMessage>& notify) {
+    ALOGI("%s,ssrc(0x%x),track(%d)", __FUNCTION__, srcId, iTrackIndex);
     mID = srcId;
     mHighestSeqNumber = 0;
     mFirstPacketSeqNum = 0;
-    //mIssueFIRRequests(false),
-    //mLastFIRRequestUs(-1),
-    //mNextFIRSeqNo((rand() * 256.0) / RAND_MAX),
+    // mIssueFIRRequests(false),
+    // mLastFIRRequestUs(-1),
+    // mNextFIRSeqNo((rand() * 256.0) / RAND_MAX),
     mNotify = notify->dup();
     mHighestSeqNumberSet = false;
-    //mConfigParam = *pConfigPram;// ToDo: whether can assign struct this way
+    // mConfigParam = *pConfigPram;// ToDo: whether can assign struct this way
     mWaitingTMMBN = false;
-
 
     mAdaInfo = new RxAdaptationInfo();
 
     mTrackIndex = iTrackIndex;
 
-    if(IMSMA_RTP_VIDEO == pConfigPram->media_type) {
-        if(IMSMA_RTP_VIDEO_H264 == pConfigPram->mime_Type) {
+    if (IMSMA_RTP_VIDEO == pConfigPram->media_type) {
+        if (IMSMA_RTP_VIDEO_H264 == pConfigPram->mime_Type) {
             mAssembler = new AVCAssembler(notify);
-        } else if(IMSMA_RTP_VIDEO_HEVC == pConfigPram->mime_Type) {
+        } else if (IMSMA_RTP_VIDEO_HEVC == pConfigPram->mime_Type) {
             mAssembler = new HEVCAssembler(notify);
         }
     }
 
     mClockRate = pConfigPram->sample_rate;
-    //mRRintervalUs = 5000000l;
-    //ToDo:need set mRRintervalUs according pConfigParam
+    // mRRintervalUs = 5000000l;
+    // ToDo:need set mRRintervalUs according pConfigParam
 
     mFirstPacketRecvTimeUs = 0;
 
@@ -83,43 +77,38 @@ RTPSource::RTPSource(
     mCName.setTo("android@");
     mCName.append(inet_ntoa(addr.sin_addr));
 
-
     /*****adaptation related parameters*******/
-    mAdaInfo->updateInfo(pConfigPram->rtp_packet_bandwidth, pConfigPram->network_info.MBR_DL, pConfigPram->sample_rate);
+    mAdaInfo->updateInfo(pConfigPram->rtp_packet_bandwidth, pConfigPram->network_info.MBR_DL,
+                         pConfigPram->sample_rate);
 
     mSupportTMMBR = false;
 
-    for(uint8_t i = 0; i< pConfigPram->rtcp_fb_param_num; i++) {
+    for (uint8_t i = 0; i < pConfigPram->rtcp_fb_param_num; i++) {
         uint16_t fb_id = (pConfigPram->rtcp_fb_type[i]).rtcp_fb_id;
         uint16_t fb_param = (pConfigPram->rtcp_fb_type[i]).rtcp_fb_param;
 
-        if((fb_id == IMSMA_CCM) && (fb_param == IMSMA_TMMBR)) {
+        if ((fb_id == IMSMA_CCM) && (fb_param == IMSMA_TMMBR)) {
             mSupportTMMBR = true;
             break;
         }
     }
 
-    ALOGD("%s,mAS =%d kbps,mMBR_DL=%d kbps,mSupportTMMBR=%d",\
-          __FUNCTION__,pConfigPram->rtp_packet_bandwidth,pConfigPram->network_info.MBR_DL,mSupportTMMBR);
-
-
+    ALOGD("%s,mAS =%d kbps,mMBR_DL=%d kbps,mSupportTMMBR=%d", __FUNCTION__,
+          pConfigPram->rtp_packet_bandwidth, pConfigPram->network_info.MBR_DL, mSupportTMMBR);
 }
-RTPSource::~RTPSource()
-{
-    ALOGI("%s",__FUNCTION__);
+RTPSource::~RTPSource() {
+    ALOGI("%s", __FUNCTION__);
 
     delete mAdaInfo;
 }
-static uint32_t AbsDiff(uint32_t seq1, uint32_t seq2)
-{
+static uint32_t AbsDiff(uint32_t seq1, uint32_t seq2) {
     return seq1 > seq2 ? seq1 - seq2 : seq2 - seq1;
 }
 
-void RTPSource::processRTPPacket(const sp<ABuffer> &buffer)
-{
-    ALOGV("%s",__FUNCTION__);
+void RTPSource::processRTPPacket(const sp<ABuffer>& buffer) {
+    ALOGV("%s", __FUNCTION__);
 
-    if(queuePacket(buffer) && mAssembler != NULL) {
+    if (queuePacket(buffer) && mAssembler != NULL) {
         mAssembler->onPacketReceived(this);
     }
 }
@@ -137,60 +126,59 @@ void RTPSource::timeUpdate(uint32_t rtpTime, uint64_t ntpTime) {
 }
 */
 
-bool RTPSource::GetdebugInfo(bool needNotify, int32_t *uiEncBitRate, uint32_t Operator)
-{
-
+bool RTPSource::GetdebugInfo(bool needNotify, int32_t* uiEncBitRate, uint32_t Operator) {
     RTPDebugNotifyInfo NotifyInfo[10];
-    memset(NotifyInfo, 0, sizeof(RTPDebugNotifyInfo)*10);
+    memset(NotifyInfo, 0, sizeof(RTPDebugNotifyInfo) * 10);
 
     int count = 10;
     bool isTrigger = false;
     uint32_t lostcount = getLostCount();
     uint32_t IDamageCount = getIDamageCount();
-    bool ret = mAdaInfo->GetdebugInfo(needNotify, uiEncBitRate, lostcount, IDamageCount, NotifyInfo, &count, &isTrigger, Operator);
+    bool ret = mAdaInfo->GetdebugInfo(needNotify, uiEncBitRate, lostcount, IDamageCount, NotifyInfo,
+                                      &count, &isTrigger, Operator);
 
-    if(ret == true) {
-        ALOGD("%s NotifyInfo size=%d isTrigger=%d",__FUNCTION__, count, isTrigger);
+    if (ret == true) {
+        ALOGD("%s NotifyInfo size=%d isTrigger=%d", __FUNCTION__, count, isTrigger);
 
-        if(isTrigger == true) {
+        if (isTrigger == true) {
             NotifyTMMBR();
         }
 
-        if(count < 0 || count > 10) {
+        if (count < 0 || count > 10) {
             ALOGE("error: GetdebugInfo notify msg count %d", count);
         } else {
-            for(int i = 0; i < count; i++) {
-                switch(NotifyInfo[i].kWhatInfo) {
-                case kWhatNoRTP: {
-                    ALOGD("%s kWhatNoRTP info=%d",__FUNCTION__, NotifyInfo[i].item1);
-                    sp<AMessage> notify = mNotify->dup();
-                    notify->setInt32("what",kWhatNoRTP);
-                    notify->setInt32("info",NotifyInfo[i].item1);
-                    notify->post();
-                    break;
-                }
+            for (int i = 0; i < count; i++) {
+                switch (NotifyInfo[i].kWhatInfo) {
+                    case kWhatNoRTP: {
+                        ALOGD("%s kWhatNoRTP info=%d", __FUNCTION__, NotifyInfo[i].item1);
+                        sp<AMessage> notify = mNotify->dup();
+                        notify->setInt32("what", kWhatNoRTP);
+                        notify->setInt32("info", NotifyInfo[i].item1);
+                        notify->post();
+                        break;
+                    }
 
-            case kWhatDropCall: {
-                ALOGD("%s kWhatDropCall ",__FUNCTION__);
-                sp<AMessage> notify = mNotify->dup();
-                notify->setInt32("what",kWhatDropCall);
-                notify->post();
-                break;
-            }
+                    case kWhatDropCall: {
+                        ALOGD("%s kWhatDropCall ", __FUNCTION__);
+                        sp<AMessage> notify = mNotify->dup();
+                        notify->setInt32("what", kWhatDropCall);
+                        notify->post();
+                        break;
+                    }
 
-                case kWhatUpdateDebugInfo: {
-                    ALOGD("%s kWhatUpdateDebugInfo info=%d",__FUNCTION__, NotifyInfo[i].item1);
-                    sp<AMessage> notify = mNotify->dup();
-                    notify->setInt32("what",kWhatUpdateDebugInfo);
-                    notify->setInt32("info",NotifyInfo[i].item1);
-                    notify->setInt32("needNotify", (needNotify == true ? 1 : 0));
-                    notify->post();
-                    break;
-                }
+                    case kWhatUpdateDebugInfo: {
+                        ALOGD("%s kWhatUpdateDebugInfo info=%d", __FUNCTION__, NotifyInfo[i].item1);
+                        sp<AMessage> notify = mNotify->dup();
+                        notify->setInt32("what", kWhatUpdateDebugInfo);
+                        notify->setInt32("info", NotifyInfo[i].item1);
+                        notify->setInt32("needNotify", (needNotify == true ? 1 : 0));
+                        notify->post();
+                        break;
+                    }
 
-                default:
-                    ALOGE("%s invaild msg %x",__FUNCTION__, NotifyInfo[i].kWhatInfo);
-                    break;
+                    default:
+                        ALOGE("%s invaild msg %x", __FUNCTION__, NotifyInfo[i].kWhatInfo);
+                        break;
                 }
             }
         }
@@ -199,17 +187,16 @@ bool RTPSource::GetdebugInfo(bool needNotify, int32_t *uiEncBitRate, uint32_t Op
     return ret;
 }
 
-bool RTPSource::queuePacket(const sp<ABuffer> &buffer)
-{
-    uint32_t orig_seqNum = (uint32_t) buffer->int32Data();
+bool RTPSource::queuePacket(const sp<ABuffer>& buffer) {
+    uint32_t orig_seqNum = (uint32_t)buffer->int32Data();
 
     updateStatisticInfo(buffer);
     mAdaInfo->setReceivePacketFlag();
 
-    if(mAdaInfo->getFrameCount() == 0) {
+    if (mAdaInfo->getFrameCount() == 0) {
         mFirstPacketRecvTimeUs = ALooper::GetNowUs();
 
-        if(!mHighestSeqNumberSet) {
+        if (!mHighestSeqNumberSet) {
             mHighestSeqNumber = orig_seqNum;
         }
 
@@ -217,7 +204,7 @@ bool RTPSource::queuePacket(const sp<ABuffer> &buffer)
 
         mAdaInfo->selfIncFrameCount();
         mQueue.push_back(buffer);
-        ALOGI("%s,first recv packet seqNum:%u",__FUNCTION__,orig_seqNum);
+        ALOGI("%s,first recv packet seqNum:%u", __FUNCTION__, orig_seqNum);
         return false;
     }
 
@@ -225,21 +212,21 @@ bool RTPSource::queuePacket(const sp<ABuffer> &buffer)
 
     uint32_t seqNum = extendSeqNumber(orig_seqNum, mHighestSeqNumber);
 
-    if(seqNum > mHighestSeqNumber) {
+    if (seqNum > mHighestSeqNumber) {
         mHighestSeqNumber = seqNum;
     }
 
     buffer->setInt32Data(seqNum);
 
-    ATRACE_INT64("RTR:Src:queExtSeqN", (int64_t) seqNum);
+    ATRACE_INT64("RTR:Src:queExtSeqN", (int64_t)seqNum);
 
     List<sp<ABuffer> >::iterator it = mQueue.begin();
 
-    while(it != mQueue.end() && (uint32_t)(*it)->int32Data() < seqNum) {
+    while (it != mQueue.end() && (uint32_t)(*it)->int32Data() < seqNum) {
         ++it;
     }
 
-    if(it != mQueue.end() && (uint32_t)(*it)->int32Data() == seqNum) {
+    if (it != mQueue.end() && (uint32_t)(*it)->int32Data() == seqNum) {
         ALOGW("Discarding duplicate buffer");
         return false;
     }
@@ -248,27 +235,26 @@ bool RTPSource::queuePacket(const sp<ABuffer> &buffer)
     /*ALOGD("%s,SeqNum(orig:%d,extended:%d),jitter buf size(%d)",\
         __FUNCTION__,orig_seqNum,seqNum,mQueue.size());*/
 
-    //ToDo:
-    //wait for 50ms for the right first seqNum
-    //need tune on real network to adjust this timeout value
-    //or change to mNumBuffersReceived < threshold
+    // ToDo:
+    // wait for 50ms for the right first seqNum
+    // need tune on real network to adjust this timeout value
+    // or change to mNumBuffersReceived < threshold
     int64_t iPacketRecvTimeUs = ALooper::GetNowUs();
 
-    if((iPacketRecvTimeUs - mFirstPacketRecvTimeUs) < 50000) {
-        if(seqNum < mFirstPacketSeqNum) {
+    if ((iPacketRecvTimeUs - mFirstPacketRecvTimeUs) < 50000) {
+        if (seqNum < mFirstPacketSeqNum) {
             mFirstPacketSeqNum = seqNum;
         }
 
-        ALOGD("waiting(%" PRId64 " us) for the least seq:%ud",\
-              iPacketRecvTimeUs - mFirstPacketRecvTimeUs,mFirstPacketSeqNum);
+        ALOGD("waiting(%" PRId64 " us) for the least seq:%ud",
+              iPacketRecvTimeUs - mFirstPacketRecvTimeUs, mFirstPacketSeqNum);
         return false;
     }
 
     return true;
 }
 
-void RTPSource::updateStatisticInfo(const sp<ABuffer> buffer)
-{
+void RTPSource::updateStatisticInfo(const sp<ABuffer> buffer) {
     sp<AMessage> meta = buffer->meta();
 
     int32_t iRtpTime = 0;
@@ -278,40 +264,38 @@ void RTPSource::updateStatisticInfo(const sp<ABuffer> buffer)
 
     int32_t iRtpOH = 0;
     int32_t iRtpSize = 0;
-    meta->findInt32("rtp_size",&iRtpSize);
-    meta->findInt32("rtp_overhead",&iRtpOH);
+    meta->findInt32("rtp_size", &iRtpSize);
+    meta->findInt32("rtp_overhead", &iRtpOH);
 
     uint32_t lostcount = getLostCount();
     uint32_t uiNetSize = buffer->size();
-    bool isTrigger = mAdaInfo->updateStatisticInfo(iRtpOH, iRtpSize, uiNetSize, lostcount, iRtpTime);
+    bool isTrigger =
+            mAdaInfo->updateStatisticInfo(iRtpOH, iRtpSize, uiNetSize, lostcount, iRtpTime);
 
-    if(isTrigger == true) {
+    if (isTrigger == true) {
         NotifyTMMBR();
     }
 }
 
-void RTPSource::reset()
-{
+void RTPSource::reset() {
     peerResumedSendStream();
     flushQueue();
 }
 
-status_t RTPSource::peerPausedSendStream()
-{
-    ALOGI("%s",__FUNCTION__);
-    //ToDo: cancel check whether alive
+status_t RTPSource::peerPausedSendStream() {
+    ALOGI("%s", __FUNCTION__);
+    // ToDo: cancel check whether alive
 
     mAdaInfo->peerPausedSendStream();
 
     return OK;
 }
-status_t RTPSource::peerResumedSendStream()
-{
-    ALOGI("%s",__FUNCTION__);
+status_t RTPSource::peerResumedSendStream() {
+    ALOGI("%s", __FUNCTION__);
 
     mHighestSeqNumberSet = 0;
 
-    if(mAssembler != NULL) {
+    if (mAssembler != NULL) {
         mAssembler->reset();
     }
 
@@ -319,68 +303,65 @@ status_t RTPSource::peerResumedSendStream()
 
     mAdaInfo->peerResumedSendStream();
 
-    //ToDo: re-start check whether alive
+    // ToDo: re-start check whether alive
     return OK;
 }
 
-//void RTPSource::byeReceived() {
-//    mAssembler->onByeReceived();
-//}
+// void RTPSource::byeReceived() {
+//     mAssembler->onByeReceived();
+// }
 
-status_t RTPSource::processSenderInfo(const sp<ABuffer> &buffer)
-{
-    ALOGI("%s",__FUNCTION__);
+status_t RTPSource::processSenderInfo(const sp<ABuffer>& buffer) {
+    ALOGI("%s", __FUNCTION__);
 
-    if(!buffer.get() || (buffer->size() < 20)) {
-        ALOGE("%s,buffer is not valid",__FUNCTION__);
+    if (!buffer.get() || (buffer->size() < 20)) {
+        ALOGE("%s,buffer is not valid", __FUNCTION__);
         return UNKNOWN_ERROR;
     }
 
-    uint8_t *data = buffer->data();
+    uint8_t* data = buffer->data();
 
     uint64_t ntpTime = 0;
     uint32_t rtpTime = 0;
 
     mAdaInfo->processSenderInfo(data, &ntpTime, &rtpTime);
 
-    ALOGI("XXX timeUpdate: ssrc=0x%08x, rtpTime %u tick == ntpTime %.6f s",
-          mID,
-          rtpTime,
+    ALOGI("XXX timeUpdate: ssrc=0x%08x, rtpTime %u tick == ntpTime %.6f s", mID, rtpTime,
           (ntpTime >> 32) + (double)(ntpTime & 0xffffffff) / (1ll << 32));
 
-    //notify timeupdate to RTPReceiver
+    // notify timeupdate to RTPReceiver
     sp<AMessage> meta = buffer->meta();
     int32_t sr_generation = 0;
-    meta->findInt32("sr_generation",&sr_generation);
+    meta->findInt32("sr_generation", &sr_generation);
 
     sp<AMessage> notify = mNotify->dup();
-    notify->setInt32("what",kWhatTimeUpdate);
-    notify->setInt32("rtpTime",rtpTime);
-    notify->setInt64("ntpTime",ntpTime);
-    notify->setInt32("sr_generation",sr_generation);
+    notify->setInt32("what", kWhatTimeUpdate);
+    notify->setInt32("rtpTime", rtpTime);
+    notify->setInt64("ntpTime", ntpTime);
+    notify->setInt32("sr_generation", sr_generation);
     notify->post();
 
     return OK;
 }
 
-status_t RTPSource::addReceiverReportBlock(const sp<ABuffer> &buffer)
-{
-    //ToDo, check whether the state, if hold on no packets received
+status_t RTPSource::addReceiverReportBlock(const sp<ABuffer>& buffer) {
+    // ToDo, check whether the state, if hold on no packets received
 
-    if(buffer->size() + 24 > buffer->capacity()) {
+    if (buffer->size() + 24 > buffer->capacity()) {
         ALOGW("RTCP buffer too small to accomodate RR.");
         return UNKNOWN_ERROR;
     }
 
     bool isTrigger = false;
-    uint8_t *data = buffer->data() + buffer->size();
-    int ret = mAdaInfo->addReceiverReportBlock(mID, data, mHighestSeqNumber, mFirstPacketSeqNum, mClockRate, &isTrigger);
+    uint8_t* data = buffer->data() + buffer->size();
+    int ret = mAdaInfo->addReceiverReportBlock(mID, data, mHighestSeqNumber, mFirstPacketSeqNum,
+                                               mClockRate, &isTrigger);
 
-    if(ret != 0) {
+    if (ret != 0) {
         return UNKNOWN_ERROR;
     }
 
-    if(isTrigger == true) {
+    if (isTrigger == true) {
         NotifyTMMBR();
     }
 
@@ -388,26 +369,24 @@ status_t RTPSource::addReceiverReportBlock(const sp<ABuffer> &buffer)
     return OK;
 }
 
-//ToDo: wrong value will happen if rtptime overflow
-void RTPSource::calculateArrivalJitter(const sp<ABuffer> &buffer)
-{
-    //calculate interarrival jitter
+// ToDo: wrong value will happen if rtptime overflow
+void RTPSource::calculateArrivalJitter(const sp<ABuffer>& buffer) {
+    // calculate interarrival jitter
     int32_t iArrivalJitter = 0;
 
     uint32_t uiRtpTimeStamp = 0;
     sp<AMessage> meta_pack = buffer->meta();
-    CHECK(meta_pack->findInt32("rtp-time", (int32_t *) &uiRtpTimeStamp));
+    CHECK(meta_pack->findInt32("rtp-time", (int32_t*)&uiRtpTimeStamp));
 
     int64_t iPacketRecvTimeUs = ALooper::GetNowUs();
-    meta_pack->setInt64("recv-time",iPacketRecvTimeUs);
+    meta_pack->setInt64("recv-time", iPacketRecvTimeUs);
 
     mAdaInfo->calculateArrivalJitter(uiRtpTimeStamp, iPacketRecvTimeUs, mClockRate);
 
     return;
 }
-//ToDo: can not handle if overflow and discorder happen simultaneously
-uint32_t RTPSource::extendSeqNumber(uint32_t seqNum, uint32_t mHighestSeqNumber)
-{
+// ToDo: can not handle if overflow and discorder happen simultaneously
+uint32_t RTPSource::extendSeqNumber(uint32_t seqNum, uint32_t mHighestSeqNumber) {
     uint32_t seq1 = seqNum | (mHighestSeqNumber & 0xffff0000);
     uint32_t seq2 = seqNum | ((mHighestSeqNumber & 0xffff0000) + 0x10000);
     uint32_t seq3 = seqNum | ((mHighestSeqNumber & 0xffff0000) - 0x10000);
@@ -415,15 +394,15 @@ uint32_t RTPSource::extendSeqNumber(uint32_t seqNum, uint32_t mHighestSeqNumber)
     uint32_t diff2 = AbsDiff(seq2, mHighestSeqNumber);
     uint32_t diff3 = AbsDiff(seq3, mHighestSeqNumber);
 
-    if(diff1 < diff2) {
-        if(diff1 < diff3) {
+    if (diff1 < diff2) {
+        if (diff1 < diff3) {
             // diff1 < diff2 ^ diff1 < diff3
             seqNum = seq1;
         } else {
             // diff3 <= diff1 < diff2
             seqNum = seq3;
         }
-    } else if(diff2 < diff3) {
+    } else if (diff2 < diff3) {
         // diff2 <= diff1 ^ diff2 < diff3
         seqNum = seq2;
     } else {
@@ -434,7 +413,7 @@ uint32_t RTPSource::extendSeqNumber(uint32_t seqNum, uint32_t mHighestSeqNumber)
     return seqNum;
 }
 
-//ToDo
+// ToDo
 #if 0
 void ARTPSource::updateExpectedTimeoutUs(const int32_t& samples)
 {
@@ -454,39 +433,35 @@ void ARTPSource::updateExpectedTimeoutUs(const int64_t& duration)
 }
 #endif
 
-void RTPSource::flushQueue()
-{
+void RTPSource::flushQueue() {
     mQueue.clear();
 
-    if(mAssembler != NULL) {
+    if (mAssembler != NULL) {
         mAssembler->flushQueue();
     }
 }
-void RTPSource::start()
-{
-
+void RTPSource::start() {
     mAdaInfo->resetParamOnstart();
 
     mHighestSeqNumberSet = false;
 
     flushQueue();
 
-    if(mAssembler != NULL) {
+    if (mAssembler != NULL) {
         mAssembler->reset();
     }
 
     mWaitingTMMBN = false;
 }
-void RTPSource::stop()
-{
-    //mStarted = false;
+void RTPSource::stop() {
+    // mStarted = false;
 
-    //avoid re-use the SR before stop(such as hold on, one-way video)
-    //peer may reset rtp time to increase from another random value after hold back
-    //so we can't re-use the old SR
-    //but can make use of the SR receiving earlier than start
-    //so we should not reset this param when start
-    //mLastSRntp = 0;
+    // avoid re-use the SR before stop(such as hold on, one-way video)
+    // peer may reset rtp time to increase from another random value after hold back
+    // so we can't re-use the old SR
+    // but can make use of the SR receiving earlier than start
+    // so we should not reset this param when start
+    // mLastSRntp = 0;
 
     mAdaInfo->resetParamOnstop();
 
@@ -494,14 +469,13 @@ void RTPSource::stop()
     mWaitingTMMBN = false;
 }
 
-void RTPSource::NotifyTMMBR()
-{
-    if(!mSupportTMMBR) {
-        ALOGW("%s,not support TMMBR",__FUNCTION__);
+void RTPSource::NotifyTMMBR() {
+    if (!mSupportTMMBR) {
+        ALOGW("%s,not support TMMBR", __FUNCTION__);
         return;
     }
 
-    if(mWaitingTMMBN) {
+    if (mWaitingTMMBN) {
         return;
     }
 
@@ -509,29 +483,27 @@ void RTPSource::NotifyTMMBR()
     sp<ABuffer> tmmbr_fci = new ABuffer(4);
     uint8_t* data = tmmbr_fci->data();
 
-    if(OK != mAdaInfo->fillTMMBRbuffer(data, &isReduce)) {
-        ALOGW("%s,fillTMMBRbuffer fail !",__FUNCTION__);
+    if (OK != mAdaInfo->fillTMMBRbuffer(data, &isReduce)) {
+        ALOGW("%s,fillTMMBRbuffer fail !", __FUNCTION__);
         return;
     }
 
     sp<AMessage> notify = mNotify->dup();
-    notify->setInt32("what",kWhatSendTMMBR);
-    notify->setBuffer("tmmbr_fci",tmmbr_fci);
-    notify->setInt32("isReduce",isReduce);
+    notify->setInt32("what", kWhatSendTMMBR);
+    notify->setBuffer("tmmbr_fci", tmmbr_fci);
+    notify->setInt32("isReduce", isReduce);
     notify->post();
 
     mWaitingTMMBN = true;
-
 }
 
-void RTPSource::processTMMBN(sp<ABuffer> tmmbn_fci)
-{
-    ALOGD("%s ++",__FUNCTION__);
+void RTPSource::processTMMBN(sp<ABuffer> tmmbn_fci) {
+    ALOGD("%s ++", __FUNCTION__);
 
-    if(!mWaitingTMMBN) {
-        ALOGW("%s,not waiting TMMBN",__FUNCTION__);
-        //ToDo, if peer send TMMBN actively
-        //whether need more operation
+    if (!mWaitingTMMBN) {
+        ALOGW("%s,not waiting TMMBN", __FUNCTION__);
+        // ToDo, if peer send TMMBN actively
+        // whether need more operation
     }
 
     uint8_t* data = tmmbn_fci->data();
@@ -540,55 +512,53 @@ void RTPSource::processTMMBN(sp<ABuffer> tmmbn_fci)
     mWaitingTMMBN = false;
 }
 
-void RTPSource::updateConfigParams(rtp_rtcp_config_t* pConfigPram)
-{
-    ALOGD("%s",__FUNCTION__);
+void RTPSource::updateConfigParams(rtp_rtcp_config_t* pConfigPram) {
+    ALOGD("%s", __FUNCTION__);
     mClockRate = pConfigPram->sample_rate;
 
     mSupportTMMBR = false;
 
-    for(uint8_t i = 0; i < (pConfigPram->rtcp_fb_param_num); i++) {
+    for (uint8_t i = 0; i < (pConfigPram->rtcp_fb_param_num); i++) {
         uint16_t fb_id = (pConfigPram->rtcp_fb_type[i]).rtcp_fb_id;
         uint16_t fb_param = (pConfigPram->rtcp_fb_type[i]).rtcp_fb_param;
 
-        if((fb_id == IMSMA_CCM) && (fb_param == IMSMA_TMMBR)) {
+        if ((fb_id == IMSMA_CCM) && (fb_param == IMSMA_TMMBR)) {
             mSupportTMMBR = true;
             break;
         }
     }
 
-    bool isTrigger = mAdaInfo->updateInfo(pConfigPram->rtp_packet_bandwidth, pConfigPram->network_info.MBR_DL, pConfigPram->sample_rate);
+    bool isTrigger =
+            mAdaInfo->updateInfo(pConfigPram->rtp_packet_bandwidth,
+                                 pConfigPram->network_info.MBR_DL, pConfigPram->sample_rate);
 
-    if(isTrigger == true) {
+    if (isTrigger == true) {
         NotifyTMMBR();
     }
 
-    ALOGD("%s,mSupportTMMBR=%d",__FUNCTION__,mSupportTMMBR);
+    ALOGD("%s,mSupportTMMBR=%d", __FUNCTION__, mSupportTMMBR);
 }
 
-
-const sp<ABuffer> RTPSource::getNewTMMBRInfo()
-{
+const sp<ABuffer> RTPSource::getNewTMMBRInfo() {
     sp<ABuffer> tmmbr_fci = new ABuffer(4);
     uint8_t* data = tmmbr_fci->data();
 
     bool isReduce = true;
 
-    if(0 != mAdaInfo->fillTMMBRbuffer(data, &isReduce)) {
-        ALOGE("%s,fill tmmbr fail",__FUNCTION__);
+    if (0 != mAdaInfo->fillTMMBRbuffer(data, &isReduce)) {
+        ALOGE("%s,fill tmmbr fail", __FUNCTION__);
         return NULL;
     }
 
-    //ToDo: maybe no use
+    // ToDo: maybe no use
     sp<AMessage> tmmbr_meta = tmmbr_fci->meta();
-    tmmbr_meta->setInt32("isReduce",isReduce);
+    tmmbr_meta->setInt32("isReduce", isReduce);
 
     return tmmbr_fci;
 }
 
-uint32_t RTPSource::getLostCount()
-{
-    if(mAssembler != NULL) {
+uint32_t RTPSource::getLostCount() {
+    if (mAssembler != NULL) {
         return mAssembler->getLostCount();
     } else {
         ALOGD("getLostCount 0 mAssembler is NULL");
@@ -596,9 +566,8 @@ uint32_t RTPSource::getLostCount()
     }
 }
 
-uint32_t RTPSource::getIDamageCount()
-{
-    if(mAssembler != NULL) {
+uint32_t RTPSource::getIDamageCount() {
+    if (mAssembler != NULL) {
         return mAssembler->getIDamageCount();
     } else {
         ALOGD("getIDamageCount 0 mAssembler is NULL");
@@ -606,27 +575,18 @@ uint32_t RTPSource::getIDamageCount()
     }
 }
 
-void RTPSource::EstimateTSDelay(int64_t mediaTimeUs)
-{
-    mAdaInfo->EstimateTSDelay(mediaTimeUs);
-}
+void RTPSource::EstimateTSDelay(int64_t mediaTimeUs) { mAdaInfo->EstimateTSDelay(mediaTimeUs); }
 
-bool RTPSource::pollingCheckTSDelay()
-{
-    return mAdaInfo->pollingCheckTSDelay();
-}
+bool RTPSource::pollingCheckTSDelay() { return mAdaInfo->pollingCheckTSDelay(); }
 
-void RTPSource::clearTSDelayInfo()
-{
-    return mAdaInfo->clearTSDelayInfo();
-}
+void RTPSource::clearTSDelayInfo() { return mAdaInfo->clearTSDelayInfo(); }
 
 bool RTPSource::isCSD(const sp<ABuffer>& accessUnit) {
     bool ret = false;
-    if(mAssembler != NULL) {
+    if (mAssembler != NULL) {
         ret = mAssembler->isCSD(accessUnit);
     }
     return ret;
 }
 
-}  // namespace android
+}  // namespace imsma

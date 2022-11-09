@@ -26,19 +26,19 @@
 class RmcPhbSimIoRequestHandler : public RmcSimBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcPhbSimIoRequestHandler);
 
-    public:
-        RmcPhbSimIoRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcPhbSimIoRequestHandler();
+  public:
+    RmcPhbSimIoRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcPhbSimIoRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestHandlePhbSimIo(const sp<RfxMclMessage>& msg);
-        void makePhbSimRspFromUsimFcp(unsigned char ** simResponse);
+  private:
+    void requestHandlePhbSimIo(const sp<RfxMclMessage>& msg);
+    void makePhbSimRspFromUsimFcp(unsigned char** simResponse);
 
-    private:
-        int mIsEngLoad = -1;
+  private:
+    int mIsEngLoad = -1;
 };
 
 #endif /*__RMC_PHB_SIMIO_REQUEST_HANDLER_H__*/

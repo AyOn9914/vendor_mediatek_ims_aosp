@@ -42,12 +42,10 @@ int RmcCapabilitySwitchUtil::getMaxRadioGeneration(int radio_capability) {
     }
 }
 
-int RmcCapabilitySwitchUtil::getMajorSim() {
-    return RfxRilUtils::getMajorSim();
-}
+int RmcCapabilitySwitchUtil::getMajorSim() { return RfxRilUtils::getMajorSim(); }
 
 int RmcCapabilitySwitchUtil::isDisableCapabilitySwitch() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_disable_cap_switch", tmp, "0");
     return atoi(tmp);
 }
@@ -61,10 +59,11 @@ int RmcCapabilitySwitchUtil::getAdjustedRaf(int raf) {
     return raf;
 }
 
-bool RmcCapabilitySwitchUtil::isMessageBeforeCapabilitySwitch(const sp<RfxMclMessage> &msg) {
+bool RmcCapabilitySwitchUtil::isMessageBeforeCapabilitySwitch(const sp<RfxMclMessage>& msg) {
     if (RfxMclStatusManager::getNonSlotMclStatusManager()->getIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0) == msg->getMainProtocolSlotId()) {
-        RFX_LOG_I(RFX_LOG_TAG, "%s isn't msg before capability switch", RFX_ID_TO_STR(msg->getId()));
+                RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0) == msg->getMainProtocolSlotId()) {
+        RFX_LOG_I(RFX_LOG_TAG, "%s isn't msg before capability switch",
+                  RFX_ID_TO_STR(msg->getId()));
         return false;
     }
     RFX_LOG_I(RFX_LOG_TAG, "%s is msg before capability switch", RFX_ID_TO_STR(msg->getId()));
@@ -72,7 +71,7 @@ bool RmcCapabilitySwitchUtil::isMessageBeforeCapabilitySwitch(const sp<RfxMclMes
 }
 
 bool RmcCapabilitySwitchUtil::isDssNoResetSupport() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.simswitch.no_reset_support", tmp, "0");
     if (strcmp(tmp, "1") == 0) {
         return true;
@@ -81,7 +80,7 @@ bool RmcCapabilitySwitchUtil::isDssNoResetSupport() {
 }
 
 bool RmcCapabilitySwitchUtil::isDisableC2kCapability() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.radio.disable_c2k_cap", tmp, "0");
     if (strcmp(tmp, "1") == 0) {
         RFX_LOG_I(RFX_LOG_TAG, "isDisableC2kCapability == true");

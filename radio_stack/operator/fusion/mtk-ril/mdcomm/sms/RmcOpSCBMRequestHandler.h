@@ -27,24 +27,23 @@
  *****************************************************************************/
 
 class RmcOpSCBMRequestHandler : public RfxBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcOpSCBMRequestHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcOpSCBMRequestHandler);
 
-public:
+  public:
     RmcOpSCBMRequestHandler(int slot_id, int channel_id);
     virtual ~RmcOpSCBMRequestHandler();
 
-protected:
+  protected:
     // Process request here
     virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
     // request handler
     void requestExitSCBM(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     String8 mTag;
-
 };
 #endif /* __RMC_OP_SCBM_REQUEST_HANDLER_H__ */

@@ -31,11 +31,11 @@ enum IptablesTarget { V4, V6, V4V6 };
 
 int execIptables(IptablesTarget target, ...);
 int execIptablesSilently(IptablesTarget target, ...);
-int system_nosh(const char *command);
-int execTcCmd(const char *cmd);
-int execNdcCmd(const char *command, ...);
+int system_nosh(const char* command);
+int execTcCmd(const char* cmd);
+int execNdcCmd(const char* command, ...);
 int execIpCmd(int family, ...);
-void createChildChains(IptablesTarget target, const char* table,const char* op,
+void createChildChains(IptablesTarget target, const char* table, const char* op,
                        const char* parentChain, const char** childChains);
 
 }  // namespace netdagent

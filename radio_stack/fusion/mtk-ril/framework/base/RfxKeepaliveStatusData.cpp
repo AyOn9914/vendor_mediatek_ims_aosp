@@ -19,11 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxKeepaliveStatusData);
 
-RfxKeepaliveStatusData::RfxKeepaliveStatusData(void *data, int length) : RfxBaseData(data, length) {
+RfxKeepaliveStatusData::RfxKeepaliveStatusData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_KeepaliveStatus *pInput = (RIL_KeepaliveStatus*)data;
-        RIL_KeepaliveStatus *pData =
-                (RIL_KeepaliveStatus*)calloc(1, sizeof(RIL_KeepaliveStatus));
+        RIL_KeepaliveStatus* pInput = (RIL_KeepaliveStatus*)data;
+        RIL_KeepaliveStatus* pData = (RIL_KeepaliveStatus*)calloc(1, sizeof(RIL_KeepaliveStatus));
         RFX_ASSERT(pData != NULL);
 
         pData->sessionHandle = pInput->sessionHandle;

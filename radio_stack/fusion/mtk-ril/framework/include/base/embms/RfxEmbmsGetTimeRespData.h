@@ -23,9 +23,10 @@
 class RfxEmbmsGetTimeRespData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsGetTimeRespData);
 
-    public:
-        RfxEmbmsGetTimeRespData(RIL_EMBMS_GetTimeResp* data, int length);
-    private:
-        void copyData(RIL_EMBMS_GetTimeResp *data, int length);
+  public:
+    RfxEmbmsGetTimeRespData(RIL_EMBMS_GetTimeResp* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_GetTimeResp* data, int length);
 };
 #endif /*RFX_EMBMS_GETTIME_RESP_DATA__H*/

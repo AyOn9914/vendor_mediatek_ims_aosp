@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxCdmaWaitingCallData);
 
-RfxCdmaWaitingCallData::RfxCdmaWaitingCallData(void *data, int length) : RfxBaseData(data, length) {
+RfxCdmaWaitingCallData::RfxCdmaWaitingCallData(void* data, int length) : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
@@ -26,20 +26,21 @@ RfxCdmaWaitingCallData::RfxCdmaWaitingCallData(void *data, int length) : RfxBase
 
     int len = 0;
     m_length = length;
-    RIL_CDMA_CallWaiting_v6 *tmp = (RIL_CDMA_CallWaiting_v6 *)data;
-    RIL_CDMA_CallWaiting_v6 *dup = (RIL_CDMA_CallWaiting_v6 *)calloc(1, sizeof(RIL_CDMA_CallWaiting_v6));
+    RIL_CDMA_CallWaiting_v6* tmp = (RIL_CDMA_CallWaiting_v6*)data;
+    RIL_CDMA_CallWaiting_v6* dup =
+            (RIL_CDMA_CallWaiting_v6*)calloc(1, sizeof(RIL_CDMA_CallWaiting_v6));
     RFX_ASSERT(dup != NULL);
     memset(dup, 0, sizeof(RIL_CDMA_CallWaiting_v6));
     memcpy(dup, tmp, sizeof(RIL_CDMA_CallWaiting_v6));
     if (tmp->number != NULL) {
         len = strlen(tmp->number) + 1;
-        dup->number = (char *)calloc(len, sizeof(char));
+        dup->number = (char*)calloc(len, sizeof(char));
         RFX_ASSERT(dup->number != NULL);
         strncpy(dup->number, tmp->number, len - 1);
     }
     if (tmp->name != NULL) {
         len = strlen(tmp->name) + 1;
-        dup->name = (char *)calloc(len, sizeof(char));
+        dup->name = (char*)calloc(len, sizeof(char));
         RFX_ASSERT(dup->name != NULL);
         strncpy(dup->name, tmp->name, len - 1);
     }
@@ -48,7 +49,7 @@ RfxCdmaWaitingCallData::RfxCdmaWaitingCallData(void *data, int length) : RfxBase
 
 RfxCdmaWaitingCallData::~RfxCdmaWaitingCallData() {
     // free
-    RIL_CDMA_CallWaiting_v6 *tmp = (RIL_CDMA_CallWaiting_v6 *)m_data;
+    RIL_CDMA_CallWaiting_v6* tmp = (RIL_CDMA_CallWaiting_v6*)m_data;
     if (tmp != NULL) {
         if (tmp->number != NULL) {
             free(tmp->number);

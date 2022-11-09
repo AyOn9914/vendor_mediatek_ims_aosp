@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#define MCC_MNC_SEPARATOR    -1
-#define MCC_MNC_END_TAG           -99
+#define MCC_MNC_SEPARATOR -1
+#define MCC_MNC_END_TAG -99
 
 /**
  * Key
@@ -27,5 +27,5 @@
  */
 typedef struct CarrierConfigValueStruct {
     int key;
-    char *value;
+    char* value;
 } CarrierConfigValue;

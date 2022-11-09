@@ -22,15 +22,15 @@
 class RmcRadioRelatedRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcRadioRelatedRequestHandler);
 
-    public:
-        RmcRadioRelatedRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcRadioRelatedRequestHandler();
+  public:
+    RmcRadioRelatedRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcRadioRelatedRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestSetEccMode(const sp<RfxMclMessage>& msg);
+  private:
+    void requestSetEccMode(const sp<RfxMclMessage>& msg);
 };
 
 #endif

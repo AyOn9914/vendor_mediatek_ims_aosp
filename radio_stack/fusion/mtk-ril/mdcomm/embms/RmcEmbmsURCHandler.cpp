@@ -19,33 +19,27 @@
 #include "rfx_properties.h"
 
 static const int events[] = {
-    RFX_MSG_EVENT_EMBMS_INITIAL_VARIABLE,
+        RFX_MSG_EVENT_EMBMS_INITIAL_VARIABLE,
 };
 
 #define VDBG 1
 
 RFX_IMPLEMENT_HANDLER_CLASS(RmcEmbmsURCHandler, RIL_CMD_PROXY_URC);
 
-RmcEmbmsURCHandler::RmcEmbmsURCHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-       const char* urc[] = {
-        "+EMSRV:",
-        "+EMSLU",
-        "+EMSAIL",
-        "+EMSESS:",
-        //"+CEREG:", // Phase out, NW module will get EGREG and bypass
-        "+EHVOLTE:"
-       };
+RmcEmbmsURCHandler::RmcEmbmsURCHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const char* urc[] = {"+EMSRV:", "+EMSLU", "+EMSAIL", "+EMSESS:",
+                         //"+CEREG:", // Phase out, NW module will get EGREG and bypass
+                         "+EHVOLTE:"};
 
     memset(&oos_tmgi, 0, sizeof(RIL_EMBMS_LocalOosNotify));
     oos_tmgi_count = 0;
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
-    registerToHandleEvent(events, sizeof(events)/sizeof(int));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
+    registerToHandleEvent(events, sizeof(events) / sizeof(int));
 }
 
-RmcEmbmsURCHandler::~RmcEmbmsURCHandler() {
-}
+RmcEmbmsURCHandler::~RmcEmbmsURCHandler() {}
 
 bool RmcEmbmsURCHandler::isHvolteDisable() {
     bool ret = false;
@@ -63,17 +57,17 @@ bool RmcEmbmsURCHandler::isHvolteDisable() {
 
 void RmcEmbmsURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     char* urc = msg->getRawUrc()->getLine();
-    if(strStartsWith(urc, "+EMSRV:")) {
+    if (strStartsWith(urc, "+EMSRV:")) {
         onEmbmsSrvStatus(msg);
-    } else if(strStartsWith(urc, "+EMSLU")) {
+    } else if (strStartsWith(urc, "+EMSLU")) {
         onEmbmsSessionListUpdate(msg);
-    } else if(strStartsWith(urc, "+EMSAILNF")) {
+    } else if (strStartsWith(urc, "+EMSAILNF")) {
         onEmbmsSaiListUpdate(msg);
-    } else if(strStartsWith(urc, "+EMSESS:")) {
+    } else if (strStartsWith(urc, "+EMSESS:")) {
         onEmbmsSessionActiveUpdate(msg);
-    //} else if(strStartsWith(urc, "+CEREG:")) {
-    //    onEpsNetworkUpdate(msg);
-    } else if(strStartsWith(urc, "+EHVOLTE")) {
+        //} else if(strStartsWith(urc, "+CEREG:")) {
+        //    onEpsNetworkUpdate(msg);
+    } else if (strStartsWith(urc, "+EHVOLTE")) {
         if (!isHvolteDisable()) {
             onEmbmsHvolteUpdate(msg);
         }
@@ -85,14 +79,14 @@ void RmcEmbmsURCHandler::onEmbmsHvolteUpdate(const sp<RfxMclMessage>& msg) {
     // <mode>: integer.
     // 0 SRLTE mode
     // 1 LTE-only mode (received in SIB-13 MBSFN-AreaInfoList)
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char* urc = line->getLine();
     if (VDBG) {
-        logD(LOG_TAG, "[onEmbmsHvolteUpdate]%s, sendEvent RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPDATE"
-            , urc);
+        logD(LOG_TAG, "[onEmbmsHvolteUpdate]%s, sendEvent RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPDATE",
+             urc);
     }
     sendEvent(RFX_MSG_EVENT_EMBMS_POST_HVOLTE_UPDATE, RfxStringData(urc, strlen(urc)),
-        RIL_CMD_PROXY_EMBMS, msg->getSlotId());
+              RIL_CMD_PROXY_EMBMS, msg->getSlotId());
 }
 
 void RmcEmbmsURCHandler::onEpsNetworkUpdate(const sp<RfxMclMessage>& msg) {
@@ -101,12 +95,12 @@ void RmcEmbmsURCHandler::onEpsNetworkUpdate(const sp<RfxMclMessage>& msg) {
     int err;
     int status;
     int result_status;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char* urc = line->getLine();
 
     logD(LOG_TAG, "sendEvent RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE");
     sendEvent(RFX_MSG_EVENT_EMBMS_POST_NETWORK_UPDATE, RfxStringData(urc, strlen(urc)),
-        RIL_CMD_PROXY_EMBMS, msg->getSlotId());
+              RIL_CMD_PROXY_EMBMS, msg->getSlotId());
 }
 
 void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg) {
@@ -119,7 +113,7 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
     int num_sessions;
     int x;
     sp<RfxMclMessage> response;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     // +EMSESS: <num_sessions>,<x>,<tmgi>,[<session_id>],<status>[,<cause>[,<sub_cause>]]
     // Cause for session deactivation:
     // 0:    Normal deactivation (requested by
@@ -142,8 +136,8 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
     //       of interest cannot be found
     // 6:   Out of MBMS coverage
     // 7:   Out of service
-    // 8:   The frequency of requested activated session conflicts to the frequency of the current cell
-    // 9:   Maximum number of sessions is activated.
+    // 8:   The frequency of requested activated session conflicts to the frequency of the current
+    // cell 9:   Maximum number of sessions is activated.
     //       Now modem supports 8 concurrent sessions
 
     logI(LOG_TAG, "[onEmbmsSessionActiveUpdate]%s", line->getLine());
@@ -240,9 +234,9 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
         start_ss_response.tmgi_info_valid = 1;
         strncpy(start_ss_response.tmgi, raw_tmgi, EMBMS_MAX_LEN_TMGI);
 
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_START_SESSION_RESPONSE,
-            msg->getSlotId(),
-            RfxEmbmsLocalStartSessionRespData(&start_ss_response, sizeof(start_ss_response)));
+        response = RfxMclMessage::obtainUrc(
+                RFX_MSG_URC_EMBMS_START_SESSION_RESPONSE, msg->getSlotId(),
+                RfxEmbmsLocalStartSessionRespData(&start_ss_response, sizeof(start_ss_response)));
         responseToTelCore(response);
     }
 
@@ -264,7 +258,7 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
 
     logD(LOG_TAG, "oos response_reason %d", response_reason);
 
-    if ( x < 1 || x > EMBMS_MAX_NUM_SESSIONINFO ) {
+    if (x < 1 || x > EMBMS_MAX_NUM_SESSIONINFO) {
         logE(LOG_TAG, "invalid x = %d !!", x);
     } else if (x == 1) {
         logD(LOG_TAG, "initial data base for x = %d", x);
@@ -275,8 +269,7 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
     if (response_reason != -1) {
         oos_tmgi.reason = response_reason;
         strncpy(oos_tmgi.tmgix[oos_tmgi_count], raw_tmgi, EMBMS_MAX_LEN_TMGI);
-        logD(LOG_TAG, "Save oos tmgi[%d] as: %s",
-            x, oos_tmgi.tmgix[oos_tmgi_count]);
+        logD(LOG_TAG, "Save oos tmgi[%d] as: %s", x, oos_tmgi.tmgix[oos_tmgi_count]);
 
         oos_tmgi_count++;
         oos_tmgi.tmgi_info_count = oos_tmgi_count;
@@ -284,9 +277,9 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
 
     // Fire OOS URC only when index == num
     if (x == num_sessions && oos_tmgi_count > 0) {
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_OOS_NOTIFICATION,
-            msg->getSlotId(),
-            RfxEmbmsLocalOosNotifyData(&oos_tmgi, sizeof(oos_tmgi)));
+        response =
+                RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_OOS_NOTIFICATION, msg->getSlotId(),
+                                         RfxEmbmsLocalOosNotifyData(&oos_tmgi, sizeof(oos_tmgi)));
         responseToTelCore(response);
         memset(&oos_tmgi, 0, sizeof(oos_tmgi));
         oos_tmgi_count = 0;
@@ -295,9 +288,10 @@ void RmcEmbmsURCHandler::onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg
 
 void RmcEmbmsURCHandler::onEmbmsSaiListUpdate(const sp<RfxMclMessage>& msg) {
     int num;
-    int index = 0;;
+    int index = 0;
+    ;
     int err = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     logI(LOG_TAG, "[onEmbmsSaiListUpdate]%s", line->getLine());
 
     // wait for num_nf = x in +EMSAILNF: <num_nf>,<x>,<nfx>...,
@@ -307,7 +301,7 @@ void RmcEmbmsURCHandler::onEmbmsSaiListUpdate(const sp<RfxMclMessage>& msg) {
     num = line->atTokNextint(&err);
     if (err < 0) return;
 
-    if ( num > 0 ) {
+    if (num > 0) {
         index = line->atTokNextint(&err);
     } else {
         index = 0;
@@ -317,7 +311,7 @@ void RmcEmbmsURCHandler::onEmbmsSaiListUpdate(const sp<RfxMclMessage>& msg) {
     if (num == index) {
         logD(LOG_TAG, "sendEvent RFX_MSG_EVENT_EMBMS_POST_SAI_UPDATE");
         sendEvent(RFX_MSG_EVENT_EMBMS_POST_SAI_UPDATE, RfxVoidData(), RIL_CMD_PROXY_EMBMS,
-            msg->getSlotId());
+                  msg->getSlotId());
     }
 }
 
@@ -330,7 +324,7 @@ void RmcEmbmsURCHandler::onEmbmsSessionListUpdate(const sp<RfxMclMessage>& msg) 
     int num;
     int index;
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     // logI(LOG_TAG, "[onEmbmsSessionListUpdate]%s", line->getLine());
 
     // +EMSLUI: <num_sessions>,<x>,<tmgix>,[<session_idx>],<statusx>
@@ -340,7 +334,7 @@ void RmcEmbmsURCHandler::onEmbmsSessionListUpdate(const sp<RfxMclMessage>& msg) 
     num = line->atTokNextint(&err);
     if (err < 0) return;
 
-    if ( num == 0 ) {
+    if (num == 0) {
         index = 0;
         logI(LOG_TAG, "[onEmbmsSessionListUpdate]%s", line->getLine());
     } else {
@@ -349,10 +343,11 @@ void RmcEmbmsURCHandler::onEmbmsSessionListUpdate(const sp<RfxMclMessage>& msg) 
     if (err < 0) return;
 
     if (num == index) {
-        logI(LOG_TAG, "[onEmbmsSessionListUpdate]%s, sendEvent RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE",
-            line->getLine());
+        logI(LOG_TAG,
+             "[onEmbmsSessionListUpdate]%s, sendEvent RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE",
+             line->getLine());
         sendEvent(RFX_MSG_EVENT_EMBMS_POST_SESSION_UPDATE, RfxVoidData(), RIL_CMD_PROXY_EMBMS,
-            msg->getSlotId());
+                  msg->getSlotId());
     }
     return;
 }
@@ -361,10 +356,10 @@ void RmcEmbmsURCHandler::onEmbmsSrvStatus(const sp<RfxMclMessage>& msg) {
     int err;
     int status;
     sp<RfxMclMessage> response;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     // +EMSRV: <srv>[,<num_area_ids>,<area_id1>[,<area_id2>...]]
-    // 0: No service, 1:only unicast available, 2:in eMBMS supporting area 3:e911 4:hVolte 5:flight mode
-    // 6: Gemini suspend 7: Virtual suspend
+    // 0: No service, 1:only unicast available, 2:in eMBMS supporting area 3:e911 4:hVolte 5:flight
+    // mode 6: Gemini suspend 7: Virtual suspend
     logI(LOG_TAG, "[onEmbmsSrvStatus]%s", line->getLine());
 
     line->atTokStart(&err);
@@ -378,11 +373,10 @@ void RmcEmbmsURCHandler::onEmbmsSrvStatus(const sp<RfxMclMessage>& msg) {
     int intdata[1];  // embms_local_coverage_state
     intdata[0] = status;
     if (status < 7) {
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_COVERAGE_STATE,
-            msg->getSlotId(), RfxIntsData(intdata, 1));
+        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_COVERAGE_STATE, msg->getSlotId(),
+                                            RfxIntsData(intdata, 1));
         responseToTelCore(response);
     }
-
 
     // 0: Unicast OOS
     // 1: Multicast OOS
@@ -393,8 +387,9 @@ void RmcEmbmsURCHandler::onEmbmsSrvStatus(const sp<RfxMclMessage>& msg) {
         oos_response.reason = EMBMS_EXIT_OOS;
         oos_response.tmgi_info_count = 0;
 
-        response = RfxMclMessage::obtainUrc(RFX_MSG_URC_EMBMS_OOS_NOTIFICATION,
-            msg->getSlotId(), RfxEmbmsLocalOosNotifyData(&oos_response, sizeof(oos_response)));
+        response = RfxMclMessage::obtainUrc(
+                RFX_MSG_URC_EMBMS_OOS_NOTIFICATION, msg->getSlotId(),
+                RfxEmbmsLocalOosNotifyData(&oos_response, sizeof(oos_response)));
         responseToTelCore(response);
     }
 }
@@ -402,7 +397,7 @@ void RmcEmbmsURCHandler::onEmbmsSrvStatus(const sp<RfxMclMessage>& msg) {
 void RmcEmbmsURCHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     logD(LOG_TAG, "onHandleEvent: %s", idToString(msg->getId()));
     int id = msg->getId();
-    switch(id) {
+    switch (id) {
         case RFX_MSG_EVENT_EMBMS_INITIAL_VARIABLE:
             handleInitialVariable(msg);
             break;

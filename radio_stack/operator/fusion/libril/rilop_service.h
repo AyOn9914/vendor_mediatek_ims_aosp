@@ -24,116 +24,93 @@
 
 namespace radio {
 
-extern "C" void registerOpService(RIL_RadioFunctions *callbacks, android::CommandInfo *commands);
+extern "C" void registerOpService(RIL_RadioFunctions* callbacks, android::CommandInfo* commands);
 /*********************************************************************************/
 /*  Vendor request                                                               */
 /*********************************************************************************/
-int setDigitsLineResponse(int slotId, android::ClientId clientId,
-                          int responseType, int serial, RIL_Errno e,
-                          void *response, size_t responselen);
+int setDigitsLineResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                          RIL_Errno e, void* response, size_t responselen);
 
-int setTrnResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
+int setTrnResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                   RIL_Errno e, void* response, size_t responselen);
 
-int setIncomingVirtualLineResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
+int setIncomingVirtualLineResponse(int slotId, android::ClientId clientId, int responseType,
+                                   int serial, RIL_Errno e, void* response, size_t responselen);
 
-int setRxTestConfigResponse(int slotId, android::ClientId clientId,
-        int responseType, int serial, RIL_Errno e,
-        void *response, size_t responseLen);
+int setRxTestConfigResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                            RIL_Errno e, void* response, size_t responseLen);
 
-int getRxTestResultResponse(int slotId, android::ClientId clientId,
-        int responseType, int serial, RIL_Errno e,
-        void *response, size_t responseLen);
+int getRxTestResultResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                            RIL_Errno e, void* response, size_t responseLen);
 
-int dialFromResponse(int slotId, android::ClientId clientId,
-                int responseType, int serial, RIL_Errno e, void *response, size_t responselen);
+int dialFromResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                     RIL_Errno e, void* response, size_t responselen);
 
-int sendUssiFromResponse(int slotId, android::ClientId clientId,
-                        int responseType, int serial, RIL_Errno e,
-                        void *response, size_t responselen);
+int sendUssiFromResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                         RIL_Errno e, void* response, size_t responselen);
 
-int cancelUssiFromResponse(int slotId, android::ClientId clientId,
-                        int responseType, int serial, RIL_Errno e,
-                        void *response, size_t responselen);
+int cancelUssiFromResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                           RIL_Errno e, void* response, size_t responselen);
 
-int setEmergencyCallConfigResponse(int slotId, android::ClientId clientId,
-                        int responseType, int serial, RIL_Errno e,
-                        void *response, size_t responselen);
+int setEmergencyCallConfigResponse(int slotId, android::ClientId clientId, int responseType,
+                                   int serial, RIL_Errno e, void* response, size_t responselen);
 
-int setDisable2GResponse(int slotId, android::ClientId clientId,
-        int responseType, int serial, RIL_Errno e,
-        void *response, size_t responseLen);
+int setDisable2GResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                         RIL_Errno e, void* response, size_t responseLen);
 
-int getDisable2GResponse(int slotId, android::ClientId clientId,
-        int responseType, int serial, RIL_Errno e,
-        void *response, size_t responseLen);
+int getDisable2GResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                         RIL_Errno e, void* response, size_t responseLen);
 
-int sendRsuRequestResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e, void *response,
-                   size_t responselen);
+int sendRsuRequestResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                           RIL_Errno e, void* response, size_t responselen);
 
-int deviceSwitchResponse(int slotId, android::ClientId clientId,
-                 int responseType, int serial, RIL_Errno e,
-                 void *response, size_t responselen);
+int deviceSwitchResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                         RIL_Errno e, void* response, size_t responselen);
 
-int cancelDeviceSwitchResponse(int slotId, android::ClientId clientId,
-                       int responseType, int serial, RIL_Errno e,
-                       void *response, size_t responselen);
+int cancelDeviceSwitchResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                               RIL_Errno e, void* response, size_t responselen);
 
-int setDigitsRegStatuseResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
+int setDigitsRegStatuseResponse(int slotId, android::ClientId clientId, int responseType,
+                                int serial, RIL_Errno e, void* response, size_t responselen);
 
-int exitSCBMResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e, void *response,
-                   size_t responselen);
-int switchRcsRoiStatusResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
-int updateRcsCapabilitiesResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
-int updateRcsSessionInfoResponse(int slotId, android::ClientId clientId,
-                   int responseType, int serial, RIL_Errno e,
-                   void *response, size_t responselen);
+int exitSCBMResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                     RIL_Errno e, void* response, size_t responselen);
+int switchRcsRoiStatusResponse(int slotId, android::ClientId clientId, int responseType, int serial,
+                               RIL_Errno e, void* response, size_t responselen);
+int updateRcsCapabilitiesResponse(int slotId, android::ClientId clientId, int responseType,
+                                  int serial, RIL_Errno e, void* response, size_t responselen);
+int updateRcsSessionInfoResponse(int slotId, android::ClientId clientId, int responseType,
+                                 int serial, RIL_Errno e, void* response, size_t responselen);
 
 /*********************************************************************************/
 /*  Vendor unsol                                                                 */
 /*********************************************************************************/
-int digitsLineIndicationInd(int slotId,
-                            int indicationType, int token, RIL_Errno e,
-                            void *response, size_t responselen);
+int digitsLineIndicationInd(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+                            size_t responselen);
 
-int getTrnIndicationInd(int slotId,
-                        int indicationType, int token, RIL_Errno e,
-                        void *response, size_t responselen);
+int getTrnIndicationInd(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+                        size_t responselen);
 
 // MTK-START: SIM TMO RSU
-int onSimMeLockEvent(int slotId,
-        int indicationType, int token, RIL_Errno e, void *response,
-        size_t responseLen);
+int onSimMeLockEvent(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+                     size_t responseLen);
 // MTK-END
 
-int onRsuEvent(int slotId, int indicationType, int token, RIL_Errno e,
-        void *response, size_t responselen);
+int onRsuEvent(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+               size_t responselen);
 
-int responseModulationInfoInd(int slotId,
-                       int indicationType, int token, RIL_Errno e, void *response,
-                       size_t responseLen);
+int responseModulationInfoInd(int slotId, int indicationType, int token, RIL_Errno e,
+                              void* response, size_t responseLen);
 
-int digitsLineIndication(int slotId,
-                       int indicationType, int token, RIL_Errno e,
-                       void *response, size_t responselen);
+int digitsLineIndication(int slotId, int indicationType, int token, RIL_Errno e, void* response,
+                         size_t responselen);
 
 int enterSCBMInd(int slotId, int indicationType, int token,
 
-        RIL_Errno e, void *response, size_t responselen);
+                 RIL_Errno e, void* response, size_t responselen);
 
 int exitSCBMInd(int slotId, int indicationType, int token,
 
-        RIL_Errno e, void *response, size_t responselen);
-}
+                RIL_Errno e, void* response, size_t responselen);
+}  // namespace radio
 #endif  // RILOP_SERVICE_H

@@ -25,14 +25,14 @@
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcConCatSmsRoot", RtcConCatSmsRoot, RfxObject);
 
-RtcConCatSmsSender* RtcConCatSmsRoot::getSmsSender(const String8 & address) {
+RtcConCatSmsSender* RtcConCatSmsRoot::getSmsSender(const String8& address) {
     if (address.isEmpty()) {
-       return NULL;
+        return NULL;
     }
-    RfxObject *obj = getFirstChildObj();
-    RtcConCatSmsSender *sender = NULL;
+    RfxObject* obj = getFirstChildObj();
+    RtcConCatSmsSender* sender = NULL;
     while (obj != NULL) {
-        sender = (RtcConCatSmsSender *)obj;
+        sender = (RtcConCatSmsSender*)obj;
         if (sender->isSameAs(address)) {
             return sender;
         }
@@ -43,18 +43,18 @@ RtcConCatSmsSender* RtcConCatSmsRoot::getSmsSender(const String8 & address) {
 }
 
 void RtcConCatSmsRoot::cleanUpObj() {
-    RfxObject *obj = getFirstChildObj();
-    RtcConCatSmsSender *sender = NULL;
-    Vector<RtcConCatSmsSender *> cleanObj;
+    RfxObject* obj = getFirstChildObj();
+    RtcConCatSmsSender* sender = NULL;
+    Vector<RtcConCatSmsSender*> cleanObj;
     while (obj != NULL) {
-        sender = (RtcConCatSmsSender *)obj;
+        sender = (RtcConCatSmsSender*)obj;
         sender->cleanUpObj();
         if (sender->getChildCount() == 0) {
             cleanObj.push(sender);
         }
         obj = obj->getNextObj();
     }
-    Vector<RtcConCatSmsSender *>::iterator it;
+    Vector<RtcConCatSmsSender*>::iterator it;
     for (it = cleanObj.begin(); it != cleanObj.end(); it++) {
         RFX_OBJ_CLOSE(*it);
     }
@@ -65,14 +65,14 @@ void RtcConCatSmsRoot::cleanUpObj() {
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcConCatSmsSender", RtcConCatSmsSender, RfxObject);
 
-RtcConCatSmsGroup *RtcConCatSmsSender::getSmsGroup(int refNumber, int messageCount) {
+RtcConCatSmsGroup* RtcConCatSmsSender::getSmsGroup(int refNumber, int messageCount) {
     if (refNumber < 0 || messageCount < 0) {
         return NULL;
     }
-    RfxObject *obj = getFirstChildObj();
-    RtcConCatSmsGroup *group = NULL;
+    RfxObject* obj = getFirstChildObj();
+    RtcConCatSmsGroup* group = NULL;
     while (obj != NULL) {
-        group = (RtcConCatSmsGroup *)obj;
+        group = (RtcConCatSmsGroup*)obj;
         if (group->isSameAs(refNumber, messageCount)) {
             return group;
         }
@@ -83,17 +83,17 @@ RtcConCatSmsGroup *RtcConCatSmsSender::getSmsGroup(int refNumber, int messageCou
 }
 
 void RtcConCatSmsSender::cleanUpObj() {
-    RfxObject *obj = getFirstChildObj();
-    RtcConCatSmsGroup *group = NULL;
-    Vector<RtcConCatSmsGroup *> cleanObj;
+    RfxObject* obj = getFirstChildObj();
+    RtcConCatSmsGroup* group = NULL;
+    Vector<RtcConCatSmsGroup*> cleanObj;
     while (obj != NULL) {
-        group = (RtcConCatSmsGroup *)obj;
+        group = (RtcConCatSmsGroup*)obj;
         if (group->allPartsReady() || group->isExpire()) {
             cleanObj.push(group);
         }
         obj = obj->getNextObj();
     }
-    Vector<RtcConCatSmsGroup *>::iterator it;
+    Vector<RtcConCatSmsGroup*>::iterator it;
     for (it = cleanObj.begin(); it != cleanObj.end(); it++) {
         RFX_OBJ_CLOSE(*it);
     }
@@ -104,14 +104,14 @@ void RtcConCatSmsSender::cleanUpObj() {
  *****************************************************************************/
 RFX_IMPLEMENT_CLASS("RtcConCatSmsGroup", RtcConCatSmsGroup, RfxObject);
 
-RtcConCatSmsPart *RtcConCatSmsGroup::getSmsPart(int seqNumber) {
+RtcConCatSmsPart* RtcConCatSmsGroup::getSmsPart(int seqNumber) {
     if (seqNumber <= 0 || seqNumber > mMessageCount) {
         return NULL;
     }
-    RfxObject *obj = getFirstChildObj();
-    RtcConCatSmsPart *part = NULL;
+    RfxObject* obj = getFirstChildObj();
+    RtcConCatSmsPart* part = NULL;
     while (obj != NULL) {
-        part = (RtcConCatSmsPart *)obj;
+        part = (RtcConCatSmsPart*)obj;
         if (part->isSameAs(seqNumber)) {
             return part;
         }
@@ -143,33 +143,30 @@ RtcConCatSmsPart::~RtcConCatSmsPart() {
     }
 }
 
-const RtcSmsMessage &RtcConCatSmsPart::getMessage()  const {
+const RtcSmsMessage& RtcConCatSmsPart::getMessage() const {
     if (mIs3Gpp) {
-        return *((RtcGsmSmsMessage *)mMessage);
-    } else  {
-        return *((RtcCdmaSmsMessage *)mMessage);
+        return *((RtcGsmSmsMessage*)mMessage);
+    } else {
+        return *((RtcCdmaSmsMessage*)mMessage);
     }
 }
 
-RtcSmsMessage *RtcConCatSmsPart::getConvertedMessage() {
+RtcSmsMessage* RtcConCatSmsPart::getConvertedMessage() {
     if (mConvertedMessage != NULL) {
         return mConvertedMessage;
     }
-    RtcConCatSmsGroup *group = (RtcConCatSmsGroup *)getParent();
+    RtcConCatSmsGroup* group = (RtcConCatSmsGroup*)getParent();
     if (group != NULL) {
-        RtcConCatSmsPart *part = (RtcConCatSmsPart *)group->getFirstChildObj();
+        RtcConCatSmsPart* part = (RtcConCatSmsPart*)group->getFirstChildObj();
         if ((part != NULL) && (part != this) && (!part->isSameFormatAs(this))) {
             if (part->isFormat3Gpp()) {
                 mConvertedMessage = new RtcGsmSmsMessage(
-                        (const RtcGsmSmsMessage &)part->getMessage(),
-                        getMessage().getEncodingType(),
-                        getMessage().getNumField(),
-                        getMessage().getUserDataPayload());
+                        (const RtcGsmSmsMessage&)part->getMessage(), getMessage().getEncodingType(),
+                        getMessage().getNumField(), getMessage().getUserDataPayload());
             } else {
                 mConvertedMessage = new RtcCdmaSmsMessage(
-                        (const RtcCdmaSmsMessage &)part->getMessage(),
-                        getMessage().getEncodingType(),
-                        getMessage().getNumField(),
+                        (const RtcCdmaSmsMessage&)part->getMessage(),
+                        getMessage().getEncodingType(), getMessage().getNumField(),
                         getMessage().getUserDataPayload());
             }
         }

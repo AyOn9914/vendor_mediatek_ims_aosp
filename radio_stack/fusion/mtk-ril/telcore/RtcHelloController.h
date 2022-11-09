@@ -34,27 +34,27 @@ class RtcHelloController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcHelloController);
 
-public:
+  public:
     RtcHelloController();
     virtual ~RtcHelloController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
 
-public:
+  public:
     void responseCallBack(const sp<RfxMessage>& message);
 
-private:
+  private:
     void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     void onGetIMEI();
     void onSampleControlerSomethingChanged(int d1, int d2, int d3, int d4);
     void onTimer();
 
-private:
+  private:
     int m_member_data1;
     int m_member_data2;
     TimerHandle m_timer_handle;

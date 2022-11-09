@@ -34,18 +34,18 @@ class RtcOpSuppServController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcOpSuppServController);
 
-public:
+  public:
     RtcOpSuppServController();
     virtual ~RtcOpSuppServController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 };
 
 #endif /* __RTC_OP_SUPP_SERV_CONTROLLER_H__ */

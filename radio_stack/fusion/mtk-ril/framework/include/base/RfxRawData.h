@@ -24,10 +24,11 @@
 class RfxRawData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxRawData);
 
-    public:
-        RfxRawData();
-        RfxRawData(char data[], int length);
-    private:
-        void copyRaw(char *data, int length);
+  public:
+    RfxRawData();
+    RfxRawData(char data[], int length);
+
+  private:
+    void copyRaw(char* data, int length);
 };
 #endif

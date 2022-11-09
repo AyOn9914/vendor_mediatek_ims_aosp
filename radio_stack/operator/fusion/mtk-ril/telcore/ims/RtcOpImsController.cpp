@@ -32,43 +32,33 @@
 
 #define RFX_LOG_TAG "RtcOpIms"
 
-
 RFX_IMPLEMENT_CLASS("RtcOpImsController", RtcOpImsController, RfxController);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_GET_TRN_INDICATION);
 
-RtcOpImsController::RtcOpImsController() {
-}
+RtcOpImsController::RtcOpImsController() {}
 
-RtcOpImsController::~RtcOpImsController() {
-}
+RtcOpImsController::~RtcOpImsController() {}
 
 void RtcOpImsController::onInit() {
     // Required: invoke super class implementation
     RfxController::onInit();
-    const int request_id_list[] = {
-        RFX_MSG_REQUEST_SET_DIGITS_LINE,
-        RFX_MSG_REQUEST_SET_TRN,
-        RFX_MSG_REQUEST_SWITCH_RCS_ROI_STATUS,
-        RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES,
-        RFX_MSG_REQUEST_UPDATE_RCS_SESSION_INFO
-    };
+    const int request_id_list[] = {RFX_MSG_REQUEST_SET_DIGITS_LINE, RFX_MSG_REQUEST_SET_TRN,
+                                   RFX_MSG_REQUEST_SWITCH_RCS_ROI_STATUS,
+                                   RFX_MSG_REQUEST_UPDATE_RCS_CAPABILITIES,
+                                   RFX_MSG_REQUEST_UPDATE_RCS_SESSION_INFO};
 
-    const int urc_id_list[] = {
-        RFX_MSG_UNSOL_DIGITS_LINE_INDICATION,
-        RFX_MSG_UNSOL_GET_TRN_INDICATION,
-        RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO
-    };
+    const int urc_id_list[] = {RFX_MSG_UNSOL_DIGITS_LINE_INDICATION,
+                               RFX_MSG_UNSOL_GET_TRN_INDICATION,
+                               RFX_MSG_UNSOL_RCS_DIGITS_LINE_INFO};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int), DEFAULT);
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int), DEFAULT);
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 }
 
-void RtcOpImsController::onDeinit() {
-    RfxController::onDeinit();
-}
+void RtcOpImsController::onDeinit() { RfxController::onDeinit(); }
 
 bool RtcOpImsController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
@@ -94,9 +84,8 @@ bool RtcOpImsController::onHandleResponse(const sp<RfxMessage>& response) {
     return true;
 }
 
-bool RtcOpImsController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState) {
-
+bool RtcOpImsController::onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                                int radioState) {
     /* Reject the request when modem off */
     if (isModemPowerOff == true) {
         return true;
@@ -121,7 +110,7 @@ void RtcOpImsController::handleSetTrn(const sp<RfxMessage>& message) {
 
     // create the KEY for callback query with format as <fromMsisdn>_to_<toMsisdn>
     int len = strlen(data[0]) + strlen(data[1]) + 4;
-    char* address = (char *)alloca(len + 1);
+    char* address = (char*)alloca(len + 1);
     memset(address, 0, len + 1);
     strncpy(address, data[0], strlen(data[0]));
     strncat(address, "_to_", 4);
@@ -130,12 +119,13 @@ void RtcOpImsController::handleSetTrn(const sp<RfxMessage>& message) {
 
     // If KEY not matched, won't callback
     sp<RfxAction> action = findAction(addrString);
-    if ((sp<RfxAction>) NULL != action) {
+    if ((sp<RfxAction>)NULL != action) {
         action->act();
         sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
         responseToRilj(responseMsg);
     } else {
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
         responseToRilj(responseMsg);
     }
 }
@@ -153,18 +143,18 @@ sp<RfxAction> RtcOpImsController::findAction(std::string addrString) {
 }
 
 void RtcOpImsController::getTrn(const char* fromMsisdn, const char* toMsisdn, const char* address,
-        const sp<RfxAction>& action) {
+                                const sp<RfxAction>& action) {
     // create the KEY for callback query with format as <fromMsisdn>_to_<toMsisdn>
-    char *data[2];
+    char* data[2];
     data[0] = strdup(fromMsisdn);
     data[1] = strdup(toMsisdn);
     sp<RfxMessage> urc = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_GET_TRN_INDICATION,
-            RfxStringsData(data, 2));
+                                               RfxStringsData(data, 2));
     responseToRilj(urc);
 
     std::string addrString(address);
 
-    if ((sp<RfxAction>) NULL != action) {
+    if ((sp<RfxAction>)NULL != action) {
         mActionMap.insert({addrString, action});
     }
 }

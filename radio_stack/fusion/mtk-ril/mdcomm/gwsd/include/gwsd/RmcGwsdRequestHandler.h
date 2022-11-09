@@ -29,19 +29,19 @@
 class RmcGwsdRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcGwsdRequestHandler);
 
-    public:
-        RmcGwsdRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcGwsdRequestHandler();
+  public:
+    RmcGwsdRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcGwsdRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestSetGwsdMode(const sp<RfxMclMessage>& msg);
-        void requestSetCallValidTimer(const sp<RfxMclMessage>& msg);
-        void requestSetIgnoreSameNumberInterval(const sp<RfxMclMessage>& msg);
-        void requestSetKeepAliveByPDCPCtrlPDU(const sp<RfxMclMessage>& msg);
-        void requestSetKeepAliveByIpData(const sp<RfxMclMessage>& msg);
+  private:
+    void requestSetGwsdMode(const sp<RfxMclMessage>& msg);
+    void requestSetCallValidTimer(const sp<RfxMclMessage>& msg);
+    void requestSetIgnoreSameNumberInterval(const sp<RfxMclMessage>& msg);
+    void requestSetKeepAliveByPDCPCtrlPDU(const sp<RfxMclMessage>& msg);
+    void requestSetKeepAliveByIpData(const sp<RfxMclMessage>& msg);
 };
 
 #endif

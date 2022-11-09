@@ -21,26 +21,25 @@
 
 #define RFX_LOG_TAG "RmcEccNumberUrcHandler"
 
-#define MAX_PROP_CHARS   50
+#define MAX_PROP_CHARS 50
 
 static const char PROPERTY_NW_ECC_LIST[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.ecc.service.category.list",
-    "vendor.ril.ecc.service.category.list.1",
-    "vendor.ril.ecc.service.category.list.2",
-    "vendor.ril.ecc.service.category.list.3",
+        "vendor.ril.ecc.service.category.list",
+        "vendor.ril.ecc.service.category.list.1",
+        "vendor.ril.ecc.service.category.list.2",
+        "vendor.ril.ecc.service.category.list.3",
 };
 
 static const char PROPERTY_NW_ECC_MCC[MAX_SIM_COUNT][MAX_PROP_CHARS] = {
-    "vendor.ril.ecc.service.category.mcc",
-    "vendor.ril.ecc.service.category.mcc.1",
-    "vendor.ril.ecc.service.category.mcc.2",
-    "vendor.ril.ecc.service.category.mcc.3",
+        "vendor.ril.ecc.service.category.mcc",
+        "vendor.ril.ecc.service.category.mcc.1",
+        "vendor.ril.ecc.service.category.mcc.2",
+        "vendor.ril.ecc.service.category.mcc.3",
 };
 
 /*****************************************************************************
  * Class RmcEccNumberUrcHandler
  *****************************************************************************/
-
 
 RFX_IMPLEMENT_HANDLER_CLASS(RmcEccNumberUrcHandler, RIL_CMD_PROXY_URC);
 
@@ -49,22 +48,14 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_URC_CC_GSM_SIM_ECC);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_URC_CC_C2K_SIM_ECC);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_CC_ECC_NUMBER_TEST);
 
-RmcEccNumberUrcHandler::RmcEccNumberUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id),
-        mNeedRefreshNwEcc(false) {
-    const char* urc[] = {
-        "+ESIMECC",
-        "+CECC",
-        "+CEN1",
-        "+CEN2",
-        "+EECCTEST"
-    };
+RmcEccNumberUrcHandler::RmcEccNumberUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id), mNeedRefreshNwEcc(false) {
+    const char* urc[] = {"+ESIMECC", "+CECC", "+CEN1", "+CEN2", "+EECCTEST"};
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcEccNumberUrcHandler::~RmcEccNumberUrcHandler() {
-}
+RmcEccNumberUrcHandler::~RmcEccNumberUrcHandler() {}
 
 void RmcEccNumberUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     String8 ss(msg->getRawUrc()->getLine());
@@ -82,18 +73,14 @@ void RmcEccNumberUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcEccNumberUrcHandler::handleGsmSimEcc(const sp<RfxMclMessage>& msg) {
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        RFX_MSG_URC_CC_GSM_SIM_ECC,
-        m_slot_id,
-        RfxStringData(msg->getRawUrc()->getLine()));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CC_GSM_SIM_ECC, m_slot_id,
+                                                     RfxStringData(msg->getRawUrc()->getLine()));
     responseToTelCore(urc);
 }
 
 void RmcEccNumberUrcHandler::handleC2kSimEcc(const sp<RfxMclMessage>& msg) {
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        RFX_MSG_URC_CC_C2K_SIM_ECC,
-        m_slot_id,
-        RfxStringData(msg->getRawUrc()->getLine()));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CC_C2K_SIM_ECC, m_slot_id,
+                                                     RfxStringData(msg->getRawUrc()->getLine()));
     responseToTelCore(urc);
 }
 
@@ -126,7 +113,7 @@ void RmcEccNumberUrcHandler::handleNetworkEcc(const sp<RfxMclMessage>& msg) {
             // Update MCC
             rfx_property_set(PROPERTY_NW_ECC_MCC[m_slot_id], mcc);
             logD(RFX_LOG_TAG, "[%s] reset %s from %s to %s", __FUNCTION__,
-                PROPERTY_NW_ECC_MCC[m_slot_id], oldMcc, mcc);
+                 PROPERTY_NW_ECC_MCC[m_slot_id], oldMcc, mcc);
         }
         mNeedRefreshNwEcc = true;
     } else {
@@ -149,12 +136,12 @@ void RmcEccNumberUrcHandler::handleNetworkEcc(const sp<RfxMclMessage>& msg) {
         char findStr[MAX_PROP_CHARS] = {0};
         rfx_property_get(PROPERTY_NW_ECC_LIST[m_slot_id], eccList, "");
         sprintf(findStr, ";%s,", number);
-        char *ptr = strstr(eccList, findStr);
+        char* ptr = strstr(eccList, findStr);
         if (ptr == NULL) {
             // Not found number in original ECC list
             sprintf(newEccList, "%s;%s,%d", eccList, number, category);
-            logV(RFX_LOG_TAG, "[%s] append number %s to ecc list: %s", __FUNCTION__,
-                number, newEccList);
+            logV(RFX_LOG_TAG, "[%s] append number %s to ecc list: %s", __FUNCTION__, number,
+                 newEccList);
         } else {
             char tmpEccList[RFX_PROPERTY_VALUE_MAX] = {0};
 
@@ -173,8 +160,8 @@ void RmcEccNumberUrcHandler::handleNetworkEcc(const sp<RfxMclMessage>& msg) {
             }
 
             sprintf(newEccList, "%s;%s,%d", tmpEccList, number, category);
-            logV(RFX_LOG_TAG, "[%s] update number %s in ecc list: %s", __FUNCTION__,
-                number, newEccList);
+            logV(RFX_LOG_TAG, "[%s] update number %s in ecc list: %s", __FUNCTION__, number,
+                 newEccList);
         }
 
         // Update mapping list
@@ -184,10 +171,8 @@ void RmcEccNumberUrcHandler::handleNetworkEcc(const sp<RfxMclMessage>& msg) {
     // Response to uppper layer (ecc list not used by upper layer)
     // Upper layer requires ECC with SIM and W/O SIM for all ECC sources
     // (Network ECC, SIM ECC, AP set ECC, ...)
-    urc = RfxMclMessage::obtainUrc(
-            RFX_MSG_UNSOL_ECC_NUM,
-            m_slot_id,
-            RfxStringData((char *)String8("").string()));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ECC_NUM, m_slot_id,
+                                   RfxStringData((char*)String8("").string()));
     responseToTelCore(urc);
 
     return;
@@ -206,10 +191,8 @@ void RmcEccNumberUrcHandler::handleTestCommand(const sp<RfxMclMessage>& msg) {
     command[0] = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    urc = RfxMclMessage::obtainUrc(
-        RFX_MSG_URC_CC_ECC_NUMBER_TEST,
-        m_slot_id,
-        RfxIntsData(command, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_CC_ECC_NUMBER_TEST, m_slot_id,
+                                   RfxIntsData(command, 1));
     responseToTelCore(urc);
 
     return;

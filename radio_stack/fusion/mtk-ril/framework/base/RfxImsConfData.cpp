@@ -18,7 +18,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxImsConfData);
 
-RfxImsConfData::RfxImsConfData(void *data, int length) : RfxBaseData(data, length)  {
+RfxImsConfData::RfxImsConfData(void* data, int length) : RfxBaseData(data, length) {
     if (data == NULL) {
         m_length = 0;
         m_data = NULL;
@@ -28,24 +28,21 @@ RfxImsConfData::RfxImsConfData(void *data, int length) : RfxBaseData(data, lengt
     m_length = length;
     m_data = NULL;
     RIL_Conference_Participants* srcData = (RIL_Conference_Participants*)data;
-    int count = m_length/sizeof(RIL_Conference_Participants);
-    RIL_Conference_Participants* dupData = (RIL_Conference_Participants*)
-            calloc(count, sizeof(RIL_Conference_Participants));
+    int count = m_length / sizeof(RIL_Conference_Participants);
+    RIL_Conference_Participants* dupData =
+            (RIL_Conference_Participants*)calloc(count, sizeof(RIL_Conference_Participants));
     RFX_ASSERT(dupData != NULL);
-    for(int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
         int len = strlen(srcData[i].useraddr);
-        dupData[i].useraddr =
-                (char*)calloc(len + 1, sizeof(char));
+        dupData[i].useraddr = (char*)calloc(len + 1, sizeof(char));
         RFX_ASSERT(dupData[i].useraddr != NULL);
         strncpy(dupData[i].useraddr, srcData[i].useraddr, len);
         len = strlen(srcData[i].end_point);
-        dupData[i].end_point =
-                (char*)calloc(strlen(srcData[i].end_point) + 1, sizeof(char));
+        dupData[i].end_point = (char*)calloc(strlen(srcData[i].end_point) + 1, sizeof(char));
         RFX_ASSERT(dupData[i].end_point != NULL);
         strncpy(dupData[i].end_point, srcData[i].end_point, len);
         len = strlen(srcData[i].entity);
-        dupData[i].entity =
-                (char*)calloc(strlen(srcData[i].entity) + 1, sizeof(char));
+        dupData[i].entity = (char*)calloc(strlen(srcData[i].entity) + 1, sizeof(char));
         RFX_ASSERT(dupData[i].entity != NULL);
         strncpy(dupData[i].entity, srcData[i].entity, len);
         len = strlen(srcData[i].display_text);
@@ -62,8 +59,8 @@ RfxImsConfData::RfxImsConfData(void *data, int length) : RfxBaseData(data, lengt
 
 RfxImsConfData::~RfxImsConfData() {
     // free
-    int count = m_length/sizeof(RIL_Conference_Participants);
-    RIL_Conference_Participants* dupData = (RIL_Conference_Participants*) m_data;
+    int count = m_length / sizeof(RIL_Conference_Participants);
+    RIL_Conference_Participants* dupData = (RIL_Conference_Participants*)m_data;
     if (dupData != NULL) {
         for (int i = 0; i < count; i++) {
             free(dupData[i].useraddr);

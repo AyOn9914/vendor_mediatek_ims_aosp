@@ -18,39 +18,34 @@
 #define __OMX_VIDEO_EXTENSIONS_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <OMX_Core.h>
 
 #pragma pack(push, 1)
 
-typedef enum OMX_VIDEO_SliceControlMode
-{
-    OMX_VIDEO_SliceControlModeNone        = 0,
-    OMX_VIDEO_SliceControlModeMB          = 1,
-    OMX_VIDEO_SliceControlModeByte        = 2,
-    OMX_VIDEO_SliceControlModMBRow        = 3,
+typedef enum OMX_VIDEO_SliceControlMode {
+    OMX_VIDEO_SliceControlModeNone = 0,
+    OMX_VIDEO_SliceControlModeMB = 1,
+    OMX_VIDEO_SliceControlModeByte = 2,
+    OMX_VIDEO_SliceControlModMBRow = 3,
 } OMX_VIDEO_SliceControlMode;
 
-typedef enum OMX_VIDEO_DownScaleFactor
-{
-    OMX_VIDEO_DownScaleFactor_1_1         = 0,
-    OMX_VIDEO_DownScaleFactor_Equal_AR    = 1,
-    OMX_VIDEO_DownScaleFactor_Any         = 2,
+typedef enum OMX_VIDEO_DownScaleFactor {
+    OMX_VIDEO_DownScaleFactor_1_1 = 0,
+    OMX_VIDEO_DownScaleFactor_Equal_AR = 1,
+    OMX_VIDEO_DownScaleFactor_Any = 2,
 } OMX_VIDEO_DownScaleFactor;
 
-typedef enum OMX_VIDEO_HierarType
-{
-    OMX_VIDEO_HierarType_P                = 0x01,
-    OMX_VIDEO_HierarType_B                = 0x02,
+typedef enum OMX_VIDEO_HierarType {
+    OMX_VIDEO_HierarType_P = 0x01,
+    OMX_VIDEO_HierarType_B = 0x02,
 } OMX_VIDEO_HierarType;
 
-typedef enum OMX_VIDEO_EXTENSION_AVCPROFILETYPE
-{
+typedef enum OMX_VIDEO_EXTENSION_AVCPROFILETYPE {
     OMX_VIDEO_EXT_AVCProfileConstrainedBaseline = 0x01,
-    OMX_VIDEO_EXT_AVCProfileConstrainedHigh     = 0x02,
+    OMX_VIDEO_EXT_AVCProfileConstrainedHigh = 0x02,
 } OMX_VIDEO_EXTENSION_AVCPROFILETYPE;
 
 typedef struct OMX_VIDEO_ENCODERPARAMS {
@@ -124,7 +119,7 @@ typedef struct OMX_VIDEO_CONFIG_TEMPORALLAYERCOUNT {
     OMX_U32 nTemproalLayerCount;
 } OMX_VIDEO_CONFIG_TEMPORALLAYERCOUNT;
 
-typedef struct OMX_VIDEO_CONFIG_BASELAYERPID{
+typedef struct OMX_VIDEO_CONFIG_BASELAYERPID {
     OMX_U32 nSize;
     OMX_VERSIONTYPE nVersion;
     OMX_U32 nPortIndex;

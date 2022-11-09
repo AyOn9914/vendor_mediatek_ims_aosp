@@ -28,43 +28,42 @@
 class RmcRatSwitchHandler : public RmcNetworkHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcRatSwitchHandler);
 
-    public:
-        RmcRatSwitchHandler(int slot_id, int channel_id);
-        virtual ~RmcRatSwitchHandler();
+  public:
+    RmcRatSwitchHandler(int slot_id, int channel_id);
+    virtual ~RmcRatSwitchHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg) {RFX_UNUSED(msg);}
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer() {}
+    virtual void onHandleTimer() {}
 
-    private:
-        void requestAbortQueryAvailableNetworks(const sp<RfxMclMessage>& msg);
-        void requestStopNetworkScan(const sp<RfxMclMessage>& msg);
-        void requestSetPreferredNetworkType(const sp<RfxMclMessage>& msg);
-        void requestGetPreferredNetworkType(const sp<RfxMclMessage>& msg);
-        void requestVoiceRadioTech(const sp<RfxMclMessage>& msg);
+  private:
+    void requestAbortQueryAvailableNetworks(const sp<RfxMclMessage>& msg);
+    void requestStopNetworkScan(const sp<RfxMclMessage>& msg);
+    void requestSetPreferredNetworkType(const sp<RfxMclMessage>& msg);
+    void requestGetPreferredNetworkType(const sp<RfxMclMessage>& msg);
+    void requestVoiceRadioTech(const sp<RfxMclMessage>& msg);
 
-        bool isRatPreferred();
-        bool isInCall();
+    bool isRatPreferred();
+    bool isInCall();
 
-        void requestGetGmssRatMode(const sp<RfxMclMessage>& msg);
+    void requestGetGmssRatMode(const sp<RfxMclMessage>& msg);
 
-        void requestSetDisable2G(const sp<RfxMclMessage>& msg);
-        void requestGetDisable2G(const sp<RfxMclMessage>& msg);
+    void requestSetDisable2G(const sp<RfxMclMessage>& msg);
+    void requestGetDisable2G(const sp<RfxMclMessage>& msg);
 
-    protected:
-        int m_slot_id;
-        int m_channel_id;
+  protected:
+    int m_slot_id;
+    int m_channel_id;
 
-    private:
-        int mLastReqRatType;
-        int mRetryCount;
-        bool tc1_support;
-
+  private:
+    int mLastReqRatType;
+    int mRetryCount;
+    bool tc1_support;
 };
 
 #endif

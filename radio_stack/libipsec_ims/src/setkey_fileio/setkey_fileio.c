@@ -34,7 +34,6 @@
 #define LOG_TAG "setkey"
 #include <log/log.h>
 
-
 #if 0
 extern void plog_android(int level, char *format, ...);
 extern int setkey_main(int argc, char ** argv);
@@ -239,8 +238,7 @@ int function_setkey(char * file_conf)
 }
 #endif
 /*flush all SA*/
-int setkey_flushSAD(void)
-{
+int setkey_flushSAD(void) {
 #if 0
     char * argv[3];
 
@@ -265,8 +263,7 @@ int setkey_flushSAD(void)
 }
 
 /*flush all SP*/
-int setkey_flushSPD(void)
-{
+int setkey_flushSPD(void) {
 #if 0
     char * argv[4];
 
@@ -291,8 +288,7 @@ int setkey_flushSPD(void)
 }
 
 /*delete one SA entry*/
-int setkey_deleteSA(char * src,char * dst,char * ipsec_type,char * spi_src)
-{
+int setkey_deleteSA(char* src, char* dst, char* ipsec_type, char* spi_src) {
 #if 0
     char delSA[POLICY_LEN];
     FILE * fd_config = NULL;
@@ -339,13 +335,13 @@ int setkey_deleteSA(char * src,char * dst,char * ipsec_type,char * spi_src)
     }
     return 0;
 #endif
-    int ret = setkey_deleteSA_xfrm(src,dst,ipsec_type,spi_src);
+    int ret = setkey_deleteSA_xfrm(src, dst, ipsec_type, spi_src);
     return ret;
 }
 
 /*delete one SP entry*/
-int setkey_deleteSP(char * src,char * dst,enum PROTOCOL_TYPE protocol,char * src_port,char * dst_port,char * direction)
-{
+int setkey_deleteSP(char* src, char* dst, enum PROTOCOL_TYPE protocol, char* src_port,
+                    char* dst_port, char* direction) {
 #if 0
     char delSP[POLICY_LEN];
 
@@ -393,13 +389,12 @@ int setkey_deleteSP(char * src,char * dst,enum PROTOCOL_TYPE protocol,char * src
     }
     return 0;
 #endif
-	int ret = setkey_deleteSP_xfrm(src,dst,protocol,src_port,dst_port,direction);
-	return ret;
+    int ret = setkey_deleteSP_xfrm(src, dst, protocol, src_port, dst_port, direction);
+    return ret;
 }
 
 /*dump SA */
-int dump_setkeySA(void)
-{
+int dump_setkeySA(void) {
 /*To do*/
 #if 0
     char * argv[3];
@@ -415,12 +410,10 @@ int dump_setkeySA(void)
     }
 #endif
     return 0;
-
 }
 
 /*dump SP */
-int dump_setkeySP(void)
-{
+int dump_setkeySP(void) {
 /*To do*/
 #if 0
    char * argv[4];
@@ -437,7 +430,6 @@ int dump_setkeySP(void)
     }
 #endif
     return 0;
-
 }
 #if 0
 void setkey_get_aid_and_cap() {
@@ -459,9 +451,9 @@ void setkey_get_aid_and_cap() {
   intergrity_algo_src:authentication algorithm ,hmac-md5,hmac-sha1
   intergrity_key_src:key of authentication algorithm
 */
-int setkey_setSA(char * ip_src,char * ip_dst,char * ipsec_type,char * spi_src,char * mode,
-                 char * encrp_algo_src,char * encrp_key_src,char * intergrity_algo_src,char * intergrity_key_src,int u_id)
-{
+int setkey_setSA(char* ip_src, char* ip_dst, char* ipsec_type, char* spi_src, char* mode,
+                 char* encrp_algo_src, char* encrp_key_src, char* intergrity_algo_src,
+                 char* intergrity_key_src, int u_id) {
 #if 0
     char sad_policy[POLICY_LEN];
 
@@ -518,22 +510,24 @@ int setkey_setSA(char * ip_src,char * ip_dst,char * ipsec_type,char * spi_src,ch
 
     return 0;
 #endif
-	int ret = setkey_setSA_xfrm(XFRM_MSG_NEWSA,ip_src,ip_dst,ipsec_type,spi_src,mode,
-                 encrp_algo_src,encrp_key_src,intergrity_algo_src,intergrity_key_src,u_id);
-	return ret;
+    int ret = setkey_setSA_xfrm(XFRM_MSG_NEWSA, ip_src, ip_dst, ipsec_type, spi_src, mode,
+                                encrp_algo_src, encrp_key_src, intergrity_algo_src,
+                                intergrity_key_src, u_id);
+    return ret;
 }
-int setkey_setSA_update(char * ip_src,char * ip_dst,char * ipsec_type,char * spi_src,char * mode,
-                 char * encrp_algo_src,char * encrp_key_src,char * intergrity_algo_src,char * intergrity_key_src,int u_id)
-{
-	int ret = setkey_setSA_xfrm(XFRM_MSG_UPDSA,ip_src,ip_dst,ipsec_type,spi_src,mode,
-                 encrp_algo_src,encrp_key_src,intergrity_algo_src,intergrity_key_src,u_id);
-	return ret;
+int setkey_setSA_update(char* ip_src, char* ip_dst, char* ipsec_type, char* spi_src, char* mode,
+                        char* encrp_algo_src, char* encrp_key_src, char* intergrity_algo_src,
+                        char* intergrity_key_src, int u_id) {
+    int ret = setkey_setSA_xfrm(XFRM_MSG_UPDSA, ip_src, ip_dst, ipsec_type, spi_src, mode,
+                                encrp_algo_src, encrp_key_src, intergrity_algo_src,
+                                intergrity_key_src, u_id);
+    return ret;
 }
 /*set one SP of one direction, just for transport mode*/
 /*protocol:tcp icmp udp icmp6 ip4 gre
   direction:src->dst */
-int setkey_SP(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char * port_src,char * port_dst,char * ipsec_type,char * mode, char * direction,int u_id)
-{
+int setkey_SP(char* src_range, char* dst_range, enum PROTOCOL_TYPE protocol, char* port_src,
+              char* port_dst, char* ipsec_type, char* mode, char* direction, int u_id) {
 #if 0
     char spd_policy[POLICY_LEN];
     FILE * fd_config = NULL;
@@ -572,17 +566,19 @@ int setkey_SP(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char
         return -1;
     return 0;
 #endif
-	mode = "transport";
-	int ret = setkey_SP_xfrm(XFRM_MSG_NEWPOLICY,src_range,dst_range,protocol,port_src,port_dst,NULL,NULL,ipsec_type,mode,direction,u_id);
-	return ret;
+    mode = "transport";
+    int ret = setkey_SP_xfrm(XFRM_MSG_NEWPOLICY, src_range, dst_range, protocol, port_src, port_dst,
+                             NULL, NULL, ipsec_type, mode, direction, u_id);
+    return ret;
 }
 
 /*set one SP of one direction, just for tunnel mode*/
 /*protocol:tcp icmp udp icmp6 ip4 gre
   direction:src->dst
 src_tunnel,dst_tunnel: tunnel src ip tunnel dst ip */
-int setkey_SP_tunnel(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char * port_src,char * port_dst,char * src_tunnel,char * dst_tunnel,char * ipsec_type,char * mode, char * direction,int u_id)
-{
+int setkey_SP_tunnel(char* src_range, char* dst_range, enum PROTOCOL_TYPE protocol, char* port_src,
+                     char* port_dst, char* src_tunnel, char* dst_tunnel, char* ipsec_type,
+                     char* mode, char* direction, int u_id) {
 #if 0
     char spd_policy[POLICY_LEN];
     FILE * fd_config = NULL;
@@ -621,26 +617,29 @@ int setkey_SP_tunnel(char * src_range,char * dst_range,enum PROTOCOL_TYPE protoc
         return -1;
     return 0;
 #endif
-	mode = "tunnel";
-	int ret = setkey_SP_xfrm(XFRM_MSG_NEWPOLICY,src_range,dst_range,protocol,port_src,port_dst,src_tunnel,dst_tunnel,ipsec_type,mode,direction,u_id);
-	return ret;
+    mode = "tunnel";
+    int ret = setkey_SP_xfrm(XFRM_MSG_NEWPOLICY, src_range, dst_range, protocol, port_src, port_dst,
+                             src_tunnel, dst_tunnel, ipsec_type, mode, direction, u_id);
+    return ret;
 }
 
-/*set one SP of one direction, for 2 layers' ipsec--tunnel mode+transport mode or transport mode+tunnel mode*/
+/*set one SP of one direction, for 2 layers' ipsec--tunnel mode+transport mode or transport
+ * mode+tunnel mode*/
 /*protocol:tcp icmp udp icmp6 ip4 gre
   direction:src->dst
 src_tunnel,dst_tunnel: tunnel src ip tunnel dst ip */
-int setkey_SP_tunnel_transport(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char * port_src,char * port_dst,char * src_tunnel,char * dst_tunnel,char * ipsec_type1,char * mode1, char * ipsec_type2,char * mode2,char * direction,int u_id1,int u_id2)
-{
-
+int setkey_SP_tunnel_transport(char* src_range, char* dst_range, enum PROTOCOL_TYPE protocol,
+                               char* port_src, char* port_dst, char* src_tunnel, char* dst_tunnel,
+                               char* ipsec_type1, char* mode1, char* ipsec_type2, char* mode2,
+                               char* direction, int u_id1, int u_id2) {
     char version[128] = {0};
     int ret_mapping = 0;
-    property_get("vendor.net.ims.ipsec.version",version,"");
-    //plog_android(LLV_WARNING,"getproperty-- vendor.net.ims.ipsec.version :%s\n",version);
-    if(strcmp(version,"2.0")==0)
-    {
-	ret_mapping = setkey_SP(src_range,dst_range,protocol,port_src,port_dst,ipsec_type1,mode1, direction,u_id1);
-	return ret_mapping;
+    property_get("vendor.net.ims.ipsec.version", version, "");
+    // plog_android(LLV_WARNING,"getproperty-- vendor.net.ims.ipsec.version :%s\n",version);
+    if (strcmp(version, "2.0") == 0) {
+        ret_mapping = setkey_SP(src_range, dst_range, protocol, port_src, port_dst, ipsec_type1,
+                                mode1, direction, u_id1);
+        return ret_mapping;
     }
 
 #if 0
@@ -724,16 +723,18 @@ int setkey_SP_tunnel_transport(char * src_range,char * dst_range,enum PROTOCOL_T
         return -1;
     return 0;
 #endif
-	int ret = setkey_SP_2layer_xfrm(XFRM_MSG_UPDPOLICY,src_range,dst_range,protocol,port_src,port_dst,src_tunnel,dst_tunnel,ipsec_type1,mode1,ipsec_type2,mode2,direction,u_id1,u_id2);
-	return ret;
+    int ret = setkey_SP_2layer_xfrm(XFRM_MSG_UPDPOLICY, src_range, dst_range, protocol, port_src,
+                                    port_dst, src_tunnel, dst_tunnel, ipsec_type1, mode1,
+                                    ipsec_type2, mode2, direction, u_id1, u_id2);
+    return ret;
 }
-
 
 /*update one SP of one direction, just for transport mode*/
 /*protocol:tcp icmp udp icmp6 ip4 gre
   direction:src->dst*/
-int setkey_SP_update_transport(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char * port_src,char * port_dst,char * ipsec_type, char * direction,int u_id)
-{
+int setkey_SP_update_transport(char* src_range, char* dst_range, enum PROTOCOL_TYPE protocol,
+                               char* port_src, char* port_dst, char* ipsec_type, char* direction,
+                               int u_id) {
 #if 0
     char spd_policy[POLICY_LEN];
     FILE * fd_config = NULL;
@@ -772,16 +773,21 @@ int setkey_SP_update_transport(char * src_range,char * dst_range,enum PROTOCOL_T
         return -1;
     return 0;
 #endif
-	int ret = setkey_SP_xfrm(XFRM_MSG_UPDPOLICY,src_range,dst_range,protocol,port_src,port_dst,NULL,NULL,ipsec_type,"transport",direction,u_id);
-	return ret;
+    int ret = setkey_SP_xfrm(XFRM_MSG_UPDPOLICY, src_range, dst_range, protocol, port_src, port_dst,
+                             NULL, NULL, ipsec_type, "transport", direction, u_id);
+    return ret;
 }
 
-/*update one SP of one direction, for 2 layers' ipsec--tunnel mode+transport mode or transport mode+tunnel mode*/
+/*update one SP of one direction, for 2 layers' ipsec--tunnel mode+transport mode or transport
+ * mode+tunnel mode*/
 /*protocol:tcp icmp udp icmp6 ip4 gre
   direction:src->dst
 src_tunnel,dst_tunnel: tunnel src ip tunnel dst ip */
-int setkey_SP_update_tunnel_transport(char * src_range,char * dst_range,enum PROTOCOL_TYPE protocol,char * port_src,char * port_dst,char * src_tunnel,char * dst_tunnel,char * ipsec_type1,char * mode1, char * ipsec_type2,char * mode2,char * direction,int u_id1,int u_id2)
-{
+int setkey_SP_update_tunnel_transport(char* src_range, char* dst_range, enum PROTOCOL_TYPE protocol,
+                                      char* port_src, char* port_dst, char* src_tunnel,
+                                      char* dst_tunnel, char* ipsec_type1, char* mode1,
+                                      char* ipsec_type2, char* mode2, char* direction, int u_id1,
+                                      int u_id2) {
 #if 0
     char spd_policy[POLICY_LEN]={0};
     char * spd_policy_mode1= (char *)malloc(POLICY_MODE);
@@ -861,14 +867,14 @@ int setkey_SP_update_tunnel_transport(char * src_range,char * dst_range,enum PRO
         return -1;
     return 0;
 #endif
-	int ret = setkey_SP_2layer_xfrm(XFRM_MSG_UPDPOLICY,src_range,dst_range,protocol,port_src,port_dst,src_tunnel,dst_tunnel,ipsec_type1,mode1,ipsec_type2,mode2,direction,u_id1,u_id2);
-	return ret;
+    int ret = setkey_SP_2layer_xfrm(XFRM_MSG_UPDPOLICY, src_range, dst_range, protocol, port_src,
+                                    port_dst, src_tunnel, dst_tunnel, ipsec_type1, mode1,
+                                    ipsec_type2, mode2, direction, u_id1, u_id2);
+    return ret;
 }
 
-
 /*flush SA\SP from setkey.conf*/
-int flush_SA_SP_exist()
-{
+int flush_SA_SP_exist() {
 #if 0
 	FILE *fpSrc = NULL;
 	FILE *fpDst = NULL;
@@ -1118,6 +1124,6 @@ int flush_SA_SP_exist()
     }
 	return 0;
 #endif
-	int ret = flush_SA_SP_exist_xfrm();
-	return ret;
+    int ret = flush_SA_SP_exist_xfrm();
+    return ret;
 }

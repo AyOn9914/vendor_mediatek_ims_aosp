@@ -39,22 +39,22 @@ class RtcSmsNSlotController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcSmsNSlotController);
 
-public:
+  public:
     RtcSmsNSlotController();
     virtual ~RtcSmsNSlotController();
 
-    void onHandleSmsMessage(const sp<RtcSmsParsingMessage> & message);
+    void onHandleSmsMessage(const sp<RtcSmsParsingMessage>& message);
 
     void dispatchSms(const sp<RfxMessage>& msg);
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
 
-private:
+  private:
     sp<RtcSmsThread> getSmsThread();
 
-private:
+  private:
     // reference of sms working thread
     sp<RtcSmsThread> m_smsThread;
     Vector<SuplMsgDispatcher*>* mDispatcherList;

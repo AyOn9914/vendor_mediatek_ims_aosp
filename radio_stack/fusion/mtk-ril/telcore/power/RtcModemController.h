@@ -22,31 +22,30 @@
  *****************************************************************************/
 #include "RfxController.h"
 
-#define INITIAL_RETRY_INTERVAL_MSEC 200 // 200ms
+#define INITIAL_RETRY_INTERVAL_MSEC 200  // 200ms
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 
 class RtcModemController : public RfxController {
-    RFX_DECLARE_CLASS(RtcModemController); // Required: declare this class
+    RFX_DECLARE_CLASS(RtcModemController);  // Required: declare this class
 
-public:
-
+  public:
     RtcModemController();
     virtual ~RtcModemController();
 
-protected:
-
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff,int radioState);
-private:
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
+
+  private:
     void requestModemPower(bool power, const sp<RfxMessage>& message);
     bool canHandleRequest(const sp<RfxMessage>& message);
     void responseModemPower(const sp<RfxMessage>& message);

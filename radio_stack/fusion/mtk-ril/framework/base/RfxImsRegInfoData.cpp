@@ -21,11 +21,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxImsRegInfoData);
 
-RfxImsRegInfoData::RfxImsRegInfoData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxImsRegInfoData::RfxImsRegInfoData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_ImsRegInfo *pImsRegInfo = (RIL_ImsRegInfo*)_data;
-        RIL_ImsRegInfo *pData = (RIL_ImsRegInfo *)calloc(1,
-                sizeof(RIL_ImsRegInfo));
+        RIL_ImsRegInfo* pImsRegInfo = (RIL_ImsRegInfo*)_data;
+        RIL_ImsRegInfo* pData = (RIL_ImsRegInfo*)calloc(1, sizeof(RIL_ImsRegInfo));
 
         if (pData != NULL) {
             pData->report_type = pImsRegInfo->report_type;
@@ -49,7 +48,7 @@ RfxImsRegInfoData::RfxImsRegInfoData(void *_data, int _length) : RfxBaseData(_da
 RfxImsRegInfoData::~RfxImsRegInfoData() {
     // free memory
     if (m_data != NULL) {
-        RIL_ImsRegInfo *pData = (RIL_ImsRegInfo*)m_data;
+        RIL_ImsRegInfo* pData = (RIL_ImsRegInfo*)m_data;
         if (pData->uri != NULL) {
             free(pData->uri);
             pData->uri = NULL;

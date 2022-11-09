@@ -20,25 +20,25 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhbEntriesData);
 
-RfxPhbEntriesData::RfxPhbEntriesData() : RfxBaseData(NULL, 0) {
-}
+RfxPhbEntriesData::RfxPhbEntriesData() : RfxBaseData(NULL, 0) {}
 
-RfxPhbEntriesData::RfxPhbEntriesData(void *data, int length) : RfxBaseData(data, length) {
+RfxPhbEntriesData::RfxPhbEntriesData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    int countEntries = length/sizeof(RIL_PhbEntryStructure*);
-    copyPhbEntries((RIL_PhbEntryStructure **)data, countEntries);
+    int countEntries = length / sizeof(RIL_PhbEntryStructure*);
+    copyPhbEntries((RIL_PhbEntryStructure**)data, countEntries);
 }
 
-RfxPhbEntriesData::RfxPhbEntriesData(RIL_PhbEntryStructure **data, int countEntries) :
-        RfxBaseData(data, countEntries * sizeof(RIL_PhbEntryStructure*)) {
+RfxPhbEntriesData::RfxPhbEntriesData(RIL_PhbEntryStructure** data, int countEntries)
+    : RfxBaseData(data, countEntries * sizeof(RIL_PhbEntryStructure*)) {
     m_length = countEntries * sizeof(RIL_PhbEntryStructure*);
     copyPhbEntries(data, countEntries);
 }
 
-void RfxPhbEntriesData::copyPhbEntries(RIL_PhbEntryStructure **data, int countEntries) {
+void RfxPhbEntriesData::copyPhbEntries(RIL_PhbEntryStructure** data, int countEntries) {
     if (data != NULL) {
-        RIL_PhbEntryStructure **pInput = (RIL_PhbEntryStructure**)data;
-        RIL_PhbEntryStructure **pData = (RIL_PhbEntryStructure**)calloc(1, sizeof(RIL_PhbEntryStructure*)*countEntries);
+        RIL_PhbEntryStructure** pInput = (RIL_PhbEntryStructure**)data;
+        RIL_PhbEntryStructure** pData =
+                (RIL_PhbEntryStructure**)calloc(1, sizeof(RIL_PhbEntryStructure*) * countEntries);
         RFX_ASSERT(pData != NULL);
         for (int i = 0; i < countEntries; i++) {
             pData[i] = (RIL_PhbEntryStructure*)calloc(1, sizeof(RIL_PhbEntryStructure));
@@ -58,12 +58,11 @@ void RfxPhbEntriesData::copyPhbEntries(RIL_PhbEntryStructure **data, int countEn
     }
 }
 
-
 RfxPhbEntriesData::~RfxPhbEntriesData() {
     // free
     if (m_data != NULL) {
-        RIL_PhbEntryStructure **pTmp = (RIL_PhbEntryStructure **) m_data;
-        int countEntries = m_length/sizeof(RIL_PhbEntryStructure*);
+        RIL_PhbEntryStructure** pTmp = (RIL_PhbEntryStructure**)m_data;
+        int countEntries = m_length / sizeof(RIL_PhbEntryStructure*);
         for (int i = 0; i < countEntries; i++) {
             if (pTmp[i] != NULL) {
                 if (pTmp[i]->number != NULL) {

@@ -62,7 +62,7 @@
 #define AUTO_ANSWER_DELAY 5 * 1000
 #define CONF_CALL_ID_SHIFT 100
 #define CALL_ID_NONE 0
-#define SET_CALL_INDICATION_TIMER 6*1000
+#define SET_CALL_INDICATION_TIMER 6 * 1000
 #define MCC_CHAR_LEN 3
 #define CHINA_MCC "460"
 #define DELAY_SEND_CALL_INFO_TIMER 500
@@ -76,11 +76,13 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCallListData, RFX_MSG_REQUEST_GE
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxDialData, RfxVoidData, RFX_MSG_REQUEST_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxEmergencyDialData, RfxVoidData, RFX_MSG_REQUEST_EMERGENCY_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxDialData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_ANSWER);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_UDUB);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_EXPLICIT_CALL_TRANSFER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCallFailCauseData, RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCallFailCauseData,
+                                RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_DTMF);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_DTMF_START);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_DTMF_STOP);
@@ -92,25 +94,32 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_ECC_PREFERRED_RAT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_HANGUP_ALL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_HANGUP);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SEPARATE_CONNECTION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_MUTE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_MUTE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_TTY_MODE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_QUERY_TTY_MODE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_FORCE_RELEASE_CALL);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxEmergencyDialData, RfxVoidData, RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxEmergencyDialData, RfxVoidData,
+                                RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxDialData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxDialData, RfxVoidData, RFX_MSG_REQUEST_IMS_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxDialData, RfxVoidData, RFX_MSG_REQUEST_IMS_VT_DIAL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_HANGUP_WITH_REASON);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_FAKE_ACCEPT); // GWSD
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_FAKE_REJECT); // GWSD
-RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_FAKE_ACCEPT); // GWSD
-RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_FAKE_REJECT); // GWSD
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_LOCAL_FAKE_ACCEPT);  // GWSD
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_LOCAL_FAKE_REJECT);     // GWSD
+RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_FAKE_ACCEPT);  // GWSD
+RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_FAKE_REJECT);  // GWSD
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED);
@@ -118,8 +127,8 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxSuppServNotificationData, RFX_MSG_UNSOL_SUPP_SVC_
 RFX_REGISTER_DATA_TO_URC_ID(RfxSuppServNotificationData, RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION_EX);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_RINGBACK_TONE);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_CALL_RING);
-RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData,  RFX_MSG_UNSOL_INCOMING_CALL_INDICATION);
-RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData,  RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO);
+RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_INCOMING_CALL_INDICATION);
+RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_CIPHER_INDICATION);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_SPEECH_CODEC_INFO);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_ESPEECH);
@@ -128,8 +137,10 @@ RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringData, RFX_MSG_EVENT_CNAP_UPDATE);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_CLEAR_CLCCNAME);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_EXIT_EMERGENCY_CALLBACK_MODE);
 // CDMA
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_CDMA_SET_PREFERRED_VOICE_PRIVACY_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_CDMA_QUERY_PREFERRED_VOICE_PRIVACY_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_CDMA_SET_PREFERRED_VOICE_PRIVACY_MODE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_CDMA_QUERY_PREFERRED_VOICE_PRIVACY_MODE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_CDMA_FLASH);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_CDMA_BURST_DTMF);
 RFX_REGISTER_DATA_TO_URC_ID(RfxCdmaInfoRecData, RFX_MSG_UNSOL_CDMA_INFO_REC);
@@ -148,17 +159,24 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_ASYNC_
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_ASYNC_RESUME_CALL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_PULL_CALL);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_IMS_ECT);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCallListData, RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_IMS_HANGUP_WAITING_OR_BACKGROUND);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxCallListData,
+                                RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_IMS_HANGUP_WAITING_OR_BACKGROUND);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_RTT_MODE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_SIP_HEADER);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SIP_HEADER_REPORT);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_IMS_CALL_MODE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_VOICE_DOMAIN_PREFERENCE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_VOICE_DOMAIN_PREFERENCE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_VOICE_DOMAIN_PREFERENCE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_GET_VOICE_DOMAIN_PREFERENCE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_CALL_INFO_INDICATION);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_ECONF_SRVCC_INDICATION);
@@ -174,24 +192,41 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_FAKE_INCOMING_CALL_FAILUR
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_URC_SIP_HEADER);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_CALL_RAT_INDICATION);
 
-RtcCallController::RtcCallController() :
-mRedialCtrl(NULL)
-, mCallRat(CALL_RAT_NONE), mImsCallRat(CALL_RAT_NONE)
-, mEccNumber(NULL), mEccNumberBuffer(""), mEccState(STATE_DISCONNECTED)
-, mPreciseCallStateList(NULL)
-, mUseLocalCallFailCause(false), mDialLastError(0)
-, mEspeechOnInDialingEcc(false)
-, mCsCallCount(0), mPendingCallControlMessage(NULL)
-, mPendingIncomingCallId(-1), mAutoAnswerImsIncoming(0), mAutoAnswerCallId(CALL_ID_NONE)
-, mWaitForSwitchCallResp(false)
-, mWaitForSetEccModeResponse(false), mPendingSrvccCallCount(0), mNeedResumeOrAnswerCall(false)
-, mExpectedToResumeCallId(-1), mSpeechCodec(0), mCallIdToBeHeld(0), mCallIdToBeHangup(0)
-, mCallIdExpectToResumeOrAnswer(0), mCallIdResuming(0), mCallIdAnswering(0)
-, mPendingImsStkCallInfoMessage(NULL), mSeqNo(-1), mOriginalAnswerMessage(NULL)
-, mOriginalHangupMessage(NULL), mImsFakeMode(false)
-, mOriginalHangupRingingMessage(NULL)
-, mRQ(false)
-, mAutoFakeAcceptTimerHandle(NULL) {
+RtcCallController::RtcCallController()
+    : mRedialCtrl(NULL),
+      mCallRat(CALL_RAT_NONE),
+      mImsCallRat(CALL_RAT_NONE),
+      mEccNumber(NULL),
+      mEccNumberBuffer(""),
+      mEccState(STATE_DISCONNECTED),
+      mPreciseCallStateList(NULL),
+      mUseLocalCallFailCause(false),
+      mDialLastError(0),
+      mEspeechOnInDialingEcc(false),
+      mCsCallCount(0),
+      mPendingCallControlMessage(NULL),
+      mPendingIncomingCallId(-1),
+      mAutoAnswerImsIncoming(0),
+      mAutoAnswerCallId(CALL_ID_NONE),
+      mWaitForSwitchCallResp(false),
+      mWaitForSetEccModeResponse(false),
+      mPendingSrvccCallCount(0),
+      mNeedResumeOrAnswerCall(false),
+      mExpectedToResumeCallId(-1),
+      mSpeechCodec(0),
+      mCallIdToBeHeld(0),
+      mCallIdToBeHangup(0),
+      mCallIdExpectToResumeOrAnswer(0),
+      mCallIdResuming(0),
+      mCallIdAnswering(0),
+      mPendingImsStkCallInfoMessage(NULL),
+      mSeqNo(-1),
+      mOriginalAnswerMessage(NULL),
+      mOriginalHangupMessage(NULL),
+      mImsFakeMode(false),
+      mOriginalHangupRingingMessage(NULL),
+      mRQ(false),
+      mAutoFakeAcceptTimerHandle(NULL) {
     unsigned int i;
     for (i = 0; i < sizeof(mEccNumberBuffer); i++) {
         mEccNumberBuffer[i] = '\0';
@@ -202,8 +237,7 @@ mRedialCtrl(NULL)
     }
 }
 
-RtcCallController::~RtcCallController() {
-}
+RtcCallController::~RtcCallController() {}
 
 void RtcCallController::onInit() {
     // Required: invoke super class implementation
@@ -214,89 +248,80 @@ void RtcCallController::onInit() {
     mPreciseCallStateList = new Vector<RfxPreciseCallState*>();
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_GET_CURRENT_CALLS,
-        RFX_MSG_REQUEST_DIAL,
-        RFX_MSG_REQUEST_HANGUP,
-        RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
-        RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND,
-        RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND,
-        RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE,
-        RFX_MSG_REQUEST_HANGUP_ALL,
-        RFX_MSG_REQUEST_CDMA_FLASH,
-        RFX_MSG_REQUEST_EMERGENCY_DIAL,
-        RFX_MSG_REQUEST_DIAL_WITH_SIP_URI,
-        RFX_MSG_REQUEST_CONFERENCE_DIAL,
-        RFX_MSG_REQUEST_VT_DIAL_WITH_SIP_URI,
-        RFX_MSG_REQUEST_PULL_CALL,
-        RFX_MSG_REQUEST_SET_ECC_MODE,
-        RFX_MSG_REQUEST_IMS_DIAL,
-        RFX_MSG_REQUEST_IMS_VT_DIAL,
-        RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL,
-        RFX_MSG_REQUEST_HOLD_CALL,
-        RFX_MSG_REQUEST_RESUME_CALL,
-        RFX_MSG_REQUEST_ASYNC_HOLD_CALL,
-        RFX_MSG_REQUEST_ASYNC_RESUME_CALL,
-        RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
-        RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
-        RFX_MSG_REQUEST_ANSWER,
-        RFX_MSG_REQUEST_SET_CALL_INDICATION,
-        RFX_MSG_REQUEST_FORCE_RELEASE_CALL,
-        RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT,
-        RFX_MSG_REQUEST_ECC_REDIAL_APPROVE,
-        RFX_MSG_REQUEST_CONFERENCE,
-        RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE,
-        RFX_MSG_REQUEST_UDUB,
-        RFX_MSG_REQUEST_QUERY_TTY_MODE,
-        RFX_MSG_REQUEST_SET_TTY_MODE,
-        RFX_MSG_REQUEST_DTMF,
-        RFX_MSG_REQUEST_DTMF_START,
-        RFX_MSG_REQUEST_DTMF_STOP,
-        RFX_MSG_REQUEST_HANGUP_WITH_REASON,
-        RFX_MSG_REQUEST_LOCAL_FAKE_ACCEPT,  // GWSD
-        RFX_MSG_REQUEST_LOCAL_FAKE_REJECT,  // GWSD
-        RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS,
-        RFX_MSG_REQUEST_IMS_HANGUP_WAITING_OR_BACKGROUND,
-        RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND,
-        RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
-        RFX_MSG_REQUEST_SET_RTT_MODE,
-        RFX_MSG_REQUEST_SET_SIP_HEADER,
-        RFX_MSG_REQUEST_SIP_HEADER_REPORT,
-        RFX_MSG_REQUEST_SET_IMS_CALL_MODE,
-        RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL,
-        RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL,
-        RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
-        RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO,
+            RFX_MSG_REQUEST_GET_CURRENT_CALLS,
+            RFX_MSG_REQUEST_DIAL,
+            RFX_MSG_REQUEST_HANGUP,
+            RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
+            RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND,
+            RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND,
+            RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE,
+            RFX_MSG_REQUEST_HANGUP_ALL,
+            RFX_MSG_REQUEST_CDMA_FLASH,
+            RFX_MSG_REQUEST_EMERGENCY_DIAL,
+            RFX_MSG_REQUEST_DIAL_WITH_SIP_URI,
+            RFX_MSG_REQUEST_CONFERENCE_DIAL,
+            RFX_MSG_REQUEST_VT_DIAL_WITH_SIP_URI,
+            RFX_MSG_REQUEST_PULL_CALL,
+            RFX_MSG_REQUEST_SET_ECC_MODE,
+            RFX_MSG_REQUEST_IMS_DIAL,
+            RFX_MSG_REQUEST_IMS_VT_DIAL,
+            RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL,
+            RFX_MSG_REQUEST_HOLD_CALL,
+            RFX_MSG_REQUEST_RESUME_CALL,
+            RFX_MSG_REQUEST_ASYNC_HOLD_CALL,
+            RFX_MSG_REQUEST_ASYNC_RESUME_CALL,
+            RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
+            RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
+            RFX_MSG_REQUEST_ANSWER,
+            RFX_MSG_REQUEST_SET_CALL_INDICATION,
+            RFX_MSG_REQUEST_FORCE_RELEASE_CALL,
+            RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT,
+            RFX_MSG_REQUEST_ECC_REDIAL_APPROVE,
+            RFX_MSG_REQUEST_CONFERENCE,
+            RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE,
+            RFX_MSG_REQUEST_UDUB,
+            RFX_MSG_REQUEST_QUERY_TTY_MODE,
+            RFX_MSG_REQUEST_SET_TTY_MODE,
+            RFX_MSG_REQUEST_DTMF,
+            RFX_MSG_REQUEST_DTMF_START,
+            RFX_MSG_REQUEST_DTMF_STOP,
+            RFX_MSG_REQUEST_HANGUP_WITH_REASON,
+            RFX_MSG_REQUEST_LOCAL_FAKE_ACCEPT,  // GWSD
+            RFX_MSG_REQUEST_LOCAL_FAKE_REJECT,  // GWSD
+            RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS,
+            RFX_MSG_REQUEST_IMS_HANGUP_WAITING_OR_BACKGROUND,
+            RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND,
+            RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
+            RFX_MSG_REQUEST_SET_RTT_MODE,
+            RFX_MSG_REQUEST_SET_SIP_HEADER,
+            RFX_MSG_REQUEST_SIP_HEADER_REPORT,
+            RFX_MSG_REQUEST_SET_IMS_CALL_MODE,
+            RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL,
+            RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL,
+            RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
+            RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO,
     };
 
     const int urc_id_list[] = {
-        /* Common URC */
-        RFX_MSG_UNSOL_CALL_RING,
-        RFX_MSG_UNSOL_CDMA_CALL_WAITING,
-        /* MTK RIL URC */
-        RFX_MSG_UNSOL_CALL_INFO_INDICATION,
-        RFX_MSG_UNSOL_SPEECH_CODEC_INFO,
-        RFX_MSG_UNSOL_ESPEECH,
-        // GSM
-        RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
-        RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
-        // IMS
-        RFX_MSG_UNSOL_ECONF_RESULT_INDICATION,
-        RFX_MSG_UNSOL_CALLMOD_CHANGE_INDICATOR,
-        RFX_MSG_UNSOL_VIDEO_CAPABILITY_INDICATOR,
-        RFX_MSG_UNSOL_SIP_CALL_PROGRESS_INDICATOR,
-        RFX_MSG_UNSOL_SRVCC_STATE_NOTIFY,
-        RFX_MSG_UNSOL_ECT_INDICATION,
-        RFX_MSG_UNSOL_IMS_ASYNC_CALL_CONTROL_RESULT,
-        RFX_MSG_URC_EMERGENCY_BEARER_SUPPORT_NOTIFY,
-        RFX_MSG_URC_REDIAL_EMERGENCY_INDICATION,
-        RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED,
-        RFX_MSG_URC_SIP_HEADER,
-        RFX_MSG_URC_CALL_RAT_INDICATION,
-        // ECBM
-        RFX_MSG_UNSOL_ENTER_EMERGENCY_CALLBACK_MODE,
-        RFX_MSG_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE,
-        RFX_MSG_UNSOL_NO_EMERGENCY_CALLBACK_MODE,
-        RFX_MSG_UNSOL_FAKE_INCOMING_CALL_FAILURE,  // GWSD
+            /* Common URC */
+            RFX_MSG_UNSOL_CALL_RING, RFX_MSG_UNSOL_CDMA_CALL_WAITING,
+            /* MTK RIL URC */
+            RFX_MSG_UNSOL_CALL_INFO_INDICATION, RFX_MSG_UNSOL_SPEECH_CODEC_INFO,
+            RFX_MSG_UNSOL_ESPEECH,
+            // GSM
+            RFX_MSG_UNSOL_INCOMING_CALL_INDICATION, RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
+            // IMS
+            RFX_MSG_UNSOL_ECONF_RESULT_INDICATION, RFX_MSG_UNSOL_CALLMOD_CHANGE_INDICATOR,
+            RFX_MSG_UNSOL_VIDEO_CAPABILITY_INDICATOR, RFX_MSG_UNSOL_SIP_CALL_PROGRESS_INDICATOR,
+            RFX_MSG_UNSOL_SRVCC_STATE_NOTIFY, RFX_MSG_UNSOL_ECT_INDICATION,
+            RFX_MSG_UNSOL_IMS_ASYNC_CALL_CONTROL_RESULT,
+            RFX_MSG_URC_EMERGENCY_BEARER_SUPPORT_NOTIFY, RFX_MSG_URC_REDIAL_EMERGENCY_INDICATION,
+            RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED, RFX_MSG_URC_SIP_HEADER,
+            RFX_MSG_URC_CALL_RAT_INDICATION,
+            // ECBM
+            RFX_MSG_UNSOL_ENTER_EMERGENCY_CALLBACK_MODE, RFX_MSG_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE,
+            RFX_MSG_UNSOL_NO_EMERGENCY_CALLBACK_MODE,
+            RFX_MSG_UNSOL_FAKE_INCOMING_CALL_FAILURE,  // GWSD
     };
 
     FeatureValue featurevalue;
@@ -309,30 +334,34 @@ void RtcCallController::onInit() {
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 
     // register callbacks for CS phone
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_NWS_MODE,
-        RfxStatusChangeCallback(this, &RtcCallController::onCsPhoneChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_NWS_MODE,
+            RfxStatusChangeCallback(this, &RtcCallController::onCsPhoneChanged));
 
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_SERVICE_STATE,
-        RfxStatusChangeCallback(this, &RtcCallController::onServiceStateChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_SERVICE_STATE,
+            RfxStatusChangeCallback(this, &RtcCallController::onServiceStateChanged));
 
     // register callbacks to get required information
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_RADIO_STATE,
-        RfxStatusChangeCallback(this, &RtcCallController::onRadioStateChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_RADIO_STATE,
+            RfxStatusChangeCallback(this, &RtcCallController::onRadioStateChanged));
 
     // register callbacks to get card type change event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CARD_TYPE,
-        RfxStatusChangeCallback(this, &RtcCallController::onCardTypeChanged));
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CARD_TYPE,
+            RfxStatusChangeCallback(this, &RtcCallController::onCardTypeChanged));
 
     char prop[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ril.cdma.inecmmode", prop, "");
     if (strncmp(prop, "true", strlen("true")) == 0) {
         // Notify ECBM exited if modem reset
         responseToRilj(RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE,
-                RfxVoidData()));
+                                             RfxVoidData()));
     }
 }
 
@@ -351,15 +380,14 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
     int slot_id = message->getSlotId();
     bool needSendRequestToMcl = true;
-    //logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
 
     // GWSD
     if (RfxGwsdUtils::getCallControlHandler() != NULL) {
         if (mAutoFakeAcceptTimerHandle != NULL) {
-            if (msg_id == RFX_MSG_REQUEST_ANSWER ||
-                    msg_id == RFX_MSG_REQUEST_HANGUP ||
-                    msg_id == RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND ||
-                    msg_id == RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND) {
+            if (msg_id == RFX_MSG_REQUEST_ANSWER || msg_id == RFX_MSG_REQUEST_HANGUP ||
+                msg_id == RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND ||
+                msg_id == RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND) {
                 RfxTimer::stop(mAutoFakeAcceptTimerHandle);
                 mAutoFakeAcceptTimerHandle = NULL;
             }
@@ -373,10 +401,10 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
         return true;
     }
 
-    if (msg_id == RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE
-          && mWaitForSwitchCallResp) {
+    if (msg_id == RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE && mWaitForSwitchCallResp) {
         logE(RFX_LOG_TAG, "Cannot switch call since mWaitForSwitchCallResp = true");
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
         responseToRilj(responseMsg);
         return true;
     }
@@ -387,27 +415,28 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
     // only KaiOS and Telematics without EMERGENCY_DIAL, use dial() to make ECC call,
     // check if the number is ECC and make an emergency dial request and save the original
     // request for sending response later.
-    if ((msg_id == RFX_MSG_REQUEST_DIAL || msg_id == RFX_MSG_REQUEST_IMS_DIAL)
-            && handleDialAsEmergencyDial(message)) {
+    if ((msg_id == RFX_MSG_REQUEST_DIAL || msg_id == RFX_MSG_REQUEST_IMS_DIAL) &&
+        handleDialAsEmergencyDial(message)) {
         logD(RFX_LOG_TAG, "handleDialAsEmergencyDial");
         mOriginalDialMessage = message;
-        sp<RfxMessage> emergencyDialMessage = RfxMessage::obtainRequest(getSlotId(),
-                    (message->getId() == RFX_MSG_REQUEST_DIAL
-                            ? RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL
-                            : RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL)
-                            , message, true);
+        sp<RfxMessage> emergencyDialMessage =
+                RfxMessage::obtainRequest(getSlotId(),
+                                          (message->getId() == RFX_MSG_REQUEST_DIAL
+                                                   ? RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL
+                                                   : RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL),
+                                          message, true);
         return onHandleRequest(emergencyDialMessage);
     }
 
     // Convert EMERGENCY_DIAL to LOCAL_EMERGENCY_DIAL or NORMAL DIAL
     // convertedMessage changes only when converting to DIAL request
     sp<RfxMessage> convertedMessage = message;
-    if ((msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL
-            || msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL)) {
+    if ((msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
+         msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL)) {
         mOriginalDialMessage = message;
-        RIL_Emergency_Dial *pEccDial = (RIL_Emergency_Dial*) (message->getData()->getData());
+        RIL_Emergency_Dial* pEccDial = (RIL_Emergency_Dial*)(message->getData()->getData());
         String8 dialNumber = String8::format("%s", pEccDial->dialData->address);
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
         EmergencyCallRouting eccRouting = eccNumberController->getEmergencyCallRouting(dialNumber);
 
@@ -423,8 +452,8 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
         }
         mEccNumber = mEccNumberBuffer;
 
-        String8 ignoreClirWhenEcc = getStatusManager()->getString8Value(
-                RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
+        String8 ignoreClirWhenEcc =
+                getStatusManager()->getString8Value(RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
         logD(RFX_LOG_TAG, "ignoreClirWhenEcc %s", ignoreClirWhenEcc.string());
 
         if (msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL && (ignoreClirWhenEcc == "1")) {
@@ -432,30 +461,29 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
         }
 
         // for debug
-        RIL_Dial *pDial = (RIL_Dial*)(pEccDial->dialData);
+        RIL_Dial* pDial = (RIL_Dial*)(pEccDial->dialData);
         logD(RFX_LOG_TAG,
-                "isTesting=%d, eccRouting=%d, routing=%d, serviceCategory=%d, clir=%d, number=%s ",
-                pEccDial->isTesting, eccRouting,  pEccDial->routing, pEccDial->serviceCategory,
-                pDial->clir, RfxRilUtils::pii(RFX_LOG_TAG, pDial->address));
+             "isTesting=%d, eccRouting=%d, routing=%d, serviceCategory=%d, clir=%d, number=%s ",
+             pEccDial->isTesting, eccRouting, pEccDial->routing, pEccDial->serviceCategory,
+             pDial->clir, RfxRilUtils::pii(RFX_LOG_TAG, pDial->address));
 
         if (!pEccDial->isTesting &&
-                ((pEccDial->routing == ECC_ROUTING_UNKNOWN && eccRouting != ECC_ROUTING_NORMAL) ||
-                pEccDial->routing == ECC_ROUTING_EMERGENCY)){
+            ((pEccDial->routing == ECC_ROUTING_UNKNOWN && eccRouting != ECC_ROUTING_NORMAL) ||
+             pEccDial->routing == ECC_ROUTING_EMERGENCY)) {
             int serviceCategory = pEccDial->serviceCategory;
             if (pEccDial->serviceCategory == UNSPECIFIED) {
                 serviceCategory = eccNumberController->getServiceCategory(dialNumber);
             }
 
             requestToMcl(RfxMessage::obtainRequest(getSlotId(),
-                    RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
-                    RfxIntsData(&serviceCategory, 1)));
+                                                   RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
+                                                   RfxIntsData(&serviceCategory, 1)));
 
             sp<RfxMessage> emergencyDialMessage = RfxMessage::obtainRequest(
                     (message->getId() == RFX_MSG_REQUEST_EMERGENCY_DIAL
-                            ? RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL
-                            : RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL)
-                            , RfxDialData((void*)pEccDial->dialData, sizeof(RIL_Dial))
-                            , message, false);
+                             ? RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL
+                             : RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL),
+                    RfxDialData((void*)pEccDial->dialData, sizeof(RIL_Dial)), message, false);
             return onHandleRequest(emergencyDialMessage);
         } else {
             // For either one of the following cases
@@ -465,11 +493,9 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             unsetEccModeLocally();
 
             convertedMessage = RfxMessage::obtainRequest(
-                        (message->getId() == RFX_MSG_REQUEST_EMERGENCY_DIAL
-                                ? RFX_MSG_REQUEST_DIAL
-                                : RFX_MSG_REQUEST_IMS_DIAL)
-                                , RfxDialData((void*)pEccDial->dialData, sizeof(RIL_Dial))
-                                , message, false);
+                    (message->getId() == RFX_MSG_REQUEST_EMERGENCY_DIAL ? RFX_MSG_REQUEST_DIAL
+                                                                        : RFX_MSG_REQUEST_IMS_DIAL),
+                    RfxDialData((void*)pEccDial->dialData, sizeof(RIL_Dial)), message, false);
         }
     }
 
@@ -514,11 +540,12 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             getStatusManager()->setBoolValue(RFX_STATUS_KEY_IN_CALL, true);
             needSendRequestToMcl = handleClirSpecial(convertedMessage);
             break;
-        case RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE  : {
-            RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+        case RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE: {
+            RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
                     m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
 
-            // in the case of fake disconnect, we simulate as a local call end and return the cause directly
+            // in the case of fake disconnect, we simulate as a local call end and return the cause
+            // directly
             if (imsConfCtrl->needProcessFakeDisconnect()) {
                 mUseLocalCallFailCause = true;
                 mDialLastError = CALL_FAIL_NORMAL;
@@ -528,40 +555,41 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             }
 
             if (mUseLocalCallFailCause) {
-
                 RIL_LastCallFailCauseInfo callFailCause;
                 memset(&callFailCause, 0, sizeof(RIL_LastCallFailCauseInfo));
-                callFailCause.cause_code = (RIL_LastCallFailCause) mDialLastError;
+                callFailCause.cause_code = (RIL_LastCallFailCause)mDialLastError;
                 callFailCause.vendor_cause = NULL;
                 sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                        m_slot_id, RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE,
-                        RIL_E_SUCCESS, RfxCallFailCauseData(&callFailCause, sizeof(callFailCause)),
-                        message);
+                        m_slot_id, RFX_MSG_REQUEST_LAST_CALL_FAIL_CAUSE, RIL_E_SUCCESS,
+                        RfxCallFailCauseData(&callFailCause, sizeof(callFailCause)), message);
                 responseToRilj(responseMsg);
                 logD(RFX_LOG_TAG, "Use local call fail cause for slot%d", m_slot_id);
                 mUseLocalCallFailCause = false;
                 mDialLastError = 0;
                 return true;
-
             }
             break;
         }
         case RFX_MSG_REQUEST_ANSWER:
             if (isDuringSrvcc(slot_id) && hasImsCall(slot_id)) {
-                logE(RFX_LOG_TAG, "Cannot accept call, mSrvccState[%d] = %d", slot_id, mSrvccState[slot_id]);
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
+                logE(RFX_LOG_TAG, "Cannot accept call, mSrvccState[%d] = %d", slot_id,
+                     mSrvccState[slot_id]);
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
             break;
         case RFX_MSG_REQUEST_HANGUP:
         case RFX_MSG_REQUEST_HANGUP_WITH_REASON: {
-            int hangupCallId = ((int *)message->getData()->getData())[0];
+            int hangupCallId = ((int*)message->getData()->getData())[0];
             RfxImsCallInfo* targetCall = getImsCallByCallId(mImsCalls[slot_id], hangupCallId);
 
             if (targetCall != NULL && isDuringSrvcc(slot_id)) {
-                logE(RFX_LOG_TAG, "Cannot hangup call %d, mSrvccState[%d] = %d", hangupCallId, slot_id, mSrvccState[slot_id]);
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
+                logE(RFX_LOG_TAG, "Cannot hangup call %d, mSrvccState[%d] = %d", hangupCallId,
+                     slot_id, mSrvccState[slot_id]);
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
@@ -571,8 +599,8 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             }
 
             if (hasPendingHangupRequest(hangupCallId)) {
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message,
-                        true);
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
@@ -580,12 +608,12 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             break;
         }
         case RFX_MSG_REQUEST_HANGUP_ALL: {
-            int callCount = getStatusManager(m_slot_id)->getIntValue(
-                        RFX_STATUS_KEY_VOICE_CALL_COUNT, 0);
+            int callCount =
+                    getStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0);
             if (callCount == 0) {
                 logD(RFX_LOG_TAG, "No call, ignore hangup all: slot = %d", m_slot_id);
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                        RIL_E_GENERIC_FAILURE, message, true);
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
@@ -617,14 +645,14 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             String8 dialNumber = String8::format("%s", params[0]);
 
             RtcModeSwitchController* modeSwitchController =
-                    (RtcModeSwitchController *)findController(
-                    RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+                    (RtcModeSwitchController*)findController(
+                            RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
 
             // dialNumber is empty for SET_ECC_MODE(false)
             if (!dialNumber.isEmpty()) {
                 RtcEccNumberController* eccNumberController =
-                        (RtcEccNumberController *)findController(
-                        getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
+                        (RtcEccNumberController*)findController(
+                                getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
 
                 // Condition to set ECM: let RILD to check
                 // - 6M(with C2K) project: only to C2K-enabled phone
@@ -634,8 +662,8 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
                 EmergencyCallRouting eccRouting =
                         eccNumberController->getEmergencyCallRouting(dialNumber);
                 if (eccRouting == ECC_ROUTING_NORMAL) {
-                    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                            RIL_E_GENERIC_FAILURE, message, true);
+                    sp<RfxMessage> responseMsg =
+                            RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
                     responseToRilj(responseMsg);
                     return true;
                 }
@@ -645,9 +673,9 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
                 // EMCI: always allow to main slot (SS & DSDS)
                 // EMCS: only for SS and C2K
                 if (RfxRilUtils::rfxGetSimCount() > 1 ||
-                        !mRedialCtrl->isEmergencyModeSupported(message->getSlotId())) {
-                    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                            RIL_E_GENERIC_FAILURE, message, true);
+                    !mRedialCtrl->isEmergencyModeSupported(message->getSlotId())) {
+                    sp<RfxMessage> responseMsg =
+                            RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
                     responseToRilj(responseMsg);
                     return true;
                 }
@@ -666,12 +694,11 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
             break;
         }
         case RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND:
-        case RFX_MSG_REQUEST_UDUB:
-        {
+        case RFX_MSG_REQUEST_UDUB: {
             int hangupCallId = -1;
-            if (hasPendingHangupRequest(false/*isForegnd*/)) {
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message,
-                        true);
+            if (hasPendingHangupRequest(false /*isForegnd*/)) {
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
@@ -684,18 +711,18 @@ bool RtcCallController::onHandleRequest(const sp<RfxMessage>& message) {
                         RFX_MSG_REQUEST_HANGUP, RfxIntsData(&hangupCallId, 1), message, false);
                 return onHandleRequest(hangupRingingMessage);
             } else {
-                updateDisconnecting(mPreciseCallStateList, false/*isForegnd*/);
+                updateDisconnecting(mPreciseCallStateList, false /*isForegnd*/);
             }
             break;
         }
         case RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND:
-            if (hasPendingHangupRequest(true/*isForegnd*/)) {
-                sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_SUCCESS, message,
-                        true);
+            if (hasPendingHangupRequest(true /*isForegnd*/)) {
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
                 responseToRilj(responseMsg);
                 return true;
             }
-            updateDisconnecting(mPreciseCallStateList, true/*isForegnd*/);
+            updateDisconnecting(mPreciseCallStateList, true /*isForegnd*/);
             break;
         case RFX_MSG_REQUEST_CDMA_FLASH:
             handleCdmaFlashRequest(message);
@@ -744,17 +771,17 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
         }
     }
 
-    RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+    RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
             m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
     // logD(RFX_LOG_TAG, "onHandleUrc: %s", RFX_ID_TO_STR(msg_id));
 
     bool responseToRilJ = true;
     if (imsConfCtrl != NULL && imsConfCtrl->handleUrc(message)) {
-       return true;
+        return true;
     }
 
     if (mRedialCtrl != NULL && mRedialCtrl->notifyRilUrc(message)) {
-       return true;
+        return true;
     }
 
     switch (msg_id) {
@@ -764,7 +791,7 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
         case RFX_MSG_UNSOL_INCOMING_CALL_INDICATION: {
             RfxStringsData* messageData = (RfxStringsData*)message->getData();
             char** messageParams = (char**)messageData->getData();
-            int countString = messageData->getDataLength() / sizeof(char *);
+            int countString = messageData->getDataLength() / sizeof(char*);
             sp<RfxMessage> newMessage;
 
             if (!handleIncomingCall(slotId, (RfxStringsData*)message->getData())) {
@@ -775,10 +802,9 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
             // it is only used in RILD
             if (countString == 8) {
                 logD(RFX_LOG_TAG, "RFX_MSG_UNSOL_INCOMING_CALL_INDICATION truncate evoltesi_flow");
-                newMessage = RfxMessage::obtainUrc(
-                        m_slot_id,
-                        RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
-                        RfxStringsData(messageParams, 7));
+                newMessage =
+                        RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
+                                              RfxStringsData(messageParams, 7));
                 responseToRilJAndUpdateIsImsCallExist(newMessage);
                 return true;
             }
@@ -793,11 +819,11 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
             // ATD => +ECPI: 130 with call mode = 0 and mEstablishingCall != NULL
             // IMS voice/video Conference => +ECPI 130 with call mode = 22/23
             if (hasImsCall(slotId) ||
-                    (callMode >= MIN_IMS_CALL_MODE && callMode <= MAX_IMS_CALL_MODE)) {
+                (callMode >= MIN_IMS_CALL_MODE && callMode <= MAX_IMS_CALL_MODE)) {
                 responseToRilJ = handleImsCallInfoUpdate(message);
             } else {
                 responseToRilJ = handleCsCallInfoUpdate(message);
-                //logD(RFX_LOG_TAG, "No ImsCall, report CALL_STATE_CHANGED");
+                // logD(RFX_LOG_TAG, "No ImsCall, report CALL_STATE_CHANGED");
                 return true;
             }
             break;
@@ -808,9 +834,8 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
                 responseToRilJ = true;
             } else {
                 sp<RfxMessage> urcToRilj;
-                urcToRilj = RfxMessage::obtainUrc(m_slot_id,
-                        RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
-                        RfxVoidData());
+                urcToRilj = RfxMessage::obtainUrc(
+                        m_slot_id, RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED, RfxVoidData());
                 responseToRilj(urcToRilj);
                 return true;
             }
@@ -819,7 +844,7 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
         case RFX_MSG_UNSOL_ESPEECH: {
             bool bEspeechOn = ((int*)(message->getData()->getData()))[0] == 1 ? true : false;
             if (isInChina() && bEspeechOn &&
-                    (mEccState == STATE_DIALING || mEccState == STATE_ALERTING)) {
+                (mEccState == STATE_DIALING || mEccState == STATE_ALERTING)) {
                 mEspeechOnInDialingEcc = true;
             }
             break;
@@ -843,7 +868,7 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
             break;
         case RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED:
             if (hasImsCall(slotId)) {
-                //logD(RFX_LOG_TAG, "ImsCall exist, ignore the CALL_STATE_CHANGED");
+                // logD(RFX_LOG_TAG, "ImsCall exist, ignore the CALL_STATE_CHANGED");
                 return true;
             }
             break;
@@ -877,7 +902,7 @@ bool RtcCallController::onHandleUrc(const sp<RfxMessage>& message) {
 
 bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
 
     // GWSD
     if (RfxGwsdUtils::getCallControlHandler() != NULL) {
@@ -926,25 +951,23 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
         case RFX_MSG_REQUEST_SET_ECC_MODE:
             /* ALPS03346578: Emergency dial can be handled after receiving response of
                 RFX_MSG_REQUEST_SET_ECC_MODE */
-                mWaitForSetEccModeResponse = false;
+            mWaitForSetEccModeResponse = false;
             break;
-        case RFX_MSG_REQUEST_UDUB:
-            {
-                int callCount = getStatusManager(m_slot_id)->getIntValue(
-                        RFX_STATUS_KEY_VOICE_CALL_COUNT, 0);
-                int card_types = getStatusManager(m_slot_id)->getIntValue(
-                        RFX_STATUS_KEY_CARD_TYPE, -1);
-                if (callCount == 0 && card_types <= 0) {
-                    logI(RFX_LOG_TAG, "handle UDUB response, update error code (callCount:%d, card_types %d)",
-                            callCount, card_types);
-                    /// M: CC: update response code to fix VTS
-                    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                            RIL_E_INVALID_STATE, message, true);
-                    responseToRilj(responseMsg);
-                    return true;
-                }
+        case RFX_MSG_REQUEST_UDUB: {
+            int callCount =
+                    getStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0);
+            int card_types = getStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
+            if (callCount == 0 && card_types <= 0) {
+                logI(RFX_LOG_TAG,
+                     "handle UDUB response, update error code (callCount:%d, card_types %d)",
+                     callCount, card_types);
+                /// M: CC: update response code to fix VTS
+                sp<RfxMessage> responseMsg =
+                        RfxMessage::obtainResponse(RIL_E_INVALID_STATE, message, true);
+                responseToRilj(responseMsg);
+                return true;
             }
-            break;
+        } break;
         case RFX_MSG_REQUEST_ASYNC_HOLD_CALL:
         case RFX_MSG_REQUEST_ASYNC_RESUME_CALL:
             handleAsyncCallControlResponse(message);
@@ -955,7 +978,7 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
                 // ALPS03792709: In corner cases call will be aborted and removed from telecom
                 // while hanging up is actually fail. So the call status in framework and
                 // telecom will be different and cause problems. Retry to hang up the call.
-                int hangupCallId = ((int *)message->getData()->getData())[0];
+                int hangupCallId = ((int*)message->getData()->getData())[0];
                 if (hasPendingHangupRequest(hangupCallId)) {
                     logD(RFX_LOG_TAG, "HANGUP error, force release");
                 }
@@ -963,12 +986,14 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
 
             if (mHangupWaitingOrBgMessage != NULL) {
                 logD(RFX_LOG_TAG, "mHangupWaitingOrBgMessage: send response");
-                responseToRilj(RfxMessage::obtainResponse(message->getError(), mHangupWaitingOrBgMessage, false));
+                responseToRilj(RfxMessage::obtainResponse(message->getError(),
+                                                          mHangupWaitingOrBgMessage, false));
                 mHangupWaitingOrBgMessage = NULL;
                 return true;
             } else if (mHangupFgResumeBgMessage != NULL && !mNeedResumeOrAnswerCall) {
                 logD(RFX_LOG_TAG, "mHangupFgResumeBgMessage: send response");
-                responseToRilj(RfxMessage::obtainResponse(message->getError(), mHangupFgResumeBgMessage, false));
+                responseToRilj(RfxMessage::obtainResponse(message->getError(),
+                                                          mHangupFgResumeBgMessage, false));
                 mHangupFgResumeBgMessage = NULL;
                 return true;
             }
@@ -990,8 +1015,8 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
                     int msg_data[1];
                     msg_data[0] = mCallIdToBeHeld;
                     logE(RFX_LOG_TAG, "Resume or answer failed, swap back %d", mCallIdToBeHeld);
-                    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL,
-                            RfxIntsData(msg_data, 1));
+                    sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                            getSlotId(), RFX_MSG_REQUEST_RESUME_CALL, RfxIntsData(msg_data, 1));
                     requestToMcl(msg);
                     mCallIdResuming = mCallIdToBeHeld;
                 }
@@ -1000,12 +1025,14 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
 
             if (mHangupFgResumeBgMessage != NULL) {
                 logD(RFX_LOG_TAG, "mHangupFgResumeBgMessage: send response");
-                responseToRilj(RfxMessage::obtainResponse(message->getError(), mHangupFgResumeBgMessage, false));
+                responseToRilj(RfxMessage::obtainResponse(message->getError(),
+                                                          mHangupFgResumeBgMessage, false));
                 mHangupFgResumeBgMessage = NULL;
                 return true;
             } else if (mSwitchFgBgMessage != NULL) {
                 logD(RFX_LOG_TAG, "mSwitchFgBgMessage: send response");
-                responseToRilj(RfxMessage::obtainResponse(message->getError(), mSwitchFgBgMessage, false));
+                responseToRilj(
+                        RfxMessage::obtainResponse(message->getError(), mSwitchFgBgMessage, false));
                 mSwitchFgBgMessage = NULL;
                 return true;
             }
@@ -1014,8 +1041,8 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
             if (message->getError() != RIL_E_SUCCESS) {
                 if (mSwitchFgBgMessage != NULL && mNeedResumeOrAnswerCall) {
                     logE(RFX_LOG_TAG, "Hold call failed, no need to resume background");
-                    sp<RfxMessage> responseMsg =
-                            RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, mSwitchFgBgMessage, true);
+                    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
+                            RIL_E_GENERIC_FAILURE, mSwitchFgBgMessage, true);
                     responseToRilj(responseMsg);
                     mSwitchFgBgMessage = NULL;
                     mNeedResumeOrAnswerCall = false;
@@ -1027,7 +1054,8 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
 
             if (mSwitchFgBgMessage != NULL && !mNeedResumeOrAnswerCall) {
                 logD(RFX_LOG_TAG, "mSwitchFgBgMessage: send response");
-                responseToRilj(RfxMessage::obtainResponse(message->getError(), mSwitchFgBgMessage, false));
+                responseToRilj(
+                        RfxMessage::obtainResponse(message->getError(), mSwitchFgBgMessage, false));
                 mSwitchFgBgMessage = NULL;
                 return true;
             }
@@ -1040,10 +1068,9 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
     }
 
     if (mOriginalDialMessage != NULL &&
-           (msg_id == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
-            msg_id == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
-            msg_id == RFX_MSG_REQUEST_DIAL ||
-            msg_id == RFX_MSG_REQUEST_IMS_DIAL)) {
+        (msg_id == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
+         msg_id == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL || msg_id == RFX_MSG_REQUEST_DIAL ||
+         msg_id == RFX_MSG_REQUEST_IMS_DIAL)) {
         // For the two scenarios
         // Convert DIAL to LOCAL_EMERGENCY_DIAL in handleDialAsEmergencyDial
         // Convert EMERGENCY_DIAL to LOCAL_EMERGENCY_DIAL or DIAL
@@ -1051,9 +1078,8 @@ bool RtcCallController::onHandleResponse(const sp<RfxMessage>& message) {
         // since pId is correct here, it is not necessary to change id (nice to do)
         responseToRilj(RfxMessage::obtainResponse(mOriginalDialMessage->getId(), message));
         mOriginalDialMessage = NULL;
-    } else if (mOriginalHangupRingingMessage != NULL &&
-            msg_id == RFX_MSG_REQUEST_HANGUP &&
-            message->getPToken() == mOriginalHangupRingingMessage->getPToken()) {
+    } else if (mOriginalHangupRingingMessage != NULL && msg_id == RFX_MSG_REQUEST_HANGUP &&
+               message->getPToken() == mOriginalHangupRingingMessage->getPToken()) {
         // original message's pId & pToken are copied, id is replaced & token is created
         // since pId is correct here, it is not necessary to change id (nice to do)
         responseToRilj(RfxMessage::obtainResponse(mOriginalHangupRingingMessage->getId(), message));
@@ -1070,26 +1096,26 @@ bool RtcCallController::onPreviewMessage(const sp<RfxMessage>& message) {
 
         // Hangup all current calls for the following conditions when dialing an new ECC
         String8 dialNumber("");
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
 
         bool isEccRouting = false;
         bool isEccTesting = false;
         if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
-            RIL_Emergency_Dial *pEccDial = (RIL_Emergency_Dial*) (message->getData()->getData());
+            msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+            RIL_Emergency_Dial* pEccDial = (RIL_Emergency_Dial*)(message->getData()->getData());
             dialNumber = String8::format("%s", pEccDial->dialData->address);
             EmergencyCallRouting eccRouting =
                     eccNumberController->getEmergencyCallRouting(dialNumber);
             if (!pEccDial->isTesting &&
                 ((pEccDial->routing == ECC_ROUTING_UNKNOWN && eccRouting != ECC_ROUTING_NORMAL) ||
-                pEccDial->routing == ECC_ROUTING_EMERGENCY)){
+                 pEccDial->routing == ECC_ROUTING_EMERGENCY)) {
                 isEccRouting = true;
             } else if (pEccDial->isTesting) {
                 isEccTesting = true;
             }
         } else if (msg_id == RFX_MSG_REQUEST_DIAL || msg_id == RFX_MSG_REQUEST_IMS_DIAL) {
-            RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+            RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
             dialNumber = String8::format("%s", pDial->address);
             if (eccNumberController->getEmergencyCallRouting(dialNumber) == ECC_ROUTING_EMERGENCY) {
                 isEccRouting = true;
@@ -1110,8 +1136,8 @@ bool RtcCallController::onPreviewMessage(const sp<RfxMessage>& message) {
             // Therefore, RILD hangs up the 1st call before making 2nd one to modem.
             if (mEccState == STATE_DIALING) {
                 logD(RFX_LOG_TAG, "Hang up all calls since dialing ECC exists");
-                requestToMcl(RfxMessage::obtainRequest(
-                        getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData()));
+                requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL,
+                                                       RfxVoidData()));
                 return false;
             }
 
@@ -1122,11 +1148,10 @@ bool RtcCallController::onPreviewMessage(const sp<RfxMessage>& message) {
             // To avoid slot2 failure, hangup slot2 calls first.
             for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
                 if (i != getSlotId()) {
-                    if (getStatusManager(i)->getIntValue(
-                            RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
+                    if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
                         logD(RFX_LOG_TAG, "Hang up all calls since call exists on slot%d", i);
-                        requestToMcl(RfxMessage::obtainRequest(
-                                i, RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData()));
+                        requestToMcl(RfxMessage::obtainRequest(i, RFX_MSG_REQUEST_HANGUP_ALL,
+                                                               RfxVoidData()));
                         return false;
                     }
                 }
@@ -1134,21 +1159,21 @@ bool RtcCallController::onPreviewMessage(const sp<RfxMessage>& message) {
 
             // 3) IMS call exists when dialing CS ECC [ALPS04126362]
             if (msg_id == RFX_MSG_REQUEST_IMS_DIAL ||
-                    msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+                msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
                 if (mCsCallCount > 0) {
                     logD(RFX_LOG_TAG, "Hang up all calls since mCsCallCount=%d", mCsCallCount);
-                    requestToMcl(RfxMessage::obtainRequest(
-                            getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData()));
+                    requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL,
+                                                           RfxVoidData()));
                     return false;
                 }
-             // 4) CS call exists when dialing IMS ECC [ALPS04356814]
-            } else if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                    msg_id == RFX_MSG_REQUEST_DIAL) {
+                // 4) CS call exists when dialing IMS ECC [ALPS04356814]
+            } else if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL || msg_id == RFX_MSG_REQUEST_DIAL) {
                 if (hasImsCall(getSlotId())) {
-                // For GSI/AOSP-based FW only (In BSP+, call should be hung up by Telecom already)
+                    // For GSI/AOSP-based FW only (In BSP+, call should be hung up by Telecom
+                    // already)
                     logD(RFX_LOG_TAG, "Hang up all calls since hasImsCall=true");
-                    requestToMcl(RfxMessage::obtainRequest(
-                            getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData()));
+                    requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL,
+                                                           RfxVoidData()));
                     return false;
                 }
             }
@@ -1160,20 +1185,18 @@ bool RtcCallController::onPreviewMessage(const sp<RfxMessage>& message) {
         return false;
     }
 
-    return canHandleCsDialRequest(message)
-        && canHandleEmergencyDialRequest(message)
-        && canHandleRequestDuringComboOperations(message)
-        && canHandleAnswerRequest(message);
+    return canHandleCsDialRequest(message) && canHandleEmergencyDialRequest(message) &&
+           canHandleRequestDuringComboOperations(message) && canHandleAnswerRequest(message);
 }
 
 void RtcCallController::handleSpeechCodecInfo(const sp<RfxMessage>& msg) {
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int speechCodec = pInt[0];
     if (mSpeechCodec != speechCodec) {
         mSpeechCodec = speechCodec;
-        if (hasImsCall(m_slot_id))  {
-            sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(m_slot_id,
-                    RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED, RfxVoidData());
+        if (hasImsCall(m_slot_id)) {
+            sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(
+                    m_slot_id, RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED, RfxVoidData());
             responseToRilj(urcToRilj);
         }
     }
@@ -1189,8 +1212,8 @@ void RtcCallController::handleAsyncCallControlResponse(const sp<RfxMessage>& mes
         logD(RFX_LOG_TAG, "MD accept unsynchronize call control");
         return;
     }
-    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-            message->getError(), mPendingCallControlMessage, true);
+    sp<RfxMessage> responseMsg =
+            RfxMessage::obtainResponse(message->getError(), mPendingCallControlMessage, true);
     responseToRilj(responseMsg);
     mPendingCallControlMessage = NULL;
 }
@@ -1214,15 +1237,17 @@ void RtcCallController::handleAsyncImsCallControlRequest(const sp<RfxMessage>& m
 
     RfxImsCallInfo* targetCall = getImsCallByCallId(mImsCalls[slot_id], callId);
     if (targetCall != NULL && isDuringSrvcc(slot_id)) {
-        logE(RFX_LOG_TAG, "Cannot hold/Resume call %d, mSrvccState[%d] = %d", callId, slot_id, mSrvccState[slot_id]);
+        logE(RFX_LOG_TAG, "Cannot hold/Resume call %d, mSrvccState[%d] = %d", callId, slot_id,
+             mSrvccState[slot_id]);
         sp<RfxMessage> responseMsg =
                 RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
         responseToRilj(responseMsg);
         return;
     }
 
-    int requestId = (message->getId() == RFX_MSG_REQUEST_HOLD_CALL)?
-            RFX_MSG_REQUEST_ASYNC_HOLD_CALL : RFX_MSG_REQUEST_ASYNC_RESUME_CALL;
+    int requestId = (message->getId() == RFX_MSG_REQUEST_HOLD_CALL)
+                            ? RFX_MSG_REQUEST_ASYNC_HOLD_CALL
+                            : RFX_MSG_REQUEST_ASYNC_RESUME_CALL;
     sp<RfxMessage> request =
             RfxMessage::obtainRequest(getSlotId(), requestId, RfxIntsData(msg_data, 1));
     requestToMcl(request);
@@ -1260,30 +1285,29 @@ void RtcCallController::handleAsyncCallControlResult(const sp<RfxMessage>& messa
 
 bool RtcCallController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
     if (message->getType() == REQUEST) {
-
         int msg_id = message->getId();
         // Pending ECC dial for the following conditions
         String8 dialNumber("");
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
 
         bool isEccRouting = false;
         bool isEccTesting = false;
         if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
-            RIL_Emergency_Dial *pEccDial = (RIL_Emergency_Dial*) (message->getData()->getData());
+            msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+            RIL_Emergency_Dial* pEccDial = (RIL_Emergency_Dial*)(message->getData()->getData());
             dialNumber = String8::format("%s", pEccDial->dialData->address);
             EmergencyCallRouting eccRouting =
                     eccNumberController->getEmergencyCallRouting(dialNumber);
             if (!pEccDial->isTesting &&
                 ((pEccDial->routing == ECC_ROUTING_UNKNOWN && eccRouting != ECC_ROUTING_NORMAL) ||
-                pEccDial->routing == ECC_ROUTING_EMERGENCY)){
+                 pEccDial->routing == ECC_ROUTING_EMERGENCY)) {
                 isEccRouting = true;
             } else if (pEccDial->isTesting) {
                 isEccTesting = true;
             }
         } else if (msg_id == RFX_MSG_REQUEST_DIAL || msg_id == RFX_MSG_REQUEST_IMS_DIAL) {
-            RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+            RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
             dialNumber = String8::format("%s", pDial->address);
             if (eccNumberController->getEmergencyCallRouting(dialNumber) == ECC_ROUTING_EMERGENCY) {
                 isEccRouting = true;
@@ -1299,8 +1323,7 @@ bool RtcCallController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
             // 2) Other slot has calls
             for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
                 if (i != getSlotId()) {
-                    if (getStatusManager(i)->getIntValue(
-                            RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
+                    if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
                         return false;
                     }
                 }
@@ -1308,13 +1331,12 @@ bool RtcCallController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
 
             // 3) IMS call exists when dialing CS ECC [ALPS04126362]
             if (msg_id == RFX_MSG_REQUEST_IMS_DIAL ||
-                    msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+                msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
                 if (mCsCallCount > 0) {
                     return false;
                 }
-             // 4) CS call exists when dialing IMS ECC [ALPS04356814]
-            } else if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                    msg_id == RFX_MSG_REQUEST_DIAL) {
+                // 4) CS call exists when dialing IMS ECC [ALPS04356814]
+            } else if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL || msg_id == RFX_MSG_REQUEST_DIAL) {
                 if (hasImsCall(getSlotId())) {
                     return false;
                 }
@@ -1322,11 +1344,9 @@ bool RtcCallController::onCheckIfResumeMessage(const sp<RfxMessage>& message) {
         }
     }
 
-    return canHandleCsDialRequest(message)
-        && canHandleEmergencyDialRequest(message)
-        && canHandleRequestDuringComboOperations(message)
-        && canHandleAnswerRequest(message)
-        && canHandleHangupForegndOrBackgndRequest(message);
+    return canHandleCsDialRequest(message) && canHandleEmergencyDialRequest(message) &&
+           canHandleRequestDuringComboOperations(message) && canHandleAnswerRequest(message) &&
+           canHandleHangupForegndOrBackgndRequest(message);
 }
 
 // [ALPS04642635] Block CS Dial if there is unfinished call switching
@@ -1341,12 +1361,11 @@ bool RtcCallController::canHandleCsDialRequest(const sp<RfxMessage>& message) {
     return true;
 }
 
-
 bool RtcCallController::canHandleHangupForegndOrBackgndRequest(const sp<RfxMessage>& message) {
     if (message->getType() == REQUEST) {
         int msg_id = message->getId();
         if (msg_id == RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND ||
-                msg_id == RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND) {
+            msg_id == RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND) {
             return (!mWaitForSwitchCallResp);
         }
     }
@@ -1362,14 +1381,13 @@ void RtcCallController::unsetEccModeLocally() {
             mRedialCtrl->setEmergencyModeExt(false);
         } else {
             // no need to go through RedialHandler, reset modem by AT+EMCI=0
-            char **requestData = (char **) calloc(3, sizeof(char *));
+            char** requestData = (char**)calloc(3, sizeof(char*));
             RFX_ASSERT(requestData != NULL);
             asprintf(&requestData[1], "%d", 0);  // enable
             asprintf(&requestData[2], "%d", 1);  // airplane mode
-            sp<RfxMessage> rilRequest = RfxMessage::obtainRequest(
-                    RfxRilUtils::getMajorSim() - 1,
-                    RFX_MSG_REQUEST_SET_ECC_MODE,
-                    RfxStringsData(requestData, 3));
+            sp<RfxMessage> rilRequest = RfxMessage::obtainRequest(RfxRilUtils::getMajorSim() - 1,
+                                                                  RFX_MSG_REQUEST_SET_ECC_MODE,
+                                                                  RfxStringsData(requestData, 3));
             free(requestData[1]);
             free(requestData[2]);
             free(requestData);
@@ -1385,15 +1403,15 @@ bool RtcCallController::canHandleEmergencyDialRequest(const sp<RfxMessage>& mess
     if (message->getType() == REQUEST) {
         int msg_id = message->getId();
         if (msg_id == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+            msg_id == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
             // ALPS03833937: Wait for triggerModeSwitchByEcc()
             int modemOffState = getNonSlotScopeStatusManager()->getIntValue(
                     RFX_STATUS_KEY_MODEM_OFF_STATE, MODEM_OFF_IN_IDLE);
             // ALPS04329577: Wait for world mode switching done
-            int worldModeState = getNonSlotScopeStatusManager()->getIntValue(
-                    RFX_STATUS_KEY_WORLD_MODE_STATE, 1);
-            return (!mWaitForSetEccModeResponse && modemOffState != MODEM_OFF_BY_MODE_SWITCH
-                    && worldModeState != 0);
+            int worldModeState =
+                    getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_WORLD_MODE_STATE, 1);
+            return (!mWaitForSetEccModeResponse && modemOffState != MODEM_OFF_BY_MODE_SWITCH &&
+                    worldModeState != 0);
         }
     }
     return true;
@@ -1404,12 +1422,12 @@ bool RtcCallController::canHandleRequestDuringComboOperations(const sp<RfxMessag
         int msg_id = message->getId();
         if (msg_id == RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS || msg_id == RFX_MSG_REQUEST_HANGUP) {
             if (mHangupWaitingOrBgMessage != NULL || mHangupFgResumeBgMessage != NULL ||
-                    mSwitchFgBgMessage != NULL) {
+                mSwitchFgBgMessage != NULL) {
                 return false;
             }
             if (msg_id == RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS) {
                 if (mCallIdResuming != 0 || mCallIdAnswering != 0 ||
-                        mCallIdsDisconnecting.size() != 0 || mToBeMergedCalls.size() != 0) {
+                    mCallIdsDisconnecting.size() != 0 || mToBeMergedCalls.size() != 0) {
                     return false;
                 }
             }
@@ -1421,18 +1439,17 @@ bool RtcCallController::canHandleRequestDuringComboOperations(const sp<RfxMessag
 bool RtcCallController::canHandleAnswerRequest(const sp<RfxMessage>& message) {
     if (message->getType() == REQUEST) {
         int msg_id = message->getId();
-        if ((msg_id == RFX_MSG_REQUEST_ANSWER || msg_id == RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT)
-                && mPendingCallControlMessage != NULL
-                && mPendingCallControlMessage->getId() == RFX_MSG_REQUEST_HOLD_CALL) {
+        if ((msg_id == RFX_MSG_REQUEST_ANSWER || msg_id == RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT) &&
+            mPendingCallControlMessage != NULL &&
+            mPendingCallControlMessage->getId() == RFX_MSG_REQUEST_HOLD_CALL) {
             return false;
         }
     }
     return true;
 }
 
-bool RtcCallController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
-
+bool RtcCallController::onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                               int radioState) {
     char prop_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int isWfcSupport = RfxRilUtils::isWfcSupport();
     int msgId = message->getId();
@@ -1441,23 +1458,23 @@ bool RtcCallController::onCheckIfRejectMessage(
     // ro.mtk_flight_mode_power_off_md=1 : isModemPowerOff=true, radioState=RADIO_STATE_OFF
     // ro.mtk_flight_mode_power_off_md=0 : isModemPowerOff=false, radioState=RADIO_STATE_OFF
     if (isModemPowerOff && msgId == RFX_MSG_REQUEST_GET_CURRENT_CALLS) {
-       return true;
+        return true;
     }
 
     // Reject new ims combo operations when there's a combo operations on-going.
     if (msgId == RFX_MSG_REQUEST_IMS_HANGUP_WAITING_OR_BACKGROUND ||
-            msgId == RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND ||
-            msgId == RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE) {
+        msgId == RFX_MSG_REQUEST_IMS_HANGUP_FOREGROUND_RESUME_BACKGROUND ||
+        msgId == RFX_MSG_REQUEST_IMS_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE) {
         if (mHangupWaitingOrBgMessage != NULL || mHangupFgResumeBgMessage != NULL ||
-                mSwitchFgBgMessage != NULL) {
+            mSwitchFgBgMessage != NULL) {
             logW(RFX_LOG_TAG, "block consecutive combo request");
             return true;
         }
     }
 
     // [ALPS03598523] block all request if SIM switch ongoing
-    int modemOffState = getNonSlotScopeStatusManager()->getIntValue(
-        RFX_STATUS_KEY_MODEM_OFF_STATE, MODEM_OFF_IN_IDLE);
+    int modemOffState = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_MODEM_OFF_STATE,
+                                                                    MODEM_OFF_IN_IDLE);
 
     // [ALPS04377333] block EMCS triggered by AP if mode switch ongoing
     if (modemOffState == MODEM_OFF_BY_MODE_SWITCH) {
@@ -1469,24 +1486,21 @@ bool RtcCallController::onCheckIfRejectMessage(
 
     // [ALPS03598523] block all request if SIM switch ongoing
     if (modemOffState == MODEM_OFF_BY_SIM_SWITCH) {
-        if (msgId == RFX_MSG_REQUEST_SET_ECC_MODE ||
-                msgId == RFX_MSG_REQUEST_ECC_PREFERRED_RAT) {
+        if (msgId == RFX_MSG_REQUEST_SET_ECC_MODE || msgId == RFX_MSG_REQUEST_ECC_PREFERRED_RAT) {
             logD(RFX_LOG_TAG, "block request due to SIM switch ongoing");
             return true;
         }
 
         // reset emergency Mode to false, before blocking EMERGENCY_DIAL
         if (msgId == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+            msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
             unsetEccModeLocally();
         }
 
         // Fake error cause as ERROR_UNSPECIFIED
-        if (msgId == RFX_MSG_REQUEST_DIAL ||
-                msgId == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msgId == RFX_MSG_REQUEST_IMS_DIAL ||
-                msgId == RFX_MSG_REQUEST_IMS_VT_DIAL ||
-                msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+        if (msgId == RFX_MSG_REQUEST_DIAL || msgId == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
+            msgId == RFX_MSG_REQUEST_IMS_DIAL || msgId == RFX_MSG_REQUEST_IMS_VT_DIAL ||
+            msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
             mUseLocalCallFailCause = true;
             mDialLastError = CALL_FAIL_ERROR_UNSPECIFIED;
             logD(RFX_LOG_TAG, "block request due to SIM switch ongoing");
@@ -1502,16 +1516,14 @@ bool RtcCallController::onCheckIfRejectMessage(
 
     if (radioState == (int)RADIO_STATE_OFF) {
         // Need to unblock requests not handled by TCL here
-        if (msgId == RFX_MSG_REQUEST_QUERY_TTY_MODE ||
-                msgId == RFX_MSG_REQUEST_SET_TTY_MODE ||
-                msgId == RFX_MSG_REQUEST_SET_ECC_MODE ||
-                msgId == RFX_MSG_REQUEST_GET_CURRENT_CALLS ||
-                msgId == RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE) {
+        if (msgId == RFX_MSG_REQUEST_QUERY_TTY_MODE || msgId == RFX_MSG_REQUEST_SET_TTY_MODE ||
+            msgId == RFX_MSG_REQUEST_SET_ECC_MODE || msgId == RFX_MSG_REQUEST_GET_CURRENT_CALLS ||
+            msgId == RFX_MSG_REQUEST_EXIT_EMERGENCY_CALLBACK_MODE) {
             return false;
         }
         // reset emergency Mode to false, before blocking EMERGENCY_DIAL
         if (msgId == RFX_MSG_REQUEST_EMERGENCY_DIAL ||
-                msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
+            msgId == RFX_MSG_REQUEST_IMS_EMERGENCY_DIAL) {
             unsetEccModeLocally();
             return true;
         }
@@ -1520,8 +1532,8 @@ bool RtcCallController::onCheckIfRejectMessage(
     return RfxController::onCheckIfRejectMessage(message, isModemPowerOff, radioState);
 }
 
-void RtcCallController::onCsPhoneChanged(RfxStatusKeyEnum key,
-        RfxVariant oldValue, RfxVariant newValue) {
+void RtcCallController::onCsPhoneChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                         RfxVariant newValue) {
     RFX_UNUSED(key);
     int newNws = newValue.asInt();
     int oldNws = oldValue.asInt();
@@ -1533,18 +1545,18 @@ void RtcCallController::onCsPhoneChanged(RfxStatusKeyEnum key,
 
     // If phone type is C2K, there will be no IMS call, don't need to consider IMS call case
     if (preCsPhone == RADIO_TECH_GROUP_C2K && newCsPhone == RADIO_TECH_GROUP_GSM &&
-            isCsActiveCallExistAndNoEccExist()) {
-        logD(RFX_LOG_TAG,"[%s], hang up normal call due to phone switch from C2K to GSM",
-                __FUNCTION__);
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData());
+        isCsActiveCallExistAndNoEccExist()) {
+        logD(RFX_LOG_TAG, "[%s], hang up normal call due to phone switch from C2K to GSM",
+             __FUNCTION__);
+        sp<RfxMessage> msg =
+                RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData());
         requestToMcl(msg);
         mPendingIncomingCallId = -1;
     }
 }
 
-void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key,
-        RfxVariant oldValue, RfxVariant newValue) {
+void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                              RfxVariant newValue) {
     RFX_UNUSED(key);
     RfxNwServiceState oldSS = oldValue.asServiceState();
     RfxNwServiceState newSS = newValue.asServiceState();
@@ -1553,13 +1565,13 @@ void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key,
 
     if (oldSS.getRilVoiceRadioTech() != newSS.getRilVoiceRadioTech()) {
         voiceRadioTech = newSS.getRilVoiceRadioTech();
-        //logD(RFX_LOG_TAG, "(slot %d) Voice service state changed: radioTech=%d",
-        //        m_slot_id, voiceRadioTech);
+        // logD(RFX_LOG_TAG, "(slot %d) Voice service state changed: radioTech=%d",
+        //         m_slot_id, voiceRadioTech);
     }
     if (oldSS.getRilVoiceRegState() != newSS.getRilVoiceRegState()) {
         voiceRegState = newSS.getRilVoiceRegState();
-        //logD(RFX_LOG_TAG, "(slot %d) Voice service state changed: regState=%d",
-        //        m_slot_id, voiceRegState);
+        // logD(RFX_LOG_TAG, "(slot %d) Voice service state changed: regState=%d",
+        //         m_slot_id, voiceRegState);
     }
 
     if (voiceRegState != RIL_REG_STATE_HOME && voiceRegState != RIL_REG_STATE_ROAMING) {
@@ -1597,7 +1609,7 @@ void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key,
             default:
                 mCallRat = CALL_RAT_NONE;
                 break;
-            }
+        }
     }
 
     int dataRegState = oldSS.getRilDataRegState();
@@ -1632,8 +1644,8 @@ void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key,
             int urcData[2];
             urcData[0] = 1;  // IMS
             urcData[1] = callRat;
-            sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                    RFX_MSG_URC_CALL_RAT_INDICATION, RfxIntsData(urcData, 2));
+            sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_URC_CALL_RAT_INDICATION,
+                                                       RfxIntsData(urcData, 2));
             responseToRilj(urc);
         }
     } else if (iwanRegState == 1) {
@@ -1647,9 +1659,8 @@ void RtcCallController::onServiceStateChanged(RfxStatusKeyEnum key,
             m_slot_id, mCallRat, newSS.toString().string());*/
 }
 
-
-void RtcCallController::onRadioStateChanged(RfxStatusKeyEnum key,
-    RfxVariant old_value, RfxVariant value) {
+void RtcCallController::onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                            RfxVariant value) {
     int oldState = -1, newState = -1;
 
     RFX_UNUSED(key);
@@ -1667,17 +1678,17 @@ void RtcCallController::onRadioStateChanged(RfxStatusKeyEnum key,
     }
 }
 
-void RtcCallController::onCardTypeChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcCallController::onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                          RfxVariant newValue) {
     RFX_UNUSED(key);
     if (oldValue.asInt() != newValue.asInt()) {
-        //logD(RFX_LOG_TAG, "[%s] oldValue: %d, newValue: %d", __FUNCTION__,
-        //    oldValue.asInt(), newValue.asInt());
+        // logD(RFX_LOG_TAG, "[%s] oldValue: %d, newValue: %d", __FUNCTION__,
+        //     oldValue.asInt(), newValue.asInt());
         if ((newValue.asInt() == 0) && isCsCallExistAndNoEccExist()) {
             // When SIM plugged out, hang up the normal call directly.
-            logD(RFX_LOG_TAG,"[%s], hang up normal call due to SIM plug out", __FUNCTION__);
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                    getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData());
+            logD(RFX_LOG_TAG, "[%s], hang up normal call due to SIM plug out", __FUNCTION__);
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL,
+                                                           RfxVoidData());
             requestToMcl(msg);
             mPendingIncomingCallId = -1;
         }
@@ -1747,14 +1758,13 @@ bool RtcCallController::handleIncomingCall(int slotId, RfxStringsData* data) {
 
         // Do not generate log for rejected call
         if (status == MT_CALL_MISSED) {
-            char **urcData = (char **) calloc(3, sizeof(char *));
+            char** urcData = (char**)calloc(3, sizeof(char*));
             RFX_ASSERT(urcData != NULL);
             asprintf(&urcData[0], "%d", MT_CALL_MISSED);
-            urcData[1] = params[1];  //number
-            urcData[2] = params[3];  //callMode
-            sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                    RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO,
-                    RfxStringsData(urcData, 3));
+            urcData[1] = params[1];  // number
+            urcData[2] = params[3];  // callMode
+            sp<RfxMessage> urc = RfxMessage::obtainUrc(
+                    getSlotId(), RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO, RfxStringsData(urcData, 3));
             responseToRilj(urc);
             free(urcData[0]);
             free(urcData);
@@ -1764,16 +1774,15 @@ bool RtcCallController::handleIncomingCall(int slotId, RfxStringsData* data) {
     }
 
     if ((params[5] != NULL) && (strlen(params[5]) != 0)) {
-        char **urcData = (char **) calloc(5, sizeof(char *));
+        char** urcData = (char**)calloc(5, sizeof(char*));
         RFX_ASSERT(urcData != NULL);
         asprintf(&urcData[0], "%d", MT_CALL_NUMREDIRECT);
-        urcData[1] = params[1];  //number
-        urcData[2] = params[3];  //callMode
-        urcData[3] = params[5];  //redirectNum
-        urcData[4] = params[0];  //callId
-        sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO,
-                RfxStringsData(urcData, 5));
+        urcData[1] = params[1];  // number
+        urcData[2] = params[3];  // callMode
+        urcData[3] = params[5];  // redirectNum
+        urcData[4] = params[0];  // callId
+        sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO,
+                                                   RfxStringsData(urcData, 5));
         responseToRilj(urc);
         free(urcData[0]);
         free(urcData);
@@ -1786,31 +1795,30 @@ bool RtcCallController::handleIncomingCall(int slotId, RfxStringsData* data) {
         bool isConferenceHost = false;
 
         if (callMode == RfxImsCallInfo::IMS_VOICE_CONF ||
-                callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
-                callMode == RfxImsCallInfo::IMS_VOICE_CONF_PARTS ||
-                callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS) {
+            callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
+            callMode == RfxImsCallInfo::IMS_VOICE_CONF_PARTS ||
+            callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS) {
             isConference = true;
         }
 
         if (callMode == RfxImsCallInfo::IMS_VOICE_CONF ||
-                callMode == RfxImsCallInfo::IMS_VIDEO_CONF) {
+            callMode == RfxImsCallInfo::IMS_VIDEO_CONF) {
             isConferenceHost = true;
         }
 
-        if (callMode == RfxImsCallInfo::IMS_VIDEO ||
-                callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
-                callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS) {
+        if (callMode == RfxImsCallInfo::IMS_VIDEO || callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
+            callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS) {
             isVideo = true;
         }
 
         RfxImsCallInfo* call = new RfxImsCallInfo(callId, RfxImsCallInfo::STATE_ESTABLISHING,
-                String8::format("%s", number), isConference, isConferenceHost, isEcc, isVideo, true);
+                                                  String8::format("%s", number), isConference,
+                                                  isConferenceHost, isEcc, isVideo, true);
         addImsCall(slotId, call);
         mPendingIncomingCallId = callId;
 
         // if evoltesi_flow exist, update
         if ((params[7] != NULL) && (strlen(params[7]) != 0)) {
-
             // evoltesi_flow = 0, original design, RF is ocuppied when MT come
             // evoltesi_flow = 1, RFwill be ocuppied until MT call is accepted
             int evoltesi_flow = atoi(params[7]);
@@ -1829,8 +1837,8 @@ bool RtcCallController::handleIncomingCall(int slotId, RfxStringsData* data) {
     }
 
     bool isAutoApprove = false;
-    isAutoApprove =
-        getStatusManager()->getString8Value(RFX_STATUS_KEY_CARRIER_AUTO_APPROVE_INCOMING) == "true";
+    isAutoApprove = getStatusManager()->getString8Value(
+                            RFX_STATUS_KEY_CARRIER_AUTO_APPROVE_INCOMING) == "true";
 
     // For IMS call, approve it in sendIncomingCallIndication() of ImsService
     if (isAutoApprove && !hasImsCall(slotId)) {
@@ -1850,7 +1858,7 @@ void RtcCallController::handleImsDialRequest(const sp<RfxMessage>& message) {
     String8 dialNumber = String8::format("%s", "");
     if (message->getId() == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
         message->getId() == RFX_MSG_REQUEST_IMS_DIAL) {
-        RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+        RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
         dialNumber = String8::format("%s", pDial->address);
     }
 
@@ -1868,14 +1876,15 @@ void RtcCallController::handleImsDialRequest(const sp<RfxMessage>& message) {
     bool isConference = false;
     bool isConferenceHost = false;
     if (message->getId() == RFX_MSG_REQUEST_CONFERENCE_DIAL) {
-        RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+        RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
                 m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
         imsConfCtrl->handleOneKeyConference(message);
-        isConference =  true;
+        isConference = true;
         isConferenceHost = true;
     }
-    RfxImsCallInfo* call = new RfxImsCallInfo(-1, RfxImsCallInfo::STATE_ESTABLISHING,
-            dialNumber, isConference, isConferenceHost, isEcc, isVideo, false);
+    RfxImsCallInfo* call =
+            new RfxImsCallInfo(-1, RfxImsCallInfo::STATE_ESTABLISHING, dialNumber, isConference,
+                               isConferenceHost, isEcc, isVideo, false);
 
     /* RF is ocuppied when MO call exists */
     updateRQ(true);
@@ -1888,8 +1897,8 @@ void RtcCallController::handleImsDialFailResponse(const sp<RfxMessage>& message)
     imsCallEstablishFailed(message->getSlotId());
 
     if (message->getId() == RFX_MSG_REQUEST_CONFERENCE_DIAL) {
-        RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
-               m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
+        RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
+                m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
         imsConfCtrl->handleOneKeyConferenceFail(message);
     }
 }
@@ -1914,12 +1923,12 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
         mUseLocalCallFailCause = false;
     }
 
-    RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+    RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
             m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
 
     // for the case 133, it will be fake disconnect create by RtcImsConferenceController
     // need to let it pass
-    if(imsConfCtrl->needSkipDueToFakeDisconnect(callId) && msgType != 133) {
+    if (imsConfCtrl->needSkipDueToFakeDisconnect(callId) && msgType != 133) {
         return false;
     }
 
@@ -1930,7 +1939,7 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
 
     // Emergency call end
     if (ecpiNumber != NULL && mEccNumber != NULL && strlen(ecpiNumber) > 0 &&
-            !strcmp(ecpiNumber, mEccNumber)) {
+        !strcmp(ecpiNumber, mEccNumber)) {
         if (msgType == 133) {
             if (mEspeechOnInDialingEcc == true) {
                 mUseLocalCallFailCause = true;
@@ -1958,14 +1967,17 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
         return ret;
     }
 
-    string ecpiNumberStr = ecpiNumber == NULL ? "" :
-            RtcImsConferenceHandler::normalizeNumberFromCLIR(string(ecpiNumber));
+    string ecpiNumberStr =
+            ecpiNumber == NULL
+                    ? ""
+                    : RtcImsConferenceHandler::normalizeNumberFromCLIR(string(ecpiNumber));
     if (targetCall != NULL) {
-        bool shouldUpdateAddressFromEcpi = getStatusManager()->getString8Value(
-                RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_FROM_ECPI) == "true";
+        bool shouldUpdateAddressFromEcpi =
+                getStatusManager()->getString8Value(
+                        RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_FROM_ECPI) == "true";
         if (shouldUpdateAddressFromEcpi || targetCall->getNumber().isEmpty()) {
-            logD(RFX_LOG_TAG, "Call %d update by ecpi number=%s",
-                    callId, RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumberStr.c_str()));
+            logD(RFX_LOG_TAG, "Call %d update by ecpi number=%s", callId,
+                 RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumberStr.c_str()));
             if (strcmp(ecpiNumberStr.c_str(), targetCall->getNumber().string())) {
                 targetCall->setNumber(String8::format("%s", ecpiNumberStr.c_str()));
             }
@@ -2006,7 +2018,7 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
             if (callId == mCallIdAnswering) {
                 mCallIdAnswering = 0;
             }
-            //handle mPendingImsStkCallInfoMessage if no alerting stage in stk call
+            // handle mPendingImsStkCallInfoMessage if no alerting stage in stk call
             if (mPendingImsStkCallInfoMessage != NULL) {
                 RfxStringsData* stkCallData =
                         (RfxStringsData*)mPendingImsStkCallInfoMessage->getData();
@@ -2017,8 +2029,8 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
                     mPendingImsStkCallInfoMessage = NULL;
 
                     mDelaySendCallInfoMessage = msg;
-                    mSendImsCallInfoTimerHandle = RfxTimer::start(RfxCallback0(this,
-                            &RtcCallController::onSendDelayCallInfoTimer),
+                    mSendImsCallInfoTimerHandle = RfxTimer::start(
+                            RfxCallback0(this, &RtcCallController::onSendDelayCallInfoTimer),
                             ms2ns(DELAY_SEND_CALL_INFO_TIMER));
                     ret = false;
                 }
@@ -2145,7 +2157,7 @@ bool RtcCallController::handleImsCallInfoUpdate(const sp<RfxMessage>& msg) {
     if (needSendCallStateChange) {
         sp<RfxMessage> urcToRilj;
         urcToRilj = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED,
-                RfxVoidData());
+                                          RfxVoidData());
         responseToRilj(urcToRilj);
     }
 
@@ -2163,8 +2175,8 @@ bool RtcCallController::handleCsCallInfoUpdate(const sp<RfxMessage>& msg) {
     int msgType = atoi(params[1]);
     int callMode = atoi(params[5]);
     char* ecpiNumber = params[6];
-    //logD(RFX_LOG_TAG, "csCallInfoUpdate slot: %d, callId: %d, ms: %d, callMode",
-    //        slotId, callId, msgType, callMode);
+    // logD(RFX_LOG_TAG, "csCallInfoUpdate slot: %d, callId: %d, ms: %d, callMode",
+    //         slotId, callId, msgType, callMode);
 
     if (msgType == 133) {
         mUseLocalCallFailCause = false;
@@ -2179,7 +2191,7 @@ bool RtcCallController::handleCsCallInfoUpdate(const sp<RfxMessage>& msg) {
 
     // Emergency call end
     if (ecpiNumber != NULL && mEccNumber != NULL && strlen(ecpiNumber) > 0 &&
-            !strcmp(ecpiNumber, mEccNumber)) {
+        !strcmp(ecpiNumber, mEccNumber)) {
         if (msgType == 133) {
             if (mEspeechOnInDialingEcc == true) {
                 mUseLocalCallFailCause = true;
@@ -2199,10 +2211,9 @@ bool RtcCallController::handleCsCallInfoUpdate(const sp<RfxMessage>& msg) {
         }
     }
 
-
     // Update call exist before poll call done, call end after poll call done
     switch (msgType) {
-        case 130: //MO
+        case 130:  // MO
             mCsCallCount++;
             if (mCsCallCount > 0) {
                 /* RF is ocuppied when CS call exists */
@@ -2222,7 +2233,7 @@ bool RtcCallController::handleCsCallInfoUpdate(const sp<RfxMessage>& msg) {
 
     sp<RfxMessage> urcToRilj;
     urcToRilj = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
-            RfxVoidData());
+                                      RfxVoidData());
     responseToRilj(urcToRilj);
 
     updateCallCount();
@@ -2230,7 +2241,7 @@ bool RtcCallController::handleCsCallInfoUpdate(const sp<RfxMessage>& msg) {
 }
 
 bool RtcCallController::isInChina() {
-    RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+    RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
             getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         string plmn = eccNumberController->getPlmn(i);
@@ -2247,8 +2258,8 @@ void RtcCallController::handleAutoAnswer(const sp<RfxMessage>& msg) {
     rfx_property_get("persist.vendor.em.hidl.auto_answer", prop, "");
 
     if (strncmp(prop, "1", 1) == 0) {
-        logD(RFX_LOG_TAG, "handleAutoAnswer, persist.vendor.em.hidl.auto_answer: %s, msg: %d",
-                prop, msg->getId());
+        logD(RFX_LOG_TAG, "handleAutoAnswer, persist.vendor.em.hidl.auto_answer: %s, msg: %d", prop,
+             msg->getId());
         if (msg->getId() == RFX_MSG_UNSOL_CALL_INFO_INDICATION) {
             /* +ECPI: <call_id>, <msg_type>, <is_ibt>,
              *         <is_tch>, <dir>, <call_mode>, <number>, <type>, "<pau>", [<cause>] */
@@ -2266,8 +2277,9 @@ void RtcCallController::handleAutoAnswer(const sp<RfxMessage>& msg) {
                         return;
                     }
                 }
-                mAutoAnswerTimerHandle = RfxTimer::start(RfxCallback0(this,
-                        &RtcCallController::onAutoAnswerTimer), ms2ns(AUTO_ANSWER_DELAY));
+                mAutoAnswerTimerHandle =
+                        RfxTimer::start(RfxCallback0(this, &RtcCallController::onAutoAnswerTimer),
+                                        ms2ns(AUTO_ANSWER_DELAY));
             } else if (msgType == 132 || msgType == 133) {
                 // Stop auto answer if already connected/disconnected
                 RfxTimer::stop(mAutoAnswerTimerHandle);
@@ -2284,19 +2296,17 @@ void RtcCallController::handleAutoAnswer(const sp<RfxMessage>& msg) {
 void RtcCallController::onAutoAnswerTimer() {
     logD(RFX_LOG_TAG, "onAutoAnswerTimer");
     if (mCsCallCount > 2 || getValidImsCallCount() > 2) {
-            logD(RFX_LOG_TAG, "not support calls >= 3");
+        logD(RFX_LOG_TAG, "not support calls >= 3");
     } else if (mCsCallCount > 1 || getValidImsCallCount() > 1) {
         if (mCallRat == CALL_RAT_CDMA) {
             logD(RFX_LOG_TAG, "not support CDMA multiple call auto answer");
         } else {
-            requestToMcl(RfxMessage::obtainRequest(getSlotId(),
-                    RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
+            requestToMcl(RfxMessage::obtainRequest(
+                    getSlotId(), RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,
                     RfxVoidData()));
         }
     } else {
-        requestToMcl(RfxMessage::obtainRequest(getSlotId(),
-                RFX_MSG_REQUEST_ANSWER,
-                RfxVoidData()));
+        requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER, RfxVoidData()));
     }
 }
 
@@ -2309,7 +2319,7 @@ void RtcCallController::handleSrvcc(int slotId, const sp<RfxMessage>& msg) {
         return;
     }
 
-    if (mSrvccState[slotId] == SRVCC_STATE_COMPLETED) {// SRVCC success
+    if (mSrvccState[slotId] == SRVCC_STATE_COMPLETED) {  // SRVCC success
         mPendingSrvccCallCount = getValidImsCallCount();
         releaseEstablishingCall(slotId);
         clearAllImsCalls(slotId);
@@ -2317,19 +2327,19 @@ void RtcCallController::handleSrvcc(int slotId, const sp<RfxMessage>& msg) {
         maybeSendNoEcbm(true);
 
         logD(RFX_LOG_TAG, "handleSrvcc in slot: %d, mSrvccState: %d, pendingSrvccCallCount: %d",
-                slotId, mSrvccState[slotId], mPendingSrvccCallCount);
+             slotId, mSrvccState[slotId], mPendingSrvccCallCount);
 
         mSrvccState[slotId] = SRVCC_STATE_NONE;
     }
 
-    logD(RFX_LOG_TAG, "handleSrvcc in slot: %d, mSrvccState: %d, pendingSrvccCallCount: %d",
-            slotId, mSrvccState[slotId], mPendingSrvccCallCount);
+    logD(RFX_LOG_TAG, "handleSrvcc in slot: %d, mSrvccState: %d, pendingSrvccCallCount: %d", slotId,
+         mSrvccState[slotId], mPendingSrvccCallCount);
 }
 
 bool RtcCallController::isDuringSrvcc(int slotId) {
-    return (mSrvccState[slotId] == SRVCC_STATE_STARTED || mSrvccState[slotId] == SRVCC_STATE_COMPLETED);
+    return (mSrvccState[slotId] == SRVCC_STATE_STARTED ||
+            mSrvccState[slotId] == SRVCC_STATE_COMPLETED);
 }
-
 
 bool RtcCallController::waitCallRingForMT(const sp<RfxMessage>& msg) {
     int slotId = msg->getSlotId();
@@ -2345,8 +2355,7 @@ bool RtcCallController::waitCallRingForMT(const sp<RfxMessage>& msg) {
     mPendingIncomingCallId = -1;
 
     if (mAutoAnswerImsIncoming == AUTO_ANSWER_FAKE) {
-        requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER,
-                RfxVoidData()));
+        requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER, RfxVoidData()));
         mAutoAnswerImsIncoming = AUTO_ANSWER_NONE;
         mAutoAnswerCallId = CALL_ID_NONE;
         return true;
@@ -2368,23 +2377,23 @@ bool RtcCallController::handlePendingMTCallMode(const sp<RfxMessage>& msg) {
     int callModeCallId = atoi(callModeParams[0]);
     int targetCallMode = atoi(callModeParams[1]);
 
-    RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+    RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
             m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
 
-    if(imsConfCtrl->needSkipDueToFakeDisconnect(callModeCallId)) {
+    if (imsConfCtrl->needSkipDueToFakeDisconnect(callModeCallId)) {
         return false;
     }
 
     if (pendingMTCallId != callModeCallId) return true;
     if (pendingMTCallMode == targetCallMode) return true;
 
-    logD(RFX_LOG_TAG, "handlePendingMTCallMode slot: %d, orig: %d, target: %d"
-            , m_slot_id, pendingMTCallMode, targetCallMode);
+    logD(RFX_LOG_TAG, "handlePendingMTCallMode slot: %d, orig: %d, target: %d", m_slot_id,
+         pendingMTCallMode, targetCallMode);
 
     // modify the call mode
     pendingMTParams[5] = strdup(callModeParams[1]);
 
-    int countString = pendingMTData->getDataLength() / sizeof(char *);
+    int countString = pendingMTData->getDataLength() / sizeof(char*);
     RfxStringsData data(pendingMTParams, countString);
 
     mPendingCallInfoForMT[m_slot_id] =
@@ -2394,7 +2403,8 @@ bool RtcCallController::handlePendingMTCallMode(const sp<RfxMessage>& msg) {
 }
 
 bool RtcCallController::handleImsCallModeChange(const sp<RfxMessage>& msg) {
-    /* +EIMSCMODE: <call_id>,<call_mode>,<camera_direction>,<audio_direction>,"<p_assert_uri>",<audio_codec> */
+    /* +EIMSCMODE:
+     * <call_id>,<call_mode>,<camera_direction>,<audio_direction>,"<p_assert_uri>",<audio_codec> */
 
     /* +ECPI: <call_id>, <msg_type>, <is_ibt>,
      *         <is_tch>, <dir>, <call_mode>, <number>, <type>, "<pau>", [<cause>] */
@@ -2405,10 +2415,10 @@ bool RtcCallController::handleImsCallModeChange(const sp<RfxMessage>& msg) {
     int callId = atoi(params[0]);
     char* pau = params[4];
 
-    RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+    RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
             m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
 
-    if(imsConfCtrl->needSkipDueToFakeDisconnect(callId)) {
+    if (imsConfCtrl->needSkipDueToFakeDisconnect(callId)) {
         return false;
     }
 
@@ -2427,7 +2437,7 @@ bool RtcCallController::handleImsCallModeChange(const sp<RfxMessage>& msg) {
 
         sp<RfxMessage> urcToRilj;
         urcToRilj = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED,
-                RfxVoidData());
+                                          RfxVoidData());
         responseToRilj(urcToRilj);
     }
     return true;
@@ -2438,13 +2448,14 @@ void RtcCallController::handleCallRing(int slotId) {
         logD(RFX_LOG_TAG, "Handle Call Ring, notify ECPI 0 for slot: %d", slotId);
 
         if (mAutoAnswerImsIncoming == AUTO_ANSWER_EM) {
-            mAutoAnswerTimerHandle = RfxTimer::start(RfxCallback0(this,
-                    &RtcCallController::onAutoAnswerTimer), ms2ns(AUTO_ANSWER_DELAY));
+            mAutoAnswerTimerHandle =
+                    RfxTimer::start(RfxCallback0(this, &RtcCallController::onAutoAnswerTimer),
+                                    ms2ns(AUTO_ANSWER_DELAY));
             mAutoAnswerImsIncoming = AUTO_ANSWER_NONE;
             mAutoAnswerCallId = CALL_ID_NONE;
         } else if (mAutoAnswerImsIncoming == AUTO_ANSWER_FAKE) {
-            requestToMcl(RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER,
-                    RfxVoidData()));
+            requestToMcl(
+                    RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER, RfxVoidData()));
             mAutoAnswerImsIncoming = AUTO_ANSWER_NONE;
             clearCallRingCache(slotId);
             mAutoAnswerCallId = CALL_ID_NONE;
@@ -2462,9 +2473,9 @@ void RtcCallController::handleCallRing(int slotId) {
 }
 
 void RtcCallController::addImsCall(int slotId, RfxImsCallInfo* call) {
-    logD(RFX_LOG_TAG, "Add ImsCall to slot: %d, callId: %d, isConf:%s, isConfHost:%s",
-            slotId, call->getCallId(), call->isConference() ? "True" : "False",
-            call->isConferenceHost() ? "True" : "False");
+    logD(RFX_LOG_TAG, "Add ImsCall to slot: %d, callId: %d, isConf:%s, isConfHost:%s", slotId,
+         call->getCallId(), call->isConference() ? "True" : "False",
+         call->isConferenceHost() ? "True" : "False");
 
     Vector<RfxImsCallInfo*> calls = mImsCalls[slotId];
     calls.push_back(call);
@@ -2481,7 +2492,7 @@ void RtcCallController::removeImsCall(int slotId, RfxImsCallInfo* call) {
 
     Vector<RfxImsCallInfo*> calls = mImsCalls[slotId];
     int removeIdx = -1;
-    for(int i = 0; i < (int)calls.size(); ++i) {
+    for (int i = 0; i < (int)calls.size(); ++i) {
         if (calls[i]->getCallId() == call->getCallId()) {
             removeIdx = i;
             break;
@@ -2512,12 +2523,13 @@ void RtcCallController::assignImsCallId(int slotId, int callId) {
     addImsCall(slotId, call);
 }
 
-bool RtcCallController::updateNumberFromEcpiNumOrPau(RfxImsCallInfo* targetCall, string ecpiNumber, string pau) {
+bool RtcCallController::updateNumberFromEcpiNumOrPau(RfxImsCallInfo* targetCall, string ecpiNumber,
+                                                     string pau) {
     bool changed = false;
 
     logD(RFX_LOG_TAG, "updateNumberFromEcpiNumOrPau() number=%s, pau=%s",
-            RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumber.data()),
-            RfxRilUtils::pii(RFX_LOG_TAG, pau.data()));
+         RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumber.data()),
+         RfxRilUtils::pii(RFX_LOG_TAG, pau.data()));
 
     // Update number logic:
     // 1. Get number from pau
@@ -2530,13 +2542,13 @@ bool RtcCallController::updateNumberFromEcpiNumOrPau(RfxImsCallInfo* targetCall,
     if (!pau.empty()) {
         changed = updateNumberFromPau(targetCall, pau);
 
-    // Only update by ecpi number when number is empty.
+        // Only update by ecpi number when number is empty.
     } else if (targetCall->getNumber().isEmpty() && pau.empty() && !ecpiNumber.empty()) {
         if (targetCall->getNumber() != ecpiNumber.data()) {
             targetCall->setNumber(String8::format("%s", ecpiNumber.data()));
             changed = true;
             logD(RFX_LOG_TAG, "updateNumberFromEcpiNum() number=%s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumber.data()));
+                 RfxRilUtils::pii(RFX_LOG_TAG, ecpiNumber.data()));
         }
     }
 
@@ -2546,8 +2558,9 @@ bool RtcCallController::updateNumberFromEcpiNumOrPau(RfxImsCallInfo* targetCall,
 bool RtcCallController::updateNumberFromPau(RfxImsCallInfo* targetCall, string pau) {
     bool changed = false;
 
-    bool updateAddressByPauForMo = getStatusManager()->getString8Value(
-            RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_BY_PAU_FOR_MO) == "false";
+    bool updateAddressByPauForMo =
+            getStatusManager()->getString8Value(
+                    RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_BY_PAU_FOR_MO) == "false";
     if (pau.empty() || (!targetCall->isMT() && updateAddressByPauForMo)) {
         return changed;
     }
@@ -2563,18 +2576,19 @@ bool RtcCallController::updateNumberFromPau(RfxImsCallInfo* targetCall, string p
     string telNumber = getFieldValueFromPau(pau, PAU_NUMBER_FIELD);
 
     logD(RFX_LOG_TAG, "updateNumberFromPau() sipNumber=%s, telNumber=%s",
-            RfxRilUtils::pii(RFX_LOG_TAG, sipNumber.data()),
-            RfxRilUtils::pii(RFX_LOG_TAG, telNumber.data()));
+         RfxRilUtils::pii(RFX_LOG_TAG, sipNumber.data()),
+         RfxRilUtils::pii(RFX_LOG_TAG, telNumber.data()));
 
     if (sipNumber.empty() && telNumber.empty()) {
         return changed;
     }
 
     // use the sip field first, then use the tel field
-    bool updateAddressBySipField =  getStatusManager()->getString8Value(
-            RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_BY_SIP_FIELD) == "true";
+    bool updateAddressBySipField =
+            getStatusManager()->getString8Value(
+                    RFX_STATUS_KEY_CARRIER_UPDATE_ADDRESS_BY_SIP_FIELD) == "true";
     string number = (!sipNumber.empty() && updateAddressBySipField) ? sipNumber : telNumber;
-    char* tmpNumber = strtok((char *)number.data(), "[;@,]+");
+    char* tmpNumber = strtok((char*)number.data(), "[;@,]+");
     if (tmpNumber == NULL) {
         return changed;
     }
@@ -2585,7 +2599,7 @@ bool RtcCallController::updateNumberFromPau(RfxImsCallInfo* targetCall, string p
         targetCall->setNumber(String8::format("%s", number.data()));
         changed = true;
         logD(RFX_LOG_TAG, "updateNumberFromPau() number=%s",
-                RfxRilUtils::pii(RFX_LOG_TAG, number.data()));
+             RfxRilUtils::pii(RFX_LOG_TAG, number.data()));
     }
 
     return changed;
@@ -2613,13 +2627,13 @@ bool RtcCallController::updateDisplayNameFromPau(RfxImsCallInfo* targetCall, str
     }
 
     logD(RFX_LOG_TAG, "updateDisplayNameFromPau() name=%s",
-            RfxRilUtils::pii(RFX_LOG_TAG, name.data()));
+         RfxRilUtils::pii(RFX_LOG_TAG, name.data()));
 
     if (!name.empty() &&
         !MtkPhoneNumberUtils::compareLoosely(string(targetCall->getName().string()), name)) {
         targetCall->setName(String8::format("%s", name.data()));
         logD(RFX_LOG_TAG, "updateDisplayNameFromPau() changed and set name=%s",
-                RfxRilUtils::pii(RFX_LOG_TAG, name.data()));
+             RfxRilUtils::pii(RFX_LOG_TAG, name.data()));
         changed = true;
     }
 
@@ -2659,7 +2673,7 @@ void RtcCallController::imsCallEstablishFailed(int slotId) {
 
 void RtcCallController::updateIsImsCallExistToStatusManager(int slotId) {
     RfxRootController* rootController = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    RfxStatusManager* slotStatusMgr  = rootController->getStatusManager(slotId);
+    RfxStatusManager* slotStatusMgr = rootController->getStatusManager(slotId);
     slotStatusMgr->setBoolValue(RFX_STATUS_KEY_IMS_CALL_EXIST, hasImsCall(slotId));
     updateCallCount();
 }
@@ -2673,19 +2687,17 @@ void RtcCallController::clearAllImsCalls(int slotId) {
 
     Vector<RfxImsCallInfo*> calls = mImsCalls[slotId];
 
-    for(int i = 0; i < (int)calls.size(); ++i) {
+    for (int i = 0; i < (int)calls.size(); ++i) {
         RfxImsCallInfo* call = calls[i];
         delete call;
     }
 
     mImsCalls.erase(slotId);
-    getStatusManager(m_slot_id)->setImsCallInfosValue(
-            RFX_STATUS_KEY_IMS_CALL_LIST, Vector<RfxImsCallInfo*>());
+    getStatusManager(m_slot_id)->setImsCallInfosValue(RFX_STATUS_KEY_IMS_CALL_LIST,
+                                                      Vector<RfxImsCallInfo*>());
 }
 
-void RtcCallController::releaseEstablishingCall(int slotId) {
-    imsCallEstablishFailed(slotId);
-}
+void RtcCallController::releaseEstablishingCall(int slotId) { imsCallEstablishFailed(slotId); }
 
 void RtcCallController::onSendDelayCallInfoTimer() {
     responseToRilJAndUpdateIsImsCallExist(mDelaySendCallInfoMessage);
@@ -2701,10 +2713,9 @@ void RtcCallController::responseToRilJAndUpdateIsImsCallExist(const sp<RfxMessag
 
     sp<RfxMessage> responseMsg = msg;
     if (mOriginalDialMessage != NULL &&
-           (msg->getId() == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
-            msg->getId() == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
-            msg->getId() == RFX_MSG_REQUEST_DIAL ||
-            msg->getId() == RFX_MSG_REQUEST_IMS_DIAL)) {
+        (msg->getId() == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
+         msg->getId() == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
+         msg->getId() == RFX_MSG_REQUEST_DIAL || msg->getId() == RFX_MSG_REQUEST_IMS_DIAL)) {
         // For the two scenarios
         // Convert DIAL to LOCAL_EMERGENCY_DIAL in handleDialAsEmergencyDial
         // Convert EMERGENCY_DIAL to LOCAL_EMERGENCY_DIAL or DIAL
@@ -2732,10 +2743,11 @@ void RtcCallController::clearCallRingCache(int slotId) {
 
 void RtcCallController::generateImsConference(int slotId, int callId) {
     logD(RFX_LOG_TAG, "generateImsConference() slot: %d", slotId);
-    RfxImsCallInfo* call = new RfxImsCallInfo(callId, RfxImsCallInfo::STATE_DIALING,
-            String8::format("%s", ""), true, true, false, false, false);
+    RfxImsCallInfo* call =
+            new RfxImsCallInfo(callId, RfxImsCallInfo::STATE_DIALING, String8::format("%s", ""),
+                               true, true, false, false, false);
     addImsCall(slotId, call);
-    RtcImsConferenceController *imsConfCtrl = (RtcImsConferenceController *) findController(
+    RtcImsConferenceController* imsConfCtrl = (RtcImsConferenceController*)findController(
             m_slot_id, RFX_OBJ_CLASS_INFO(RtcImsConferenceController));
     imsConfCtrl->handleConferenceStart();
 }
@@ -2746,11 +2758,11 @@ int RtcCallController::findRingingConnection() {
     int ringingId = -1;
     for (int i = 0; i < origSize; i++) {
         RfxPreciseCallState* item = mPreciseCallStateList->itemAt(i);
-        if (item->mSlot == getSlotId()
-                && (item->mOrigState == ORIG_INCOMING || item->mOrigState == ORIG_WAITING)) {
+        if (item->mSlot == getSlotId() &&
+            (item->mOrigState == ORIG_INCOMING || item->mOrigState == ORIG_WAITING)) {
             ringingId = item->mCallId;
             logD(RFX_LOG_TAG, "hangupRingingConnection found call (callId=%d, ori_state=%d)",
-                    ringingId, item->mOrigState);
+                 ringingId, item->mOrigState);
             break;
         }
     }
@@ -2763,11 +2775,11 @@ bool RtcCallController::hasPendingHangupRequest(bool isForegnd) {
     for (int i = 0; i < origSize; i++) {
         RfxPreciseCallState* item = mPreciseCallStateList->itemAt(i);
         if ((isForegnd && item->mOrigState == ORIG_FOREGND_DISCONNECTING) ||
-                (!isForegnd && item->mOrigState == ORIG_BACKGND_DISCONNECTING)) {
+            (!isForegnd && item->mOrigState == ORIG_BACKGND_DISCONNECTING)) {
             int msg_data[1];
             msg_data[0] = item->mCallId;
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL,
-                                 RfxIntsData(msg_data, 1));
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                    getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL, RfxIntsData(msg_data, 1));
             requestToMcl(msg);
             ret = true;
         }
@@ -2782,8 +2794,8 @@ bool RtcCallController::hasPendingHangupRequest(int hangupCallId) {
         if (item->mCallId == hangupCallId && item->mOrigState == ORIG_DISCONNECTING) {
             int msg_data[1];
             msg_data[0] = item->mCallId;
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL,
-                                 RfxIntsData(msg_data, 1));
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                    getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL, RfxIntsData(msg_data, 1));
             requestToMcl(msg);
             return true;
         }
@@ -2794,8 +2806,8 @@ bool RtcCallController::hasPendingHangupRequest(int hangupCallId) {
     if (hangupCall != NULL && hangupCall->getCallState() == RfxImsCallInfo::STATE_TERMINATING) {
         int msg_data[1];
         msg_data[0] = hangupCallId;
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL,
-                             RfxIntsData(msg_data, 1));
+        sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                getSlotId(), RFX_MSG_REQUEST_FORCE_RELEASE_CALL, RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         return true;
     }
@@ -2803,7 +2815,7 @@ bool RtcCallController::hasPendingHangupRequest(int hangupCallId) {
 }
 
 void RtcCallController::handleCdmaFlashRequest(const sp<RfxMessage>& message) {
-    char *address = (char*)(message->getData()->getData());
+    char* address = (char*)(message->getData()->getData());
     if ((address != NULL) && (strlen(address) > 0)) {
         RfxPreciseCallState* preciseCallState = new RfxPreciseCallState();
 
@@ -2832,11 +2844,11 @@ void RtcCallController::handleCdmaCallWait() {
 }
 
 void RtcCallController::handleGetCurrentCallsResponse(const sp<RfxMessage>& message) {
-   // logD(RFX_LOG_TAG, "handleGetCurrentCalls() slot: %d", m_slot_id);
+    // logD(RFX_LOG_TAG, "handleGetCurrentCalls() slot: %d", m_slot_id);
 
     /* Cache precise call state, previously for MDMI, currently for general purpose */
     int dataLen = message->getData()->getDataLength();
-    int count = dataLen / sizeof(RIL_Call *);
+    int count = dataLen / sizeof(RIL_Call*);
 
     // Update call exist before poll call done, call end after poll call done
     mCsCallCount = count;
@@ -2847,15 +2859,16 @@ void RtcCallController::handleGetCurrentCallsResponse(const sp<RfxMessage>& mess
         mPendingSrvccCallCount = 0;
     }
 
-    RIL_Call ** pp_calls = (RIL_Call **) message->getData()->getData();
+    RIL_Call** pp_calls = (RIL_Call**)message->getData()->getData();
     Vector<RfxPreciseCallState*>* currentList = parsePreciseCallState(pp_calls, count);
     updateDisconnected(mPreciseCallStateList, currentList);
     freePreciseCallStateList(mPreciseCallStateList);
     mPreciseCallStateList = currentList;
 }
 
-Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call ** pp_calls, int count) {
-    //logD(RFX_LOG_TAG, "parsePreciseCallState, count: %d", count);
+Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call** pp_calls,
+                                                                       int count) {
+    // logD(RFX_LOG_TAG, "parsePreciseCallState, count: %d", count);
 
     Vector<RfxPreciseCallState*>* list = new Vector<RfxPreciseCallState*>();
 
@@ -2866,14 +2879,14 @@ Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call 
     int mptyHeldCount = 0;
 
     for (int i = 0; i < count; i++) {
-        RIL_Call *p_cur = ((RIL_Call **) pp_calls)[i];
+        RIL_Call* p_cur = ((RIL_Call**)pp_calls)[i];
         RfxPreciseCallState* preciseCallState = new RfxPreciseCallState();
-        status = p_cur->state;  // state
-        id = p_cur->index;  // index
-        dir = p_cur->isMT;  // isMT
-        type = p_cur->isVoice;  // isVoice
+        status = p_cur->state;       // state
+        id = p_cur->index;           // index
+        dir = p_cur->isMT;           // isMT
+        type = p_cur->isVoice;       // isVoice
         callNumber = p_cur->number;  // number
-        mpty = p_cur->isMpty; // isMultiparty
+        mpty = p_cur->isMpty;        // isMultiparty
 
         /// M: CC: Handle 2 hold calls cases for handover. @{
         // [ALPS03579445][ALPS03104249]
@@ -2893,7 +2906,7 @@ Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call 
 
         if (type == 1) {
             if ((callNumber != NULL) && (mEccNumber != NULL) && (strlen(callNumber) > 0) &&
-                    !strcmp(callNumber, mEccNumber)) {
+                !strcmp(callNumber, mEccNumber)) {
                 preciseCallState->mCallType = CALL_TYPE_EMERGENCY;
             } else {
                 preciseCallState->mCallType = CALL_TYPE_VOICE;
@@ -2912,9 +2925,9 @@ Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call 
     // [ALPS03579445][ALPS03104249]
     if (nonMptyHeldCount >= 2 || (nonMptyHeldCount != 0 && mptyHeldCount >= 2)) {
         logD(RFX_LOG_TAG, "Hangup all calls due to abnormal held call exists, nonMpty=%d, mpty=%d",
-            nonMptyHeldCount, mptyHeldCount);
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData());
+             nonMptyHeldCount, mptyHeldCount);
+        sp<RfxMessage> msg =
+                RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP_ALL, RfxVoidData());
         requestToMcl(msg);
     }
     /// @}
@@ -2922,8 +2935,8 @@ Vector<RfxPreciseCallState*>* RtcCallController::parsePreciseCallState(RIL_Call 
     return list;
 }
 
-void RtcCallController::updateDisconnecting(
-        Vector<RfxPreciseCallState*>* origList, int hangupCallId) {
+void RtcCallController::updateDisconnecting(Vector<RfxPreciseCallState*>* origList,
+                                            int hangupCallId) {
     int origSize = origList->size();
     for (int i = 0; i < origSize; i++) {
         if (origList->itemAt(i)->mCallId == hangupCallId) {
@@ -2933,8 +2946,8 @@ void RtcCallController::updateDisconnecting(
     }
 }
 
-void RtcCallController::updateDisconnecting(
-        Vector<RfxPreciseCallState*>* origList, bool isForegnd) {
+void RtcCallController::updateDisconnecting(Vector<RfxPreciseCallState*>* origList,
+                                            bool isForegnd) {
     int origSize = origList->size();
     for (int i = 0; i < origSize; i++) {
         if (isForegnd) {
@@ -2943,15 +2956,15 @@ void RtcCallController::updateDisconnecting(
             }
         } else {
             if (origList->itemAt(i)->mOrigState == ORIG_HOLDING ||
-                    origList->itemAt(i)->mOrigState == ORIG_WAITING) {
+                origList->itemAt(i)->mOrigState == ORIG_WAITING) {
                 origList->itemAt(i)->mOrigState = ORIG_BACKGND_DISCONNECTING;
             }
         }
     }
 }
 
-void RtcCallController::updateDisconnected(
-        Vector<RfxPreciseCallState*>* oldList, Vector<RfxPreciseCallState*>* newList) {
+void RtcCallController::updateDisconnected(Vector<RfxPreciseCallState*>* oldList,
+                                           Vector<RfxPreciseCallState*>* newList) {
     int oldSize = oldList->size();
     int newSize = newList->size();
     for (int i = 0; i < oldSize; i++) {
@@ -2980,8 +2993,8 @@ void RtcCallController::freePreciseCallStateList(Vector<RfxPreciseCallState*>* l
     }
 }
 
-void RtcCallController::updatePreciseCallStateList(
-        RfxPreciseCallState* preciseCallState, Vector<RfxPreciseCallState*>* list) {
+void RtcCallController::updatePreciseCallStateList(RfxPreciseCallState* preciseCallState,
+                                                   Vector<RfxPreciseCallState*>* list) {
     preciseCallState->dump();
     if (preciseCallState->mOrigState != ORIG_DISCONNECTED) {
         list->add(preciseCallState);
@@ -2995,10 +3008,10 @@ void RtcCallController::responseDialFailed(const sp<RfxMessage>& message) {
     }
 
     if (mOriginalDialMessage != NULL &&
-           (message->getId() == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
-            message->getId() == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
-            message->getId() == RFX_MSG_REQUEST_DIAL ||
-            message->getId() == RFX_MSG_REQUEST_IMS_DIAL)) {
+        (message->getId() == RFX_MSG_REQUEST_LOCAL_EMERGENCY_DIAL ||
+         message->getId() == RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL ||
+         message->getId() == RFX_MSG_REQUEST_DIAL ||
+         message->getId() == RFX_MSG_REQUEST_IMS_DIAL)) {
         // For the two scenarios
         // Convert DIAL to LOCAL_EMERGENCY_DIAL in handleDialAsEmergencyDial
         // Convert EMERGENCY_DIAL to LOCAL_EMERGENCY_DIAL or DIAL
@@ -3011,7 +3024,6 @@ void RtcCallController::responseDialFailed(const sp<RfxMessage>& message) {
 }
 
 void RtcCallController::notifyCallInfoUpdate(const sp<RfxMessage>& message) {
-
     handleImsCallInfoUpdate(message);
     responseToRilJAndUpdateIsImsCallExist(message);
 }
@@ -3019,10 +3031,8 @@ void RtcCallController::notifyCallInfoUpdate(const sp<RfxMessage>& message) {
 bool RtcCallController::rejectDualDialForDSDS() {
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         if (i != m_slot_id) {
-            if (getStatusManager(i)->getIntValue(
-                    RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
-                logD(RFX_LOG_TAG, "reject dial on slot%d, since slot%d has call",
-                        m_slot_id, i);
+            if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
+                logD(RFX_LOG_TAG, "reject dial on slot%d, since slot%d has call", m_slot_id, i);
                 mUseLocalCallFailCause = true;
                 mDialLastError = CALL_FAIL_ERROR_UNSPECIFIED;
                 return true;
@@ -3037,18 +3047,18 @@ bool RtcCallController::rejectDualDialForDSDS() {
 RIL_CALL_INFO_TYPE RtcCallController::shouldRejectIncomingCall(int callMode) {
     int dsdaMode = getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_DSDA_MODE, 0);
 
-    for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++){
+    for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         if (i != m_slot_id) {
             // By pass for 5G+4G DSDA.
             if (dsdaMode == 1 && callMode >= MIN_IMS_CALL_MODE && callMode <= MAX_IMS_CALL_MODE) {
-                RtcCallController *ctrl =
-                    (RtcCallController *) findController(i, RFX_OBJ_CLASS_INFO(RtcCallController));
+                RtcCallController* ctrl = (RtcCallController*)findController(
+                        i, RFX_OBJ_CLASS_INFO(RtcCallController));
                 if (ctrl != NULL && ctrl->allowImsIncomingOnAnotherSlot()) {
                     // Other slot has call exist.
-                    if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0
-                            && mImsCallRat == CALL_RAT_NR) {
+                    if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0 &&
+                        mImsCallRat == CALL_RAT_NR) {
                         logD(RFX_LOG_TAG, "handle dsda case on slot%d, since slot%d has call",
-                                m_slot_id, i);
+                             m_slot_id, i);
                         getStatusManager()->setBoolValue(RFX_STATUS_KEY_IMS_CC_FAKE_MODE, true);
                         mImsFakeMode = true;
                         // Solution for CS retry MT timer for some operators.
@@ -3063,45 +3073,42 @@ RIL_CALL_INFO_TYPE RtcCallController::shouldRejectIncomingCall(int callMode) {
                 }
             } else {
                 // Reject incoming call for DSDS
-                if (getStatusManager(i)->getIntValue(
-                        RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
-                    logD(RFX_LOG_TAG, "reject MT on slot%d, since slot%d has call",
-                            m_slot_id, i);
+                if (getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0) > 0) {
+                    logD(RFX_LOG_TAG, "reject MT on slot%d, since slot%d has call", m_slot_id, i);
                     return MT_CALL_REJECTED;
                 }
             }
         } else {
-            //Reject incoming for Terminal Based Call Waiting
-            char cwMode[RFX_PROPERTY_VALUE_MAX] = { 0 };
+            // Reject incoming for Terminal Based Call Waiting
+            char cwMode[RFX_PROPERTY_VALUE_MAX] = {0};
             getMSimProperty(m_slot_id, (char*)PROPERTY_TBCW_MODE, cwMode);
             int callCount = getStatusManager(i)->getIntValue(RFX_STATUS_KEY_VOICE_CALL_COUNT, 0);
             if (!strcmp(cwMode, TBCW_OFF) && (callCount > 0)) {
-                logE(RFX_LOG_TAG, "Reject MT on slot%d, since slot%d has call",
-                        m_slot_id, i);
+                logE(RFX_LOG_TAG, "Reject MT on slot%d, since slot%d has call", m_slot_id, i);
                 return MT_CALL_REJECTED;
             }
 
             if (hasImsCall(m_slot_id)) {
-                //Reject incoming for IMS if ECC exists
+                // Reject incoming for IMS if ECC exists
                 Vector<RfxImsCallInfo*> calls = mImsCalls[m_slot_id];
                 for (int i = 0; i < (int)calls.size(); ++i) {
                     RfxImsCallInfo* call = calls[i];
                     if (call->isEcc()) {
                         logD(RFX_LOG_TAG, "Reject MT on slot%d, since there is an IMS ECC",
-                                m_slot_id);
+                             m_slot_id);
                         return MT_CALL_REJECTED;
                     }
                 }
-                String8 rejectMode = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_IMS_INCOMING_CALL_RULE);
+                String8 rejectMode =
+                        getStatusManager()->getString8Value(RFX_STATUS_KEY_IMS_INCOMING_CALL_RULE);
 
                 logD(RFX_LOG_TAG, "rejectMode %s", rejectMode.string());
                 if (rejectMode == "1") {
                     if (callMode == RfxImsCallInfo::IMS_VIDEO ||
-                            callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
-                            callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS ) {
+                        callMode == RfxImsCallInfo::IMS_VIDEO_CONF ||
+                        callMode == RfxImsCallInfo::IMS_VIDEO_CONF_PARTS) {
                         logD(RFX_LOG_TAG, "Reject MT on slot%d, since MT video call during call",
-                                m_slot_id);
+                             m_slot_id);
                         return MT_CALL_REJECTED;
                     }
 
@@ -3109,7 +3116,7 @@ RIL_CALL_INFO_TYPE RtcCallController::shouldRejectIncomingCall(int callMode) {
                         RfxImsCallInfo* call = calls[i];
                         if (call->isVideo()) {
                             logD(RFX_LOG_TAG, "Reject MT on slot%d, since during video call",
-                                    m_slot_id);
+                                 m_slot_id);
                             return MT_CALL_REJECTED;
                         }
                     }
@@ -3118,14 +3125,14 @@ RIL_CALL_INFO_TYPE RtcCallController::shouldRejectIncomingCall(int callMode) {
                         RfxImsCallInfo* call = calls[i];
                         if (call->isConferenceHost()) {
                             logD(RFX_LOG_TAG, "Reject MT on slot%d, since during conference call",
-                                    m_slot_id);
+                                 m_slot_id);
                             return MT_CALL_REJECTED;
                         }
                     }
                 }
                 // GWSD
-                if (callMode >= MIN_IMS_CALL_MODE && callMode <= MAX_IMS_CALL_MODE
-                        && mImsCallRat == CALL_RAT_NR) {
+                if (callMode >= MIN_IMS_CALL_MODE && callMode <= MAX_IMS_CALL_MODE &&
+                    mImsCallRat == CALL_RAT_NR) {
                     if (RfxGwsdUtils::getCallControlHandler() != NULL) {
                         return RfxGwsdUtils::getCallControlHandler()->handleImsIncomingCall(this);
                     }
@@ -3143,9 +3150,8 @@ void RtcCallController::approveIncoming(int callId, int seqNo, bool approve) {
     msg_data[1] = callId;
     msg_data[2] = seqNo;
     msg_data[3] = -1;
-    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(),
-            RFX_MSG_REQUEST_SET_CALL_INDICATION,
-            RfxIntsData(msg_data, 4));
+    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_CALL_INDICATION,
+                                                   RfxIntsData(msg_data, 4));
     requestToMcl(msg);
 }
 
@@ -3161,16 +3167,15 @@ void RtcCallController::onAutoApproveTimer() {
     msg_data[1] = mPendingIncomingCallId;
     msg_data[2] = mSeqNo;
     msg_data[3] = -1;
-    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(),
-            RFX_MSG_REQUEST_SET_CALL_INDICATION,
-            RfxIntsData(msg_data, 4));
+    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_CALL_INDICATION,
+                                                   RfxIntsData(msg_data, 4));
     requestToMcl(msg);
     mSeqNo = -1;
     resetImsFakeMode();
 }
 
 void RtcCallController::updateCallCount() {
-    int callCount = getValidImsCallCount() + mCsCallCount; // PS + CS call count
+    int callCount = getValidImsCallCount() + mCsCallCount;  // PS + CS call count
     if (mCsCallCount == 0) {
         callCount += mPendingSrvccCallCount;
     }
@@ -3220,18 +3225,18 @@ int RtcCallController::getPendingMTCallId() {
 
 bool RtcCallController::handleDialAsEmergencyDial(const sp<RfxMessage>& message) {
     if (message->getId() == RFX_MSG_REQUEST_DIAL || message->getId() == RFX_MSG_REQUEST_IMS_DIAL) {
-        RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+        RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
         String8 dialNumber = String8::format("%s", pDial->address);
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
 
         if (eccNumberController->getEmergencyCallRouting(dialNumber) == ECC_ROUTING_EMERGENCY) {
             int serviceCategory = eccNumberController->getServiceCategory(dialNumber);
             logD(RFX_LOG_TAG, "handleDialAsEmergencyDial: %s,%d",
-                    RfxRilUtils::pii(RFX_LOG_TAG, pDial->address), serviceCategory);
+                 RfxRilUtils::pii(RFX_LOG_TAG, pDial->address), serviceCategory);
             requestToMcl(RfxMessage::obtainRequest(getSlotId(),
-                    RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
-                    RfxIntsData(&serviceCategory, 1)));
+                                                   RFX_MSG_REQUEST_LOCAL_SET_ECC_SERVICE_CATEGORY,
+                                                   RfxIntsData(&serviceCategory, 1)));
             return true;
         }
     }
@@ -3244,12 +3249,12 @@ void RtcCallController::handleRedialEcc(const sp<RfxMessage>& urc) {
     char** params = (char**)data->getData();
     int callId = atoi(params[0]);
 
-    logD(RFX_LOG_TAG,"[%s], callId=%d", __FUNCTION__, callId);
+    logD(RFX_LOG_TAG, "[%s], callId=%d", __FUNCTION__, callId);
 
     if (callId != 0 && mRedialCtrl != NULL && mImsDialMessage != NULL) {
-        logD(RFX_LOG_TAG,"[%s], check send +EMCS for ecc redialing", __FUNCTION__);
-        sp<RfxMessage> imsEmergencyDialMessage = RfxMessage::obtainRequest(getSlotId(),
-                    RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL, mImsDialMessage, true);
+        logD(RFX_LOG_TAG, "[%s], check send +EMCS for ecc redialing", __FUNCTION__);
+        sp<RfxMessage> imsEmergencyDialMessage = RfxMessage::obtainRequest(
+                getSlotId(), RFX_MSG_REQUEST_LOCAL_IMS_EMERGENCY_DIAL, mImsDialMessage, true);
         mRedialCtrl->notifyRilRequest(imsEmergencyDialMessage);
         mRedialCtrl->setEccCallId(callId);
         mImsDialMessage = NULL;
@@ -3260,17 +3265,17 @@ void RtcCallController::handleRedialEcc(const sp<RfxMessage>& urc) {
 // Better hang up the incoming call.
 void RtcCallController::hangupIncomingCall() {
     if (mPendingIncomingCallId != -1) {
-        logD(RFX_LOG_TAG,"[%s], hang up incoming call due to ECC dial", __FUNCTION__);
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                getSlotId(), RFX_MSG_REQUEST_HANGUP, RfxIntsData(&mPendingIncomingCallId, 1));
+        logD(RFX_LOG_TAG, "[%s], hang up incoming call due to ECC dial", __FUNCTION__);
+        sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP,
+                                                       RfxIntsData(&mPendingIncomingCallId, 1));
         requestToMcl(msg);
     }
 }
 
 void RtcCallController::hangupIncomingCallOnAllSlot() {
-    for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++){
-        RtcCallController *ctrl =
-                (RtcCallController *) findController(i, RFX_OBJ_CLASS_INFO(RtcCallController));
+    for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
+        RtcCallController* ctrl =
+                (RtcCallController*)findController(i, RFX_OBJ_CLASS_INFO(RtcCallController));
         if (ctrl != NULL) {
             ctrl->hangupIncomingCall();
         }
@@ -3289,14 +3294,14 @@ bool RtcCallController::handleSetCallIndicationRequest(const sp<RfxMessage>& mes
 }
 
 bool RtcCallController::reportFakeImsRingingCall(const sp<RfxMessage>& msg, int seqNo) {
-     if (getStatusManager()->getBoolValue(RFX_STATUS_KEY_IMS_CC_FAKE_MODE)) {
+    if (getStatusManager()->getBoolValue(RFX_STATUS_KEY_IMS_CC_FAKE_MODE)) {
         mImsFakeMode = true;
         // Report fake resposne.
-        sp<RfxMessage> response =
-                RfxMessage::obtainResponse(RIL_E_SUCCESS, msg, false);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(RIL_E_SUCCESS, msg, false);
         responseToRilj(response);
 
-        // +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>[, <number>, <toa>], ""
+        // +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>[, <number>, <toa>],
+        // ""
         Vector<RfxImsCallInfo*> calls = mImsCalls[m_slot_id];
         RfxImsCallInfo* incomingCall = NULL;
         for (int i = 0; i < (int)calls.size(); i++) {
@@ -3312,32 +3317,32 @@ bool RtcCallController::reportFakeImsRingingCall(const sp<RfxMessage>& msg, int 
             int callId = incomingCall->getCallId();
             string number = incomingCall->getNumber().string();
             int callMode = incomingCall->getCallMode();
-            char *data[10] = { 0 };
+            char* data[10] = {0};
 
-            data[0] = (char *) alloca(3);
+            data[0] = (char*)alloca(3);
             sprintf(data[0], "%d", callId);
 
-            data[1] = (char *) alloca(2);
+            data[1] = (char*)alloca(2);
             sprintf(data[1], "%d", 0);
 
-            data[2] = (char *) alloca(2);
+            data[2] = (char*)alloca(2);
             sprintf(data[2], "%d", 0);
 
-            data[3] = (char *) alloca(2);
+            data[3] = (char*)alloca(2);
             sprintf(data[3], "%d", 1);
 
-            data[4] = (char *) alloca(2);
+            data[4] = (char*)alloca(2);
             sprintf(data[4], "%d", 1);
 
-            data[5] = (char *) alloca(3);
+            data[5] = (char*)alloca(3);
             sprintf(data[5], "%d", callMode);
 
             data[6] = strdup(number.c_str());
 
-            data[7] = (char *) alloca(4);
+            data[7] = (char*)alloca(4);
             sprintf(data[7], "%d", 129);
 
-            data[8] = (char *) alloca(1);
+            data[8] = (char*)alloca(1);
             sprintf(data[8], "");
 
             data[9] = NULL;
@@ -3347,8 +3352,8 @@ bool RtcCallController::reportFakeImsRingingCall(const sp<RfxMessage>& msg, int 
             }
 
             RFX_LOG_D(RFX_LOG_TAG, "notifyCallIncoming callId: %d", callId);
-            sp<RfxMessage> urc = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_CALL_INFO_INDICATION,
-                    RfxStringsData(data, 10));
+            sp<RfxMessage> urc = RfxMessage::obtainUrc(
+                    m_slot_id, RFX_MSG_UNSOL_CALL_INFO_INDICATION, RfxStringsData(data, 10));
             responseToRilj(urc);
             mSeqNo = seqNo;
             free(data[6]);
@@ -3361,15 +3366,15 @@ bool RtcCallController::reportFakeImsRingingCall(const sp<RfxMessage>& msg, int 
 void RtcCallController::maybeSendNoEcbm(bool isForce) {
     bool emergencyMode = getStatusManager()->getBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE, false);
     if (emergencyMode == false || isForce) {
-        sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_NO_EMERGENCY_CALLBACK_MODE,
-            RfxVoidData());
+        sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(
+                m_slot_id, RFX_MSG_UNSOL_NO_EMERGENCY_CALLBACK_MODE, RfxVoidData());
         responseToRilj(urcToRilj);
     }
 }
 
 void RtcCallController::handleEmergencyBearerSupportNotify(const sp<RfxMessage>& message) {
     // +CNEMS1: <s1_support>
-    int eccBearerSupport = ((int *)message->getData()->getData())[0];
+    int eccBearerSupport = ((int*)message->getData()->getData())[0];
     logD(RFX_LOG_TAG, "[%s], eccBearerSupport=%d", __FUNCTION__, eccBearerSupport);
     getStatusManager()->setIntValue(RFX_STATUS_KEY_IMS_EMERGENCY_BEARER_SUPPORT, eccBearerSupport);
 }
@@ -3388,11 +3393,11 @@ void RtcCallController::handleImsGetCurrentCalls(const sp<RfxMessage>& message) 
     countAllCalls += countSipCalls;
 
     logD(RFX_LOG_TAG, "handleImsGetCurrentCalls: countSipCalls %d, countVirtualCalls %d",
-            countSipCalls, countAllCalls);
+         countSipCalls, countAllCalls);
 
-    RIL_Call ** pp_calls = (RIL_Call **)alloca(countAllCalls * sizeof(RIL_Call *));
+    RIL_Call** pp_calls = (RIL_Call**)alloca(countAllCalls * sizeof(RIL_Call*));
     RFX_ASSERT(pp_calls != NULL);
-    RIL_Call * p_calls = (RIL_Call *)alloca(countAllCalls * sizeof(RIL_Call));
+    RIL_Call* p_calls = (RIL_Call*)alloca(countAllCalls * sizeof(RIL_Call));
     RFX_ASSERT(p_calls != NULL);
     memset(p_calls, 0, countAllCalls * sizeof(RIL_Call));
 
@@ -3412,12 +3417,13 @@ void RtcCallController::handleImsGetCurrentCalls(const sp<RfxMessage>& message) 
         index++;
     }
 
-    sp<RfxMessage> response = RfxMessage::obtainResponse(slotId, RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS,
-            RIL_E_SUCCESS, RfxCallListData(pp_calls, sizeof(RIL_Call *) * countAllCalls), message);
+    sp<RfxMessage> response = RfxMessage::obtainResponse(
+            slotId, RFX_MSG_REQUEST_IMS_GET_CURRENT_CALLS, RIL_E_SUCCESS,
+            RfxCallListData(pp_calls, sizeof(RIL_Call*) * countAllCalls), message);
     responseToRilj(response);
 }
 
-void RtcCallController::imsCallToRilCall(int &index, RfxImsCallInfo* call, RIL_Call* p_calls) {
+void RtcCallController::imsCallToRilCall(int& index, RfxImsCallInfo* call, RIL_Call* p_calls) {
     string number = call->getNumber().string();
     string name = call->getName().string();
     Vector<RfxImsCallInfo*> participantList = call->getParticipantList();
@@ -3435,13 +3441,15 @@ void RtcCallController::imsCallToRilCall(int &index, RfxImsCallInfo* call, RIL_C
     p_calls[index].uusInfo = NULL;
     p_calls[index].speechCodec = mSpeechCodec;  // RmcCallControlUrcHandler::getSpeechCodec();
 
-    logV(RFX_LOG_TAG, "imsCallToRilCall state %d, index %d, toa %d, isMpty %d, isMT %d, "
-        "isVoice %d, isVoicePrivacy %d, number %s, numberPresentation %d, name %s,"
-        "namePresentation %d, speechCodec %d", p_calls[index].state, p_calls[index].index,
-        p_calls[index].toa, p_calls[index].isMpty, p_calls[index].isMT, p_calls[index].isVoice,
-        p_calls[index].isVoicePrivacy, RfxRilUtils::pii(RFX_LOG_TAG, p_calls[index].number),
-        p_calls[index].numberPresentation, RfxRilUtils::pii(RFX_LOG_TAG, p_calls[index].name),
-        p_calls[index].namePresentation, p_calls[index].speechCodec);
+    logV(RFX_LOG_TAG,
+         "imsCallToRilCall state %d, index %d, toa %d, isMpty %d, isMT %d, "
+         "isVoice %d, isVoicePrivacy %d, number %s, numberPresentation %d, name %s,"
+         "namePresentation %d, speechCodec %d",
+         p_calls[index].state, p_calls[index].index, p_calls[index].toa, p_calls[index].isMpty,
+         p_calls[index].isMT, p_calls[index].isVoice, p_calls[index].isVoicePrivacy,
+         RfxRilUtils::pii(RFX_LOG_TAG, p_calls[index].number), p_calls[index].numberPresentation,
+         RfxRilUtils::pii(RFX_LOG_TAG, p_calls[index].name), p_calls[index].namePresentation,
+         p_calls[index].speechCodec);
 
     for (int j = 0; j < (int)participantList.size(); j++) {
         index++;
@@ -3462,7 +3470,7 @@ void RtcCallController::handleImsHangupFgResumeBg(const sp<RfxMessage>& message)
 
         logD(RFX_LOG_TAG, "handleImsHangupFgResumeBg hangup call %d", callId);
         sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP,
-                             RfxIntsData(msg_data, 1));
+                                                       RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         activeCalls[0]->setCallState(RfxImsCallInfo::STATE_TERMINATING);
         mHangupFgResumeBgMessage = message;
@@ -3488,8 +3496,8 @@ void RtcCallController::handleImsHangupFgResumeBg(const sp<RfxMessage>& message)
     } else {
         // Return error if no any foregruond call. (1H, 1W, 1H1W)
         logE(RFX_LOG_TAG, "handleImsHangupFgResumeBg no active call");
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message,
-                true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
         responseToRilj(responseMsg);
     }
 }
@@ -3508,20 +3516,23 @@ void RtcCallController::checkIfResumeBg(int slotId) {
         int callId = activeCalls[0]->getCallId();
         if (callId != mCallIdExpectToResumeOrAnswer) {
             logE(RFX_LOG_TAG, "checkIfResumeBg active call %d exist, can't resume background call",
-                    callId);
+                 callId);
             ret = RIL_E_GENERIC_FAILURE;
         } else {
-            logW(RFX_LOG_TAG, "checkIfResumeBg active call %d == mCallIdExpectToResumeOrAnswer"
-                ", regards it as success.", callId);
+            logW(RFX_LOG_TAG,
+                 "checkIfResumeBg active call %d == mCallIdExpectToResumeOrAnswer"
+                 ", regards it as success.",
+                 callId);
         }
     } else {
         RfxImsCallInfo* call = getImsCallByCallId(calls, mCallIdExpectToResumeOrAnswer);
         if (call != NULL) {
             if (call->getCallState() == RfxImsCallInfo::STATE_INCOMING ||
-                    call->getCallState() == RfxImsCallInfo::STATE_WAITING) {
-                logD(RFX_LOG_TAG, "checkIfResumeBg answer waiting call %d", mCallIdExpectToResumeOrAnswer);
+                call->getCallState() == RfxImsCallInfo::STATE_WAITING) {
+                logD(RFX_LOG_TAG, "checkIfResumeBg answer waiting call %d",
+                     mCallIdExpectToResumeOrAnswer);
                 sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER,
-                        RfxVoidData());
+                                                               RfxVoidData());
                 requestToMcl(msg);
                 mCallIdAnswering = mCallIdExpectToResumeOrAnswer;
                 mCallIdExpectToResumeOrAnswer = 0;
@@ -3531,9 +3542,10 @@ void RtcCallController::checkIfResumeBg(int slotId) {
             } else if (call->getCallState() == RfxImsCallInfo::STATE_HELD) {
                 int msg_data[1];
                 msg_data[0] = mCallIdExpectToResumeOrAnswer;
-                logD(RFX_LOG_TAG, "checkIfResumeBg resume background call %d", mCallIdExpectToResumeOrAnswer);
-                sp<RfxMessage> msg =
-                        RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL, RfxIntsData(msg_data, 1));
+                logD(RFX_LOG_TAG, "checkIfResumeBg resume background call %d",
+                     mCallIdExpectToResumeOrAnswer);
+                sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                        getSlotId(), RFX_MSG_REQUEST_RESUME_CALL, RfxIntsData(msg_data, 1));
                 requestToMcl(msg);
                 mCallIdResuming = mCallIdExpectToResumeOrAnswer;
                 mCallIdExpectToResumeOrAnswer = 0;
@@ -3543,12 +3555,12 @@ void RtcCallController::checkIfResumeBg(int slotId) {
             } else {
                 // We expect no need to deal this case.
                 logE(RFX_LOG_TAG, "checkIfResumeBg call %d, state %d, return error",
-                        mCallIdExpectToResumeOrAnswer, call->getCallState());
+                     mCallIdExpectToResumeOrAnswer, call->getCallState());
                 ret = RIL_E_GENERIC_FAILURE;
             }
         } else {
             logE(RFX_LOG_TAG, "checkIfResumeBg call %d not exist, return error",
-                    mCallIdExpectToResumeOrAnswer);
+                 mCallIdExpectToResumeOrAnswer);
             ret = RIL_E_GENERIC_FAILURE;
         }
     }
@@ -3571,8 +3583,8 @@ void RtcCallController::checkIfResumeBg(int slotId) {
                 int msg_data[1];
                 msg_data[0] = mCallIdToBeHeld;
                 logE(RFX_LOG_TAG, "Resume or answer failed, swap back %d", mCallIdToBeHeld);
-                sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL,
-                        RfxIntsData(msg_data, 1));
+                sp<RfxMessage> msg = RfxMessage::obtainRequest(
+                        getSlotId(), RFX_MSG_REQUEST_RESUME_CALL, RfxIntsData(msg_data, 1));
                 requestToMcl(msg);
                 mCallIdResuming = mCallIdToBeHeld;
             }
@@ -3597,7 +3609,7 @@ void RtcCallController::handleImsHangupWaitingOrBackground(const sp<RfxMessage>&
 
         logD(RFX_LOG_TAG, "handleImsHangupWaitingOrBackground hangup waiting call %d", callId);
         sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP,
-                RfxIntsData(msg_data, 1));
+                                                       RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         waitingCalls[0]->setCallState(RfxImsCallInfo::STATE_TERMINATING);
         mHangupWaitingOrBgMessage = message;
@@ -3612,7 +3624,7 @@ void RtcCallController::handleImsHangupWaitingOrBackground(const sp<RfxMessage>&
 
         logD(RFX_LOG_TAG, "handleImsHangupWaitingOrBackground hangup background call %d", callId);
         sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP,
-                             RfxIntsData(msg_data, 1));
+                                                       RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         holdingCalls[0]->setCallState(RfxImsCallInfo::STATE_TERMINATING);
         mHangupWaitingOrBgMessage = message;
@@ -3621,8 +3633,7 @@ void RtcCallController::handleImsHangupWaitingOrBackground(const sp<RfxMessage>&
 
     // Return error if no any waiting or background call. (1A or no call)
     logE(RFX_LOG_TAG, "handleImsHangupWaitingOrBackground no any waiting or background call.");
-    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message,
-            true);
+    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
     responseToRilj(responseMsg);
 }
 
@@ -3638,14 +3649,14 @@ void RtcCallController::handleImsSwitchFgBg(const sp<RfxMessage>& message) {
     int waitingCallSize = waitingCalls.size();
     int holdingCallSize = holdingCalls.size();
 
-    logD(RFX_LOG_TAG, "handleImsSwitchFgBg Active:%d, Holding:%d, Waiting:%d",
-            activeCallSize, waitingCallSize, holdingCallSize);
+    logD(RFX_LOG_TAG, "handleImsSwitchFgBg Active:%d, Holding:%d, Waiting:%d", activeCallSize,
+         waitingCallSize, holdingCallSize);
 
     // Return error when 1A1H1W.
     if (activeCallSize > 0 && waitingCallSize > 0 && holdingCallSize > 0) {
         logE(RFX_LOG_TAG, "handleImsSwitchFgBg 1A1H1W");
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message,
-                true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
         responseToRilj(responseMsg);
         return;
     }
@@ -3657,7 +3668,7 @@ void RtcCallController::handleImsSwitchFgBg(const sp<RfxMessage>& message) {
         msg_data[0] = callId;
         logD(RFX_LOG_TAG, "handleImsSwitchFgBg hold foreground call %d", callId);
         sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HOLD_CALL,
-                             RfxIntsData(msg_data, 1));
+                                                       RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         mSwitchFgBgMessage = message;
 
@@ -3679,8 +3690,8 @@ void RtcCallController::handleImsSwitchFgBg(const sp<RfxMessage>& message) {
     if (waitingCallSize > 0) {
         int callId = waitingCalls[0]->getCallId();
         logD(RFX_LOG_TAG, "handleImsSwitchFgBg answer waiting call %d", callId);
-        sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER,
-                RfxVoidData());
+        sp<RfxMessage> msg =
+                RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_ANSWER, RfxVoidData());
         mCallIdAnswering = callId;
         requestToMcl(msg);
         mSwitchFgBgMessage = message;
@@ -3694,8 +3705,8 @@ void RtcCallController::handleImsSwitchFgBg(const sp<RfxMessage>& message) {
         msg_data[0] = callId;
 
         logD(RFX_LOG_TAG, "checkIfResumeBg resume background call %d", callId);
-        sp<RfxMessage> request =
-                RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL, RfxIntsData(msg_data, 1));
+        sp<RfxMessage> request = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL,
+                                                           RfxIntsData(msg_data, 1));
         requestToMcl(request);
         mCallIdResuming = callId;
         mSwitchFgBgMessage = message;
@@ -3704,8 +3715,7 @@ void RtcCallController::handleImsSwitchFgBg(const sp<RfxMessage>& message) {
 
     // Return error if no any IMS call.
     logE(RFX_LOG_TAG, "handleImsSwitchFgBg No any IMS call");
-    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message,
-            true);
+    sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
     responseToRilj(responseMsg);
 }
 
@@ -3714,7 +3724,7 @@ Vector<RfxImsCallInfo*> RtcCallController::getWaitingCall(Vector<RfxImsCallInfo*
     for (int i = 0; i < (int)calls.size(); i++) {
         RfxImsCallInfo* call = calls[i];
         if (call->getCallState() == RfxImsCallInfo::STATE_INCOMING ||
-                call->getCallState() == RfxImsCallInfo::STATE_WAITING) {
+            call->getCallState() == RfxImsCallInfo::STATE_WAITING) {
             waitingCalls.push_back(call);
         }
     }
@@ -3792,8 +3802,8 @@ void RtcCallController::handleEconfResult(const sp<RfxMessage>& message) {
     int op = atoi(params[1]);
     int joinedCallId = atoi(params[5]);
 
-    logD(RFX_LOG_TAG, "handleEconfResult op %d, result %d, confId %d, joindCallId %d",
-            op, result, confId, joinedCallId);
+    logD(RFX_LOG_TAG, "handleEconfResult op %d, result %d, confId %d, joindCallId %d", op, result,
+         confId, joinedCallId);
     // <operation>: 0 = ADD; 1 = REMOVE
     if (op == 0) {
         // <result>: 0 = success; 1 = failed
@@ -3801,7 +3811,8 @@ void RtcCallController::handleEconfResult(const sp<RfxMessage>& message) {
             RfxImsCallInfo* confCall = getImsCallByCallId(calls, confId);
             // Add participant into conference.
             if (confCall != NULL) {
-                RfxImsCallInfo* participantCall = getImsCallByCallId(mToBeMergedCalls, joinedCallId);
+                RfxImsCallInfo* participantCall =
+                        getImsCallByCallId(mToBeMergedCalls, joinedCallId);
                 if (participantCall != NULL) {
                     int newCallId = confId * CONF_CALL_ID_SHIFT + joinedCallId;
                     participantCall->setCallId(newCallId);
@@ -3810,12 +3821,14 @@ void RtcCallController::handleEconfResult(const sp<RfxMessage>& message) {
                     participantCall->setIsConferenceHost(true);
                     confCall->addParticipant(participantCall);
                     // When 133 later than +ECONF.
-                    RfxImsCallInfo* OriginalParticipantCall = getImsCallByCallId(calls, joinedCallId);
+                    RfxImsCallInfo* OriginalParticipantCall =
+                            getImsCallByCallId(calls, joinedCallId);
                     if (OriginalParticipantCall != NULL) {
                         mCallIdsDisconnecting.push_back(joinedCallId);
                     }
                 } else {
-                    logE(RFX_LOG_TAG, "handleEconfResult can't find participantCall in mToBeMergedCalls");
+                    logE(RFX_LOG_TAG,
+                         "handleEconfResult can't find participantCall in mToBeMergedCalls");
                 }
             }
         }
@@ -3834,7 +3847,7 @@ void RtcCallController::handleEconfResult(const sp<RfxMessage>& message) {
 }
 
 void RtcCallController::onParticipantsUpdate(vector<sp<ConferenceCallUser>> users,
-        bool autoTerminate) {
+                                             bool autoTerminate) {
     logD(RFX_LOG_TAG, "onParticipantsUpdate autoTerminate %d", autoTerminate);
     Vector<RfxImsCallInfo*> calls = mImsCalls[m_slot_id];
     Vector<RfxImsCallInfo*> conferenceHostCalls = getConferenceHostCall(calls);
@@ -3848,21 +3861,22 @@ void RtcCallController::onParticipantsUpdate(vector<sp<ConferenceCallUser>> user
             bool matched = false;
             for (int j = 0; j < (int)users.size(); j++) {
                 sp<ConferenceCallUser> user = users[j];
-                if (MtkPhoneNumberUtils::compareLoosely(
-                            participant->getNumber().string(), user->mUserAddr)) {
+                if (MtkPhoneNumberUtils::compareLoosely(participant->getNumber().string(),
+                                                        user->mUserAddr)) {
                     matched = true;
                     logD(RFX_LOG_TAG, "onParticipantsUpdate: match address %s, status %s",
-                            RfxRilUtils::pii(RFX_LOG_TAG, user->mUserAddr.data()),
-                            user->mStatus.data());
+                         RfxRilUtils::pii(RFX_LOG_TAG, user->mUserAddr.data()),
+                         user->mStatus.data());
                     if (user->mStatus == RtcImsConferenceCallMessageHandler::STATUS_DISCONNECTED) {
                         conferenceHostCalls[0]->removeParticipant(participant);
-                        break;  // Just remove one participant because may exist multiple participants with same address.
+                        break;  // Just remove one participant because may exist multiple
+                                // participants with same address.
                     }
                 }
             }
             if (matched == false) {
                 logD(RFX_LOG_TAG, "onParticipantsUpdate: not match, remove call %d",
-                        participant->getCallId());
+                     participant->getCallId());
                 conferenceHostCalls[0]->removeParticipant(participant);
             }
         }
@@ -3876,12 +3890,12 @@ void RtcCallController::onParticipantsUpdate(vector<sp<ConferenceCallUser>> user
             int msg_data[1];
             msg_data[0] = callId;
             sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_HANGUP,
-                    RfxIntsData(msg_data, 1));
+                                                           RfxIntsData(msg_data, 1));
             requestToMcl(msg);
             conferenceHostCalls[0]->setCallState(RfxImsCallInfo::STATE_TERMINATING);
         } else {
-            sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(m_slot_id,
-                    RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED, RfxVoidData());
+            sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(
+                    m_slot_id, RFX_MSG_UNSOL_IMS_RESPONSE_CALL_STATE_CHANGED, RfxVoidData());
             responseToRilj(urcToRilj);
         }
     }
@@ -3907,20 +3921,21 @@ void RtcCallController::handleImsStkCall(int slotId, char** params) {
 
     logD(RFX_LOG_TAG, "handleImsStkCall() slot: %d callId: %d", slotId, callId);
 
-    RfxImsCallInfo* call = new RfxImsCallInfo(callId, RfxImsCallInfo::STATE_ESTABLISHED,
-            String8::format("%s", number), false, false, false, false, false);
+    RfxImsCallInfo* call =
+            new RfxImsCallInfo(callId, RfxImsCallInfo::STATE_ESTABLISHED,
+                               String8::format("%s", number), false, false, false, false, false);
     addImsCall(slotId, call);
 
-    char **urcData = (char **) calloc(10, sizeof(char *));
+    char** urcData = (char**)calloc(10, sizeof(char*));
     RFX_ASSERT(urcData != NULL);
     asprintf(&urcData[0], "%d", MT_CALL_DIAL_IMS_STK);
     for (int i = 0; i < 9; i++) {
-        urcData[i+1] = strdup(params[i]);
+        urcData[i + 1] = strdup(params[i]);
     }
     // AOSP didn't handle IMS unknown call well, so we need to cache the urc
     // until it sucessfully dial out.
-    mPendingImsStkCallInfoMessage = RfxMessage::obtainUrc(m_slot_id,
-            RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO, RfxStringsData(urcData, 10));
+    mPendingImsStkCallInfoMessage = RfxMessage::obtainUrc(
+            m_slot_id, RFX_MSG_UNSOL_CALL_ADDITIONAL_INFO, RfxStringsData(urcData, 10));
 
     for (int i = 0; i < 10; i++) {
         if (urcData[i] != NULL) {
@@ -3940,7 +3955,7 @@ bool RtcCallController::allowImsIncomingOnAnotherSlot() {
     for (int i = 0; i < (int)calls.size(); i++) {
         RfxImsCallInfo* call = calls[i];
         if (call->getCallState() == RfxImsCallInfo::STATE_DIALING ||
-                call->getCallState() == RfxImsCallInfo::STATE_ALERTING) {
+            call->getCallState() == RfxImsCallInfo::STATE_ALERTING) {
             return false;
         }
     }
@@ -3955,9 +3970,10 @@ void RtcCallController::retrieveMergeFail(int activeCallIdBeforeMerge) {
     if (holdingCalls.size() > 1 && activeCalls.size() == 0) {
         int msg_data[1];
         msg_data[0] = activeCallIdBeforeMerge;
-        logD(RFX_LOG_TAG, "retrieveMergeFail() : two hold call and resume merge call %d", activeCallIdBeforeMerge);
+        logD(RFX_LOG_TAG, "retrieveMergeFail() : two hold call and resume merge call %d",
+             activeCallIdBeforeMerge);
         sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_RESUME_CALL,
-                RfxIntsData(msg_data, 1));
+                                                       RfxIntsData(msg_data, 1));
         requestToMcl(msg);
         mCallIdResuming = activeCallIdBeforeMerge;
     }
@@ -3965,14 +3981,14 @@ void RtcCallController::retrieveMergeFail(int activeCallIdBeforeMerge) {
 
 bool RtcCallController::handleClirSpecial(const sp<RfxMessage>& message) {
     if (message->getId() == RFX_MSG_REQUEST_IMS_DIAL) {
-        RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+        RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
         String8 dialNumber = String8::format("%s", pDial->address);
-        RtcEccNumberController* eccNumberController = (RtcEccNumberController *)findController(
+        RtcEccNumberController* eccNumberController = (RtcEccNumberController*)findController(
                 getSlotId(), RFX_OBJ_CLASS_INFO(RtcEccNumberController));
         bool isEmergencyNumber = eccNumberController->isEmergencyNumber(dialNumber);
         bool sendNewImsDialRequest = false;
-        String8 ignoreClirWhenEcc = getStatusManager()->getString8Value(
-                RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
+        String8 ignoreClirWhenEcc =
+                getStatusManager()->getString8Value(RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
         logD(RFX_LOG_TAG, "ignoreClirWhenEcc %s", ignoreClirWhenEcc.string());
 
         if (pDial->clir != 0 && isEmergencyNumber && (ignoreClirWhenEcc == "1")) {
@@ -3992,8 +4008,8 @@ bool RtcCallController::handleClirSpecial(const sp<RfxMessage>& message) {
         if (sendNewImsDialRequest) {
             logD(RFX_LOG_TAG, "handleClirSpecial() : modify clir to %d", pDial->clir);
             sp<RfxMessage> normalDialMessage = RfxMessage::obtainRequest(
-                    RFX_MSG_REQUEST_IMS_DIAL, RfxDialData((void*)pDial, sizeof(RIL_Dial)),
-                    message, false);
+                    RFX_MSG_REQUEST_IMS_DIAL, RfxDialData((void*)pDial, sizeof(RIL_Dial)), message,
+                    false);
             updateIsImsCallExistToStatusManager(message->getSlotId());
             requestToMcl(message);
             return false;
@@ -4020,14 +4036,14 @@ void RtcCallController::updateRQ(bool RQ) {
 
 void RtcCallController::resetImsFakeMode() {
     if (mOriginalHangupMessage != NULL) {
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                RIL_E_GENERIC_FAILURE, mOriginalHangupMessage, true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, mOriginalHangupMessage, true);
         responseToRilj(responseMsg);
         mOriginalHangupMessage = NULL;
     }
     if (mOriginalAnswerMessage != NULL) {
-        sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                RIL_E_GENERIC_FAILURE, mOriginalAnswerMessage, true);
+        sp<RfxMessage> responseMsg =
+                RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, mOriginalAnswerMessage, true);
         responseToRilj(responseMsg);
         mOriginalAnswerMessage = NULL;
     }
@@ -4070,8 +4086,8 @@ bool RtcCallController::onHandleRequestForImsFakeMode(const sp<RfxMessage>& mess
             }
         }
         if (rejectReq) {
-            sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                    RIL_E_GENERIC_FAILURE, message, false);
+            sp<RfxMessage> responseMsg =
+                    RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, false);
             responseToRilj(responseMsg);
             return true;
         }
@@ -4087,8 +4103,8 @@ bool RtcCallController::onHandleResponseForImsFakeMode(const sp<RfxMessage>& mes
         if (msg_id == RFX_MSG_REQUEST_ANSWER) {
             getStatusManager()->setBoolValue(RFX_STATUS_KEY_IMS_CC_FAKE_MODE, false);
             mImsFakeMode = false;
-            sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(
-                    RIL_E_SUCCESS, mOriginalAnswerMessage, false);
+            sp<RfxMessage> responseMsg =
+                    RfxMessage::obtainResponse(RIL_E_SUCCESS, mOriginalAnswerMessage, false);
             responseToRilj(responseMsg);
             mOriginalAnswerMessage = NULL;
             return true;

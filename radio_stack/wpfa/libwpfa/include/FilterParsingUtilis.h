@@ -17,7 +17,7 @@
 #ifndef FILTERPARSINGUTILS_H
 #define FILTERPARSINGUTILS_H
 
-#define IPTALBE_NEW_RULE    0
+#define IPTALBE_NEW_RULE 0
 #define IPTALBE_DELETE_RULE 1
 
 #define FP_LOG_TAG "WpfaParsing"
@@ -34,14 +34,14 @@ int executeFilterDeReg(uint32_t fid);
 filter_md_ap_ver_enum getUsingFilterVersion();
 void setUsingFilterVersion(filter_md_ap_ver_enum ver);
 
-//For testing, will remove
+// For testing, will remove
 void testingFilter();
 
-void initTestingFilterStructue(wifiProxy_filter_reg_t *filter);
-void initTestingFilterStructue1(wifiProxy_filter_reg_t *filter);
-void initTestingFilterStructue2(wifiProxy_filter_reg_t *filter);
-void initTestingFilterStructue3(wifiProxy_filter_reg_t *filter);
-void initTestingFilterStructue7(wifiProxy_filter_reg_t *filter);
-void initTestingFilterStructue8(wifiProxy_filter_reg_t *filter);
+void initTestingFilterStructue(wifiProxy_filter_reg_t* filter);
+void initTestingFilterStructue1(wifiProxy_filter_reg_t* filter);
+void initTestingFilterStructue2(wifiProxy_filter_reg_t* filter);
+void initTestingFilterStructue3(wifiProxy_filter_reg_t* filter);
+void initTestingFilterStructue7(wifiProxy_filter_reg_t* filter);
+void initTestingFilterStructue8(wifiProxy_filter_reg_t* filter);
 
-#endif // FILTERPARSINGUTILS_H
+#endif  // FILTERPARSINGUTILS_H

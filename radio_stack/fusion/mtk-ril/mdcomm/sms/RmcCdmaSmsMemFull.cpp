@@ -22,18 +22,16 @@
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_URC_ID(
-        RmcVoidUrsp, RFX_MSG_URC_CDMA_RUIM_SMS_STORAGE_FULL);
+RFX_REGISTER_DATA_TO_URC_ID(RmcVoidUrsp, RFX_MSG_URC_CDMA_RUIM_SMS_STORAGE_FULL);
 
-RFX_REGISTER_DATA_TO_URC_ID(
-        RmcVoidUrsp, RFX_MSG_URC_ME_SMS_STORAGE_FULL);
+RFX_REGISTER_DATA_TO_URC_ID(RmcVoidUrsp, RFX_MSG_URC_ME_SMS_STORAGE_FULL);
 
 /*****************************************************************************
  * Class RmcCdmaSmsMemFullHdlr
  *****************************************************************************/
-bool RmcCdmaSmsMemFullHdlr::onHandleRawUrc(RfxAtLine * line) {
+bool RmcCdmaSmsMemFullHdlr::onHandleRawUrc(RfxAtLine* line) {
     int err;
-    char *type = line->atTokNextstr(&err);
+    char* type = line->atTokNextstr(&err);
     if (err < 0 || type == NULL) {
         return false;
     }
@@ -41,7 +39,7 @@ bool RmcCdmaSmsMemFullHdlr::onHandleRawUrc(RfxAtLine * line) {
     return true;
 }
 
-RmcBaseUrspData *RmcCdmaSmsMemFullHdlr::onGetUrcData(int slotId) {
+RmcBaseUrspData* RmcCdmaSmsMemFullHdlr::onGetUrcData(int slotId) {
     if (String8("SM") == m_memType) {
         return new RmcVoidUrsp(RFX_MSG_URC_CDMA_RUIM_SMS_STORAGE_FULL, slotId);
 

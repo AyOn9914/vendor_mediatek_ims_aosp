@@ -29,37 +29,31 @@
 class RmcCdmaGetBcConfigReq : RmcMultiAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaGetBcConfigReq);
 
-// External Method
-public:
+    // External Method
+  public:
     // Check if broadcast is activate in modem
     //
     // RETURNS: true if broadcast is activate in mode
-    bool isBcActivate() {
-        return m_mode == 1;
-    }
+    bool isBcActivate() { return m_mode == 1; }
 
     // Get the ranges of the channels
     //
     // RETURNS: ranges of channel
-    const Vector<Range> &getChannels() const {
-        return m_channels;
-    }
+    const Vector<Range>& getChannels() const { return m_channels; }
 
     // Get the ranges of the languages
     //
     // RETURNS: ranges of the languages
-    const Vector<Range> &getLanguages() const {
-        return m_languages;
-    }
+    const Vector<Range>& getLanguages() const { return m_languages; }
 
-// Override
-protected:
-    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler *h);
-    virtual RmcAtSendInfo* onGetNextAtInfo(const String8 & cmd,RfxBaseHandler * h);
-    virtual bool onHandleIntermediates(const String8 & cmd,RfxAtLine * line,RfxBaseHandler * h);
+    // Override
+  protected:
+    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler* h);
+    virtual RmcAtSendInfo* onGetNextAtInfo(const String8& cmd, RfxBaseHandler* h);
+    virtual bool onHandleIntermediates(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h);
 
-// Implementation
-private:
+    // Implementation
+  private:
     int m_mode;
     Vector<Range> m_channels;
     Vector<Range> m_languages;
@@ -70,29 +64,26 @@ private:
  *****************************************************************************/
 class RmcCdmaGetBcConfigRsp : public RmcVoidRsp {
     RFX_DECLARE_DATA_CLASS(RmcCdmaGetBcConfigRsp);
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     RmcCdmaGetBcConfigRsp(Vector<RIL_CDMA_BroadcastSmsConfigInfo> infos, RIL_Errno e);
-// Implementation
-private:
+    // Implementation
+  private:
     Vector<RIL_CDMA_BroadcastSmsConfigInfo> m_infos;
-    Vector<RIL_CDMA_BroadcastSmsConfigInfo *> m_pInfos;
+    Vector<RIL_CDMA_BroadcastSmsConfigInfo*> m_pInfos;
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaBcGetConfigHdlr
  *****************************************************************************/
 class RmcCdmaBcGetConfigHdlr : public RmcBaseRequestHandler {
-// Constructor / Destructor
-public:
-    RmcCdmaBcGetConfigHdlr(RfxBaseHandler *h) :RmcBaseRequestHandler(h) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcCdmaBcGetConfigHdlr(RfxBaseHandler* h) : RmcBaseRequestHandler(h) {}
 
-    virtual ~RmcCdmaBcGetConfigHdlr() {
-    }
-// Override
-public:
-    virtual RmcBaseRspData *onGetRspData(RmcBaseReqData *req);
+    virtual ~RmcCdmaBcGetConfigHdlr() {}
+    // Override
+  public:
+    virtual RmcBaseRspData* onGetRspData(RmcBaseReqData* req);
 };
 #endif /* __RMC_CDMA_BC_CONFIG_GET_H__ */

@@ -24,6 +24,6 @@
 class RfxCallListData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCallListData);
 
-    public:
+  public:
 };
 #endif

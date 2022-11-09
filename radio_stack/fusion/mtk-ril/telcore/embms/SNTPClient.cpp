@@ -52,19 +52,19 @@ void sig_handler(int signo) {
     }
 }
 
-void * asyn_getv4addrinfo(void *ptr) {
-    char *host;
+void* asyn_getv4addrinfo(void* ptr) {
+    char* host;
     int ret;
-    struct sockaddr_in *sin;
-    struct addrinfo *res;
+    struct sockaddr_in* sin;
+    struct addrinfo* res;
     struct addrinfo hints = {
-        .ai_family = AF_INET,
+            .ai_family = AF_INET,
     };
     unsigned int* ret_val = NULL;
 
     RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo start");
     signal(SIGUSR1, sig_handler);
-    host = (char *) ptr;
+    host = (char*)ptr;
     ret = getaddrinfo(host, NULL, &hints, &res);
 
     if (ret != 0) {
@@ -72,15 +72,14 @@ void * asyn_getv4addrinfo(void *ptr) {
         pthread_mutex_lock(&s_mutex);
         pthread_cond_signal(&s_cond);
         pthread_mutex_unlock(&s_mutex);
-        pthread_exit((void *)ret_val);
+        pthread_exit((void*)ret_val);
     } else {
-        sin = (struct sockaddr_in *) res[0].ai_addr;
+        sin = (struct sockaddr_in*)res[0].ai_addr;
 
-        RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo %d.%d.%d.%d",
-            sin->sin_addr.s_addr & 0xFF,
-            (sin->sin_addr.s_addr & 0x0000FF00)>>8,
-            (sin->sin_addr.s_addr & 0x00FF0000)>>16,
-            (sin->sin_addr.s_addr & 0xFF000000)>>24);
+        RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo %d.%d.%d.%d", sin->sin_addr.s_addr & 0xFF,
+                  (sin->sin_addr.s_addr & 0x0000FF00) >> 8,
+                  (sin->sin_addr.s_addr & 0x00FF0000) >> 16,
+                  (sin->sin_addr.s_addr & 0xFF000000) >> 24);
 
         ret_val = (unsigned int*)malloc(sizeof(unsigned int));
         if (ret_val == NULL) {
@@ -94,12 +93,12 @@ void * asyn_getv4addrinfo(void *ptr) {
         pthread_cond_signal(&s_cond);
         pthread_mutex_unlock(&s_mutex);
         RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo exit");
-        pthread_exit((void *)ret_val);
+        pthread_exit((void*)ret_val);
     }
 }
 
-status_t SNTPClient::requestTime(const char *host) {
-    struct hostent *ent;
+status_t SNTPClient::requestTime(const char* host) {
+    struct hostent* ent;
     int64_t requestTimeNTP, requestTimeMs;
     ssize_t n;
     int64_t responseTimeMs, responseTimeNTP;
@@ -113,8 +112,7 @@ status_t SNTPClient::requestTime(const char *host) {
     int s = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (s < 0) {
-
-       goto bail;
+        goto bail;
     }
 
     // asyn getaddrinfo call, to avoid bad network block the ril-proxy main thread.
@@ -128,12 +126,12 @@ status_t SNTPClient::requestTime(const char *host) {
         RFX_LOG_E(LOG_TAG, "requestTime pthread_create");
 
         pthread_mutex_lock(&s_mutex);
-        pthread_create(&thread1, NULL , asyn_getv4addrinfo , (void*) host);
+        pthread_create(&thread1, NULL, asyn_getv4addrinfo, (void*)host);
         r = pthread_cond_timedwait(&s_cond, &s_mutex, &ts);
         pthread_mutex_unlock(&s_mutex);
         if (r == ETIMEDOUT) {
-             RFX_LOG_E(LOG_TAG, "Time out! Force quit child thread\n");
-             pthread_kill(thread1 , SIGUSR1);
+            RFX_LOG_E(LOG_TAG, "Time out! Force quit child thread\n");
+            pthread_kill(thread1, SIGUSR1);
         }
 
         RFX_LOG_I(LOG_TAG, "bf pthread_join\n");
@@ -143,11 +141,9 @@ status_t SNTPClient::requestTime(const char *host) {
             goto bail2;
         } else {
             unsigned int addr = *p_addr;
-            RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo %d.%d.%d.%d",
-                addr & 0xFF,
-                (addr & 0x0000FF00)>>8,
-                (addr & 0x00FF0000)>>16,
-                (addr & 0xFF000000)>>24);
+            RFX_LOG_I(LOG_TAG, "asyn_getv4addrinfo %d.%d.%d.%d", addr & 0xFF,
+                      (addr & 0x0000FF00) >> 8, (addr & 0x00FF0000) >> 16,
+                      (addr & 0xFF000000) >> 24);
 
             memset(hostAddr.sin_zero, 0, sizeof(hostAddr.sin_zero));
             hostAddr.sin_family = AF_INET;
@@ -176,23 +172,19 @@ status_t SNTPClient::requestTime(const char *host) {
     struct timeval tv;
     tv.tv_sec = 3;
     tv.tv_usec = 0;
-    err = setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (void *)&tv, sizeof(tv));
-    if(err < 0)
-    {
+    err = setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, (void*)&tv, sizeof(tv));
+    if (err < 0) {
         RFX_LOG_E(LOG_TAG, "set send timeout fail.");
         goto bail2;
     }
-    err =setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *)&tv, sizeof(tv));
-    if(err < 0)
-    {
+    err = setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void*)&tv, sizeof(tv));
+    if (err < 0) {
         RFX_LOG_E(LOG_TAG, "set recv timeout fail.");
         goto bail2;
     }
 
     RFX_LOG_I(LOG_TAG, "Before ntp send");
-    n = sendto(
-            s, packet, sizeof(packet), 0,
-            (const struct sockaddr *)&hostAddr, sizeof(hostAddr));
+    n = sendto(s, packet, sizeof(packet), 0, (const struct sockaddr*)&hostAddr, sizeof(hostAddr));
 
     if (n < 0) {
         goto bail2;
@@ -214,11 +206,11 @@ status_t SNTPClient::requestTime(const char *host) {
     RFX_LOG_I(LOG_TAG, "responseTimeNTP:%lld", (long long)responseTimeNTP);
 
     uint8_t leap;
-    leap = (uint8_t) ((packet[0] >> 6) & 0x3);
+    leap = (uint8_t)((packet[0] >> 6) & 0x3);
     uint8_t mode;
-    mode = (uint8_t) (packet[0] & 0x7);
+    mode = (uint8_t)(packet[0] & 0x7);
     int stratum;
-    stratum = (int) (packet[1] & 0xff);
+    stratum = (int)(packet[1] & 0xff);
 
     originateTimeNTP = readTimeStamp(packet, kNTPOriginateTimeOffset);
     RFX_LOG_I(LOG_TAG, "originateTimeNTP:%lld", (long long)originateTimeNTP);
@@ -227,15 +219,15 @@ status_t SNTPClient::requestTime(const char *host) {
     transmitTimeNTP = readTimeStamp(packet, kNTPTransmitTimeOffset);
     RFX_LOG_I(LOG_TAG, "transmitTimeNTP:%lld", (long long)transmitTimeNTP);
 
-    roundTripTimeNTP =
-        (responseTimeMs - requestTimeMs)
-        - (transmitTimeNTP - receiveTimeNTP);
+    roundTripTimeNTP = (responseTimeMs - requestTimeMs) - (transmitTimeNTP - receiveTimeNTP);
 
     if (originateTimeNTP <= 0) {
         RFX_LOG_I(LOG_TAG, "originateTime:%lld", (long long)originateTimeNTP);
-        clockOffsetNTP = ((receiveTimeNTP - requestTimeNTP) + (transmitTimeNTP - responseTimeNTP)) / 2;
+        clockOffsetNTP =
+                ((receiveTimeNTP - requestTimeNTP) + (transmitTimeNTP - responseTimeNTP)) / 2;
     } else {
-        clockOffsetNTP = ((receiveTimeNTP - originateTimeNTP) + (transmitTimeNTP - responseTimeNTP)) / 2;
+        clockOffsetNTP =
+                ((receiveTimeNTP - originateTimeNTP) + (transmitTimeNTP - responseTimeNTP)) / 2;
     }
 
     mTimeReferenceNTP = responseTimeNTP + clockOffsetNTP;
@@ -257,9 +249,9 @@ bail:
  */
 uint64_t read32(uint8_t* buffer, int offset) {
     uint8_t b0 = buffer[offset];
-    uint8_t b1 = buffer[offset+1];
-    uint8_t b2 = buffer[offset+2];
-    uint8_t b3 = buffer[offset+3];
+    uint8_t b1 = buffer[offset + 1];
+    uint8_t b2 = buffer[offset + 2];
+    uint8_t b3 = buffer[offset + 3];
 
     // convert signed bytes to unsigned values
     int i0 = ((b0 & 0x80) == 0x80 ? (b0 & 0x7F) + 0x80 : b0);

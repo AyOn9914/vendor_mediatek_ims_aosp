@@ -25,35 +25,31 @@
  * Class RmcAtSendInfo
  *****************************************************************************/
 class RmcAtSendInfo {
-// External Method
-public:
+    // External Method
+  public:
     // Get the AT comman string sent to modem
     //
     // RETURNS: the AT command string
-    const String8 &getCmd() const {
-        return m_cmd;
-    }
+    const String8& getCmd() const { return m_cmd; }
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     // Constructor with the at command string
-    RmcAtSendInfo(
-        String8 cmd    // [IN] The at command string sent to modem
-    ) : m_cmd(cmd) {
-    }
+    RmcAtSendInfo(String8 cmd  // [IN] The at command string sent to modem
+                  )
+        : m_cmd(cmd) {}
 
     // Destructor
-    virtual ~RmcAtSendInfo() {
-    }
+    virtual ~RmcAtSendInfo() {}
 
-// Overriable
-public:
+    // Overriable
+  public:
     virtual sp<RfxAtResponse> sendAt(
-        RfxBaseHandler *handler    // [IN] the pointer of the RfxBaseHandler
-    ) = 0;
+            RfxBaseHandler* handler  // [IN] the pointer of the RfxBaseHandler
+            ) = 0;
 
-// Implementation
-private:
+    // Implementation
+  private:
     String8 m_cmd;
 };
 
@@ -61,153 +57,129 @@ private:
  * Class RmcNoLineAtSendInfo
  *****************************************************************************/
 class RmcNoLineAtSendInfo : public RmcAtSendInfo {
-// Constructor / Desctrucotr
-public:
-    RmcNoLineAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {
-    }
+    // Constructor / Desctrucotr
+  public:
+    RmcNoLineAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {}
 
-    virtual ~RmcNoLineAtSendInfo() {
-    }
+    virtual ~RmcNoLineAtSendInfo() {}
 
-// Override
-public:
-    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler *handler) {
-         return handler->atSendCommand(getCmd());
+    // Override
+  public:
+    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler* handler) {
+        return handler->atSendCommand(getCmd());
     }
 };
-
 
 /*****************************************************************************
  * Class RmcNumericAtSendInfo
  *****************************************************************************/
 class RmcNumericAtSendInfo : public RmcAtSendInfo {
-// Constructor / Desctrucotr
-public:
-    RmcNumericAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {
-    }
+    // Constructor / Desctrucotr
+  public:
+    RmcNumericAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {}
 
-    virtual ~RmcNumericAtSendInfo() {
-    }
+    virtual ~RmcNumericAtSendInfo() {}
 
-// Override
-public:
-    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler *handler) {
-         return handler->atSendCommandNumeric(getCmd());
+    // Override
+  public:
+    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler* handler) {
+        return handler->atSendCommandNumeric(getCmd());
     }
 };
-
 
 /*****************************************************************************
  * Class RmcRawAtSendInfo
  *****************************************************************************/
 class RmcRawAtSendInfo : public RmcAtSendInfo {
-// Constructor / Desctrucotr
-public:
-    RmcRawAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {
-    }
+    // Constructor / Desctrucotr
+  public:
+    RmcRawAtSendInfo(String8 cmd) : RmcAtSendInfo(cmd) {}
 
-    virtual ~RmcRawAtSendInfo() {
-    }
+    virtual ~RmcRawAtSendInfo() {}
 
-// Override
-public:
-    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler *handler) {
-         return handler->atSendCommandRaw(getCmd());
+    // Override
+  public:
+    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler* handler) {
+        return handler->atSendCommandRaw(getCmd());
     }
 };
-
 
 /*****************************************************************************
  * Class RmcSingleLineAtSendInfo
  *****************************************************************************/
 class RmcSingleLineAtSendInfo : public RmcNoLineAtSendInfo {
-// External Method
-public:
+    // External Method
+  public:
     // get prefix of the at response
     //
     // RETURNS: the prefix of at response
-    const String8 &getResponsePrefix() const {
-        return m_responsePrefix;
-    }
+    const String8& getResponsePrefix() const { return m_responsePrefix; }
 
-// Constructor / Desctructor
-public:
-    RmcSingleLineAtSendInfo(String8 cmd, String8 responsePrefix) :
-            RmcNoLineAtSendInfo(cmd), m_responsePrefix(responsePrefix) {
-    }
+    // Constructor / Desctructor
+  public:
+    RmcSingleLineAtSendInfo(String8 cmd, String8 responsePrefix)
+        : RmcNoLineAtSendInfo(cmd), m_responsePrefix(responsePrefix) {}
 
-    virtual ~RmcSingleLineAtSendInfo() {
-    }
+    virtual ~RmcSingleLineAtSendInfo() {}
 
-// Override
-public:
-    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler * handler) {
+    // Override
+  public:
+    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler* handler) {
         return handler->atSendCommandSingleline(getCmd(), getResponsePrefix().string());
     }
 
-// Implementation
-private:
+    // Implementation
+  private:
     String8 m_responsePrefix;
 };
-
 
 /*****************************************************************************
  * Class RmcMultiLineAtSendInfo
  *****************************************************************************/
 class RmcMultiLineAtSendInfo : public RmcSingleLineAtSendInfo {
-// Constructor / Desctructor
-public:
-    RmcMultiLineAtSendInfo(String8 cmd, String8 responsePrefix) :
-            RmcSingleLineAtSendInfo(cmd, responsePrefix) {
-    }
+    // Constructor / Desctructor
+  public:
+    RmcMultiLineAtSendInfo(String8 cmd, String8 responsePrefix)
+        : RmcSingleLineAtSendInfo(cmd, responsePrefix) {}
 
-    virtual ~RmcMultiLineAtSendInfo() {
-    }
+    virtual ~RmcMultiLineAtSendInfo() {}
 
-// Override
-public:
-    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler * handler) {
+    // Override
+  public:
+    virtual sp<RfxAtResponse> sendAt(RfxBaseHandler* handler) {
         return handler->atSendCommandMultiline(getCmd(), getResponsePrefix().string());
     }
 };
-
 
 /*****************************************************************************
  * Class RmcAtRspInfo
  *****************************************************************************/
 class RmcAtRspInfo {
-// External Method
-public:
+    // External Method
+  public:
     // Get the AT command
     //
     // RETURNS: the AT command
-    const String8 &getCmd() const {
-        return m_cmd;
-    }
+    const String8& getCmd() const { return m_cmd; }
 
     // Get the response of the AT
     //
     // RETURNS: the response of the AT
-    const sp<RfxAtResponse> & getResponse() {
-        return m_response;
-    }
+    const sp<RfxAtResponse>& getResponse() { return m_response; }
 
-// Constructor / Destructor
-public:
-    RmcAtRspInfo(
-        String8 cmd,                   // [IN] the AT command
-        sp<RfxAtResponse> response     // [IN] the response of the AT command
-    ) : m_cmd(cmd), m_response(response) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcAtRspInfo(String8 cmd,                // [IN] the AT command
+                 sp<RfxAtResponse> response  // [IN] the response of the AT command
+                 )
+        : m_cmd(cmd), m_response(response) {}
 
-    virtual ~RmcAtRspInfo() {
-    }
+    virtual ~RmcAtRspInfo() {}
 
-// Implementation
-private:
+    // Implementation
+  private:
     String8 m_cmd;
     sp<RfxAtResponse> m_response;
 };
-
 
 #endif /* __RMC_AT_INFO_H__ */

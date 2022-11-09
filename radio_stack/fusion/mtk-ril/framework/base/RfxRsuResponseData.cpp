@@ -18,14 +18,14 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxRsuResponseData);
 
-RfxRsuResponseData::RfxRsuResponseData(void *data, int length) : RfxBaseData(data, length)  {
+RfxRsuResponseData::RfxRsuResponseData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
     if ((m_length / sizeof(RIL_RsuResponse)) == 0 || data == NULL) {
         return;
     }
 
-    RIL_RsuResponse *dupData;
-    RIL_RsuResponse *srcData = (RIL_RsuResponse*)data;
+    RIL_RsuResponse* dupData;
+    RIL_RsuResponse* srcData = (RIL_RsuResponse*)data;
     int strLength = -1;
 
     dupData = (RIL_RsuResponse*)calloc(1, sizeof(RIL_RsuResponse));
@@ -34,14 +34,14 @@ RfxRsuResponseData::RfxRsuResponseData(void *data, int length) : RfxBaseData(dat
 
     if (srcData->data != NULL) {
         strLength = strlen(srcData->data) + 1;
-        dupData->data = (char *)calloc(strLength, sizeof(char));
+        dupData->data = (char*)calloc(strLength, sizeof(char));
         RFX_ASSERT(dupData->data != NULL);
         memset(dupData->data, 0, strLength);
         memcpy(dupData->data, srcData->data, strLength);
     }
     if (srcData->reserveString1 != NULL) {
         strLength = strlen(srcData->reserveString1) + 1;
-        dupData->reserveString1 = (char *)calloc(strLength, sizeof(char));
+        dupData->reserveString1 = (char*)calloc(strLength, sizeof(char));
         RFX_ASSERT(dupData->reserveString1 != NULL);
         memset(dupData->reserveString1, 0, strLength);
         memcpy(dupData->reserveString1, srcData->reserveString1, strLength);
@@ -51,7 +51,7 @@ RfxRsuResponseData::RfxRsuResponseData(void *data, int length) : RfxBaseData(dat
 }
 
 RfxRsuResponseData::~RfxRsuResponseData() {
-    RIL_RsuResponse *data = (RIL_RsuResponse*)m_data;
+    RIL_RsuResponse* data = (RIL_RsuResponse*)m_data;
     if (data != NULL) {
         if (data->data != NULL) {
             free(data->data);

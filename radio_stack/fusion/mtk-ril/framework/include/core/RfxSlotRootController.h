@@ -28,55 +28,43 @@ using ::android::Vector;
  * Class RfxSlotRootController
  *****************************************************************************/
 
-class RfxSlotRootController : public RfxController
-{
+class RfxSlotRootController : public RfxController {
     RFX_DECLARE_CLASS(RfxSlotRootController);
 
-// Constructor / Destructor
-public:
-
-    RfxSlotRootController() :
-        m_cs_requests(NULL),
-        m_ps_requests(NULL) {
-    }
+    // Constructor / Destructor
+  public:
+    RfxSlotRootController() : m_cs_requests(NULL), m_ps_requests(NULL) {}
 
     explicit RfxSlotRootController(int slot_id);
 
     virtual ~RfxSlotRootController();
 
-    void regReqToCsRild(const int *request_id_list, size_t length);
+    void regReqToCsRild(const int* request_id_list, size_t length);
 
-    void regReqToPsRild(const int *request_id_list, size_t length);
+    void regReqToPsRild(const int* request_id_list, size_t length);
 
-    void unregReqToCsRild(const int *request_id_list, size_t length) {
+    void unregReqToCsRild(const int* request_id_list, size_t length) {
         unregisterRequestInternal(request_id_list, length, m_cs_requests);
     }
 
-    void unregReqToPsRild(const int *request_id_list, size_t length) {
+    void unregReqToPsRild(const int* request_id_list, size_t length) {
         unregisterRequestInternal(request_id_list, length, m_ps_requests);
     }
 
-protected:
-
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
 
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
 
+  private:
+    void registerRequestInternal(const int* request_id_list, size_t length, Vector<int>* list);
 
-private:
+    void unregisterRequestInternal(const int* request_id_list, size_t length, Vector<int>* list);
 
-    void registerRequestInternal(const int *request_id_list, size_t length,
-                                 Vector<int> *list);
+  private:
+    Vector<int>* m_cs_requests;
 
-    void unregisterRequestInternal(const int *request_id_list, size_t length,
-                                 Vector<int> *list);
-
-private:
-
-    Vector<int> *m_cs_requests;
-
-    Vector<int> *m_ps_requests;
+    Vector<int>* m_ps_requests;
 };
-
 
 #endif /* __RFX_SLOT_ROOT_CONTROLLER_H__ */

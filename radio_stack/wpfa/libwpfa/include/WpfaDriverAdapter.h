@@ -25,14 +25,13 @@
 #include "WpfaDriverVersionData.h"
 #include "WpfaDriverAcceptData.h"
 
-
 using ::android::Mutex;
 
 class WpfaDriverAdapter {
-public:
+  public:
     WpfaDriverAdapter();
     virtual ~WpfaDriverAdapter();
-    static WpfaDriverAdapter *getInstance();
+    static WpfaDriverAdapter* getInstance();
     static void setCcciHandler(int fd);
     void init();
 
@@ -41,14 +40,13 @@ public:
     int sendMsgToShmReadMsgHandler(const sp<WpfaDriverMessage>& message);
     int sendMsgToShmWriteMsgHandler(const sp<WpfaDriverMessage>& message);
 
-
     int getCcciHandler();
 
-private:
+  private:
     /**
      * singleton pattern
      */
-    static WpfaDriverAdapter *sInstance;
+    static WpfaDriverAdapter* sInstance;
     static Mutex sWpfaDriverAdapterInitMutex;
 
     static int mCcciHandler;

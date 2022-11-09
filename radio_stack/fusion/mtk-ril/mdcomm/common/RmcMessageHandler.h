@@ -27,108 +27,98 @@
  * Class RmcMessageHandler
  *****************************************************************************/
 class RmcMessageHandler {
-// Constructor / Destructor
-public:
-    RmcMessageHandler(
-        RfxBaseHandler *handler   // [IN] the pointer of RfxBaseHandler
-    ) :m_handler(handler) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcMessageHandler(RfxBaseHandler* handler  // [IN] the pointer of RfxBaseHandler
+                      )
+        : m_handler(handler) {}
 
-    virtual ~RmcMessageHandler() {
-    }
+    virtual ~RmcMessageHandler() {}
 
-// Overridable
-public:
-    virtual void onHandleMessage(const sp<RfxMclMessage> &msg)= 0;
+    // Overridable
+  public:
+    virtual void onHandleMessage(const sp<RfxMclMessage>& msg) = 0;
 
-// Method for sub class
-protected:
-    RfxBaseHandler *getHandler() {
-        return m_handler;
-    }
+    // Method for sub class
+  protected:
+    RfxBaseHandler* getHandler() { return m_handler; }
 
-// Implementation
-private:
-    RfxBaseHandler *m_handler;
+    // Implementation
+  private:
+    RfxBaseHandler* m_handler;
 };
-
 
 /*****************************************************************************
  * Class RmcBaseRequestHandler
  *****************************************************************************/
 class RmcBaseRequestHandler : public RmcMessageHandler {
-// Constructor / Destructor
-public:
-    RmcBaseRequestHandler(RfxBaseHandler *handler)
-        :RmcMessageHandler(handler) {
-    }
+    // Constructor / Destructor
+  public:
+    RmcBaseRequestHandler(RfxBaseHandler* handler) : RmcMessageHandler(handler) {}
 
     virtual ~RmcBaseRequestHandler();
 
-// Override
-public:
-    virtual void onHandleMessage(const sp<RfxMclMessage> &msg);
+    // Override
+  public:
+    virtual void onHandleMessage(const sp<RfxMclMessage>& msg);
 
-// Overridable
-protected:
+    // Overridable
+  protected:
     // Callback when get the Response Data Object
     //
     // RETURNS: the response data object
-    virtual RmcBaseRspData *onGetRspData(
-        RmcBaseReqData *data             // [IN] The request data object
+    virtual RmcBaseRspData* onGetRspData(RmcBaseReqData* data  // [IN] The request data object
     );
 
     // Callback after call response to telcore
     //
     // RETURNS: void
-    virtual void onAfterResponse() {
-    }
+    virtual void onAfterResponse() {}
 
-// Implementation
-private:
-    void sendAtCmds(RmcBaseReqData *data);
-    void releaseRspData(RmcBaseRspData *data);
-    RmcBaseRspData *getRspData(RmcBaseReqData *data);
+    // Implementation
+  private:
+    void sendAtCmds(RmcBaseReqData* data);
+    void releaseRspData(RmcBaseRspData* data);
+    RmcBaseRspData* getRspData(RmcBaseReqData* data);
 
-// Implementation
-private:
-    Vector<RmcAtRspInfo* > m_atRspInfos;
+    // Implementation
+  private:
+    Vector<RmcAtRspInfo*> m_atRspInfos;
 };
-
 
 /*****************************************************************************
  * Class RmcBaseUrcHandler
  *****************************************************************************/
-class RmcBaseUrcHandler: public RmcMessageHandler {
-// Constructor / Destructor
-public:
-    RmcBaseUrcHandler(RfxBaseHandler *h):RmcMessageHandler(h) {}
+class RmcBaseUrcHandler : public RmcMessageHandler {
+    // Constructor / Destructor
+  public:
+    RmcBaseUrcHandler(RfxBaseHandler* h) : RmcMessageHandler(h) {}
     virtual ~RmcBaseUrcHandler() {}
 
-// Override
-protected:
-    virtual void onHandleMessage(const sp<RfxMclMessage> &msg);
+    // Override
+  protected:
+    virtual void onHandleMessage(const sp<RfxMclMessage>& msg);
 
-// Overridable
-protected:
-    virtual bool onHandleRawUrc(RfxAtLine *line) {
+    // Overridable
+  protected:
+    virtual bool onHandleRawUrc(RfxAtLine* line) {
         RFX_UNUSED(line);
         return true;
     }
 
-    virtual bool onHandleRawUrc2(RfxAtLine *line) {
+    virtual bool onHandleRawUrc2(RfxAtLine* line) {
         RFX_UNUSED(line);
         return true;
     }
-    virtual RmcBaseUrspData *onGetUrcData(int slotId) {
+    virtual RmcBaseUrspData* onGetUrcData(int slotId) {
         RFX_UNUSED(slotId);
         return NULL;
     }
 
-// Implementation
-private:
-    void releaseUrspData(RmcBaseUrspData * data);
-    RmcBaseUrspData *getUrspData(const sp<RfxMclMessage> &msg);
+    // Implementation
+  private:
+    void releaseUrspData(RmcBaseUrspData* data);
+    RmcBaseUrspData* getUrspData(const sp<RfxMclMessage>& msg);
 };
 
 #endif /* __RMC_MESSAGE_HANDLER__ */

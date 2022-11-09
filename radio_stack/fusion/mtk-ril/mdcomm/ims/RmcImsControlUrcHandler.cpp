@@ -22,7 +22,7 @@
 
 #include "rfx_properties.h"
 
-#define PROPERTY_IMS_EXTINFO     "ril.ims.extinfo"
+#define PROPERTY_IMS_EXTINFO "ril.ims.extinfo"
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcImsControlUrcHandler, RIL_CMD_PROXY_URC);
@@ -44,33 +44,32 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxSipRegInfoData, RFX_MSG_UNSOL_SIP_REG_INFO);
 RFX_REGISTER_DATA_TO_URC_ID(RfxImsRegInfoData, RFX_MSG_UNSOL_IMS_REGISTRATION_STATE_IND);
 RFX_REGISTER_DATA_TO_URC_ID(RfxEiregData, RFX_MSG_UNSOL_EIREG_INFO_IND);
 
-RmcImsControlUrcHandler::RmcImsControlUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcImsControlUrcHandler::RmcImsControlUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcImsControlUrcHandler constructor");
 
     mPreferCireg = false;
     int m_slot_id = slot_id;
     int m_channel_id = channel_id;
     const char* urc[] = {
-        "+EIMS:",
-        "+EIMCFLAG:",
-        "+CIREGU:",
-        "+EIMSDEREG:",
-        "+ESIPCPI",
-        // "+EIMSESS",
-        "+EIMSRTPRPT",
-        "+EIREG",
-        "+CIREPI",
-        "+ESIPREGINFO",
-        "+EIMSREGURI",
-        "+EIMSREGRESP",
+            "+EIMS:",
+            "+EIMCFLAG:",
+            "+CIREGU:",
+            "+EIMSDEREG:",
+            "+ESIPCPI",
+            // "+EIMSESS",
+            "+EIMSRTPRPT",
+            "+EIREG",
+            "+CIREPI",
+            "+ESIPREGINFO",
+            "+EIMSREGURI",
+            "+EIMSREGRESP",
     };
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcImsControlUrcHandler::~RmcImsControlUrcHandler() {
-}
+RmcImsControlUrcHandler::~RmcImsControlUrcHandler() {}
 
 void RmcImsControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     if (!strStartsWith(msg->getRawUrc()->getLine(), "+EIMSREGURI")) {
@@ -114,8 +113,8 @@ void RmcImsControlUrcHandler::handleImsDisabling(const sp<RfxMclMessage>& msg) {
     int response = m_slot_id;
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DISABLE_START,
-            m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DISABLE_START, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
 }
 
@@ -124,8 +123,8 @@ void RmcImsControlUrcHandler::handleImsEnabling(const sp<RfxMclMessage>& msg) {
     int response = m_slot_id;
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_ENABLE_START,
-            m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_ENABLE_START, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
 }
 
@@ -134,8 +133,8 @@ void RmcImsControlUrcHandler::handleImsDisabled(const sp<RfxMclMessage>& msg) {
     int response = m_slot_id;
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DISABLE_DONE,
-            m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DISABLE_DONE, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
 }
 
@@ -144,8 +143,8 @@ void RmcImsControlUrcHandler::handleImsEnabled(const sp<RfxMclMessage>& msg) {
     int response = m_slot_id;
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_ENABLE_DONE,
-            m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_ENABLE_DONE, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
 }
 
@@ -168,7 +167,7 @@ void RmcImsControlUrcHandler::handleImsRegistrationInfo(const sp<RfxMclMessage>&
     if (err < 0) goto error;
 
     // get ext_info , value range is 1~FFFFFFFF
-    tokenStr = line->atTokNextstr(&err); //hex string
+    tokenStr = line->atTokNextstr(&err);  // hex string
     if (err < 0) {
         // report mode is 1 , no ext_info available
         // set invalid value 0 for upper layer to distinguish if ext_info is availble or not
@@ -194,15 +193,15 @@ void RmcImsControlUrcHandler::handleImsRegistrationInfo(const sp<RfxMclMessage>&
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_IMS_REGISTRATION_STATE, response[1]);
 
     logD(RFX_LOG_TAG, "handleImsRegistrationInfo reg_info = %d, ext_info = %d, m_slot_id = %d",
-            response[0], response[1], response[2]);
+         response[0], response[1], response[2]);
 
     // MTK defined UNSOL EVENT (with IMS data info attached)
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_REGISTRATION_INFO,
-            m_slot_id, RfxIntsData(response, 3));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_REGISTRATION_INFO, m_slot_id,
+                                   RfxIntsData(response, 3));
     responseToTelCore(urc);
     // for AOSP defined UNSOL EVENT (no data)
-    urc2 = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RESPONSE_IMS_NETWORK_STATE_CHANGED,
-            m_slot_id, RfxVoidData());
+    urc2 = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RESPONSE_IMS_NETWORK_STATE_CHANGED, m_slot_id,
+                                    RfxVoidData());
     responseToTelCore(urc2);
 
     mPreferCireg = true;
@@ -217,8 +216,8 @@ void RmcImsControlUrcHandler::handleImsDereg(const sp<RfxMclMessage>& msg) {
     int response = m_slot_id;
     sp<RfxMclMessage> urc;
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DEREG_DONE,
-            m_slot_id, RfxIntsData(&response, 1));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_DEREG_DONE, m_slot_id,
+                                   RfxIntsData(&response, 1));
     responseToTelCore(urc);
 }
 
@@ -248,11 +247,10 @@ void RmcImsControlUrcHandler::handleImsEccSupportInfo(const sp<RfxMclMessage>& m
         response[0] = 0;
     }
     response[1] = m_slot_id;
-    getMclStatusManager()->setIntValue(RFX_STATUS_KEY_IMS_EMERGENCY_SUPPORT_STATE,
-            response[0]);
+    getMclStatusManager()->setIntValue(RFX_STATUS_KEY_IMS_EMERGENCY_SUPPORT_STATE, response[0]);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_SUPPORT_ECC,
-            m_slot_id, RfxIntsData(response, 2));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_SUPPORT_ECC, m_slot_id,
+                                   RfxIntsData(response, 2));
     responseToTelCore(urc);
     return;
 
@@ -262,13 +260,13 @@ error:
 
 void RmcImsControlUrcHandler::handleSipMsgIndication(const sp<RfxMclMessage>& msg) {
     /*
-    * +ESIPCPI: <call_id>,<dir>,<SIP_msg_type>,<method>,<response_code>[,<reason_text>]
-    * <call_id>: 0 = incoming call; 1~32 = call id
-    * <SIP_msg_type>: 0 = request; 1 = response
-    * <method>: 1~32 and mapping to INVITE, PRACK, UPDATE, ACK, CANCEL, BYE, REFER, OK
-    * <response_code>: 0-only used when SIP_msg_type is 0(request), else 100~600
-    * [<reason_text>]: Optional, The text in the SIP response reason header.
-    */
+     * +ESIPCPI: <call_id>,<dir>,<SIP_msg_type>,<method>,<response_code>[,<reason_text>]
+     * <call_id>: 0 = incoming call; 1~32 = call id
+     * <SIP_msg_type>: 0 = request; 1 = response
+     * <method>: 1~32 and mapping to INVITE, PRACK, UPDATE, ACK, CANCEL, BYE, REFER, OK
+     * <response_code>: 0-only used when SIP_msg_type is 0(request), else 100~600
+     * [<reason_text>]: Optional, The text in the SIP response reason header.
+     */
     const int maxLen = 6;
     int rfxMsg = RFX_MSG_UNSOL_SIP_CALL_PROGRESS_INDICATOR;
     bool appendPhoneId = true;
@@ -290,7 +288,7 @@ void RmcImsControlUrcHandler::handleImsRtpInfo(const sp<RfxMclMessage>& msg) {
      */
     const int maxLen = 7;
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char* responseStr[maxLen];
     int idx, i, err;
     line->atTokStart(&err);
@@ -302,7 +300,7 @@ void RmcImsControlUrcHandler::handleImsRtpInfo(const sp<RfxMclMessage>& msg) {
     for (idx = 0; idx < maxLen; idx++) {
         responseStr[idx] = line->atTokNextstr(&err);
         if (err < 0) {
-            logE(RFX_LOG_TAG, "handleImsRtpInfo: not support idx [%d]",idx);
+            logE(RFX_LOG_TAG, "handleImsRtpInfo: not support idx [%d]", idx);
             break;
         }
     }
@@ -313,7 +311,7 @@ void RmcImsControlUrcHandler::handleImsRtpInfo(const sp<RfxMclMessage>& msg) {
     }
 
     sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_RTP_INFO, m_slot_id,
-            RfxStringsData(responseStr, maxLen));
+                                                     RfxStringsData(responseStr, maxLen));
 
     responseToTelCore(urc);
 
@@ -372,26 +370,26 @@ void RmcImsControlUrcHandler::handleImsEiregInfo(const sp<RfxMclMessage>& msg) {
     response.sip_uri_type = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    logI(RFX_LOG_TAG, "handleImsEiregInfo:reg_state<%d>reg_type<%d>ext_info<%d>dereg_cause<%d>"
-            "ims_retry<%d>rat<%d>sip_uri_type<%d>slot<%d>",
-            response.reg_state, response.reg_type, response.ext_info, response.dereg_cause,
-            response.ims_retry, response.rat, response.sip_uri_type, m_slot_id);
+    logI(RFX_LOG_TAG,
+         "handleImsEiregInfo:reg_state<%d>reg_type<%d>ext_info<%d>dereg_cause<%d>"
+         "ims_retry<%d>rat<%d>sip_uri_type<%d>slot<%d>",
+         response.reg_state, response.reg_type, response.ext_info, response.dereg_cause,
+         response.ims_retry, response.rat, response.sip_uri_type, m_slot_id);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_EIREG_INFO_IND,
-            m_slot_id, RfxEiregData(&response, sizeof(RIL_EiregData)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_EIREG_INFO_IND, m_slot_id,
+                                   RfxEiregData(&response, sizeof(RIL_EiregData)));
     responseToTelCore(urc);
 
     return;
 
-    error:
-        logE(RFX_LOG_TAG, "There is something wrong with the +EIREG");
+error:
+    logE(RFX_LOG_TAG, "There is something wrong with the +EIREG");
 }
 
 int RmcImsControlUrcHandler::getIntFromTokenStr(char* tokenStr, int err, int base) {
     if (strlen(tokenStr) > 0 && err >= 0) {
         return (int)strtol(tokenStr, NULL, base);
-    }
-    else {
+    } else {
         // token no info available
         return -1;
     }
@@ -400,7 +398,7 @@ int RmcImsControlUrcHandler::getIntFromTokenStr(char* tokenStr, int err, int bas
 void RmcImsControlUrcHandler::onImsVopsIndication(const sp<RfxMclMessage>& msg) {
     int rfxMsg = RFX_MSG_UNSOL_VOPS_INDICATION;
     int err;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&err);
     if (err < 0) return;
@@ -412,10 +410,10 @@ void RmcImsControlUrcHandler::onImsVopsIndication(const sp<RfxMclMessage>& msg) 
 
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_VOPS, params[0]);
     logD(RFX_LOG_TAG, "RFX_STATUS_KEY_VOPS=> %d",
-            getMclStatusManager()->getIntValue(RFX_STATUS_KEY_VOPS));
+         getMclStatusManager()->getIntValue(RFX_STATUS_KEY_VOPS));
 
     sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        rfxMsg, m_slot_id, RfxIntsData(params.data(), (int)params.size()));
+            rfxMsg, m_slot_id, RfxIntsData(params.data(), (int)params.size()));
     responseToTelCore(urc);
 }
 
@@ -462,11 +460,11 @@ void RmcImsControlUrcHandler::handleSipRegInfoInd(const sp<RfxMclMessage>& msg) 
     if (err < 0) goto error;
 
     logD(RFX_LOG_TAG, "handleSipRegInfoInd: (%d, %s, %s, %s, %d, %s, %s)", response.account_id,
-            response.direction, response.sip_msg_type, response.method, response.response_code,
-            response.reason_phrase, response.warn_text);
+         response.direction, response.sip_msg_type, response.method, response.response_code,
+         response.reason_phrase, response.warn_text);
 
-    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SIP_REG_INFO,
-            m_slot_id, RfxSipRegInfoData(&response, sizeof(RIL_SipRegInfo)));
+    urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SIP_REG_INFO, m_slot_id,
+                                   RfxSipRegInfoData(&response, sizeof(RIL_SipRegInfo)));
     responseToTelCore(urc);
     return;
 
@@ -477,7 +475,7 @@ error:
 void RmcImsControlUrcHandler::handleImsRegInfoInd(const sp<RfxMclMessage>& msg) {
     /*  + EIMSREGURI:<account_id>,<URI>,<expire_time>  */
     int err;
-    RfxAtLine *p_cur = msg->getRawUrc();
+    RfxAtLine* p_cur = msg->getRawUrc();
     sp<RfxMclMessage> unsol;
     RIL_ImsRegInfo response;
 
@@ -506,7 +504,7 @@ void RmcImsControlUrcHandler::handleImsRegInfoInd(const sp<RfxMclMessage>& msg) 
     }
 
     unsol = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_REGISTRATION_STATE_IND, m_slot_id,
-            RfxImsRegInfoData(&response, sizeof(RfxImsRegInfoData)));
+                                     RfxImsRegInfoData(&response, sizeof(RfxImsRegInfoData)));
     responseToTelCore(unsol);
     return;
 
@@ -517,7 +515,7 @@ error:
 void RmcImsControlUrcHandler::handleImsRegRespInd(const sp<RfxMclMessage>& msg) {
     /* + EIMSREGRESP:<account_id>,<URI>,<errCode>,<ErrorMessage> */
     int err;
-    RfxAtLine *p_cur = msg->getRawUrc();
+    RfxAtLine* p_cur = msg->getRawUrc();
     sp<RfxMclMessage> unsol;
     RIL_ImsRegInfo response;
 
@@ -546,7 +544,7 @@ void RmcImsControlUrcHandler::handleImsRegRespInd(const sp<RfxMclMessage>& msg) 
     response.report_type = IMS_REGISTER_FAIL;
 
     unsol = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_IMS_REGISTRATION_STATE_IND, m_slot_id,
-            RfxImsRegInfoData(&response, sizeof(RfxImsRegInfoData)));
+                                     RfxImsRegInfoData(&response, sizeof(RfxImsRegInfoData)));
     responseToTelCore(unsol);
     return;
 

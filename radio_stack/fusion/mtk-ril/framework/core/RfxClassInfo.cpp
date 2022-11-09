@@ -20,18 +20,14 @@
 
 #include "RfxClassInfo.h"
 
-
 /*****************************************************************************
  * Class RfxClassInfo
  *****************************************************************************/
 
-bool RfxClassInfo::isKindOf(const RfxClassInfo *classInfo) const
-{
-    const RfxClassInfo *i;
-    for (i = this; i != NULL; i = i->getParent())
-    {
-        if (i == classInfo)
-        {
+bool RfxClassInfo::isKindOf(const RfxClassInfo* classInfo) const {
+    const RfxClassInfo* i;
+    for (i = this; i != NULL; i = i->getParent()) {
+        if (i == classInfo) {
             return true;
         }
     }

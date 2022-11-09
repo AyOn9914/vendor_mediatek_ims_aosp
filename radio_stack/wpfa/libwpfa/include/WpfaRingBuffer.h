@@ -30,15 +30,14 @@ using namespace std;
  * =============================================================================
  */
 
-
 /*
  * =============================================================================
  *                     typedef
  * =============================================================================
  */
 typedef struct region_info_t {
-     uint32_t read_idx;
-     uint16_t data_size;
+    uint32_t read_idx;
+    uint16_t data_size;
 } region_info_t;
 
 typedef struct RingBufferControlParam {
@@ -58,16 +57,15 @@ typedef struct RingBufferControlParam {
  *                     class
  * =============================================================================
  */
-#define RING_BUFFER_SIZE (10240)  /* Size = 10*1024 */
+#define RING_BUFFER_SIZE (10240) /* Size = 10*1024 */
 
-#define RING_BUFFER_STATE_NONE      (0)
-#define RING_BUFFER_STATE_READING   (1)
+#define RING_BUFFER_STATE_NONE (0)
+#define RING_BUFFER_STATE_READING (1)
 
 #define INVALID_INDEX (RING_BUFFER_SIZE + 1)
 
-
 class WpfaRingBuffer {
-public:
+  public:
     WpfaRingBuffer();
     virtual ~WpfaRingBuffer();
 
@@ -80,36 +78,30 @@ public:
     void waitCanRead(const char* user);
     void signalCanRead(const char* user);
 
-    int writeDataToRingBuffer(const void *src, uint16_t dataSize);
-    void readDataFromRingBuffer(void *des, uint32_t readIdx, uint16_t dataSize);
-    void readDataWithoutRegionCheck(void *des, uint32_t readIdx, uint16_t dataSize);
+    int writeDataToRingBuffer(const void* src, uint16_t dataSize);
+    void readDataFromRingBuffer(void* des, uint32_t readIdx, uint16_t dataSize);
+    void readDataWithoutRegionCheck(void* des, uint32_t readIdx, uint16_t dataSize);
 
-    //int notifyToReader(uint32_t readIdx, uint16_t dataSize);
+    // int notifyToReader(uint32_t readIdx, uint16_t dataSize);
     void getRegionInfoForReader(region_info_t* mRegion);
-    uint32_t getReadIndex() {
-        return mControlPara.mReadIdx;
-    }
-    uint32_t getReadDataSize() {
-        return mControlPara.mReadDataSize;
-    }
+    uint32_t getReadIndex() { return mControlPara.mReadIdx; }
+    uint32_t getReadDataSize() { return mControlPara.mReadDataSize; }
 
     void readDone();
 
     void setState(int state);
     int getState();
-    int dump_hex(unsigned char *data, int len);
+    int dump_hex(unsigned char* data, int len);
 
-protected:
-
-
-private:
+  protected:
+  private:
     unsigned char mRingBuffer[RING_BUFFER_SIZE];
     RingBufferControlParam mControlPara;
 
     void updateReadDataSizeByState(uint16_t dataSize);
 
-    void ringBuffer_memset(void *des, uint8_t value, uint16_t size);
-    void ringBuffer_memcpy(void *des, const void *src, uint16_t size);
+    void ringBuffer_memset(void* des, uint8_t value, uint16_t size);
+    void ringBuffer_memcpy(void* des, const void* src, uint16_t size);
 
     bool isEmpty();
     bool isFull();

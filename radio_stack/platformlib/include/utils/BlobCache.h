@@ -38,9 +38,7 @@ namespace android {
 // serialization is non-portable and the data should only be used by the device
 // that generated it.
 class BlobCache : public RefBase {
-
-public:
-
+  public:
     // Create an empty blob cache. The blob cache will cache key/value pairs
     // with key and value sizes less than or equal to maxKeySize and
     // maxValueSize, respectively. The total combined size of ALL cache entries
@@ -62,8 +60,7 @@ public:
     //   0 < keySize
     //   value != NULL
     //   0 < valueSize
-    void set(const void* key, size_t keySize, const void* value,
-            size_t valueSize);
+    void set(const void* key, size_t keySize, const void* value, size_t valueSize);
 
     // get retrieves from the cache the binary value associated with a given
     // binary key.  If the key is present in the cache then the length of the
@@ -82,7 +79,6 @@ public:
     //   0 < keySize
     //   0 <= valueSize
     size_t get(const void* key, size_t keySize, void* value, size_t valueSize);
-
 
     // getFlattenedSize returns the number of bytes needed to store the entire
     // serialized cache.
@@ -105,7 +101,7 @@ public:
     //
     status_t unflatten(void const* buffer, size_t size);
 
-private:
+  private:
     // Copying is disallowed.
     BlobCache(const BlobCache&);
     void operator=(const BlobCache&);
@@ -123,7 +119,7 @@ private:
 
     // A Blob is an immutable sized unstructured data blob.
     class Blob : public RefBase {
-    public:
+      public:
         Blob(const void* data, size_t size, bool copyData);
         ~Blob();
 
@@ -132,7 +128,7 @@ private:
         const void* getData() const;
         size_t getSize() const;
 
-    private:
+      private:
         // Copying is not allowed.
         Blob(const Blob&);
         void operator=(const Blob&);
@@ -150,7 +146,7 @@ private:
 
     // A CacheEntry is a single key/value pair in the cache.
     class CacheEntry {
-    public:
+      public:
         CacheEntry();
         CacheEntry(const sp<Blob>& key, const sp<Blob>& value);
         CacheEntry(const CacheEntry& ce);
@@ -163,8 +159,7 @@ private:
 
         void setValue(const sp<Blob>& value);
 
-    private:
-
+      private:
         // mKey is the key that identifies the cache entry.
         sp<Blob> mKey;
 
@@ -248,6 +243,6 @@ private:
     SortedVector<CacheEntry> mCacheEntries;
 };
 
-}
+}  // namespace android
 
-#endif // ANDROID_BLOB_CACHE_H
+#endif  // ANDROID_BLOB_CACHE_H

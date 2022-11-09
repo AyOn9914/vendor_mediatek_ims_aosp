@@ -29,29 +29,29 @@
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 #include "RilClientConstants.h"
 
-using ::android::Thread;
-using ::android::sp;
 using android::Parcel;
+using ::android::sp;
+using ::android::Thread;
 
 typedef void* (*PthreadPtr)(void*);
 
-extern "C" void *rfx_process_request_messages_loop(void *arg);
-extern "C" void *rfx_process_response_messages_loop(void *arg);
-extern "C" void *rfx_process_urc_messages_loop(void *arg);
-extern "C" void *rfx_process_status_sync_messages_loop(void *arg);
+extern "C" void* rfx_process_request_messages_loop(void* arg);
+extern "C" void* rfx_process_response_messages_loop(void* arg);
+extern "C" void* rfx_process_urc_messages_loop(void* arg);
+extern "C" void* rfx_process_status_sync_messages_loop(void* arg);
 
 typedef struct {
     int requestNumber;
-    void(*dispatchFunction) (RIL_RequestFunc onRequest, Parcel &p, struct RfxRequestInfo *pRI);
-    int(*responseFunction) (Parcel &p, void *response, size_t responselen);
+    void (*dispatchFunction)(RIL_RequestFunc onRequest, Parcel& p, struct RfxRequestInfo* pRI);
+    int (*responseFunction)(Parcel& p, void* response, size_t responselen);
 } RfxCommandInfo;
 
 typedef struct RfxRequestInfo {
-    int32_t token;      // this is not RIL_Token
-    RfxCommandInfo *pCI;
-    struct RfxRequestInfo *p_next;
+    int32_t token;  // this is not RIL_Token
+    RfxCommandInfo* pCI;
+    struct RfxRequestInfo* p_next;
     char cancelled;
-    char local;         // responses to local commands do not go back to command process
+    char local;  // responses to local commands do not go back to command process
     RIL_SOCKET_ID socket_id;
     ClientId clientId;
     int request;
@@ -66,13 +66,13 @@ typedef struct RfxSapSocketRequest {
 
 typedef struct {
     int requestNumber;
-    int (*responseFunction) (Parcel &p, void *response, size_t responselen);
+    int (*responseFunction)(Parcel& p, void* response, size_t responselen);
     // WakeType wakeType;
 } RfxUnsolResponseInfo;
 
 typedef struct MessageObj {
     sp<RfxMessage> msg;
-    struct MessageObj *p_next;
+    struct MessageObj* p_next;
 } MessageObj;
 
 static Dispatch_queue<MessageObj> dispatchRequestQueue;
@@ -83,21 +83,18 @@ static Dispatch_queue<MessageObj> pendingQueue;
 MessageObj* createMessageObj(const sp<RfxMessage>& message);
 
 class RfxDispatchThread : public Thread {
-
-private:
-
+  private:
     RfxDispatchThread();
 
     virtual ~RfxDispatchThread();
 
-public:
-
+  public:
     static RfxDispatchThread* init();
 
-    void enqueueRequestMessage(int request, void *data, size_t datalen, RIL_Token t,
-            RIL_SOCKET_ID socket_id, int clientId = -1);
-    void enqueueSapRequestMessage(int request, void *data, size_t datalen, RIL_Token t,
-            RIL_SOCKET_ID socket_id);
+    void enqueueRequestMessage(int request, void* data, size_t datalen, RIL_Token t,
+                               RIL_SOCKET_ID socket_id, int clientId = -1);
+    void enqueueSapRequestMessage(int request, void* data, size_t datalen, RIL_Token t,
+                                  RIL_SOCKET_ID socket_id);
     static void enqueueResponseMessage(const sp<RfxMclMessage>& msg);
     static void enqueueSapResponseMessage(const sp<RfxMclMessage>& msg);
     static void enqueueUrcMessage(const sp<RfxMclMessage>& msg);
@@ -108,8 +105,7 @@ public:
     static void removeMessageFromPendingQueue(int token);
     static void updateConnectionState(RIL_SOCKET_ID socket_id, int isConnected);
 
-private:
-
+  private:
     virtual bool threadLoop();
 
     void processRequestMessageLooper();
@@ -117,19 +113,17 @@ private:
     void processUrcMessageLooper();
     void processStatusSyncMessageLooper();
 
-    friend void *::rfx_process_request_messages_loop(void *arg);
-    friend void *::rfx_process_response_messages_loop(void *arg);
-    friend void *::rfx_process_urc_messages_loop(void *arg);
-    friend void *::rfx_process_status_sync_messages_loop(void *arg);
+    friend void* ::rfx_process_request_messages_loop(void* arg);
+    friend void* ::rfx_process_response_messages_loop(void* arg);
+    friend void* ::rfx_process_urc_messages_loop(void* arg);
+    friend void* ::rfx_process_status_sync_messages_loop(void* arg);
 
-private:
-
-    static RfxDispatchThread *s_self;
+  private:
+    static RfxDispatchThread* s_self;
 
     pthread_t requestThreadId;
     pthread_t responseThreadId;
     pthread_t urcThreadId;
     pthread_t statusSyncThreadId;
-
 };
 #endif /* __RFX_DISPATCH_THREAD_H__ */

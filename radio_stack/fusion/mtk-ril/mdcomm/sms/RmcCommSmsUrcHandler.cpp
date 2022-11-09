@@ -23,25 +23,22 @@
 #include "RfxStatusDefs.h"
 #include "RfxVoidData.h"
 
-
 using ::android::String8;
 
 static const char* commUrcList[] = {
-    "+EIND: 1",
+        "+EIND: 1",
 };
 
-
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCommSmsUrcHandler, RIL_CMD_PROXY_URC);
-
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcCommSmsUrcHandler::RmcCommSmsUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-        setTag(String8("RmcCommSmsUrc"));
-        const char **p = commUrcList;
-        registerToHandleURC(p, sizeof(commUrcList)/sizeof(char*));
+RmcCommSmsUrcHandler::RmcCommSmsUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    setTag(String8("RmcCommSmsUrc"));
+    const char** p = commUrcList;
+    registerToHandleURC(p, sizeof(commUrcList) / sizeof(char*));
 }
 
 void RmcCommSmsUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {

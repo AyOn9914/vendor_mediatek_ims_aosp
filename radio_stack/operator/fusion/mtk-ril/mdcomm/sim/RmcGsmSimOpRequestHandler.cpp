@@ -30,38 +30,30 @@
 #include "RfxIntsData.h"
 
 static const int ch1OpReqList[] = {
-    RFX_MSG_REQUEST_GET_SHARED_KEY,
-    RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS,
-    RFX_MSG_REQUEST_GET_SIM_LOCK_INFO,
-    RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS,
-    RFX_MSG_REQUEST_GET_MODEM_STATUS,
+        RFX_MSG_REQUEST_GET_SHARED_KEY,    RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS,
+        RFX_MSG_REQUEST_GET_SIM_LOCK_INFO, RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS,
+        RFX_MSG_REQUEST_GET_MODEM_STATUS,
 };
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_GET_SHARED_KEY);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_GET_SHARED_KEY);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData,
-        RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_GET_SIM_LOCK_INFO);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
-        RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
-        RFX_MSG_REQUEST_GET_MODEM_STATUS);
+                                RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_GET_SIM_LOCK_INFO);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_RESET_SIM_LOCK_SETTINGS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_GET_MODEM_STATUS);
 
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 
-RmcGsmSimOpRequestHandler::RmcGsmSimOpRequestHandler(int slot_id, int channel_id) :
-        RmcGsmSimRequestHandler(slot_id, channel_id) {
+RmcGsmSimOpRequestHandler::RmcGsmSimOpRequestHandler(int slot_id, int channel_id)
+    : RmcGsmSimRequestHandler(slot_id, channel_id) {
     setTag(String8("RmcGsmSimOpRequestHandler"));
 }
 
-RmcGsmSimOpRequestHandler::~RmcGsmSimOpRequestHandler() {
-}
+RmcGsmSimOpRequestHandler::~RmcGsmSimOpRequestHandler() {}
 
-
-const int* RmcGsmSimOpRequestHandler::queryTable(int channel_id, int *record_num) {
+const int* RmcGsmSimOpRequestHandler::queryTable(int channel_id, int* record_num) {
     const int* superTable = RmcGsmSimRequestHandler::queryTable(channel_id, record_num);
     int subRecordNumber = 0;
     int* bufTable = NULL;
@@ -69,8 +61,8 @@ const int* RmcGsmSimOpRequestHandler::queryTable(int channel_id, int *record_num
     int supRecordNumber = *record_num;
 
     if (channel_id == RIL_CMD_PROXY_1) {
-        subRecordNumber = sizeof(ch1OpReqList)/sizeof(int);
-        bufTable = (int*)calloc(1, sizeof(int)* (subRecordNumber + supRecordNumber));
+        subRecordNumber = sizeof(ch1OpReqList) / sizeof(int);
+        bufTable = (int*)calloc(1, sizeof(int) * (subRecordNumber + supRecordNumber));
         RFX_ASSERT(bufTable != NULL);
         if (NULL != superTable) {
             memcpy(bufTable, superTable, sizeof(int) * supRecordNumber);
@@ -81,7 +73,7 @@ const int* RmcGsmSimOpRequestHandler::queryTable(int channel_id, int *record_num
         memcpy(bufTable + index, ch1OpReqList, sizeof(int) * subRecordNumber);
         *record_num += subRecordNumber;
     } else {
-        bufTable = (int*)calloc(1, sizeof(int)* supRecordNumber);
+        bufTable = (int*)calloc(1, sizeof(int) * supRecordNumber);
         if (NULL != superTable) {
             memcpy(bufTable, superTable, sizeof(int) * supRecordNumber);
         } else {
@@ -96,7 +88,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimOpRequestHandler::needHandle(
     int request = msg->getId();
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
 
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_GET_SHARED_KEY:
         case RFX_MSG_REQUEST_UPDATE_SIM_LOCK_SETTINGS:
         case RFX_MSG_REQUEST_GET_SIM_LOCK_INFO:
@@ -114,7 +106,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcGsmSimOpRequestHandler::needHandle(
 
 void RmcGsmSimOpRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_GET_SHARED_KEY:
             handleGetSharedKey(msg);
             break;
@@ -138,13 +130,13 @@ void RmcGsmSimOpRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcGsmSimOpRequestHandler::handleGetSharedKey(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int key_len;
-    char *key = NULL;
+    char* key = NULL;
 
     logD(mTag, "[SIM ME Lock]handleGetSharedKey.\n");
 
@@ -157,17 +149,17 @@ void RmcGsmSimOpRequestHandler::handleGetSharedKey(const sp<RfxMclMessage>& msg)
     }
     line = p_response->getIntermediates();
     line->atTokStart(&err);
-    if(err < 0) {
+    if (err < 0) {
         goto done;
     }
 
-    //Get shared key len
+    // Get shared key len
     key_len = line->atTokNextint(&err);
     if (err < 0) {
         goto done;
     }
 
-    //Get shared key
+    // Get shared key
     key = line->atTokNextstr(&err);
     if (err < 0) {
         goto done;
@@ -177,22 +169,21 @@ done:
     logD(mTag, "[SIM ME Lock]done.\n");
     if (key != NULL) {
         logD(mTag, "[SIM ME Lock]key %s.\n", key);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                        RfxStringData((void*)key, strlen(key)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)key, strlen(key)), msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                            RfxStringData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
 
     responseToTelCore(response);
 }
 
 void RmcGsmSimOpRequestHandler::handleUpdateSimLockSettings(const sp<RfxMclMessage>& msg) {
-//    RfxBaseData *rbd = msg->getData();
-//    const char** strings = (const char**)rbd->getData();
+    //    RfxBaseData *rbd = msg->getData();
+    //    const char** strings = (const char**)rbd->getData();
     String8 pString((char*)(msg->getData()->getData()));
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
@@ -200,8 +191,8 @@ void RmcGsmSimOpRequestHandler::handleUpdateSimLockSettings(const sp<RfxMclMessa
 
     logD(mTag, "[SIM ME Lock]handleUpdateSimLockSettings strings %s\n", pString.string());
 
-    cmd.append(String8::format("AT+ETMOSLB=1,%d,\"%s\"",
-            (unsigned int)((pString.size() + 1)/2), pString.string()));
+    cmd.append(String8::format("AT+ETMOSLB=1,%d,\"%s\"", (unsigned int)((pString.size() + 1) / 2),
+                               pString.string()));
 
     p_response = atSendCommand(cmd.string());
     cmd.clear();
@@ -223,30 +214,28 @@ void RmcGsmSimOpRequestHandler::handleUpdateSimLockSettings(const sp<RfxMclMessa
                 break;
             default:
                 goto done;
-
         }
     } else {
         ret = RIL_E_SUCCESS;
         sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                m_slot_id, RfxVoidData());
+                                                           m_slot_id, RfxVoidData());
         responseToTelCore(unsol);
     }
 
 done:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcGsmSimOpRequestHandler::handleGetSimLockInfo(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int info_len;
-    char *info = NULL;
+    char* info = NULL;
 
     logD(mTag, "[SIM ME Lock]handleGetSimLockInfo\n");
 
@@ -260,17 +249,17 @@ void RmcGsmSimOpRequestHandler::handleGetSimLockInfo(const sp<RfxMclMessage>& ms
     }
     line = p_response->getIntermediates();
     line->atTokStart(&err);
-    if(err < 0) {
+    if (err < 0) {
         goto done;
     }
 
-    //Get info len
+    // Get info len
     info_len = line->atTokNextint(&err);
     if (err < 0) {
         goto done;
     }
 
-    //Get info
+    // Get info
     info = line->atTokNextstr(&err);
     if (err < 0) {
         goto done;
@@ -280,18 +269,17 @@ done:
     logD(mTag, "[SIM ME Lock]done.\n");
     if (info != NULL) {
         logD(mTag, "[SIM ME Lock]info %s.\n", info);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                       RfxStringData((void*)info, strlen(info)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)info, strlen(info)), msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                       RfxStringData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
     responseToTelCore(response);
 }
 
 void RmcGsmSimOpRequestHandler::handleResetSimLockSettings(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
@@ -324,25 +312,24 @@ void RmcGsmSimOpRequestHandler::handleResetSimLockSettings(const sp<RfxMclMessag
         }
     } else {
         sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-                m_slot_id, RfxVoidData());
+                                                           m_slot_id, RfxVoidData());
         responseToTelCore(unsol);
     }
     ret = RIL_E_SUCCESS;
 done:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-             RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxVoidData(), msg, false);
     responseToTelCore(response);
 }
 
 void RmcGsmSimOpRequestHandler::handleGetModemStatus(const sp<RfxMclMessage>& msg) {
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = -1;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
     int status_len;
-    char *status = NULL;
+    char* status = NULL;
 
     logD(mTag, "[SIM ME Lock]handleGetModemStatus\n");
 
@@ -356,17 +343,17 @@ void RmcGsmSimOpRequestHandler::handleGetModemStatus(const sp<RfxMclMessage>& ms
     }
     line = p_response->getIntermediates();
     line->atTokStart(&err);
-    if(err < 0) {
+    if (err < 0) {
         goto done;
     }
 
-    //Get status len
+    // Get status len
     status_len = line->atTokNextint(&err);
     if (err < 0) {
         goto done;
     }
 
-    //Get status
+    // Get status
     status = line->atTokNextstr(&err);
     if (err < 0) {
         goto done;
@@ -376,11 +363,10 @@ done:
     logD(mTag, "[SIM ME Lock]done.\n");
     if (status != NULL) {
         logD(mTag, "[SIM ME Lock]status %s.\n", status);
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData((void*)status, strlen(status)), msg, false);
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), ret, RfxStringData((void*)status, strlen(status)), msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-                RfxStringData(), msg, false);
+        response = RfxMclMessage::obtainResponse(msg->getId(), ret, RfxStringData(), msg, false);
     }
     responseToTelCore(response);
 }

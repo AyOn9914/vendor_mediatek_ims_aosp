@@ -27,7 +27,8 @@
 
 #define PHBSIMIO_LOG_TAG "RtcPhbSimIo"
 
-#define DlogD(x...) if (mIsEngLoad == 1) logD( x )
+#define DlogD(x...) \
+    if (mIsEngLoad == 1) logD(x)
 
 static const int USIM_TYPE1_TAG = 0xA8;
 static const int USIM_TYPE2_TAG = 0xA9;
@@ -41,12 +42,9 @@ using ::android::String8;
 
 RFX_IMPLEMENT_CLASS("RtcPhbSimIoController", RtcPhbSimIoController, RfxController);
 
+RtcPhbSimIoController::RtcPhbSimIoController() {}
 
-RtcPhbSimIoController::RtcPhbSimIoController() {
-}
-
-RtcPhbSimIoController::~RtcPhbSimIoController() {
-}
+RtcPhbSimIoController::~RtcPhbSimIoController() {}
 
 void RtcPhbSimIoController::onInit() {
     // Required: invoke super class implementation
@@ -54,34 +52,36 @@ void RtcPhbSimIoController::onInit() {
     logD(PHBSIMIO_LOG_TAG, "[%s]", __FUNCTION__);
 
     const int request1[] = {
-        RFX_MSG_REQUEST_PHB_SIM_IO,
-        RFX_MSG_REQUEST_PHB_PBR_SIM_IO,
+            RFX_MSG_REQUEST_PHB_SIM_IO,
+            RFX_MSG_REQUEST_PHB_PBR_SIM_IO,
     };
-    registerToHandleRequest(request1, sizeof(request1)/sizeof(int));
+    registerToHandleRequest(request1, sizeof(request1) / sizeof(int));
     int i = 0;
     for (i = 0; i < PBR_FILE_LENGTH; i++) {
         pbrFile[i] = 0xFF;
     }
     // register callbacks to get card type change event
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CARD_TYPE,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CARD_TYPE,
             RfxStatusChangeCallback(this, &RtcPhbSimIoController::onCardTypeChanged));
     mIsEngLoad = RfxRilUtils::isEngLoad();
 }
 
 bool RtcPhbSimIoController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                   bool isModemPowerOff, int radioState) {
     int msgId = message->getId();
     if ((radioState == (int)RADIO_STATE_OFF) && (msgId == RFX_MSG_REQUEST_PHB_SIM_IO)) {
-        DlogD(PHBSIMIO_LOG_TAG, "onCheckIfRejectMessage, id = %d, isModemPowerOff = %d, radioState = %d",
-                msgId, isModemPowerOff, radioState);
+        DlogD(PHBSIMIO_LOG_TAG,
+              "onCheckIfRejectMessage, id = %d, isModemPowerOff = %d, radioState = %d", msgId,
+              isModemPowerOff, radioState);
         return false;
     }
     return RfxController::onCheckIfRejectMessage(message, isModemPowerOff, radioState);
 }
 
-int RtcPhbSimIoController::parsePbrFileId(char *hex, int length) {
+int RtcPhbSimIoController::parsePbrFileId(char* hex, int length) {
     int i = 0;
-    char *tempStr = hex;
+    char* tempStr = hex;
     int tag = 0;
     int len = 0;
     int value = 0;
@@ -103,8 +103,8 @@ int RtcPhbSimIoController::parsePbrFileId(char *hex, int length) {
             break;
         }
         i = current + len * 2;
-        DlogD(PHBSIMIO_LOG_TAG, "parsePbrFileId tag = %d, len = %d, current = %d,i = %d",
-                tag, len, current, i);
+        DlogD(PHBSIMIO_LOG_TAG, "parsePbrFileId tag = %d, len = %d, current = %d,i = %d", tag, len,
+              current, i);
         for (j = current; j < i;) {
             inTag = hexCharToDecInt(tempStr, 2);
             tempStr = tempStr + 2;
@@ -112,12 +112,11 @@ int RtcPhbSimIoController::parsePbrFileId(char *hex, int length) {
             tempStr = tempStr + 2;
             inValue = hexCharToDecInt(tempStr, 4);
             if (false == addFileId(inValue)) {
-
             }
-            tempStr = tempStr + inLen * 2; // move to next tag
+            tempStr = tempStr + inLen * 2;  // move to next tag
             j = j + inLen * 2 + 4;
             DlogD(PHBSIMIO_LOG_TAG, "parsePbrFileId inTag = %d, inValue = %d, j = %d, inLen = %d",
-                    inTag, inValue, j, inLen);
+                  inTag, inValue, j, inLen);
         }
     }
     return i;
@@ -151,24 +150,21 @@ bool RtcPhbSimIoController::onCheckIfPhbRequest(int fileId) {
     return retValue;
 }
 
-int RtcPhbSimIoController::hexCharToDecInt(char *hex, int length) {
+int RtcPhbSimIoController::hexCharToDecInt(char* hex, int length) {
     int i = 0;
     int value, digit;
 
     for (i = 0, value = 0; i < length && hex[i] != '\0'; i++) {
         if (hex[i] >= '0' && hex[i] <= '9') {
             digit = hex[i] - '0';
-        }
-        else if (hex[i] >= 'A' && hex[i] <= 'F') {
+        } else if (hex[i] >= 'A' && hex[i] <= 'F') {
             digit = hex[i] - 'A' + 10;
-        }
-        else if (hex[i] >= 'a' && hex[i] <= 'f') {
+        } else if (hex[i] >= 'a' && hex[i] <= 'f') {
             digit = hex[i] - 'a' + 10;
-        }
-        else {
+        } else {
             return -1;
         }
-        value = value*16 + digit;
+        value = value * 16 + digit;
     }
     return value;
 }
@@ -176,11 +172,11 @@ int RtcPhbSimIoController::hexCharToDecInt(char *hex, int length) {
 bool RtcPhbSimIoController::onHandleResponse(const sp<RfxMessage>& message) {
     int msgId = message->getId();
     DlogD(PHBSIMIO_LOG_TAG, "onHandleResponse, handle %s", RFX_ID_TO_STR(msgId));
-    if(msgId == RFX_MSG_REQUEST_PHB_SIM_IO) {
+    if (msgId == RFX_MSG_REQUEST_PHB_SIM_IO) {
         sp<RfxMessage> rsp = RfxMessage::obtainResponse(RFX_MSG_REQUEST_SIM_IO, message);
         responseToRilj(rsp);
     } else if (msgId == RFX_MSG_REQUEST_PHB_PBR_SIM_IO) {
-        RIL_SIM_IO_Response *pData = (RIL_SIM_IO_Response*)(message->getData()->getData());
+        RIL_SIM_IO_Response* pData = (RIL_SIM_IO_Response*)(message->getData()->getData());
         if (pData != NULL && pData->simResponse != NULL) {
             parsePbrFileId(pData->simResponse, strlen(pData->simResponse));
         }
@@ -192,8 +188,8 @@ bool RtcPhbSimIoController::onHandleResponse(const sp<RfxMessage>& message) {
     return true;
 }
 
-void RtcPhbSimIoController::onCardTypeChanged(RfxStatusKeyEnum key,
-    RfxVariant oldValue, RfxVariant newValue) {
+void RtcPhbSimIoController::onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue,
+                                              RfxVariant newValue) {
     RFX_UNUSED(key);
     if (oldValue.asInt() != newValue.asInt()) {
         if ((newValue.asInt() == 0)) {

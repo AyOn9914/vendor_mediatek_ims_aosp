@@ -25,41 +25,36 @@
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemReq
  *****************************************************************************/
-class RmcCdmaGetRuimSmsMemReq: RmcSingleAtReq {
+class RmcCdmaGetRuimSmsMemReq : RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaGetRuimSmsMemReq);
-public:
-    int getUsed() const {
-        return m_used;
-    }
 
-    int getTotal() const {
-        return m_total;
-    }
+  public:
+    int getUsed() const { return m_used; }
 
-protected:
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
-    virtual bool onHandleIntermediates(RfxAtLine * line,RfxBaseHandler * h);
+    int getTotal() const { return m_total; }
 
+  protected:
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
+    virtual bool onHandleIntermediates(RfxAtLine* line, RfxBaseHandler* h);
 
-private:
+  private:
     int m_used;
     int m_total;
 };
 
-
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemRsp
  *****************************************************************************/
-class RmcCdmaGetRuimSmsMemRsp: public RmcVoidRsp {
+class RmcCdmaGetRuimSmsMemRsp : public RmcVoidRsp {
     RFX_DECLARE_DATA_CLASS(RmcCdmaGetRuimSmsMemRsp);
-public:
+
+  public:
     RmcCdmaGetRuimSmsMemRsp(int total, int used, RIL_Errno e);
 
-private:
+  private:
     struct MemInfo {
-        MemInfo() :m_used(0), m_total(0) {}
-        MemInfo(int total, int used) : m_used(used), m_total(total) {
-        }
+        MemInfo() : m_used(0), m_total(0) {}
+        MemInfo(int total, int used) : m_used(used), m_total(total) {}
         int m_used;
         int m_total;
     };
@@ -67,16 +62,16 @@ private:
     MemInfo m_info;
 };
 
-
 /*****************************************************************************
  * Class RmcCdmaGetRuimSmsMemHdlr
  *****************************************************************************/
 class RmcCdmaGetRuimSmsMemHdlr : public RmcBaseRequestHandler {
-public:
-    RmcCdmaGetRuimSmsMemHdlr(RfxBaseHandler *h) :RmcBaseRequestHandler(h){}
+  public:
+    RmcCdmaGetRuimSmsMemHdlr(RfxBaseHandler* h) : RmcBaseRequestHandler(h) {}
     virtual ~RmcCdmaGetRuimSmsMemHdlr() {}
-public:
-    virtual RmcBaseRspData *onGetRspData(RmcBaseReqData* req);
+
+  public:
+    virtual RmcBaseRspData* onGetRspData(RmcBaseReqData* req);
 };
 
 #endif /* __RMC_RUIM_SMS_MEM_H__ */

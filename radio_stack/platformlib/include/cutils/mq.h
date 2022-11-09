@@ -58,8 +58,7 @@ typedef void MqCloseListener(MqDestination* destination);
  * @param body as defined by user
  * @param replyTo destination to which replies should be sent, NULL if none
  */
-MqMessage* mqCreateMessage(MqBytes header, MqBytes body,
-        MqDestination* replyTo);
+MqMessage* mqCreateMessage(MqBytes header, MqBytes body, MqDestination* replyTo);
 
 /** Sends a message to a destination. */
 void mqSendMessage(MqMessage* message, MqDestination* destination);
@@ -75,7 +74,7 @@ void mqSendMessage(MqMessage* message, MqDestination* destination);
  *  Retrieve using mqGetDestinationUserData().
  */
 MqDestination* mqCreateDestination(MqMessageListener* messageListener,
-        MqCloseListener* closeListener, void* userData);
+                                   MqCloseListener* closeListener, void* userData);
 
 /**
  * Gets user data which was associated with the given destination at

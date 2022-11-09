@@ -21,43 +21,40 @@
 
 using ::android::Vector;
 
-enum SSLockState {
-    SS_UNLOCKED = 0,
-    SS_LOCKED   = 1
-};
+enum SSLockState { SS_UNLOCKED = 0, SS_LOCKED = 1 };
 
 class RtcSSEntry {
-    public:
-        RtcSSEntry() : message(NULL) {}
-        RtcSSEntry(const sp<RfxMessage>& msg) : message(msg) {}
+  public:
+    RtcSSEntry() : message(NULL) {}
+    RtcSSEntry(const sp<RfxMessage>& msg) : message(msg) {}
 
-    public:
-        sp<RfxMessage> message;
+  public:
+    sp<RfxMessage> message;
 };
 
 class RtcSuppServQueue {
-    public:
-        ~RtcSuppServQueue();
-        static RtcSuppServQueue* getInstance();
+  public:
+    ~RtcSuppServQueue();
+    static RtcSuppServQueue* getInstance();
 
-        // Operation of queue
-        void add(RtcSSEntry ssEntry);
-        void removeFront();
-        void clear();
-        bool isEmpty();
-        const RtcSSEntry& itemAt(int index);
+    // Operation of queue
+    void add(RtcSSEntry ssEntry);
+    void removeFront();
+    void clear();
+    bool isEmpty();
+    const RtcSSEntry& itemAt(int index);
 
-        // Operation of lock
-        void setSSLock(SSLockState lock);
-        SSLockState getSSLock();
+    // Operation of lock
+    void setSSLock(SSLockState lock);
+    SSLockState getSSLock();
 
-    private:
-        RtcSuppServQueue();
-        static RtcSuppServQueue* mInstance;
+  private:
+    RtcSuppServQueue();
+    static RtcSuppServQueue* mInstance;
 
-        Vector<RtcSSEntry> mSuspendedMsgQueue;
-        SSLockState mSSLock;
-        const char *lockToString(SSLockState lock);
+    Vector<RtcSSEntry> mSuspendedMsgQueue;
+    SSLockState mSSLock;
+    const char* lockToString(SSLockState lock);
 };
 
 #endif /* __RFX_SUPP_SERV_QUEUE_H__ */

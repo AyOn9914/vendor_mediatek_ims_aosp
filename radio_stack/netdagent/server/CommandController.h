@@ -25,7 +25,7 @@ namespace android {
 namespace netdagent {
 
 class CommandController {
-public:
+  public:
     CommandController();
 
     FirewallController firewallCtrl;
@@ -35,10 +35,9 @@ public:
     ThroughputMonitor throughputMonitor;
     PerfController perfCtrl;
 #endif
-private:
+  private:
     void initControllers();
     void initIptables();
-
 };
 
 extern CommandController* gCtls;

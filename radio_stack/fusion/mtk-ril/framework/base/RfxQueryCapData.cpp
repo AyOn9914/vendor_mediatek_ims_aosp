@@ -22,10 +22,10 @@ RFX_IMPLEMENT_DATA_CLASS(RfxQueryCapData);
 
 #define RFX_LOG_TAG "RfxQueryCapData"
 
-RfxQueryCapData::RfxQueryCapData(void *data, int length) : RfxBaseData(data, length)  {
+RfxQueryCapData::RfxQueryCapData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_QueryCap* pOriginal = (RIL_QueryCap *) data;
-        RIL_QueryCap* pData = (RIL_QueryCap *) calloc(1, sizeof(RIL_QueryCap));
+        RIL_QueryCap* pOriginal = (RIL_QueryCap*)data;
+        RIL_QueryCap* pData = (RIL_QueryCap*)calloc(1, sizeof(RIL_QueryCap));
         if (pData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
@@ -40,7 +40,7 @@ RfxQueryCapData::RfxQueryCapData(void *data, int length) : RfxBaseData(data, len
             }
         }
 
-        m_data = (void *) pData;
+        m_data = (void*)pData;
         m_length = length;
     }
 }
@@ -48,7 +48,7 @@ RfxQueryCapData::RfxQueryCapData(void *data, int length) : RfxBaseData(data, len
 RfxQueryCapData::~RfxQueryCapData() {
     // free memory
     if (m_data != NULL) {
-        RIL_QueryCap* pData = (RIL_QueryCap *) m_data;
+        RIL_QueryCap* pData = (RIL_QueryCap*)m_data;
         if (pData->name != NULL) {
             free(pData->name);
         }

@@ -28,17 +28,17 @@
 class RmcOpSuppServRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpSuppServRequestHandler);
 
-    public:
-        RmcOpSuppServRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcOpSuppServRequestHandler();
+  public:
+    RmcOpSuppServRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcOpSuppServRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void requestSendUssiFrom(const sp<RfxMclMessage>& msg);
-        void requestCancelUssiFrom(const sp<RfxMclMessage>& msg);
+  private:
+    void requestSendUssiFrom(const sp<RfxMclMessage>& msg);
+    void requestCancelUssiFrom(const sp<RfxMclMessage>& msg);
 };
 
 #endif

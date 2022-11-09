@@ -19,7 +19,7 @@
 
 #define WPFA_D_LOG_TAG "WpfaShmSynchronizer"
 
-WpfaShmSynchronizer *WpfaShmSynchronizer::sInstance = NULL;
+WpfaShmSynchronizer* WpfaShmSynchronizer::sInstance = NULL;
 Mutex WpfaShmSynchronizer::sWpfaShmSynchronizerInitMutex;
 ShmCtrlParam WpfaShmSynchronizer::mControlPara;
 
@@ -28,21 +28,19 @@ WpfaShmSynchronizer::WpfaShmSynchronizer() {
     init();
 }
 
-WpfaShmSynchronizer::~WpfaShmSynchronizer() {
-    mtkLogD(WPFA_D_LOG_TAG, "-del()");
-}
+WpfaShmSynchronizer::~WpfaShmSynchronizer() { mtkLogD(WPFA_D_LOG_TAG, "-del()"); }
 
 WpfaShmSynchronizer* WpfaShmSynchronizer::getInstance() {
     if (sInstance != NULL) {
-       return sInstance;
+        return sInstance;
     } else {
-       sWpfaShmSynchronizerInitMutex.lock();
-       sInstance = new WpfaShmSynchronizer();
-       if (sInstance == NULL) {
-          mtkLogE(WPFA_D_LOG_TAG, "new WpfaShmSynchronizer fail");
-       }
-       sWpfaShmSynchronizerInitMutex.unlock();
-       return sInstance;
+        sWpfaShmSynchronizerInitMutex.lock();
+        sInstance = new WpfaShmSynchronizer();
+        if (sInstance == NULL) {
+            mtkLogE(WPFA_D_LOG_TAG, "new WpfaShmSynchronizer fail");
+        }
+        sWpfaShmSynchronizerInitMutex.unlock();
+        return sInstance;
     }
 }
 
@@ -66,18 +64,18 @@ void WpfaShmSynchronizer::init() {
 
     mShmAccessController = new WpfaShmAccessController();
 
-    mtkLogD(WPFA_D_LOG_TAG, "-init(), mShmAccessController: [%p]", (void*) &mShmAccessController);
+    mtkLogD(WPFA_D_LOG_TAG, "-init(), mShmAccessController: [%p]", (void*)&mShmAccessController);
 }
 
 void WpfaShmSynchronizer::lock(const char* user) {
-    mtkLogD(WPFA_D_LOG_TAG, "[ShmSync] get lock ... (%s)(%p)", user, (void*) &mControlPara.mutex);
+    mtkLogD(WPFA_D_LOG_TAG, "[ShmSync] get lock ... (%s)(%p)", user, (void*)&mControlPara.mutex);
     pthread_mutex_lock(&mControlPara.mutex);
     mtkLogD(WPFA_D_LOG_TAG, "[ShmSync] lock success (%s)", user);
 }
 
 void WpfaShmSynchronizer::trylock(const char* user) {
     mtkLogD(WPFA_D_LOG_TAG, "[ShmSync][trylock] get lock ... (%s)", user);
-    for (int i = 0; i < 200; i ++) {
+    for (int i = 0; i < 200; i++) {
         if (pthread_mutex_trylock(&mControlPara.mutex) == 0) {
             mtkLogD(WPFA_D_LOG_TAG, "[ShmSync][trylock] lock success");
             return;
@@ -97,7 +95,7 @@ void WpfaShmSynchronizer::unlock(const char* user) {
 
 void WpfaShmSynchronizer::waitCanWrite(const char* user) {
     mtkLogD(WPFA_D_LOG_TAG, "[ShmSync] wait can write... (%s)", user);
-    while(isStateUpdating()) {
+    while (isStateUpdating()) {
         // wait until some state update done
         pthread_cond_wait(&mControlPara.cond_can_write, &mControlPara.mutex);
     }
@@ -111,7 +109,7 @@ void WpfaShmSynchronizer::signalCanWrite(const char* user) {
 
 void WpfaShmSynchronizer::waitCanUpdateState(const char* user) {
     mtkLogD(WPFA_D_LOG_TAG, "[ShmSync] wait can update state .... (%s)", user);
-    while(isWriting()) {
+    while (isWriting()) {
         // wait for data pkts write to SHM
         pthread_cond_wait(&mControlPara.cond_can_update_state, &mControlPara.mutex);
     }
@@ -128,10 +126,10 @@ int WpfaShmSynchronizer::processControlMessage(uint16_t tId, uint16_t msgId) {
     mtkLogD(WPFA_D_LOG_TAG, "processControlMessage()+ tId=%d msgId=%d", tId, msgId);
     // get lock and wait for signel if needed
     trylock("processControlMessage");
-    //waitCanUpdateState("processControlMessage");
+    // waitCanUpdateState("processControlMessage");
 
     // set state updating flag
-    //setStateUpdatingFlag(true);
+    // setStateUpdatingFlag(true);
 
     switch (msgId) {
         case MSG_M2A_REQUEST_DATA:
@@ -147,10 +145,10 @@ int WpfaShmSynchronizer::processControlMessage(uint16_t tId, uint16_t msgId) {
     }
 
     // reset state updating flag
-    //setStateUpdatingFlag(false);
+    // setStateUpdatingFlag(false);
 
     // signal writer thread and release mutex
-    //signalCanWrite("processControlMessage");
+    // signalCanWrite("processControlMessage");
     unlock("processControlMessage");
     mtkLogD(WPFA_D_LOG_TAG, "processControlMessage()-");
     return retValue;
@@ -162,13 +160,14 @@ int WpfaShmSynchronizer::onRequestData(uint16_t tId) {
         mtkLogD(WPFA_D_LOG_TAG, "onRequestData(): mShmAccessController is NULL");
     }
     mtkLogD(WPFA_D_LOG_TAG, "onRequestData()+ tId:%d, mShmAccessController: [%p]", tId,
-            (void*) &mShmAccessController);
+            (void*)&mShmAccessController);
     dumpCtrlParams();
     mShmAccessController->dumpShmDLCtrParm();
     int retValue = 0;
     if (tId == mTid) {
         // 1. set newBeginIdx = WrideIdx+size and newSize=0
-        mControlPara.newWriteIdx = (mControlPara.writeIdx + mControlPara.writeSize) % WPFA_SHM_MAX_DATA_BUFFER_SIZE ;
+        mControlPara.newWriteIdx =
+                (mControlPara.writeIdx + mControlPara.writeSize) % WPFA_SHM_MAX_DATA_BUFFER_SIZE;
         mControlPara.newWriteSize = 0;
 
         mtkLogD(WPFA_D_LOG_TAG, "onRequestData, newWriteIdx=%d newWriteSize=%d",
@@ -193,7 +192,7 @@ int WpfaShmSynchronizer::onRequestDataDone(uint16_t tId) {
         mtkLogD(WPFA_D_LOG_TAG, "onRequestData(): mShmAccessController is NULL");
     }
     mtkLogD(WPFA_D_LOG_TAG, "onRequestDataDone() tId:%d, mShmAccessController: [%p]", tId,
-            (void*) &mShmAccessController);
+            (void*)&mShmAccessController);
     int retValue = 0;
     if (tId == mTid) {
         mtkLogD(WPFA_D_LOG_TAG, "onRequestDataDone +");
@@ -235,7 +234,7 @@ int WpfaShmSynchronizer::onRequestDataDone(uint16_t tId) {
         mShmAccessController->dumpShmDLCtrParm();
         dumpCtrlParams();
         mtkLogD(WPFA_D_LOG_TAG, "onRequestDataDone -");
-    }else {
+    } else {
         mtkLogE(WPFA_D_LOG_TAG, "onRequestDataDone id not match, tId:%d", tId);
         retValue = -1;
     }
@@ -243,29 +242,29 @@ int WpfaShmSynchronizer::onRequestDataDone(uint16_t tId) {
     return retValue;
 }
 
-int WpfaShmSynchronizer::wirteDataToShm(WpfaRingBuffer *ringBuffer) {
+int WpfaShmSynchronizer::wirteDataToShm(WpfaRingBuffer* ringBuffer) {
     int retValue = 0;
 
     // acquire mutex and wait
     lock("wirteDataToShm");
-    //waitCanWrite("wirteDataToShm");
+    // waitCanWrite("wirteDataToShm");
 
     // set Writing flag
-    //setWritingFlag(true);
+    // setWritingFlag(true);
 
     switch (getState()) {
         case SHM_WRITER_STATE_IDLE:
-            mtkLogD(WPFA_D_LOG_TAG,"call writeInIdleState");
+            mtkLogD(WPFA_D_LOG_TAG, "call writeInIdleState");
             retValue = writeInIdleState(ringBuffer);
             break;
 
         case SHM_WRITER_STATE_READY:
-            mtkLogD(WPFA_D_LOG_TAG,"call writeInReadyState");
+            mtkLogD(WPFA_D_LOG_TAG, "call writeInReadyState");
             retValue = writeInReadyState(ringBuffer);
             break;
 
         case SHM_WRITER_STATE_MD_READING:
-            mtkLogD(WPFA_D_LOG_TAG,"call writeInMdReadingState");
+            mtkLogD(WPFA_D_LOG_TAG, "call writeInMdReadingState");
             retValue = writeInMdReadingState(ringBuffer);
             break;
 
@@ -274,19 +273,19 @@ int WpfaShmSynchronizer::wirteDataToShm(WpfaRingBuffer *ringBuffer) {
     }
 
     // reset Writing flag
-    //setWritingFlag(false);
+    // setWritingFlag(false);
 
     // signal for state update and release mutex
-    //signalCanUpdateState("wirteDataToShm");
+    // signalCanUpdateState("wirteDataToShm");
     unlock("wirteDataToShm");
 
     return retValue;
 }
 
 // write data pkts
-int WpfaShmSynchronizer::writeInIdleState(WpfaRingBuffer *ringBuffer) {
+int WpfaShmSynchronizer::writeInIdleState(WpfaRingBuffer* ringBuffer) {
     mtkLogD(WPFA_D_LOG_TAG, "writeInIdleState +, mShmAccessController: [%p]",
-            (void*) &mShmAccessController);
+            (void*)&mShmAccessController);
 
     int retValue = 0;
     uint32_t newIdx = 0;
@@ -305,8 +304,8 @@ int WpfaShmSynchronizer::writeInIdleState(WpfaRingBuffer *ringBuffer) {
         mShmAccessController->setMdReadIdx(mControlPara.writeIdx);
         mShmAccessController->setMdReadSize(mControlPara.writeSize);
 
-        mtkLogD(WPFA_D_LOG_TAG, "writeInIdleState, writeIdx=%d writeSize=%d",
-                mControlPara.writeIdx, mControlPara.writeSize);
+        mtkLogD(WPFA_D_LOG_TAG, "writeInIdleState, writeIdx=%d writeSize=%d", mControlPara.writeIdx,
+                mControlPara.writeSize);
 
         // 3. send A2M_DATA_READY to modem
         sendMessageToModem(generateShmTid(), MSG_A2M_DATA_READY);
@@ -324,12 +323,12 @@ int WpfaShmSynchronizer::writeInIdleState(WpfaRingBuffer *ringBuffer) {
     return retValue;
 }
 
-int WpfaShmSynchronizer::writeInReadyState(WpfaRingBuffer *ringBuffer) {
+int WpfaShmSynchronizer::writeInReadyState(WpfaRingBuffer* ringBuffer) {
     int retValue = 0;
     uint32_t newIdx = 0;
 
     mtkLogD(WPFA_D_LOG_TAG, "writeInReadyState +, mShmAccessController: [%p]",
-            (void*) &mShmAccessController);
+            (void*)&mShmAccessController);
     dumpCtrlParams();
     mShmAccessController->dumpShmDLCtrParm();
 
@@ -353,12 +352,12 @@ int WpfaShmSynchronizer::writeInReadyState(WpfaRingBuffer *ringBuffer) {
     return retValue;
 }
 
-int WpfaShmSynchronizer::writeInMdReadingState(WpfaRingBuffer *ringBuffer) {
+int WpfaShmSynchronizer::writeInMdReadingState(WpfaRingBuffer* ringBuffer) {
     int retValue = 0;
     uint32_t newIdx = 0;
 
     mtkLogD(WPFA_D_LOG_TAG, "writeInMdReadingState +, mShmAccessController: [%p]",
-            (void*) &mShmAccessController);
+            (void*)&mShmAccessController);
     dumpCtrlParams();
     mShmAccessController->dumpShmDLCtrParm();
 
@@ -386,11 +385,7 @@ int WpfaShmSynchronizer::writeInMdReadingState(WpfaRingBuffer *ringBuffer) {
 int WpfaShmSynchronizer::sendMessageToModem(uint16_t tId, uint16_t msgId) {
     int retValue = 0;
 
-    sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-            msgId,
-            tId,
-            CCCI_CTRL_MSG,
-            0);
+    sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(msgId, tId, CCCI_CTRL_MSG, 0);
     WpfaShmWriteMsgHandler::enqueueShmWriteMessage(msg);
     return retValue;
 }
@@ -400,34 +395,27 @@ void WpfaShmSynchronizer::setState(writer_state_enum state) {
     mControlPara.mState = state;
 }
 
-writer_state_enum WpfaShmSynchronizer::getState() {
-    return mControlPara.mState;
-}
+writer_state_enum WpfaShmSynchronizer::getState() { return mControlPara.mState; }
 
 void WpfaShmSynchronizer::setWritingFlag(bool isWriting) {
     mtkLogD(WPFA_D_LOG_TAG, "setWritingFlag() isWriting=%d", isWriting);
     mControlPara.isWriting = isWriting;
 }
 
-bool WpfaShmSynchronizer::isWriting() {
-    return mControlPara.isWriting;
-}
+bool WpfaShmSynchronizer::isWriting() { return mControlPara.isWriting; }
 
-void WpfaShmSynchronizer::setStateUpdatingFlag(bool isUpdating){
+void WpfaShmSynchronizer::setStateUpdatingFlag(bool isUpdating) {
     mtkLogD(WPFA_D_LOG_TAG, "setStateUpdatingFlag() isUpdating=%d", isUpdating);
     mControlPara.isStateUpdating = isUpdating;
 }
 
-bool WpfaShmSynchronizer::isStateUpdating(){
-    return mControlPara.isStateUpdating;
-}
+bool WpfaShmSynchronizer::isStateUpdating() { return mControlPara.isStateUpdating; }
 
 void WpfaShmSynchronizer::dumpCtrlParams() {
-    mtkLogD(WPFA_D_LOG_TAG, "dumpCtrlParams writeIdx=%d writeSize=%d newWriteIdx=%d,"
+    mtkLogD(WPFA_D_LOG_TAG,
+            "dumpCtrlParams writeIdx=%d writeSize=%d newWriteIdx=%d,"
             "newWriteSize=%d",
-            mControlPara.writeIdx,
-            mControlPara.writeSize,
-            mControlPara.newWriteIdx,
+            mControlPara.writeIdx, mControlPara.writeSize, mControlPara.newWriteIdx,
             mControlPara.newWriteSize);
 }
 

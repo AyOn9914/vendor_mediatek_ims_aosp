@@ -33,83 +33,77 @@
 #define RFX_LOG_TAG "TCL-ImsConfigUtils"
 
 const char* ImsConfigUtils::PROPERTY_IMS_SUPPORT = "persist.vendor.ims_support";
-const char* ImsConfigUtils::PROPERTY_VOLTE_ENALBE =  "persist.vendor.mtk.volte.enable";
+const char* ImsConfigUtils::PROPERTY_VOLTE_ENALBE = "persist.vendor.mtk.volte.enable";
 const char* ImsConfigUtils::PROPERTY_WFC_ENALBE = "persist.vendor.mtk.wfc.enable";
 const char* ImsConfigUtils::PROPERTY_VILTE_ENALBE = "persist.vendor.mtk.vilte.enable";
 const char* ImsConfigUtils::PROPERTY_VIWIFI_ENALBE = "persist.vendor.mtk.viwifi.enable";
-const char* ImsConfigUtils::PROPERTY_VONR_ENALBE =  "persist.vendor.mtk.vonr.enable";
-const char* ImsConfigUtils::PROPERTY_VINR_ENALBE =  "persist.vendor.mtk.vinr.enable";
+const char* ImsConfigUtils::PROPERTY_VONR_ENALBE = "persist.vendor.mtk.vonr.enable";
+const char* ImsConfigUtils::PROPERTY_VINR_ENALBE = "persist.vendor.mtk.vinr.enable";
 const char* ImsConfigUtils::PROPERTY_IMS_VIDEO_ENALBE = "persist.vendor.mtk.ims.video.enable";
 const char* ImsConfigUtils::PROPERTY_MULTI_IMS_SUPPORT = "persist.vendor.mims_support";
-const char* ImsConfigUtils::PROPERTY_DYNAMIC_IMS_SWITCH_SUPPORT = "persist.vendor.mtk_dynamic_ims_switch";
+const char* ImsConfigUtils::PROPERTY_DYNAMIC_IMS_SWITCH_SUPPORT =
+        "persist.vendor.mtk_dynamic_ims_switch";
 const char* ImsConfigUtils::PROPERTY_CTVOLTE_ENABLE = "persist.vendor.mtk_ct_volte_support";
-
 
 static ConfigOperatorTable operatorTable[] = {
 #include "op/OperatorTable.h"
 };
 
-
 const char ImsConfigUtils::PROPERTY_ICCID_SIM[4][25] = {
-"vendor.ril.iccid.sim1",
-"vendor.ril.iccid.sim2",
-"vendor.ril.iccid.sim3",
-"vendor.ril.iccid.sim4"
-};
+        "vendor.ril.iccid.sim1", "vendor.ril.iccid.sim2", "vendor.ril.iccid.sim3",
+        "vendor.ril.iccid.sim4"};
 
 const char ImsConfigUtils::PROPERTY_TEST_SIM[4][30] = {
-"vendor.gsm.sim.ril.testsim",
-"vendor.gsm.sim.ril.testsim.2",
-"vendor.gsm.sim.ril.testsim.3",
-"vendor.gsm.sim.ril.testsim.4"
-};
+        "vendor.gsm.sim.ril.testsim", "vendor.gsm.sim.ril.testsim.2",
+        "vendor.gsm.sim.ril.testsim.3", "vendor.gsm.sim.ril.testsim.4"};
 
 const bool ImsConfigUtils::DEBUG_ENABLED = false;
 bool ImsConfigUtils::mForceNotify[4] = {false, false, false, false};
 int ImsConfigUtils::mForceValue[4] = {0, 0, 0, 0};
 
-int ImsConfigUtils::getSystemPropValue(const char* propName){
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+int ImsConfigUtils::getSystemPropValue(const char* propName) {
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
     int result;
 
     rfx_property_get(propName, value, "0");
     result = atoi(value);
 
-    printLog(DEBUG, String8::format("getSystemPropValue, propName:%s, value:%s",
-                                    propName, value), 0);
+    printLog(DEBUG, String8::format("getSystemPropValue, propName:%s, value:%s", propName, value),
+             0);
 
     return result;
 }
 
-std::string ImsConfigUtils::getSystemPropStringValue(const char* propName){
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+std::string ImsConfigUtils::getSystemPropStringValue(const char* propName) {
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get(propName, value, "");
 
     return std::string(value);
 }
 
-int ImsConfigUtils::getFeaturePropValue(const char* propName, int slot_id){
+int ImsConfigUtils::getFeaturePropValue(const char* propName, int slot_id) {
     RFX_UNUSED(slot_id);
     int defaultPropValue = 0;
     int featureValue = 0;
     int propResult = 0;
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(propName, value, "0");
     std::stringstream ss;
     ss << value;
     ss >> featureValue;
 
     if (!checkIsPhoneIdValid(slot_id)) {
-        printLog(INFO,
-                 String8::format(
-                         "getFeaturePropValue(): = %s, slot_id invalid return default value",
-                         propName), slot_id);
+        printLog(
+                INFO,
+                String8::format("getFeaturePropValue(): = %s, slot_id invalid return default value",
+                                propName),
+                slot_id);
 
         return defaultPropValue;
     }
     if (isMultiImsSupport()) {
-        propResult = ((featureValue & (1 << slot_id)) > 0) ? 1: 0;
+        propResult = ((featureValue & (1 << slot_id)) > 0) ? 1 : 0;
     } else {
         // Backward compatibility, only use phone Id 0 to get.
         propResult = ((featureValue & (1 << 0)) > 0) ? 1 : 0;
@@ -117,7 +111,8 @@ int ImsConfigUtils::getFeaturePropValue(const char* propName, int slot_id){
 
     printLog(INFO,
              String8::format("getFeaturePropValue() featureValue:%d, propName:%s, propResult:%d",
-                             featureValue, propName, propResult), slot_id);
+                             featureValue, propName, propResult),
+             slot_id);
 
     return propResult;
 }
@@ -127,7 +122,7 @@ void ImsConfigUtils::setFeaturePropValue(const char* propName, char* enabled, in
     int featureValue = 0;
     int enabledValue = 0;
     int sumFeatureValue = 0;
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
     std::stringstream ss;
     std::string sumFeatureVal = "";
 
@@ -140,7 +135,8 @@ void ImsConfigUtils::setFeaturePropValue(const char* propName, char* enabled, in
         printLog(INFO,
                  String8::format(
                          "SetFeaturePropValue() propName:%s, slot_id invalid don't set and return",
-                         propName), slot_id);
+                         propName),
+                 slot_id);
 
         return;
     }
@@ -162,14 +158,13 @@ void ImsConfigUtils::setFeaturePropValue(const char* propName, char* enabled, in
     rfx_property_set(propName, sumFeatureVal.c_str());
 
     printLog(DEBUG,
-             String8::format(
-                     "SetFeaturePropValue() featureValue:%d, propName:%s, sumFeatureValue:%d, enabledValue:%d",
-                     featureValue, propName, sumFeatureValue, enabledValue), slot_id);
-
+             String8::format("SetFeaturePropValue() featureValue:%d, propName:%s, "
+                             "sumFeatureValue:%d, enabledValue:%d",
+                             featureValue, propName, sumFeatureValue, enabledValue),
+             slot_id);
 }
 
-int ImsConfigUtils::setBitForPhone(int featureValue, int enabled, int slot_id)
-{
+int ImsConfigUtils::setBitForPhone(int featureValue, int enabled, int slot_id) {
     int result;
     if (enabled == 1) {
         result = featureValue | (1 << slot_id);
@@ -182,14 +177,16 @@ int ImsConfigUtils::setBitForPhone(int featureValue, int enabled, int slot_id)
 bool ImsConfigUtils::checkIsPhoneIdValid(int slot_id) {
     if (isMultiImsSupport()) {
         if (slot_id > 3 || slot_id < 0) {
-            printLog(INFO, String8::format(
-                    "Multi IMS support but phone id invalid, slot_id:%d", slot_id), slot_id);
+            printLog(INFO,
+                     String8::format("Multi IMS support but phone id invalid, slot_id:%d", slot_id),
+                     slot_id);
             return false;
         }
     } else {
         if (slot_id > 3 || slot_id < 0) {
-            printLog(INFO, String8::format(
-                    "Multi IMS not support but phone id invalid, slot_id:%d", slot_id),
+            printLog(INFO,
+                     String8::format("Multi IMS not support but phone id invalid, slot_id:%d",
+                                     slot_id),
                      slot_id);
             return false;
         }
@@ -198,7 +195,7 @@ bool ImsConfigUtils::checkIsPhoneIdValid(int slot_id) {
 }
 
 bool ImsConfigUtils::isMultiImsSupport() {
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_MULTI_IMS_SUPPORT, value, "1");
     std::stringstream ss;
     int val = 0;
@@ -213,28 +210,29 @@ bool ImsConfigUtils::isMultiImsSupport() {
 }
 
 bool ImsConfigUtils::isPhoneIdSupportIms(int slot_id) {
-    char imsSupport[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char imsSupport[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_IMS_SUPPORT, imsSupport, "1");
 
     if (atoi(imsSupport) == 0) {
         return false;
     } else {
-        char msimCount[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char msimCount[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get(PROPERTY_MULTI_IMS_SUPPORT, msimCount, "1");
         int count = atoi(msimCount);
         if (count == 1) {
             printLog(DEBUG,
-                    String8::format("isPhoneIdSupportIms, msimcount:%d, major slot:%d",
-                                    count, RfxRilUtils::getMajorSim() - 1), slot_id);
+                     String8::format("isPhoneIdSupportIms, msimcount:%d, major slot:%d", count,
+                                     RfxRilUtils::getMajorSim() - 1),
+                     slot_id);
             return slot_id == RfxRilUtils::getMajorSim() - 1;
         } else {
             int protocalStackId = RfxRilUtils::getProtocolStackId(slot_id);
             printLog(DEBUG,
-                    String8::format("isPhoneIdSupportIms, msimcount:%d, protocalStackId:%d",
-                                    count, protocalStackId), slot_id);
+                     String8::format("isPhoneIdSupportIms, msimcount:%d, protocalStackId:%d", count,
+                                     protocalStackId),
+                     slot_id);
             return protocalStackId <= count;
         }
-
     }
 }
 
@@ -251,7 +249,6 @@ int ImsConfigUtils::getOperatorId(int mccmnc) {
     }
     return Operator::OP_NONE;
 }
-
 
 bool ImsConfigUtils::isCtVolteDisabled(int mccmnc) {
     int op_id = getOperatorId(mccmnc);
@@ -275,7 +272,6 @@ bool ImsConfigUtils::isAllowForceNotify(int slot_id, int value) {
 void ImsConfigUtils::setAllowForceNotify(int slot_id, bool allow, int value) {
     mForceNotify[slot_id] = allow;
     mForceValue[slot_id] = value;
-    printLog(DEBUG,
-            String8::format("setAllowForceNotify: mForceNotify[%d] = %d",
-                    slot_id, allow), slot_id);
+    printLog(DEBUG, String8::format("setAllowForceNotify: mForceNotify[%d] = %d", slot_id, allow),
+             slot_id);
 }

@@ -25,7 +25,7 @@ extern "C" {
 
 using ::android::Mutex;
 
-WpfaControlMsgHandler *WpfaControlMsgHandler::s_self = NULL;
+WpfaControlMsgHandler* WpfaControlMsgHandler::s_self = NULL;
 int WpfaControlMsgHandler::mCcciFd = -1;
 
 static sem_t sWaitLooperSem;
@@ -35,12 +35,11 @@ static Mutex sWaitLooperMutex;
 /*****************************************************************************
  * Class CcciMsgHandler
  *****************************************************************************/
-void WpfaControlMsgHandler::CcciMsgHandler::handleMessage(
-        const Message& message) {
+void WpfaControlMsgHandler::CcciMsgHandler::handleMessage(const Message& message) {
     WPFA_UNUSED(message);
 
     uint16_t msgId = msg->getMsgId();
-    //mtkLogD(WPFA_D_LOG_TAG, "handleMessage, msgId=%d", msgId);
+    // mtkLogD(WPFA_D_LOG_TAG, "handleMessage, msgId=%d", msgId);
     switch (msgId) {
         case MSG_A2M_WPFA_INIT:
         case MSG_A2M_WPFA_VERSION:
@@ -94,34 +93,33 @@ bool WpfaControlMsgHandler::threadLoop() {
     int err = 0;
     mLooper = Looper::prepare(0);
 
-
     // 1. open ccci
-    //err = openCcciDriver();
+    // err = openCcciDriver();
     if (mCcciFd < 0) {
         mtkLogE(WPFA_D_LOG_TAG, "fail to open ccci, err = %d", err);
         // ASSERT
-        //WPFA_D_ASSERT(0); // Can't go here
+        // WPFA_D_ASSERT(0); // Can't go here
     }
-    //else {  // TODO: only for test
-        mtkLogD(WPFA_D_LOG_TAG, "new Reader/Sender");
-        mReader = new WpfaCcciReader(mCcciFd);
-        mReader->run("WpfaCcciReader");
+    // else {  // TODO: only for test
+    mtkLogD(WPFA_D_LOG_TAG, "new Reader/Sender");
+    mReader = new WpfaCcciReader(mCcciFd);
+    mReader->run("WpfaCcciReader");
 
-        mSender = new WpfaCcciSender(mCcciFd);
-        mSender->run("WpfaCcciSender");
+    mSender = new WpfaCcciSender(mCcciFd);
+    mSender->run("WpfaCcciSender");
 
-        // UT MODE
-        if (WPFA_DRIVER_TEST_MODE_ENABLE) {
+    // UT MODE
+    if (WPFA_DRIVER_TEST_MODE_ENABLE) {
+        if (mWpfaDriverUtilis == NULL) {
+            mWpfaDriverUtilis = WpfaDriverUtilis::getInstance();
             if (mWpfaDriverUtilis == NULL) {
-                mWpfaDriverUtilis = WpfaDriverUtilis::getInstance();
-                if (mWpfaDriverUtilis == NULL) {
-                    mtkLogE(WPFA_D_LOG_TAG, "getInstance of DriverUtilis fail");
-                }
+                mtkLogE(WPFA_D_LOG_TAG, "getInstance of DriverUtilis fail");
             }
-            mWpfaDriverUtilis->setCcciReader(mReader);
-            mWpfaDriverUtilis->setCcciSender(mSender);
-            mtkLogD(WPFA_D_LOG_TAG, "!!! Test Mode!!!");
         }
+        mWpfaDriverUtilis->setCcciReader(mReader);
+        mWpfaDriverUtilis->setCcciSender(mSender);
+        mtkLogD(WPFA_D_LOG_TAG, "!!! Test Mode!!!");
+    }
     //}
 
     sem_post(&sWaitLooperSem);
@@ -132,13 +130,13 @@ bool WpfaControlMsgHandler::threadLoop() {
         mtkLogD(WPFA_D_LOG_TAG, "threadLoop, result = %d", result);
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    WPFA_D_ASSERT(0); // Can't go here
+    WPFA_D_ASSERT(0);  // Can't go here
     return true;
 }
 
 void WpfaControlMsgHandler::enqueueDriverMessage(const sp<WpfaDriverMessage>& message) {
-    //if (!RfxRilUtils::isInLogReductionList(message->getId())) {
-        mtkLogD(WPFA_D_LOG_TAG, "enqueueDriverMessage: %s", message->toString().string());
+    // if (!RfxRilUtils::isInLogReductionList(message->getId())) {
+    mtkLogD(WPFA_D_LOG_TAG, "enqueueDriverMessage: %s", message->toString().string());
     //}
     WpfaControlMsgHandler* dispatcher = s_self;
     sp<MessageHandler> handler = new CcciMsgHandler(dispatcher, message);

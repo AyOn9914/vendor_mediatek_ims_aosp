@@ -23,6 +23,5 @@
 
 class RfxCdmaInfoRecData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCdmaInfoRecData);
-
 };
 #endif

@@ -29,16 +29,15 @@
 class RmcOpNetworkUrcHandler : public RmcNetworkHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpNetworkUrcHandler);
 
-    public:
-        RmcOpNetworkUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcOpNetworkUrcHandler();
+  public:
+    RmcOpNetworkUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcOpNetworkUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleModulationInfoReceived(const sp<RfxMclMessage>& msg);
-
+  private:
+    void handleModulationInfoReceived(const sp<RfxMclMessage>& msg);
 };
 
 #endif

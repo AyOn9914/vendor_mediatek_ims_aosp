@@ -33,11 +33,10 @@
 #include "RfxOpUtils.h"
 #include "RfxGwsdUtils.h"
 
-
 /*****************************************************************************
  * Implementation
  *****************************************************************************/
-RfxDispatchThread *dispatchThread;
+RfxDispatchThread* dispatchThread;
 
 #define RFX_LOG_TAG "RFX"
 
@@ -63,55 +62,57 @@ void rfx_init(void) {
     RfxGwsdUtils::initHandler();
 }
 
-void rfx_enqueue_request_message(int request, void *data, size_t datalen, RIL_Token t,
-        RIL_SOCKET_ID socketId) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+void rfx_enqueue_request_message(int request, void* data, size_t datalen, RIL_Token t,
+                                 RIL_SOCKET_ID socketId) {
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.ril.test_mode", property_value, "0");
     if (atoi(property_value) == 1) {
         RFX_LOG_D(RFX_LOG_TAG, "test mode on, return not support : %d", request);
-        RfxRequestInfo *requestInfo = (RfxRequestInfo *)t;
-        sp<RfxMessage> resMsg = RfxMessage::obtainResponse(socketId, request, requestInfo->token,
-                INVALID_ID, -1, RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
-        MessageObj *obj = createMessageObj(resMsg);
+        RfxRequestInfo* requestInfo = (RfxRequestInfo*)t;
+        sp<RfxMessage> resMsg =
+                RfxMessage::obtainResponse(socketId, request, requestInfo->token, INVALID_ID, -1,
+                                           RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
+        MessageObj* obj = createMessageObj(resMsg);
         dispatchResponseQueue.enqueue(obj);
         return;
     }
     dispatchThread->enqueueRequestMessage(request, data, datalen, t, socketId);
 }
 
-void rfx_enqueue_request_message_client(int request, void *data, size_t datalen,
-        RIL_Token t, RIL_SOCKET_ID socketId) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+void rfx_enqueue_request_message_client(int request, void* data, size_t datalen, RIL_Token t,
+                                        RIL_SOCKET_ID socketId) {
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.ril.test_mode", property_value, "0");
-    RfxRequestInfo *requestInfo = (RfxRequestInfo *)t;
+    RfxRequestInfo* requestInfo = (RfxRequestInfo*)t;
     int clientId = requestInfo->clientId;
-    if (atoi(property_value) == 1 && (clientId != CLIENT_ID_MTTS1
-            && clientId != CLIENT_ID_MTTS2 && clientId != CLIENT_ID_MTTS3
-            && clientId != CLIENT_ID_MTTS4)) {
+    if (atoi(property_value) == 1 && (clientId != CLIENT_ID_MTTS1 && clientId != CLIENT_ID_MTTS2 &&
+                                      clientId != CLIENT_ID_MTTS3 && clientId != CLIENT_ID_MTTS4)) {
         RFX_LOG_D(RFX_LOG_TAG, "test mode but not MTTS request, return not support : %d", request);
-        sp<RfxMessage> resMsg = RfxMessage::obtainResponse(socketId, request, requestInfo->token,
-                INVALID_ID, -1, RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
-        MessageObj *obj = createMessageObj(resMsg);
+        sp<RfxMessage> resMsg =
+                RfxMessage::obtainResponse(socketId, request, requestInfo->token, INVALID_ID, -1,
+                                           RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
+        MessageObj* obj = createMessageObj(resMsg);
         dispatchResponseQueue.enqueue(obj);
         return;
     }
     dispatchThread->enqueueRequestMessage(request, data, datalen, t, socketId, clientId);
 }
 
-void rfx_enqueue_sap_request_message(int request, void *data, size_t datalen,
-        RIL_Token t, RIL_SOCKET_ID socketId) {
-   char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+void rfx_enqueue_sap_request_message(int request, void* data, size_t datalen, RIL_Token t,
+                                     RIL_SOCKET_ID socketId) {
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.ril.test_mode", property_value, "0");
     if (atoi(property_value) == 1) {
         RFX_LOG_D(RFX_LOG_TAG, "test mode on, return not support : %d", request);
-        RfxRequestInfo *requestInfo = (RfxRequestInfo *)t;
-        sp<RfxMessage> resMsg = RfxMessage::obtainResponse(socketId, request, requestInfo->token,
-                INVALID_ID, -1, RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
-        MessageObj *obj = createMessageObj(resMsg);
+        RfxRequestInfo* requestInfo = (RfxRequestInfo*)t;
+        sp<RfxMessage> resMsg =
+                RfxMessage::obtainResponse(socketId, request, requestInfo->token, INVALID_ID, -1,
+                                           RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0, t);
+        MessageObj* obj = createMessageObj(resMsg);
         dispatchResponseQueue.enqueue(obj);
         return;
     }
-   dispatchThread->enqueueSapRequestMessage(request, data, datalen, t, socketId);
+    dispatchThread->enqueueSapRequestMessage(request, data, datalen, t, socketId);
 }
 
 void rfx_update_connection_state(RIL_SOCKET_ID socketId, int isConnected) {

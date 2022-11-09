@@ -23,19 +23,19 @@
 class RmcHardwareConfigRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcHardwareConfigRequestHandler);
 
-    public:
-        RmcHardwareConfigRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcHardwareConfigRequestHandler();
+  public:
+    RmcHardwareConfigRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcHardwareConfigRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleHardwareConfigRequest(const sp<RfxMclMessage>& msg);
-        void sendHardwareConfigUrc();
-        void getHardwareConfig(RIL_HardwareConfig *hardwareConfigs);
+  private:
+    void handleHardwareConfigRequest(const sp<RfxMclMessage>& msg);
+    void sendHardwareConfigUrc();
+    void getHardwareConfig(RIL_HardwareConfig* hardwareConfigs);
 };
 
 #endif

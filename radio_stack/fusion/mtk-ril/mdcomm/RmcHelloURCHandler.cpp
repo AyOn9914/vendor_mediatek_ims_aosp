@@ -22,26 +22,22 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcHelloURCHandler, RIL_CMD_PROXY_5);
 // register data
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_HELLO_NOTIFY_MODEM_STATE);
 
-RmcHelloURCHandler::RmcHelloURCHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-       const char* urc[] = {
-    //     "+EIND:128",
-    //     "+ECSRA",
-           "+EUSIM:"
-       };
+RmcHelloURCHandler::RmcHelloURCHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const char* urc[] = {//     "+EIND:128",
+                         //     "+ECSRA",
+                         "+EUSIM:"};
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcHelloURCHandler::~RmcHelloURCHandler() {
-}
+RmcHelloURCHandler::~RmcHelloURCHandler() {}
 
 void RmcHelloURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    if(strStartsWith(msg->getRawUrc()->getLine(), "+EIND:128")) {
+    if (strStartsWith(msg->getRawUrc()->getLine(), "+EIND:128")) {
         handleModemState(msg);
     } else if (strStartsWith(msg->getRawUrc()->getLine(), "+EUSIM:")) {
-        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RIL_UNSOL_TEST,
-                m_slot_id, RfxVoidData());
+        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RIL_UNSOL_TEST, m_slot_id, RfxVoidData());
         responseToTelCore(urc);
     }
 }
@@ -52,10 +48,11 @@ void RmcHelloURCHandler::handleModemState(const sp<RfxMclMessage>& msg) {
     int modemState[1];
     // NOTE: sendEvent with RfxBaseData
     modemState[0] = 1;
-    sendEvent(RFX_MSG_EVENT_HELLO_NOTIFY_MODEM_STATE, RfxIntsData(modemState, 1),
-            RIL_CMD_PROXY_1, RFX_SLOT_ID_0);
+    sendEvent(RFX_MSG_EVENT_HELLO_NOTIFY_MODEM_STATE, RfxIntsData(modemState, 1), RIL_CMD_PROXY_1,
+              RFX_SLOT_ID_0);
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED, m_slot_id, RfxVoidData());
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED,
+                                                     m_slot_id, RfxVoidData());
     responseToTelCore(urc);
 }
 

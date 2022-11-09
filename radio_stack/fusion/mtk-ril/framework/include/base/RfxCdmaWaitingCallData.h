@@ -23,6 +23,5 @@
 
 class RfxCdmaWaitingCallData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCdmaWaitingCallData);
-
 };
 #endif

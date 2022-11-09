@@ -33,7 +33,7 @@
 #include "power/RtcRadioController.h"
 
 #define RFX_LOG_TAG "RtcCapa"
-#define UNKNOW_SLOT  (-1)
+#define UNKNOW_SLOT (-1)
 
 /*****************************************************************************
  * Class RtcCapabilitySwitchController
@@ -41,27 +41,34 @@
 
 RFX_IMPLEMENT_CLASS("RtcCapabilitySwitchController", RtcCapabilitySwitchController, RfxController);
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxRadioCapabilityData, RfxRadioCapabilityData, RFX_MSG_REQUEST_SET_RADIO_CAPABILITY);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxRadioCapabilityData, RFX_MSG_REQUEST_GET_RADIO_CAPABILITY);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxRadioCapabilityData, RfxRadioCapabilityData,
+                                RFX_MSG_REQUEST_SET_RADIO_CAPABILITY);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxRadioCapabilityData,
+                                RFX_MSG_REQUEST_GET_RADIO_CAPABILITY);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData,
+                                RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM);
 
-RtcCapabilitySwitchController::RtcCapabilitySwitchController() :
-        m_request_count(0), m_max_capability(0), m_new_main_slot(0), m_close_radio_count(0),
-        m_new_main_slot_by_modem_id(-1), m_is_started(false), m_pending_request(NULL),
-        m_checker_controller(NULL) {
+RtcCapabilitySwitchController::RtcCapabilitySwitchController()
+    : m_request_count(0),
+      m_max_capability(0),
+      m_new_main_slot(0),
+      m_close_radio_count(0),
+      m_new_main_slot_by_modem_id(-1),
+      m_is_started(false),
+      m_pending_request(NULL),
+      m_checker_controller(NULL) {
     logI(RFX_LOG_TAG, "constructor entered");
 }
 
-RtcCapabilitySwitchController::~RtcCapabilitySwitchController() {
-}
+RtcCapabilitySwitchController::~RtcCapabilitySwitchController() {}
 
 void RtcCapabilitySwitchController::onInit() {
     RfxController::onInit();
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_SET_RADIO_CAPABILITY,
-        RFX_MSG_REQUEST_GET_RADIO_CAPABILITY,
-        RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM,
+            RFX_MSG_REQUEST_SET_RADIO_CAPABILITY,
+            RFX_MSG_REQUEST_GET_RADIO_CAPABILITY,
+            RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM,
     };
 
     logD(RFX_LOG_TAG, "onInit");
@@ -75,12 +82,13 @@ void RtcCapabilitySwitchController::onInit() {
         m_new_main_slot = getUndoneSwitch();
         registerStatusKeys();
     }
-    if(getGeminiMode() == GEMINI_MODE_L_AND_L &&
-            RfxRilUtils::rfxGetSimCount() == 2 && RfxRilUtils::isCtVolteSupport()) {
+    if (getGeminiMode() == GEMINI_MODE_L_AND_L && RfxRilUtils::rfxGetSimCount() == 2 &&
+        RfxRilUtils::isCtVolteSupport()) {
         for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-             getStatusManager(i)->registerStatusChanged(
-                     RFX_STATUS_KEY_VOLTE_STATE, RfxStatusChangeCallback(
-                     this, &RtcCapabilitySwitchController::onVolteStateChanged));
+            getStatusManager(i)->registerStatusChanged(
+                    RFX_STATUS_KEY_VOLTE_STATE,
+                    RfxStatusChangeCallback(this,
+                                            &RtcCapabilitySwitchController::onVolteStateChanged));
         }
     }
 
@@ -88,8 +96,8 @@ void RtcCapabilitySwitchController::onInit() {
             RFX_STATUS_KEY_DEFAULT_DATA_SIM,
             RfxStatusChangeCallback(this, &RtcCapabilitySwitchController::onDefaultDataChanged));
 
-    m_checker_controller = (RtcCapabilitySwitchChecker*)
-            findController(RFX_OBJ_CLASS_INFO(RtcCapabilitySwitchChecker));
+    m_checker_controller = (RtcCapabilitySwitchChecker*)findController(
+            RFX_OBJ_CLASS_INFO(RtcCapabilitySwitchChecker));
 }
 
 bool RtcCapabilitySwitchController::isPendingUndoneSwitch() {
@@ -102,7 +110,7 @@ bool RtcCapabilitySwitchController::isPendingUndoneSwitch() {
 }
 
 int RtcCapabilitySwitchController::getUndoneSwitch() {
-    char temp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char temp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.radio.pendcapswt", temp, "-1");
     return atoi(temp);
 }
@@ -110,8 +118,8 @@ int RtcCapabilitySwitchController::getUndoneSwitch() {
 bool RtcCapabilitySwitchController::isReadyForMessage(const sp<RfxMessage>& message, bool log) {
     int msg_id = message->getId();
     if (msg_id == RFX_MSG_REQUEST_SET_RADIO_CAPABILITY) {
-        RIL_RadioCapability *capability = (RIL_RadioCapability *)message->getData()->getData();
-        if (capability->phase != RC_PHASE_FINISH ) {
+        RIL_RadioCapability* capability = (RIL_RadioCapability*)message->getData()->getData();
+        if (capability->phase != RC_PHASE_FINISH) {
             return m_checker_controller->isReadyForSwitch(log);
         }
     }
@@ -120,9 +128,9 @@ bool RtcCapabilitySwitchController::isReadyForMessage(const sp<RfxMessage>& mess
 
 bool RtcCapabilitySwitchController::onPreviewMessage(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    RIL_RadioCapability *capability = (RIL_RadioCapability *)message->getData()->getData();
+    RIL_RadioCapability* capability = (RIL_RadioCapability*)message->getData()->getData();
     if (msg_id == RFX_MSG_REQUEST_SET_RADIO_CAPABILITY) {
-        RIL_RadioCapability *capability = (RIL_RadioCapability *)message->getData()->getData();
+        RIL_RadioCapability* capability = (RIL_RadioCapability*)message->getData()->getData();
         if (capability->phase == RC_PHASE_APPLY) {
             // record new main slot
             if (strstr(capability->logicalModemUuid, "0") != NULL) {
@@ -146,8 +154,8 @@ void RtcCapabilitySwitchController::calculateNewMainSlot(int capability, int slo
         m_new_main_slot_by_modem_id = slot;
     } else if ((strcmp(modemId, "") == 0) && (m_new_main_slot_by_modem_id == -1)) {
         logD(RFX_LOG_TAG, "calculateMainSlot, modemId is wrong, switch to default data sim");
-        m_new_main_slot_by_modem_id = getNonSlotScopeStatusManager()->getIntValue(
-                RFX_STATUS_KEY_DEFAULT_DATA_SIM);
+        m_new_main_slot_by_modem_id =
+                getNonSlotScopeStatusManager()->getIntValue(RFX_STATUS_KEY_DEFAULT_DATA_SIM);
     }
     logD(RFX_LOG_TAG,
          "calculateMainSlot,maxCap=%d, newMainSlot=%d, cap=%d, slot=%d, id=%s, newMainSlotById=%d",
@@ -169,21 +177,20 @@ void RtcCapabilitySwitchController::calculateNewMainSlot(int capability, int slo
             m_new_main_slot = slot;
         }
     }
-    if ((m_request_count == RfxRilUtils::rfxGetSimCount()) &&
-            (m_new_main_slot_by_modem_id != -1)) {
+    if ((m_request_count == RfxRilUtils::rfxGetSimCount()) && (m_new_main_slot_by_modem_id != -1)) {
         m_new_main_slot = m_new_main_slot_by_modem_id;
         logD(RFX_LOG_TAG, "calculateMainSlot newMainSlot=%d", m_new_main_slot);
     }
 }
 
-bool RtcCapabilitySwitchController::onHandleRequest(const sp<RfxMessage> &message) {
+bool RtcCapabilitySwitchController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    RIL_RadioCapability *capability = NULL;
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    RIL_RadioCapability* capability = NULL;
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     switch (msg_id) {
         case RFX_MSG_REQUEST_SET_RADIO_CAPABILITY:
-            capability = (RIL_RadioCapability *)message->getData()->getData();
+            capability = (RIL_RadioCapability*)message->getData()->getData();
             logI(RFX_LOG_TAG,
                  "RadioCapability version=%d, session=%d, phase=%d, rat=%d, logicMD=%s, status=%d",
                  capability->version, capability->session, capability->phase, capability->rat,
@@ -193,20 +200,19 @@ bool RtcCapabilitySwitchController::onHandleRequest(const sp<RfxMessage> &messag
                     if (m_checker_controller->isInCalling(true)) {
                         logI(RFX_LOG_TAG, "in calling state, return!");
                         responseToRilj(RfxMessage::obtainResponse(
-                                       RIL_E_OP_NOT_ALLOWED_DURING_VOICE_CALL, message, true));
+                                RIL_E_OP_NOT_ALLOWED_DURING_VOICE_CALL, message, true));
                         return true;
                     }
                     if (m_checker_controller->isInPukLock(true)) {
                         logI(RFX_LOG_TAG, "in PUK lock state, return!");
-                        responseToRilj(RfxMessage::obtainResponse(
-                                       RIL_E_INVALID_SIM_STATE, message, true));
+                        responseToRilj(
+                                RfxMessage::obtainResponse(RIL_E_INVALID_SIM_STATE, message, true));
                         return true;
                     }
-                    if ((strcmp(capability->logicalModemUuid, "") == 0) &&
-                            (capability->rat == 0)) {
+                    if ((strcmp(capability->logicalModemUuid, "") == 0) && (capability->rat == 0)) {
                         logI(RFX_LOG_TAG, "invalid modem uuid, return!");
-                        responseToRilj(RfxMessage::obtainResponse(
-                                       RIL_E_INVALID_ARGUMENTS, message, false));
+                        responseToRilj(RfxMessage::obtainResponse(RIL_E_INVALID_ARGUMENTS, message,
+                                                                  false));
                         return true;
                     }
                     m_request_count = 0;
@@ -229,14 +235,14 @@ bool RtcCapabilitySwitchController::onHandleRequest(const sp<RfxMessage> &messag
                                              String8::format("%d", capability->session).string());
                             if (m_checker_controller->isSkipCapabilitySwitch(m_new_main_slot)) {
                                 m_is_started = false;
-                                //No need to do, send urc to rilj directly
+                                // No need to do, send urc to rilj directly
                                 sp<RfxMessage> set_capability_request =
                                         RfxMessage::obtainResponse(RIL_E_SUCCESS, message, true);
                                 responseToRilj(set_capability_request);
                                 updateRadioCapability();
                                 return true;
                             }
-                            ///TODO: check op rules
+                            /// TODO: check op rules
                             m_pending_request = message;
                             handleRequestSwitchCapability();
                         } else {
@@ -289,7 +295,7 @@ void RtcCapabilitySwitchController::powerOffRadio() {
             sp<RfxAction> action0 = new RfxAction1<int>(
                     this, &RtcCapabilitySwitchController::onRequestRadioOffDone, i);
             RtcRadioController* radio_controller =
-                    (RtcRadioController *)findController(i, RFX_OBJ_CLASS_INFO(RtcRadioController));
+                    (RtcRadioController*)findController(i, RFX_OBJ_CLASS_INFO(RtcRadioController));
             radio_controller->moduleRequestRadioPower(false, action0, RFOFF_CAUSE_SIM_SWITCH);
         }
     }
@@ -301,7 +307,7 @@ void RtcCapabilitySwitchController::powerOffRadio() {
             sp<RfxAction> action0 = new RfxAction1<int>(
                     this, &RtcCapabilitySwitchController::onRequestRadioOffDone, i);
             RtcRadioController* radio_controller =
-                    (RtcRadioController *)findController(i, RFX_OBJ_CLASS_INFO(RtcRadioController));
+                    (RtcRadioController*)findController(i, RFX_OBJ_CLASS_INFO(RtcRadioController));
             radio_controller->moduleRequestRadioPower(false, action0, RFOFF_CAUSE_SIM_SWITCH);
         }
     }
@@ -319,20 +325,20 @@ void RtcCapabilitySwitchController::onRequestRadioOffDone(int slotId) {
 }
 
 void RtcCapabilitySwitchController::requestSetMajorSim() {
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get("persist.vendor.radio.simswitch", tempstr, "1");
     int current_main_slot = atoi(tempstr) - 1;
     int msg_data[1];
     msg_data[0] = m_new_main_slot;
-    sp<RfxMessage> msg = RfxMessage::obtainRequest(
-            current_main_slot, RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM,
-            RfxIntsData(msg_data, 1));
+    sp<RfxMessage> msg = RfxMessage::obtainRequest(current_main_slot,
+                                                   RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM,
+                                                   RfxIntsData(msg_data, 1));
     requestToMcl(msg);
 }
 
-void RtcCapabilitySwitchController::processSetMajorSimResponse(const sp<RfxMessage> &message) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+void RtcCapabilitySwitchController::processSetMajorSimResponse(const sp<RfxMessage>& message) {
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int session_id;
 
     rfx_property_get("vendor.ril.rc.session.id1", property_value, "-1");
@@ -341,9 +347,9 @@ void RtcCapabilitySwitchController::processSetMajorSimResponse(const sp<RfxMessa
         if (session_id != -1) {
             int msg_data[1];
             msg_data[0] = m_new_main_slot;
-            //retry if session hasn't been terminated
-            sp<RfxMessage> msg = RfxMessage::obtainRequest(
-                    message->getSlotId(), message->getId(), RfxIntsData(msg_data, 1));
+            // retry if session hasn't been terminated
+            sp<RfxMessage> msg = RfxMessage::obtainRequest(message->getSlotId(), message->getId(),
+                                                           RfxIntsData(msg_data, 1));
             requestToMcl(msg);
         }
     } else {
@@ -352,7 +358,7 @@ void RtcCapabilitySwitchController::processSetMajorSimResponse(const sp<RfxMessa
             resetLock(MAX_RFX_SLOT_ID, RFX_STATUS_KEY_MODEM_OFF_STATE);
         }
         getNonSlotScopeStatusManager()->setIntValue(RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
-                CAPABILITY_SWITCH_STATE_ENDING);
+                                                    CAPABILITY_SWITCH_STATE_ENDING);
         if (m_pending_request != NULL) {
             sp<RfxMessage> set_capability_request =
                     RfxMessage::obtainResponse(RIL_E_SUCCESS, m_pending_request, true);
@@ -363,7 +369,7 @@ void RtcCapabilitySwitchController::processSetMajorSimResponse(const sp<RfxMessa
     }
 }
 
-bool RtcCapabilitySwitchController::onHandleResponse(const sp<RfxMessage> &message) {
+bool RtcCapabilitySwitchController::onHandleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
 
     logD(RFX_LOG_TAG, "onHandleResponse:%s", idToString(msg_id));
@@ -383,11 +389,11 @@ bool RtcCapabilitySwitchController::onHandleResponse(const sp<RfxMessage> &messa
 }
 
 bool RtcCapabilitySwitchController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff, int radioState) {
+                                                           bool isModemPowerOff, int radioState) {
     RFX_UNUSED(radioState);
     int msg_id = message->getId();
-    RIL_RadioCapability *capability = NULL;
-    //logD(RFX_LOG_TAG, "onCheckIfRejectMessage, msg_id: %s", idToString(msg_id));
+    RIL_RadioCapability* capability = NULL;
+    // logD(RFX_LOG_TAG, "onCheckIfRejectMessage, msg_id: %s", idToString(msg_id));
     if (msg_id == RFX_MSG_REQUEST_GET_RADIO_CAPABILITY ||
         (msg_id == RFX_MSG_REQUEST_SET_RADIO_CAPABILITY && !isModemPowerOff) ||
         msg_id == RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM) {
@@ -397,14 +403,13 @@ bool RtcCapabilitySwitchController::onCheckIfRejectMessage(const sp<RfxMessage>&
     }
 }
 
-void RtcCapabilitySwitchController::onDefaultDataChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant new_value) {
+void RtcCapabilitySwitchController::onDefaultDataChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                         RfxVariant new_value) {
     int old_slot = old_value.asInt();
     int new_slot = new_value.asInt();
-    logD(RFX_LOG_TAG, "onDefaultDataChanged:%s(%d==>%d)",
-         RfxStatusManager::getKeyString(key), old_slot, new_slot);
-    rfx_property_set("persist.vendor.radio.pendcapswt",
-                     String8::format("%d", new_slot).string());
+    logD(RFX_LOG_TAG, "onDefaultDataChanged:%s(%d==>%d)", RfxStatusManager::getKeyString(key),
+         old_slot, new_slot);
+    rfx_property_set("persist.vendor.radio.pendcapswt", String8::format("%d", new_slot).string());
 
     /*
     if (m_checker_controller->isReadyForSwitch(true) && m_is_started == false) {
@@ -416,8 +421,8 @@ void RtcCapabilitySwitchController::onDefaultDataChanged(RfxStatusKeyEnum key,
     */
 }
 
-void RtcCapabilitySwitchController::onVolteStateChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant new_value) {
+void RtcCapabilitySwitchController::onVolteStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                        RfxVariant new_value) {
     int old_state = old_value.asInt();
     int high_priority_slot = m_checker_controller->getHigherPrioritySlot();
     logD(RFX_LOG_TAG, "onVolteStateChanged:%s(%s==>%s), high_priority_slot = %d",
@@ -464,13 +469,15 @@ void RtcCapabilitySwitchController::registerStatusKeys() {
         getStatusManager(i)->registerStatusChanged(
                 RFX_STATUS_KEY_SIM_STATE,
                 RfxStatusChangeCallback(this, &RtcCapabilitySwitchController::onStatusKeyChanged));
-        if(getGeminiMode() == GEMINI_MODE_L_AND_L && RfxRilUtils::rfxGetSimCount() == 2) {
+        if (getGeminiMode() == GEMINI_MODE_L_AND_L && RfxRilUtils::rfxGetSimCount() == 2) {
             getStatusManager(i)->registerStatusChanged(
-                    RFX_STATUS_KEY_GSM_IMSI, RfxStatusChangeCallback(
-                    this, &RtcCapabilitySwitchController::onStatusKeyChanged));
+                    RFX_STATUS_KEY_GSM_IMSI,
+                    RfxStatusChangeCallback(this,
+                                            &RtcCapabilitySwitchController::onStatusKeyChanged));
             getStatusManager(i)->registerStatusChanged(
-                    RFX_STATUS_KEY_C2K_IMSI, RfxStatusChangeCallback(
-                    this, &RtcCapabilitySwitchController::onStatusKeyChanged));
+                    RFX_STATUS_KEY_C2K_IMSI,
+                    RfxStatusChangeCallback(this,
+                                            &RtcCapabilitySwitchController::onStatusKeyChanged));
         }
     }
     getNonSlotScopeStatusManager()->registerStatusChanged(
@@ -501,13 +508,15 @@ void RtcCapabilitySwitchController::unregisterStatusKeys() {
         getStatusManager(i)->unRegisterStatusChanged(
                 RFX_STATUS_KEY_SIM_STATE,
                 RfxStatusChangeCallback(this, &RtcCapabilitySwitchController::onStatusKeyChanged));
-        if(getGeminiMode() == GEMINI_MODE_L_AND_L && RfxRilUtils::rfxGetSimCount() == 2) {
+        if (getGeminiMode() == GEMINI_MODE_L_AND_L && RfxRilUtils::rfxGetSimCount() == 2) {
             getStatusManager(i)->unRegisterStatusChanged(
-                    RFX_STATUS_KEY_GSM_IMSI, RfxStatusChangeCallback(
-                    this, &RtcCapabilitySwitchController::onStatusKeyChanged));
+                    RFX_STATUS_KEY_GSM_IMSI,
+                    RfxStatusChangeCallback(this,
+                                            &RtcCapabilitySwitchController::onStatusKeyChanged));
             getStatusManager(i)->unRegisterStatusChanged(
-                    RFX_STATUS_KEY_C2K_IMSI, RfxStatusChangeCallback(
-                    this, &RtcCapabilitySwitchController::onStatusKeyChanged));
+                    RFX_STATUS_KEY_C2K_IMSI,
+                    RfxStatusChangeCallback(this,
+                                            &RtcCapabilitySwitchController::onStatusKeyChanged));
         }
     }
     getNonSlotScopeStatusManager()->unRegisterStatusChanged(
@@ -519,11 +528,10 @@ void RtcCapabilitySwitchController::unregisterStatusKeys() {
     getNonSlotScopeStatusManager()->unRegisterStatusChanged(
             RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
             RfxStatusChangeCallback(this, &RtcCapabilitySwitchController::onStatusKeyChanged));
-
 }
 
-void RtcCapabilitySwitchController::onStatusKeyChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant new_value) {
+void RtcCapabilitySwitchController::onStatusKeyChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                       RfxVariant new_value) {
     logD(RFX_LOG_TAG, "onStatusKeyChanged:%s(%s==>%s)", RfxStatusManager::getKeyString(key),
          old_value.toString().string(), new_value.toString().string());
 
@@ -619,8 +627,7 @@ int RtcCapabilitySwitchController::getLockState(int slot_id, RfxStatusKeyEnum ke
     int ret = -1;
     switch (key) {
         case RFX_STATUS_KEY_MODEM_OFF_STATE: {
-            ret = getNonSlotScopeStatusManager()->getIntValue(
-                    key, MODEM_OFF_IN_IDLE);
+            ret = getNonSlotScopeStatusManager()->getIntValue(key, MODEM_OFF_IN_IDLE);
             break;
         }
         case RFX_STATUS_KEY_RADIO_LOCK: {
@@ -665,15 +672,15 @@ void RtcCapabilitySwitchController::resetLock(int slot_id, RfxStatusKeyEnum key)
 
 void RtcCapabilitySwitchController::backupRadioPower() {
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-        m_backup_radio_power[i] = getStatusManager(i)->getBoolValue(
-                RFX_STATUS_KEY_REQUEST_RADIO_POWER, false);
+        m_backup_radio_power[i] =
+                getStatusManager(i)->getBoolValue(RFX_STATUS_KEY_REQUEST_RADIO_POWER, false);
         logD(RFX_LOG_TAG, "m_backup_radio_power[%d]=%d", i, m_backup_radio_power[i]);
     }
 }
 
 void RtcCapabilitySwitchController::powerOnRadio() {
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
-        RadioPowerLock radio_lock = (RadioPowerLock) getLockState(i, RFX_STATUS_KEY_RADIO_LOCK);
+        RadioPowerLock radio_lock = (RadioPowerLock)getLockState(i, RFX_STATUS_KEY_RADIO_LOCK);
         logD(RFX_LOG_TAG, "powerOnRadio[%d]:%d,radio_lock:%d,start:%d", i, m_backup_radio_power[i],
              radio_lock, m_is_started);
         if (radio_lock == RADIO_LOCK_BY_SIM_SWITCH) {
@@ -681,8 +688,8 @@ void RtcCapabilitySwitchController::powerOnRadio() {
         }
         if (m_is_started == false && m_backup_radio_power[i] == true) {
             // Three-phase solution will power on radio from Java
-            RtcRadioController* radio_controller = (RtcRadioController *)findController(
-                    i, RFX_OBJ_CLASS_INFO(RtcRadioController));
+            RtcRadioController* radio_controller =
+                    (RtcRadioController*)findController(i, RFX_OBJ_CLASS_INFO(RtcRadioController));
             radio_controller->moduleRequestRadioPower(m_backup_radio_power[i], NULL,
                                                       RFOFF_CAUSE_SIM_SWITCH);
         }
@@ -693,10 +700,10 @@ void RtcCapabilitySwitchController::notifySetRatDone() {
     int state = getLockState(MAX_RFX_SLOT_ID, RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE);
     logD(RFX_LOG_TAG, "notifySetRatDone, state: %d", state);
     if (state == CAPABILITY_SWITCH_STATE_ENDING) {
-        getNonSlotScopeStatusManager()->setIntValue(
-                RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE, CAPABILITY_SWITCH_STATE_IDLE);
-        RtcDataAllowController* data_controller = (RtcDataAllowController *)findController(
-                RFX_OBJ_CLASS_INFO(RtcDataAllowController));
+        getNonSlotScopeStatusManager()->setIntValue(RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
+                                                    CAPABILITY_SWITCH_STATE_IDLE);
+        RtcDataAllowController* data_controller =
+                (RtcDataAllowController*)findController(RFX_OBJ_CLASS_INFO(RtcDataAllowController));
         if (data_controller) {
             data_controller->resendAllowData();
         }
@@ -707,9 +714,9 @@ void RtcCapabilitySwitchController::notifySetRatDone() {
 }
 
 void RtcCapabilitySwitchController::updateRadioCapability() {
-    RtcCapabilityGetController* get_controller = (RtcCapabilityGetController *)
-            findController(RFX_OBJ_CLASS_INFO(RtcCapabilityGetController));
-    char temp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    RtcCapabilityGetController* get_controller = (RtcCapabilityGetController*)findController(
+            RFX_OBJ_CLASS_INFO(RtcCapabilityGetController));
+    char temp[RFX_PROPERTY_VALUE_MAX] = {0};
     memset(temp, 0, sizeof(temp));
     rfx_property_get("persist.vendor.radio.c_capability_slot", temp, "1");
     int cslot = atoi(temp) - 1;

@@ -26,11 +26,10 @@
 #include "utils/StrongPointer.h"
 #include "utils/Looper.h"
 
-
-using ::android::RefBase;
-using ::android::sp;
 using ::android::Looper;
 using ::android::MessageHandler;
+using ::android::RefBase;
+using ::android::sp;
 
 /*****************************************************************************
  * Class RfxTimer
@@ -39,11 +38,10 @@ using ::android::MessageHandler;
 typedef sp<MessageHandler> TimerHandle;
 
 class RfxTimer {
-public:
+  public:
+    static TimerHandle start(const RfxCallback0& callback, nsecs_t time);
 
-    static TimerHandle start(const RfxCallback0 &callback, nsecs_t time);
-
-    static void stop(const TimerHandle &timer_handle);
+    static void stop(const TimerHandle& timer_handle);
 };
 
 #endif /* __RFX_TIMER_H__ */

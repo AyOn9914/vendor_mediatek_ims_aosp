@@ -27,28 +27,28 @@
  *****************************************************************************/
 
 class RtcOemController : public RfxController {
-    RFX_DECLARE_CLASS(RtcOemController); // Required: declare this class
+    RFX_DECLARE_CLASS(RtcOemController);  // Required: declare this class
 
-    public:
-        RtcOemController();
-        virtual ~RtcOemController();
+  public:
+    RtcOemController();
+    virtual ~RtcOemController();
 
     // Override
-    protected:
-        void onInit();
-        bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
-        bool onHandleRequest(const sp<RfxMessage>& message);
-        bool onHandleResponse(const sp<RfxMessage>& message);
+  protected:
+    void onInit();
+    bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                int radioState);
+    bool onHandleRequest(const sp<RfxMessage>& message);
+    bool onHandleResponse(const sp<RfxMessage>& message);
 
-    private:
-        void onHandleOemHookRaw(const sp<RfxMessage>& message);
-        void onHandleOemHookStrings(const sp<RfxMessage>& message);
-        void onHandleGetActivityInfo(const sp<RfxMessage>& message);
-        bool isMainProtocolCommand(char* target);
-        void onTelephonyAssistantStatusChanged(RfxStatusKeyEnum key,
-                RfxVariant old_value, RfxVariant value);
-        bool handleExtraState(const sp<RfxMessage>& message);
+  private:
+    void onHandleOemHookRaw(const sp<RfxMessage>& message);
+    void onHandleOemHookStrings(const sp<RfxMessage>& message);
+    void onHandleGetActivityInfo(const sp<RfxMessage>& message);
+    bool isMainProtocolCommand(char* target);
+    void onTelephonyAssistantStatusChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                           RfxVariant value);
+    bool handleExtraState(const sp<RfxMessage>& message);
 };
 
 #endif /* __RP_OEM_CONTROLLER_H__ */

@@ -17,7 +17,6 @@
 #ifndef MTKCONFIGDEF_H
 #define MTKCONFIGDEF_H
 
-
 typedef enum {
     CONFIG_SIM_MODE,
     CONFIG_SS_MODE,
@@ -30,5 +29,4 @@ typedef enum {
     CONFIG_RCSUA,
 } ConfigDef;
 
-
-#endif // MTKCONFIGDEF_H
+#endif  // MTKCONFIGDEF_H

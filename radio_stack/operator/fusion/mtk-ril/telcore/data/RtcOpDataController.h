@@ -24,14 +24,14 @@
  * Class RtcOpDataController
  *****************************************************************************/
 class RtcOpDataController : public RtcDataController {
-    RFX_DECLARE_CLASS(RtcOpDataController); // Required: declare this class
-    public:
-        RtcOpDataController();
-        virtual ~RtcOpDataController();
+    RFX_DECLARE_CLASS(RtcOpDataController);  // Required: declare this class
+  public:
+    RtcOpDataController();
+    virtual ~RtcOpDataController();
     // Override
-    protected:
-        void onInit();
-        bool onHandleRequest(const sp<RfxMessage>& message);
-        bool onHandleResponse(const sp<RfxMessage>& message);
+  protected:
+    void onInit();
+    bool onHandleRequest(const sp<RfxMessage>& message);
+    bool onHandleResponse(const sp<RfxMessage>& message);
 };
 #endif /* __RTC_OP_DATA_CONTROLLER_H__ */

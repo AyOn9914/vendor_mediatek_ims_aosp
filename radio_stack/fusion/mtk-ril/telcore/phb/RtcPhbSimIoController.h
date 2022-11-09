@@ -31,23 +31,23 @@ class RtcPhbSimIoController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcPhbSimIoController);
 
-public:
+  public:
     RtcPhbSimIoController();
     virtual ~RtcPhbSimIoController();
     bool onCheckIfPhbRequest(int fileId);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
 
-private:
+  private:
     int mIsEngLoad = -1;
-    int hexCharToDecInt(char *hex, int length);
+    int hexCharToDecInt(char* hex, int length);
     bool addFileId(int fileId);
-    int parsePbrFileId(char *hex, int length);
+    int parsePbrFileId(char* hex, int length);
     void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
     int pbrFile[50] = {0};
 };

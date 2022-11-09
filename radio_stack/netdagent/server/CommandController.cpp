@@ -26,8 +26,9 @@ namespace netdagent {
 CommandController* gCtls = nullptr;
 
 static const char* MANGLE_PREROUTING[] = {
-                        NetworkController::LOCAL_MANGLE_PREROUTING,
-                        NULL, };
+        NetworkController::LOCAL_MANGLE_PREROUTING,
+        NULL,
+};
 
 CommandController::CommandController() {
     initControllers();

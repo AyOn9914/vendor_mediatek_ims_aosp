@@ -23,7 +23,7 @@
 #include <time.h>
 
 #if !defined(_WIN32)
-# include <pthread.h>
+#include <pthread.h>
 #endif
 
 #include <Errors.h>
@@ -50,16 +50,10 @@ namespace android {
  * be re-evaluated after a wake-up, as spurious wake-ups may happen.
  */
 class Condition {
-public:
-    enum {
-        PRIVATE = 0,
-        SHARED = 1
-    };
+  public:
+    enum { PRIVATE = 0, SHARED = 1 };
 
-    enum WakeUpType {
-        WAKE_UP_ONE = 0,
-        WAKE_UP_ALL = 1
-    };
+    enum WakeUpType { WAKE_UP_ONE = 0, WAKE_UP_ALL = 1 };
 
     Condition();
     explicit Condition(int type);
@@ -82,11 +76,11 @@ public:
     // Signal the condition variable, allowing all threads to continue.
     void broadcast();
 
-private:
+  private:
 #if !defined(_WIN32)
     pthread_cond_t mCond;
 #else
-    void*   mState;
+    void* mState;
 #endif
 };
 
@@ -94,8 +88,7 @@ private:
 
 #if !defined(_WIN32)
 
-inline Condition::Condition() : Condition(PRIVATE) {
-}
+inline Condition::Condition() : Condition(PRIVATE) {}
 inline Condition::Condition(int type) {
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
@@ -109,30 +102,25 @@ inline Condition::Condition(int type) {
 
     pthread_cond_init(&mCond, &attr);
     pthread_condattr_destroy(&attr);
-
 }
-inline Condition::~Condition() {
-    pthread_cond_destroy(&mCond);
-}
-inline status_t Condition::wait(Mutex& mutex) {
-    return -pthread_cond_wait(&mCond, &mutex.mMutex);
-}
+inline Condition::~Condition() { pthread_cond_destroy(&mCond); }
+inline status_t Condition::wait(Mutex& mutex) { return -pthread_cond_wait(&mCond, &mutex.mMutex); }
 inline status_t Condition::waitRelative(Mutex& mutex, nsecs_t reltime) {
     struct timespec ts;
 #if defined(__linux__)
     clock_gettime(CLOCK_MONOTONIC, &ts);
-#else // __APPLE__
+#else  // __APPLE__
     // Apple doesn't support POSIX clocks.
     struct timeval t;
     gettimeofday(&t, nullptr);
     ts.tv_sec = t.tv_sec;
-    ts.tv_nsec = t.tv_usec*1000;
+    ts.tv_nsec = t.tv_usec * 1000;
 #endif
 
     // On 32-bit devices, tv_sec is 32-bit, but `reltime` is 64-bit.
-    int64_t reltime_sec = reltime/1000000000;
+    int64_t reltime_sec = reltime / 1000000000;
 
-    ts.tv_nsec += static_cast<long>(reltime%1000000000);
+    ts.tv_nsec += static_cast<long>(reltime % 1000000000);
     if (reltime_sec < INT64_MAX && ts.tv_nsec >= 1000000000) {
         ts.tv_nsec -= 1000000000;
         ++reltime_sec;
@@ -149,17 +137,13 @@ inline status_t Condition::waitRelative(Mutex& mutex, nsecs_t reltime) {
 
     return -pthread_cond_timedwait(&mCond, &mutex.mMutex, &ts);
 }
-inline void Condition::signal() {
-    pthread_cond_signal(&mCond);
-}
-inline void Condition::broadcast() {
-    pthread_cond_broadcast(&mCond);
-}
+inline void Condition::signal() { pthread_cond_signal(&mCond); }
+inline void Condition::broadcast() { pthread_cond_broadcast(&mCond); }
 
-#endif // !defined(_WIN32)
+#endif  // !defined(_WIN32)
 
 // ---------------------------------------------------------------------------
 }  // namespace android
 // ---------------------------------------------------------------------------
 
-#endif // _LIBS_UTILS_CONDITON_H
+#endif  // _LIBS_UTILS_CONDITON_H

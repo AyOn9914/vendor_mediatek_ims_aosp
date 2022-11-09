@@ -18,35 +18,34 @@
 #include "RfxIdToStringUtils.h"
 #include <libmtkrilutils.h>
 
-RfxMclMessage::RfxMclMessage() :
-    m_type(REQUEST),
-    m_id(-1),
-    m_data(NULL),
-    m_channel_id(-1),
-    m_slot_id(-1),
-    m_client_id(-1),
-    m_token(-1),
-    m_raw_urc(NULL),
-    m_raw_urc2(NULL),
-    m_err(RIL_E_SUCCESS),
-    m_delayTime(0),
-    m_priority(MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM),
-    rilToken(NULL),
-    m_key(RfxStatusKeyEnum(-1)),
-    m_value(RfxVariant()),
-    m_force_notify(false),
-    m_is_default(false),
-    m_update_for_mock(false),
-    mSendToMainProtocol(false),
-    m_main_protocol_slot_id(0),
-    mTimeStamp (0),
-    mAddAtFront(false) {
-}
+RfxMclMessage::RfxMclMessage()
+    : m_type(REQUEST),
+      m_id(-1),
+      m_data(NULL),
+      m_channel_id(-1),
+      m_slot_id(-1),
+      m_client_id(-1),
+      m_token(-1),
+      m_raw_urc(NULL),
+      m_raw_urc2(NULL),
+      m_err(RIL_E_SUCCESS),
+      m_delayTime(0),
+      m_priority(MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM),
+      rilToken(NULL),
+      m_key(RfxStatusKeyEnum(-1)),
+      m_value(RfxVariant()),
+      m_force_notify(false),
+      m_is_default(false),
+      m_update_for_mock(false),
+      mSendToMainProtocol(false),
+      m_main_protocol_slot_id(0),
+      mTimeStamp(0),
+      mAddAtFront(false) {}
 
 RfxMclMessage::~RfxMclMessage() {
-    if (m_data) delete(m_data);
-    if (m_raw_urc) delete(m_raw_urc);
-    if (m_raw_urc2) delete(m_raw_urc2);
+    if (m_data) delete (m_data);
+    if (m_raw_urc) delete (m_raw_urc);
+    if (m_raw_urc2) delete (m_raw_urc2);
 }
 
 String8 RfxMclMessage::toString() const {
@@ -55,32 +54,35 @@ String8 RfxMclMessage::toString() const {
     int index = 0;
 
     if (m_raw_urc != NULL) {
-        char *raw_urc1 = m_raw_urc->getLine();
+        char* raw_urc1 = m_raw_urc->getLine();
         if ((index = needToHidenLog(raw_urc1)) >= 0) {
             strncpy(raw_urc1_str, (String8::format("%s:***", getHidenLogPreFix(index))).string(),
                     (MAX_HIDEN_LOG_LEN - 1));
         }
     }
     if (m_raw_urc2 != NULL) {
-        char *raw_urc2 = m_raw_urc2->getLine();
+        char* raw_urc2 = m_raw_urc2->getLine();
         index = 0;
         if ((index = needToHidenLog(raw_urc2)) >= 0) {
             strncpy(raw_urc2_str, (String8::format("%s:***", getHidenLogPreFix(index))).string(),
                     (MAX_HIDEN_LOG_LEN - 1));
         }
     }
-    return String8::format("type = %d, id = %s(%d), channel id = %d, slot id = %d, \
+    return String8::format(
+            "type = %d, id = %s(%d), channel id = %d, slot id = %d, \
 client_id = %d, token = %d, raw urc = %s, raw urc2 = %s, err = %d, \
-mSendToMainProtocol = %d, m_priority = %d", m_type, RFX_ID_TO_STR(m_id),
-            m_id, m_channel_id, m_slot_id, m_client_id, m_token,
-           (strlen(raw_urc1_str) == 0 ? (m_raw_urc == NULL ? "" : m_raw_urc->getLine()) : raw_urc1_str),
-           (strlen(raw_urc2_str) == 0 ? (m_raw_urc2 == NULL ? "" : m_raw_urc2->getLine()) : raw_urc2_str),
+mSendToMainProtocol = %d, m_priority = %d",
+            m_type, RFX_ID_TO_STR(m_id), m_id, m_channel_id, m_slot_id, m_client_id, m_token,
+            (strlen(raw_urc1_str) == 0 ? (m_raw_urc == NULL ? "" : m_raw_urc->getLine())
+                                       : raw_urc1_str),
+            (strlen(raw_urc2_str) == 0 ? (m_raw_urc2 == NULL ? "" : m_raw_urc2->getLine())
+                                       : raw_urc2_str),
             m_err, mSendToMainProtocol, m_priority);
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainRequest(int id, RfxBaseData *data,
-        int slot_id, int token, bool sendToMainProtocol, RIL_Token rilToken, nsecs_t timeStamp,
-        bool addAtFront) {
+sp<RfxMclMessage> RfxMclMessage::obtainRequest(int id, RfxBaseData* data, int slot_id, int token,
+                                               bool sendToMainProtocol, RIL_Token rilToken,
+                                               nsecs_t timeStamp, bool addAtFront) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = REQUEST;
     msg->m_id = id;
@@ -95,17 +97,18 @@ sp<RfxMclMessage> RfxMclMessage::obtainRequest(int id, RfxBaseData *data,
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainRequest(int id, RfxBaseData *data,
-        int slot_id, int token, bool sendToMainProtocol, RIL_Token rilToken, nsecs_t delayTime,
-        nsecs_t timeStamp, bool addAtFront) {
+sp<RfxMclMessage> RfxMclMessage::obtainRequest(int id, RfxBaseData* data, int slot_id, int token,
+                                               bool sendToMainProtocol, RIL_Token rilToken,
+                                               nsecs_t delayTime, nsecs_t timeStamp,
+                                               bool addAtFront) {
     sp<RfxMclMessage> msg = obtainRequest(id, data, slot_id, token, sendToMainProtocol, rilToken,
-            timeStamp, addAtFront);
+                                          timeStamp, addAtFront);
     msg->m_delayTime = delayTime;
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainResponse(int id, RIL_Errno err, const RfxBaseData &data,
-        sp<RfxMclMessage> msg, bool copyData) {
+sp<RfxMclMessage> RfxMclMessage::obtainResponse(int id, RIL_Errno err, const RfxBaseData& data,
+                                                sp<RfxMclMessage> msg, bool copyData) {
     sp<RfxMclMessage> newMsg = new RfxMclMessage();
     newMsg->m_type = RESPONSE;
     newMsg->m_id = id;
@@ -123,14 +126,13 @@ sp<RfxMclMessage> RfxMclMessage::obtainResponse(int id, RIL_Errno err, const Rfx
     return newMsg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainResponse(RIL_Errno err, const RfxBaseData &data,
-        sp<RfxMclMessage> msg) {
+sp<RfxMclMessage> RfxMclMessage::obtainResponse(RIL_Errno err, const RfxBaseData& data,
+                                                sp<RfxMclMessage> msg) {
     return RfxMclMessage::obtainResponse(msg->getId(), err, data, msg, false);
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainRawUrc(int channel_id, RfxAtLine* line1,
-        RfxAtLine* line2) {
-    sp<RfxMclMessage> msg = new  RfxMclMessage();
+sp<RfxMclMessage> RfxMclMessage::obtainRawUrc(int channel_id, RfxAtLine* line1, RfxAtLine* line2) {
+    sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = RAW_URC;
     // msg->m_channel_id = channel_id % RIL_CHANNEL_OFFSET;
     msg->m_channel_id = channel_id;
@@ -141,7 +143,7 @@ sp<RfxMclMessage> RfxMclMessage::obtainRawUrc(int channel_id, RfxAtLine* line1,
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainUrc(int id, int slot_id, const RfxBaseData &data) {
+sp<RfxMclMessage> RfxMclMessage::obtainUrc(int id, int slot_id, const RfxBaseData& data) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = URC;
     msg->m_id = id;
@@ -151,14 +153,14 @@ sp<RfxMclMessage> RfxMclMessage::obtainUrc(int id, int slot_id, const RfxBaseDat
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainEvent(int id, const RfxBaseData &data, int channel_Id,
-            int slot_id, int client_id, int token, nsecs_t delayTime,
-            MTK_RIL_REQUEST_PRIORITY priority) {
+sp<RfxMclMessage> RfxMclMessage::obtainEvent(int id, const RfxBaseData& data, int channel_Id,
+                                             int slot_id, int client_id, int token,
+                                             nsecs_t delayTime, MTK_RIL_REQUEST_PRIORITY priority) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = EVENT;
     msg->m_id = id;
     msg->m_data = RfxDataCloneManager::copyData(id, &data, EVENT);
-    msg->m_channel_id = channel_Id%RIL_CHANNEL_OFFSET;
+    msg->m_channel_id = channel_Id % RIL_CHANNEL_OFFSET;
     msg->m_slot_id = slot_id;
     msg->m_client_id = client_id;
     msg->m_token = token;
@@ -168,7 +170,8 @@ sp<RfxMclMessage> RfxMclMessage::obtainEvent(int id, const RfxBaseData &data, in
 }
 
 sp<RfxMclMessage> RfxMclMessage::obtainStatusSync(int slot_id, RfxStatusKeyEnum key,
-        const RfxVariant value, bool force_notify, bool is_default, bool update_for_mock) {
+                                                  const RfxVariant value, bool force_notify,
+                                                  bool is_default, bool update_for_mock) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = STATUS_SYNC;
     msg->m_slot_id = slot_id;
@@ -181,8 +184,8 @@ sp<RfxMclMessage> RfxMclMessage::obtainStatusSync(int slot_id, RfxStatusKeyEnum 
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainSapRequest(int id, RfxBaseData *data, int slot_id,
-        int token) {
+sp<RfxMclMessage> RfxMclMessage::obtainSapRequest(int id, RfxBaseData* data, int slot_id,
+                                                  int token) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = SAP_REQUEST;
     msg->m_id = id;
@@ -192,8 +195,8 @@ sp<RfxMclMessage> RfxMclMessage::obtainSapRequest(int id, RfxBaseData *data, int
     return msg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainSapResponse(int id, RIL_Errno e,
-        const RfxBaseData &data, sp<RfxMclMessage> msg, bool copyData) {
+sp<RfxMclMessage> RfxMclMessage::obtainSapResponse(int id, RIL_Errno e, const RfxBaseData& data,
+                                                   sp<RfxMclMessage> msg, bool copyData) {
     sp<RfxMclMessage> newMsg = new RfxMclMessage();
     newMsg->m_type = SAP_RESPONSE;
     newMsg->m_id = id;
@@ -210,7 +213,7 @@ sp<RfxMclMessage> RfxMclMessage::obtainSapResponse(int id, RIL_Errno e,
     return newMsg;
 }
 
-sp<RfxMclMessage> RfxMclMessage::obtainSapUrc(int id, int slot_id, const RfxBaseData &data) {
+sp<RfxMclMessage> RfxMclMessage::obtainSapUrc(int id, int slot_id, const RfxBaseData& data) {
     sp<RfxMclMessage> msg = new RfxMclMessage();
     msg->m_type = SAP_URC;
     msg->m_id = id;

@@ -26,19 +26,19 @@
 /*****************************************************************************
  * Class RmcCdmaSetBcConfigReq
  *****************************************************************************/
-class RmcCdmaSetBcConfigReq: public RmcMultiAtReq {
+class RmcCdmaSetBcConfigReq : public RmcMultiAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaSetBcConfigReq);
 
-// Override
-protected:
-    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler *h);
-    virtual RmcAtSendInfo* onGetNextAtInfo(const String8 & cmd,RfxBaseHandler * h);
-    virtual bool onHandleIntermediates(const String8 & cmd,RfxAtLine * line,RfxBaseHandler * h);
+    // Override
+  protected:
+    virtual RmcAtSendInfo* onGetFirstAtInfo(RfxBaseHandler* h);
+    virtual RmcAtSendInfo* onGetNextAtInfo(const String8& cmd, RfxBaseHandler* h);
+    virtual bool onHandleIntermediates(const String8& cmd, RfxAtLine* line, RfxBaseHandler* h);
 
-// Implementation
-private:
+    // Implementation
+  private:
     Vector<RIL_CDMA_BroadcastSmsConfigInfo> m_infos;
-    Vector<RIL_CDMA_BroadcastSmsConfigInfo *> m_pInfos;
+    Vector<RIL_CDMA_BroadcastSmsConfigInfo*> m_pInfos;
     SortedVector<int> m_categorys;
     SortedVector<int> m_languages;
     Vector<Range> m_channels;
@@ -51,11 +51,9 @@ private:
     unsigned int m_channel_md;
     unsigned int m_lans_md;
 
-// Implementation
-private:
-    bool isSelected() {
-        return (m_infos[0].selected == 1);
-    }
+    // Implementation
+  private:
+    bool isSelected() { return (m_infos[0].selected == 1); }
 
     bool sortCategoryAndLanguage();
 };

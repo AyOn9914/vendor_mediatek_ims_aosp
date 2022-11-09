@@ -20,23 +20,22 @@
 #include "rfx_properties.h"
 #include <ratconfig.h>
 
-const int request[] = {
-    RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS,
-    RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK,
-    RFX_MSG_REQUEST_SET_PREFERRED_NETWORK_TYPE,
-    RFX_MSG_REQUEST_GET_PREFERRED_NETWORK_TYPE,
-    RFX_MSG_REQUEST_VOICE_RADIO_TECH,
-    RFX_MSG_REQUEST_GET_GMSS_RAT_MODE,
-    RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN,
-    RFX_MSG_REQUEST_OM_SET_DISABLE_2G,
-    RFX_MSG_REQUEST_OM_GET_DISABLE_2G
-};
+const int request[] = {RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS,
+                       RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK,
+                       RFX_MSG_REQUEST_SET_PREFERRED_NETWORK_TYPE,
+                       RFX_MSG_REQUEST_GET_PREFERRED_NETWORK_TYPE,
+                       RFX_MSG_REQUEST_VOICE_RADIO_TECH,
+                       RFX_MSG_REQUEST_GET_GMSS_RAT_MODE,
+                       RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN,
+                       RFX_MSG_REQUEST_OM_SET_DISABLE_2G,
+                       RFX_MSG_REQUEST_OM_GET_DISABLE_2G};
 
-const int event[] = {
-};
+const int event[] = {};
 
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData,
+                                RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_RIL_REQUEST_STOP_NETWORK_SCAN);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_OM_SET_DISABLE_2G);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_OM_GET_DISABLE_2G);
@@ -44,15 +43,14 @@ RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_OM_GET
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcRatSwitchHandler, RIL_CMD_PROXY_9);
 
-RmcRatSwitchHandler::RmcRatSwitchHandler(int slot_id, int channel_id) :
-        RmcNetworkHandler(slot_id, channel_id) {
-
+RmcRatSwitchHandler::RmcRatSwitchHandler(int slot_id, int channel_id)
+    : RmcNetworkHandler(slot_id, channel_id) {
     m_slot_id = slot_id;
     m_channel_id = channel_id;
     mLastReqRatType = -1;
     mRetryCount = 1;
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
-    registerToHandleEvent(event, sizeof(event)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
+    registerToHandleEvent(event, sizeof(event) / sizeof(int));
 
     tc1_support = false;
 
@@ -61,13 +59,12 @@ RmcRatSwitchHandler::RmcRatSwitchHandler(int slot_id, int channel_id) :
 #endif
 }
 
-RmcRatSwitchHandler::~RmcRatSwitchHandler() {
-}
+RmcRatSwitchHandler::~RmcRatSwitchHandler() {}
 
 void RmcRatSwitchHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
     // logD(LOG_TAG, "[onHandleRequest] %s", RFX_ID_TO_STR(request));
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_ABORT_QUERY_AVAILABLE_NETWORKS:
             requestAbortQueryAvailableNetworks(msg);
             break;
@@ -101,8 +98,7 @@ void RmcRatSwitchHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcRatSwitchHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
-    switch(id) {
-
+    switch (id) {
         default:
             logE(LOG_TAG, "should not be here");
             break;
@@ -127,18 +123,18 @@ void RmcRatSwitchHandler::requestAbortQueryAvailableNetworks(const sp<RfxMclMess
     sp<RfxMclMessage> resp;
     RIL_Errno ril_errno = RIL_E_SUCCESS;
 
-    logD(LOG_TAG, "requestAbortQueryAvailableNetworks execute while plmnListOngoing=%d", mPlmnListOngoing);
+    logD(LOG_TAG, "requestAbortQueryAvailableNetworks execute while plmnListOngoing=%d",
+         mPlmnListOngoing);
     if (mPlmnListOngoing == 1) {
         mPlmnListAbort = 1;
         p_response = atSendCommand("AT+CAPL");
         if (p_response->getError() < 0 || p_response->getSuccess() == 0) {
-            mPlmnListAbort =0;
+            mPlmnListAbort = 0;
             ril_errno = RIL_E_GENERIC_FAILURE;
             logD(LOG_TAG, "requestAbortQueryAvailableNetworks fail,clear plmnListAbort flag");
         }
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -149,21 +145,19 @@ void RmcRatSwitchHandler::requestStopNetworkScan(const sp<RfxMclMessage>& msg) {
 
     logD(LOG_TAG, "requestStopNetworkScan execute while plmnListOngoing=%d", mPlmnListOngoing);
     if (mPlmnListOngoing == 1) {
-        if (msg->getId() != RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK) { // skip local abort.
+        if (msg->getId() != RFX_MSG_REQUEST_LOCAL_ABORT_AVAILABLE_NETWORK) {  // skip local abort.
             mPlmnListAbort = 1;
         }
         p_response = atSendCommand("AT+CAPL");
         if (p_response->getError() < 0 || p_response->getSuccess() == 0) {
-            mPlmnListAbort =0;
+            mPlmnListAbort = 0;
             ril_errno = RIL_E_GENERIC_FAILURE;
             logD(LOG_TAG, "requestStopNetworkScan fail, clear plmnListAbort flag");
         }
     }
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
-
 
 bool RmcRatSwitchHandler::isInCall() {
     int ret = false;
@@ -183,27 +177,26 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
     int req_type, rat, rat1;
     RIL_Errno ril_errno = RIL_E_MODE_NOT_SUPPORTED;
     bool isPreferred = false;
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     char optr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     req_type = pInt[0];
     rat = -1;
-    rat1= 0;
+    rat1 = 0;
 
     rfx_property_get("persist.vendor.radio.simswitch", optr, "1");
-    int currMajorSim = (atoi(optr)-1);
+    int currMajorSim = (atoi(optr) - 1);
     // logD(LOG_TAG, "requestSetPreferredNetworkType currMajorSim = %d", currMajorSim);
 
     isPreferred = isRatPreferred();
     if (isPreferred) {
         if (req_type > PREF_NET_TYPE_NR_ONLY &&
-                req_type <= PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA) {
+            req_type <= PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA) {
             rat1 = 128;  // NR preferred
         }
     }
 
-    switch(req_type)
-    {
+    switch (req_type) {
         case PREF_NET_TYPE_GSM_WCDMA_AUTO:
             rat = 2;  // 2/3G AUTO
             break;
@@ -211,7 +204,7 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
         case PREF_NET_TYPE_TD_SCDMA_GSM:
         case PREF_NET_TYPE_TD_SCDMA_GSM_WCDMA:
             rat = 2;  // 2/3G AUTO
-            if(isPreferred){
+            if (isPreferred) {
                 rat1 = 2;  // 3G preferred
             }
             break;
@@ -228,14 +221,14 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
         case PREF_NET_TYPE_TD_SCDMA_GSM_WCDMA_LTE:
             rat = 6;  // 2/3/4G AUTO
             if (isPreferred) {
-                rat1 = 4;  //4G preferred
+                rat1 = 4;  // 4G preferred
             }
             break;
         case PREF_NET_TYPE_LTE_CMDA_EVDO_GSM_WCDMA:
         case PREF_NET_TYPE_TD_SCDMA_LTE_CDMA_EVDO_GSM_WCDMA:
             rat = 14;  // LTE CDMA EVDO GSM/WCDMA mode
             if (isPreferred) {
-                rat1 = 4;  //4G preferred
+                rat1 = 4;  // 4G preferred
             }
             break;
         case PREF_NET_TYPE_LTE_CDMA_EVDO_GSM:
@@ -264,10 +257,10 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
             rat1 = 32;
             break;
         case PREF_NET_TYPE_LTE_CDMA_EVDO:
-            rat = 11;   // LTE/C2K mode
+            rat = 11;  // LTE/C2K mode
             break;
         case PREF_NET_TYPE_CDMA_EVDO_AUTO:
-            rat = 7;    // C2K 1x/Evdo
+            rat = 7;  // C2K 1x/Evdo
             break;
         case PREF_NET_TYPE_CDMA_ONLY:
             rat = 7;    // C2K 1x/Evdo
@@ -278,27 +271,27 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
             rat1 = 64;  // C2K Evdo only
             break;
         case PREF_NET_TYPE_NR_ONLY:
-            rat = 15;    // NR only
+            rat = 15;  // NR only
             break;
         case PREF_NET_TYPE_NR_LTE:
-            rat = 19;    // NR/LTE
+            rat = 19;  // NR/LTE
             break;
         case PREF_NET_TYPE_NR_LTE_CDMA_EVDO:
-            rat = 26;    // NR/LTE/C2K
+            rat = 26;  // NR/LTE/C2K
             break;
         case PREF_NET_TYPE_NR_LTE_GSM_WCDMA:
         case PREF_NET_TYPE_NR_LTE_TDSCDMA_GSM:
         case PREF_NET_TYPE_NR_LTE_TDSCDMA_GSM_WCDMA:
-            rat = 22;    // NR/LTE/GSM/WCDMA(TDS-CDMA)
+            rat = 22;  // NR/LTE/GSM/WCDMA(TDS-CDMA)
             break;
         case PREF_NET_TYPE_NR_LTE_CDMA_EVDO_GSM_WCDMA:
         case PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA:
-            rat = 30;    // NR/LTE/C2K/GSM/WCDMA(TDS-CDMA)
+            rat = 30;  // NR/LTE/C2K/GSM/WCDMA(TDS-CDMA)
             break;
         case PREF_NET_TYPE_NR_LTE_WCDMA:
         case PREF_NET_TYPE_NR_LTE_TDSCDMA:
         case PREF_NET_TYPE_NR_LTE_TDSCDMA_WCDMA:
-            rat = 21;    //NR/LTE/WCDMA(TDS-CDMA)
+            rat = 21;  // NR/LTE/WCDMA(TDS-CDMA)
             break;
         default:
             rat = -1;
@@ -306,8 +299,8 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
     }
 
     if (rat >= 0) {
-        if (getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF,
-                false) == true) {
+        if (getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF, false) ==
+            true) {
             ril_errno = RIL_E_GENERIC_FAILURE;
             logE(LOG_TAG, "SetPreferredNetworkType: Skip retry in radio off");
             goto finish;
@@ -320,20 +313,20 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
         p_response = atSendCommand(String8::format("AT+ERAT=%d,%d", rat, rat1));
         if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
             logV(LOG_TAG, "SetPreferredNetworkType: ok, count=%d, MajorSim=%d, Preferred=%d",
-                    mRetryCount, currMajorSim, isPreferred);
+                 mRetryCount, currMajorSim, isPreferred);
             mLastReqRatType = req_type;
             ril_errno = RIL_E_SUCCESS;
         } else {
             logE(LOG_TAG, "SetPreferredNetworkType: fail, count=%d, error=%d, MajorSim=%d",
-                    mRetryCount, p_response->atGetCmeError(), currMajorSim);
+                 mRetryCount, p_response->atGetCmeError(), currMajorSim);
             if (p_response->atGetCmeError() == CME_OPERATION_NOT_SUPPORTED) {
                 ril_errno = RIL_E_MODE_NOT_SUPPORTED;
                 logE(LOG_TAG, "SetPreferredNetworkType: fail, modem not support dual C2K RAT");
             } else {  // retry 40 times if set rat fail.
                 if (mRetryCount < 40) {
                     mRetryCount++;
-                    sp<RfxMclMessage> mclMessage = RfxMclMessage::obtainRequest(msg->getId(),
-                            msg->getData(), msg->getSlotId(), msg->getToken(),
+                    sp<RfxMclMessage> mclMessage = RfxMclMessage::obtainRequest(
+                            msg->getId(), msg->getData(), msg->getSlotId(), msg->getToken(),
                             msg->getSendToMainProtocol(), msg->getRilToken(), ms2ns(1000),
                             msg->getTimeStamp(), msg->getAddAtFront());
                     RfxMclDispatcherThread::enqueueMclMessageDelay(mclMessage);
@@ -349,8 +342,8 @@ void RmcRatSwitchHandler::requestSetPreferredNetworkType(const sp<RfxMclMessage>
 
 finish:
     mRetryCount = 1;
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }
@@ -369,30 +362,29 @@ void RmcRatSwitchHandler::requestGetPreferredNetworkType(const sp<RfxMclMessage>
     p_response = atSendCommandSingleline("AT+ERAT?", "+ERAT:");
 
     err = p_response->getError();
-    if (err < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (err < 0 || p_response->getSuccess() == 0) goto error;
 
     line1 = p_response->getIntermediates();
 
     // go to start position
     line1->atTokStart(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
-    //skip <curr_rat>
+    // skip <curr_rat>
     skip = line1->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
-    //skip <gprs_status>
+    // skip <gprs_status>
     skip = line1->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
-    //get <rat>
+    // get <rat>
     nt_type = line1->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
-    //get <prefer rat>
+    // get <prefer rat>
     prefer_type = line1->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     if (nt_type == 0) {
         return_type = PREF_NET_TYPE_GSM_ONLY;
@@ -405,14 +397,14 @@ void RmcRatSwitchHandler::requestGetPreferredNetworkType(const sp<RfxMclMessage>
         return_type = PREF_NET_TYPE_GSM_WCDMA_AUTO;
     } else if (nt_type == 2 && prefer_type == 2) {
         return_type = PREF_NET_TYPE_GSM_WCDMA;
-    //for LTE -- START
+        // for LTE -- START
     } else if (nt_type == 6 && prefer_type == 4) {
-        //4G Preferred (4G, 3G/2G) item
-        //Bause we are not defind LTE preferred,
-        //so return by NT_LTE_GSM_WCDMA_TYPE temporary
+        // 4G Preferred (4G, 3G/2G) item
+        // Bause we are not defind LTE preferred,
+        // so return by NT_LTE_GSM_WCDMA_TYPE temporary
         return_type = PREF_NET_TYPE_LTE_GSM_WCDMA;
     } else if (nt_type == 6 && prefer_type == 0) {
-        //4G/3G/2G(Auto) item
+        // 4G/3G/2G(Auto) item
         return_type = PREF_NET_TYPE_LTE_GSM_WCDMA;
     } else if (nt_type == 14) {
         // LTE CDMA EVDO GSM/WCDMA mode
@@ -421,7 +413,7 @@ void RmcRatSwitchHandler::requestGetPreferredNetworkType(const sp<RfxMclMessage>
         // LTE CDMA EVDO GSM mode
         return_type = PREF_NET_TYPE_LTE_CDMA_EVDO_GSM;
     } else if (nt_type == 3 && prefer_type == 0) {
-        //4G only
+        // 4G only
         return_type = PREF_NET_TYPE_LTE_ONLY;
     } else if (nt_type == 5 && prefer_type == 0) {
         // 4G/3G
@@ -435,7 +427,7 @@ void RmcRatSwitchHandler::requestGetPreferredNetworkType(const sp<RfxMclMessage>
     } else if (nt_type == 8 && prefer_type == 32) {
         // 2G/C2K 1x
         return_type = PREF_NET_TYPE_CDMA_GSM;
-    } else if(nt_type == 11) {
+    } else if (nt_type == 11) {
         // LC mode
         return_type = PREF_NET_TYPE_LTE_CDMA_EVDO;
     } else if (nt_type == 7 && prefer_type == 0) {
@@ -461,26 +453,29 @@ void RmcRatSwitchHandler::requestGetPreferredNetworkType(const sp<RfxMclMessage>
         return_type = PREF_NET_TYPE_NR_LTE_CDMA_EVDO;
     } else if (nt_type == 22) {
         // 5G/4G/3G/2G
-        return_type = PREF_NET_TYPE_NR_LTE_TDSCDMA_GSM_WCDMA; //NETWORK_MODE_NR_LTE_GSM_WCDMA; NETWORK_MODE_NR_LTE_TDSCDMA_GSM;
+        return_type = PREF_NET_TYPE_NR_LTE_TDSCDMA_GSM_WCDMA;  // NETWORK_MODE_NR_LTE_GSM_WCDMA;
+                                                               // NETWORK_MODE_NR_LTE_TDSCDMA_GSM;
     } else if (nt_type == 30) {
         // 5G/4G/C2K/3G/2G
-        return_type = PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA; //NETWORK_MODE_NR_LTE_CDMA_EVDO_GSM_WCDMA;
+        return_type =
+                PREF_NET_TYPE_NR_LTE_TDSCDMA_CDMA_EVDO_GSM_WCDMA;  // NETWORK_MODE_NR_LTE_CDMA_EVDO_GSM_WCDMA;
     } else if (nt_type == 21) {
         // 5G/4G/3G
-        return_type =PREF_NET_TYPE_NR_LTE_TDSCDMA_WCDMA; //NETWORK_MODE_NR_LTE_WCDMA; NETWORK_MODE_NR_LTE_TDSCDMA;
+        return_type = PREF_NET_TYPE_NR_LTE_TDSCDMA_WCDMA;  // NETWORK_MODE_NR_LTE_WCDMA;
+                                                           // NETWORK_MODE_NR_LTE_TDSCDMA;
     } else {
         goto error;
     }
 
 queryDone:
     response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(&return_type, 1), msg, false);
+                                             RfxIntsData(&return_type, 1), msg, false);
     responseToTelCore(response);
     return;
 
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(),
+                                             msg, false);
     responseToTelCore(response);
 }
 
@@ -493,15 +488,13 @@ void RmcRatSwitchHandler::requestGetGmssRatMode(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> response;
     int err = 0;
-    int data[5] = { 0 };
+    int data[5] = {0};
     RfxAtLine* line = NULL;
 
     p_response = atSendCommandSingleline("AT+EGMSS?", "+EGMSS:");
 
-    if (p_response == NULL
-            || p_response->getError() != 0
-            || p_response->getSuccess() == 0
-            || p_response->getIntermediates() == NULL) {
+    if (p_response == NULL || p_response->getError() != 0 || p_response->getSuccess() == 0 ||
+        p_response->getIntermediates() == NULL) {
         goto error;
     }
 
@@ -523,15 +516,15 @@ void RmcRatSwitchHandler::requestGetGmssRatMode(const sp<RfxMclMessage>& msg) {
         }
     }
 
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData(data, 5), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxIntsData(data, 5), msg,
+                                             false);
     responseToTelCore(response);
     return;
 
 error:
     logE(LOG_TAG, "requestGetGmssRatMode error");
-    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxIntsData(),
+                                             msg, false);
     responseToTelCore(response);
 }
 
@@ -541,21 +534,21 @@ void RmcRatSwitchHandler::requestSetDisable2G(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> resp;
     int mode = 0;
 
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     mode = pInt[0];
     if (mode == 1 || mode == 0) {
-
         if (isOp07Support() || tc1_support) {
             logD(LOG_TAG, "[OP07] requestSetDisable2G %d", mode);
             p_response = atSendCommand(String8::format("AT+EDRAT=%d", mode));
             if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
                 rfx_property_set("persist.vendor.radio.disable.2g",
-                        String8::format("%d", mode).string());
+                                 String8::format("%d", mode).string());
                 ril_errno = RIL_E_SUCCESS;
             }
         } else if (isOp08Support()) {
             logD(LOG_TAG, "[OP08] requestSetDisable2G %d", mode);
-            p_response = atSendCommand(String8::format("AT+EGMC=1,\"rat_disable_with_ecc\",%d", mode));
+            p_response =
+                    atSendCommand(String8::format("AT+EGMC=1,\"rat_disable_with_ecc\",%d", mode));
             if (p_response->getError() >= 0 && p_response->getSuccess() != 0) {
                 ril_errno = RIL_E_SUCCESS;
             }
@@ -566,8 +559,7 @@ void RmcRatSwitchHandler::requestSetDisable2G(const sp<RfxMclMessage>& msg) {
     p_response = NULL;
 
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxVoidData(), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
     responseToTelCore(resp);
 }
 
@@ -576,8 +568,8 @@ void RmcRatSwitchHandler::requestGetDisable2G(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> resp;
     RfxAtLine* line;
-    int err=0, mode=0;
-    char *type=NULL;
+    int err = 0, mode = 0;
+    char* type = NULL;
     char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     if (isOp07Support() || tc1_support) {
@@ -589,18 +581,17 @@ void RmcRatSwitchHandler::requestGetDisable2G(const sp<RfxMclMessage>& msg) {
         p_response = atSendCommandSingleline("AT+EGMC=0,\"rat_disable_with_ecc\"", "+EGMC:");
 
         err = p_response->getError();
-        if (err < 0 || p_response->getSuccess() == 0)
-            goto error;
+        if (err < 0 || p_response->getSuccess() == 0) goto error;
 
         line = p_response->getIntermediates();
 
         // go to start position
         line->atTokStart(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
 
         // get "type"
         type = line->atTokNextstr(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
 
         if (strncmp(type, "rat_disable_with_ecc", strlen("rat_disable_with_ecc")) != 0) {
             goto error;
@@ -608,7 +599,7 @@ void RmcRatSwitchHandler::requestGetDisable2G(const sp<RfxMclMessage>& msg) {
 
         // get <mode>
         mode = line->atTokNextint(&err);
-        if(err < 0) goto error;
+        if (err < 0) goto error;
 
         logD(LOG_TAG, "[OP08] requestGetDisable2G %d", mode);
         ril_errno = RIL_E_SUCCESS;
@@ -617,7 +608,7 @@ void RmcRatSwitchHandler::requestGetDisable2G(const sp<RfxMclMessage>& msg) {
     }
 
 error:
-    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
-            RfxIntsData(&mode, 1), msg, false);
+    resp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxIntsData(&mode, 1), msg,
+                                         false);
     responseToTelCore(resp);
 }

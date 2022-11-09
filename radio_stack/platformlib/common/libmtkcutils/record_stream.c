@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdint.h>
 #if defined(_WIN32)
-#include <winsock2.h>   /* for ntohl */
+#include <winsock2.h> /* for ntohl */
 #else
 #include <netinet/in.h>
 #endif
@@ -33,25 +33,23 @@ struct RecordStream {
     int fd;
     size_t maxRecordLen;
 
-    unsigned char *buffer;
+    unsigned char* buffer;
 
-    unsigned char *unconsumed;
-    unsigned char *read_end;
-    unsigned char *buffer_end;
+    unsigned char* unconsumed;
+    unsigned char* read_end;
+    unsigned char* buffer_end;
 };
 
+extern RecordStream* record_stream_new(int fd, size_t maxRecordLen) {
+    RecordStream* ret;
 
-extern RecordStream *record_stream_new(int fd, size_t maxRecordLen)
-{
-    RecordStream *ret;
+    assert(maxRecordLen <= 0xffff);
 
-    assert (maxRecordLen <= 0xffff);
-
-    ret = (RecordStream *)calloc(1, sizeof(RecordStream));
+    ret = (RecordStream*)calloc(1, sizeof(RecordStream));
     assert(ret != NULL);
     ret->fd = fd;
     ret->maxRecordLen = maxRecordLen;
-    ret->buffer = (unsigned char *)malloc (maxRecordLen + HEADER_SIZE);
+    ret->buffer = (unsigned char*)malloc(maxRecordLen + HEADER_SIZE);
     assert(ret->buffer != NULL);
     ret->unconsumed = ret->buffer;
     ret->read_end = ret->buffer;
@@ -60,27 +58,22 @@ extern RecordStream *record_stream_new(int fd, size_t maxRecordLen)
     return ret;
 }
 
-
-extern void record_stream_free(RecordStream *rs)
-{
+extern void record_stream_free(RecordStream* rs) {
     free(rs->buffer);
     free(rs);
 }
 
-
 /* returns NULL; if there isn't a full record in the buffer */
-static unsigned char * getEndOfRecord (unsigned char *p_begin,
-                                            unsigned char *p_end)
-{
+static unsigned char* getEndOfRecord(unsigned char* p_begin, unsigned char* p_end) {
     size_t len;
-    unsigned char * p_ret;
+    unsigned char* p_ret;
 
     if (p_end < p_begin + HEADER_SIZE) {
         return NULL;
     }
 
-    //First four bytes are length
-    len = ntohl(*((uint32_t *)p_begin));
+    // First four bytes are length
+    len = ntohl(*((uint32_t*)p_begin));
 
     p_ret = p_begin + HEADER_SIZE + len;
 
@@ -91,11 +84,10 @@ static unsigned char * getEndOfRecord (unsigned char *p_begin,
     return p_ret;
 }
 
-static void *getNextRecord (RecordStream *p_rs, size_t *p_outRecordLen)
-{
+static void* getNextRecord(RecordStream* p_rs, size_t* p_outRecordLen) {
     unsigned char *record_start, *record_end;
 
-    record_end = getEndOfRecord (p_rs->unconsumed, p_rs->read_end);
+    record_end = getEndOfRecord(p_rs->unconsumed, p_rs->read_end);
 
     if (record_end != NULL) {
         /* one full line in the buffer */
@@ -123,15 +115,13 @@ static void *getNextRecord (RecordStream *p_rs, size_t *p_outRecordLen)
  * Returns 0 with *p_outRecord set to NULL on end of stream
  * Returns -1 / errno = EAGAIN if it needs to read again
  */
-int record_stream_get_next (RecordStream *p_rs, void ** p_outRecord,
-                                    size_t *p_outRecordLen)
-{
-    void *ret;
+int record_stream_get_next(RecordStream* p_rs, void** p_outRecord, size_t* p_outRecordLen) {
+    void* ret;
 
     ssize_t countRead;
 
     /* is there one record already in the buffer? */
-    ret = getNextRecord (p_rs, p_outRecordLen);
+    ret = getNextRecord(p_rs, p_outRecordLen);
 
     if (ret != NULL) {
         *p_outRecord = ret;
@@ -139,12 +129,10 @@ int record_stream_get_next (RecordStream *p_rs, void ** p_outRecord,
     }
 
     // if the buffer is full and we don't have a full record
-    if (p_rs->unconsumed == p_rs->buffer
-        && p_rs->read_end == p_rs->buffer_end
-    ) {
+    if (p_rs->unconsumed == p_rs->buffer && p_rs->read_end == p_rs->buffer_end) {
         // this should never happen
-        //ALOGE("max record length exceeded\n");
-        assert (0);
+        // ALOGE("max record length exceeded\n");
+        assert(0);
         errno = EFBIG;
         return -1;
     }
@@ -162,7 +150,7 @@ int record_stream_get_next (RecordStream *p_rs, void ** p_outRecord,
         p_rs->unconsumed = p_rs->buffer;
     }
 
-    countRead = read (p_rs->fd, p_rs->read_end, p_rs->buffer_end - p_rs->read_end);
+    countRead = read(p_rs->fd, p_rs->read_end, p_rs->buffer_end - p_rs->read_end);
 
     if (countRead <= 0) {
         /* note: end-of-stream drops through here too */
@@ -172,7 +160,7 @@ int record_stream_get_next (RecordStream *p_rs, void ** p_outRecord,
 
     p_rs->read_end += countRead;
 
-    ret = getNextRecord (p_rs, p_outRecordLen);
+    ret = getNextRecord(p_rs, p_outRecordLen);
 
     if (ret == NULL) {
         /* not enough of a buffer to for a whole command */

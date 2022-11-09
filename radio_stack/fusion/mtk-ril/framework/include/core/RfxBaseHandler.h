@@ -30,228 +30,214 @@
 #include "RfxDefs.h"
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 
-using ::android::String8;
-using ::android::sp;
-using ::android::wp;
 using ::android::RefBase;
+using ::android::sp;
+using ::android::String8;
+using ::android::wp;
 
 #define LOG_BUF_SIZE 1024
 
 // class RfxChannel;
 class RfxBaseHandler;
 
-#define RFX_DECLARE_HANDLER_CLASS(_class_name)                                  \
-    public:                                                                     \
-        static RfxBaseHandler *createInstance(int slot_id, int channel_id);     \
-    public:                                                                     \
-        class InitHelper {                                                      \
-        public:                                                                 \
-            InitHelper(int c_id, int slot_category);                            \
-        }
+#define RFX_DECLARE_HANDLER_CLASS(_class_name)                          \
+  public:                                                               \
+    static RfxBaseHandler* createInstance(int slot_id, int channel_id); \
+                                                                        \
+  public:                                                               \
+    class InitHelper {                                                  \
+      public:                                                           \
+        InitHelper(int c_id, int slot_category);                        \
+    }
 
-#define RFX_IMPLEMENT_HANDLER_CLASS(_class_name, _channel_id)   \
-    RfxBaseHandler *_class_name::createInstance(int slot_id, int channel_id)    \
-    {                                                                           \
-        _class_name *handler;                                                   \
-        handler = new _class_name(slot_id, channel_id);                         \
-        return handler;                                                         \
-    }                                                                           \
-                                                                                \
-    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {          \
-         RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, false, false); \
-    }                                                                                          \
-                                                                                               \
+#define RFX_IMPLEMENT_HANDLER_CLASS(_class_name, _channel_id)                                \
+    RfxBaseHandler* _class_name::createInstance(int slot_id, int channel_id) {               \
+        _class_name* handler;                                                                \
+        handler = new _class_name(slot_id, channel_id);                                      \
+        return handler;                                                                      \
+    }                                                                                        \
+                                                                                             \
+    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {                       \
+        RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, \
+                                           false, false);                                    \
+    }                                                                                        \
+                                                                                             \
     _class_name::InitHelper _class_name##s_init_val(_channel_id, SLOT);
 
-#define RFX_IMPLEMENT_OP_PARENT_HANDLER_CLASS(_class_name, _channel_id)         \
-    RfxBaseHandler *_class_name::createInstance(int slot_id, int channel_id)    \
-    {                                                                           \
-        _class_name *handler;                                                   \
-        handler = new _class_name(slot_id, channel_id);                         \
-        return handler;                                                         \
-    }                                                                           \
-                                                                                \
-    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {          \
-         RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, true, false); \
-    }                                                                                          \
-                                                                                               \
+#define RFX_IMPLEMENT_OP_PARENT_HANDLER_CLASS(_class_name, _channel_id)                            \
+    RfxBaseHandler* _class_name::createInstance(int slot_id, int channel_id) {                     \
+        _class_name* handler;                                                                      \
+        handler = new _class_name(slot_id, channel_id);                                            \
+        return handler;                                                                            \
+    }                                                                                              \
+                                                                                                   \
+    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {                             \
+        RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, true, \
+                                           false);                                                 \
+    }                                                                                              \
+                                                                                                   \
     _class_name::InitHelper _class_name##s_init_val(_channel_id, SLOT);
 
-#define RFX_IMPLEMENT_NON_SLOT_HANDLER_CLASS(_class_name, _channel_id)          \
-    RfxBaseHandler *_class_name::createInstance(int slot_id, int channel_id)    \
-    {                                                                           \
-        _class_name *handler;                                                   \
-        handler = new _class_name(slot_id, channel_id);                         \
-        return handler;                                                         \
-    }                                                                           \
-                                                                                \
-    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {          \
-         RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, false, false); \
-    }                                                                                          \
-                                                                                               \
+#define RFX_IMPLEMENT_NON_SLOT_HANDLER_CLASS(_class_name, _channel_id)                       \
+    RfxBaseHandler* _class_name::createInstance(int slot_id, int channel_id) {               \
+        _class_name* handler;                                                                \
+        handler = new _class_name(slot_id, channel_id);                                      \
+        return handler;                                                                      \
+    }                                                                                        \
+                                                                                             \
+    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {                       \
+        RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, \
+                                           false, false);                                    \
+    }                                                                                        \
+                                                                                             \
     _class_name::InitHelper _class_name##s_init_val(_channel_id, NON_SLOT);
 
-#define RFX_IMPLEMENT_OP_PARENT_NON_SLOT_HANDLER_CLASS(_class_name, _channel_id)\
-    RfxBaseHandler *_class_name::createInstance(int slot_id, int channel_id)    \
-    {                                                                           \
-        _class_name *handler;                                                   \
-        handler = new _class_name(slot_id, channel_id);                         \
-        return handler;                                                         \
-    }                                                                           \
-                                                                                \
-    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {          \
-         RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, true, false); \
-    }                                                                                          \
-                                                                                               \
+#define RFX_IMPLEMENT_OP_PARENT_NON_SLOT_HANDLER_CLASS(_class_name, _channel_id)                   \
+    RfxBaseHandler* _class_name::createInstance(int slot_id, int channel_id) {                     \
+        _class_name* handler;                                                                      \
+        handler = new _class_name(slot_id, channel_id);                                            \
+        return handler;                                                                            \
+    }                                                                                              \
+                                                                                                   \
+    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {                             \
+        RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, true, \
+                                           false);                                                 \
+    }                                                                                              \
+                                                                                                   \
     _class_name::InitHelper _class_name##s_init_val(_channel_id, NON_SLOT);
 
-#define RFX_IMPLEMENT_OP_HANDLER_CLASS(_class_name, _channel_id)   \
-    RfxBaseHandler *_class_name::createInstance(int slot_id, int channel_id)    \
-    {                                                                           \
-        _class_name *handler;                                                   \
-        handler = new _class_name(slot_id, channel_id);                         \
-        return handler;                                                         \
-    }                                                                           \
-                                                                                \
-    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {          \
-         RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, false, true); \
-    }                                                                                          \
-                                                                                               \
+#define RFX_IMPLEMENT_OP_HANDLER_CLASS(_class_name, _channel_id)                             \
+    RfxBaseHandler* _class_name::createInstance(int slot_id, int channel_id) {               \
+        _class_name* handler;                                                                \
+        handler = new _class_name(slot_id, channel_id);                                      \
+        return handler;                                                                      \
+    }                                                                                        \
+                                                                                             \
+    _class_name::InitHelper::InitHelper(int c_id, int slot_category) {                       \
+        RfxHandlerManager::registerHandler(_class_name::createInstance, c_id, slot_category, \
+                                           false, true);                                     \
+    }                                                                                        \
+                                                                                             \
     _class_name::InitHelper _class_name##s_init_val(_channel_id, SLOT);
 
-
-#define RFX_REGISTER_HANDLER_CLASS(class_name, channel_id)                      \
+#define RFX_REGISTER_HANDLER_CLASS(class_name, channel_id) \
     class_name::InitHelper class_name##channel_id##s_init_val(channel_id, SLOT);
 
 // class RfxBaseHandler : public virtual RefBase {
 class RfxBaseHandler {
+  public:
+    RfxBaseHandler(int slot_id, int channel_id) : m_slot_id(slot_id), m_channel_id(channel_id) {}
+    virtual ~RfxBaseHandler() {}
 
-    public:
-        RfxBaseHandler(int slot_id, int channel_id) : m_slot_id(slot_id),
-                m_channel_id(channel_id) {}
-        virtual ~RfxBaseHandler() {}
+  public:
+    void processMessage(const sp<RfxMclMessage>& msg);
 
-    public:
+    void processTimer() { onHandleTimer(); }
 
-        void processMessage(const sp<RfxMclMessage>& msg);
+    void registerToHandleRequest(const int* request_id_list, size_t length);
 
-        void processTimer() {
-            onHandleTimer();
-        }
+    void registerToHandleURC(const char** urc_prefix_list, size_t length);
 
-        void registerToHandleRequest(const int *request_id_list, size_t length);
+    void registerToHandleEvent(const int* event_prefix_list, size_t length);
 
-        void registerToHandleURC(const char **urc_prefix_list, size_t length);
+    void registerToHandleEvent(int clientId, const int* event_prefix_list, size_t length);
 
-        void registerToHandleEvent(const int *event_prefix_list, size_t length);
+    void responseToTelCore(const sp<RfxMclMessage>& msg);
 
-        void registerToHandleEvent(int clientId, const int *event_prefix_list, size_t length);
+    void sendBtSapStatusInd(RIL_SIM_SAP_STATUS_IND_Status message);
 
-        void responseToTelCore(const sp<RfxMclMessage>& msg);
+    void sendEvent(int id, const RfxBaseData& data, int channelId, int slotId, int clientId = -1,
+                   int token = -1, nsecs_t delayTime = 0,
+                   MTK_RIL_REQUEST_PRIORITY priority =
+                           MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM);
 
-        void sendBtSapStatusInd(RIL_SIM_SAP_STATUS_IND_Status message);
+    // cancelEvent
 
-        void sendEvent(int id, const RfxBaseData &data, int channelId, int slotId,
-                int clientId = -1, int token = -1, nsecs_t delayTime = 0,
-                MTK_RIL_REQUEST_PRIORITY priority =
-                MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM);
+    void sendEvent(sp<RfxMclMessage> msg);
 
-        // cancelEvent
+    void logD(const char* tag, const char* fmt, ...) const;
+    void logI(const char* tag, const char* fmt, ...) const;
+    void logV(const char* tag, const char* fmt, ...) const;
+    void logE(const char* tag, const char* fmt, ...) const;
+    void logW(const char* tag, const char* fmt, ...) const;
 
-        void sendEvent(sp<RfxMclMessage> msg);
+    RfxMclStatusManager* getMclStatusManager();
+    RfxMclStatusManager* getMclStatusManager(int slotId);
+    RfxMclStatusManager* getNonSlotMclStatusManager();
 
-        void logD(const char *tag, const char *fmt, ...) const;
-        void logI(const char *tag, const char *fmt, ...) const;
-        void logV(const char *tag, const char *fmt, ...) const;
-        void logE(const char *tag, const char *fmt, ...) const;
-        void logW(const char *tag, const char *fmt, ...) const;
+    // at send command related functions
+    sp<RfxAtResponse> atSendCommandSingleline(const char* command, const char* responsePrefix,
+                                              RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandSingleline(const String8& command, const char* responsePrefix,
+                                              RIL_Token ackToken = NULL);
 
-        RfxMclStatusManager* getMclStatusManager();
-        RfxMclStatusManager* getMclStatusManager(int slotId);
-        RfxMclStatusManager* getNonSlotMclStatusManager();
+    sp<RfxAtResponse> atSendCommandNumeric(const char* command, RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandNumeric(const String8& command, RIL_Token ackToken = NULL);
 
-        // at send command related functions
-        sp<RfxAtResponse> atSendCommandSingleline (const char *command,
-                const char *responsePrefix, RIL_Token ackToken = NULL);
-        sp<RfxAtResponse> atSendCommandSingleline (const String8 &command,
-                const char *responsePrefix, RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandMultiline(const char* command, const char* responsePrefix,
+                                             RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandMultiline(const String8& command, const char* responsePrefix,
+                                             RIL_Token ackToken = NULL);
 
-        sp<RfxAtResponse> atSendCommandNumeric (const char *command,
-                RIL_Token ackToken = NULL);
-        sp<RfxAtResponse> atSendCommandNumeric (const String8 &command,
-                RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommand(const char* command, RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommand(const String8& command, RIL_Token ackToken = NULL);
 
-        sp<RfxAtResponse> atSendCommandMultiline (const char *command,
-                const char *responsePrefix, RIL_Token ackToken = NULL);
-        sp<RfxAtResponse> atSendCommandMultiline (const String8 &command,
-                const char *responsePrefix, RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandRaw(const char* command, RIL_Token ackToken = NULL);
+    sp<RfxAtResponse> atSendCommandRaw(const String8& command, RIL_Token ackToken = NULL);
 
-        sp<RfxAtResponse> atSendCommand (const char *command,
-                RIL_Token ackToken = NULL);
-        sp<RfxAtResponse> atSendCommand (const String8 &command,
-                RIL_Token ackToken = NULL);
+    bool sendUserData(int clientId, unsigned char* data, size_t length);
+    bool sendUserData(int clientId, int config, unsigned char* data, size_t length);
 
-        sp<RfxAtResponse> atSendCommandRaw (const char *command,
-                RIL_Token ackToken = NULL);
-        sp<RfxAtResponse> atSendCommandRaw (const String8 &command,
-                RIL_Token ackToken = NULL);
+    int strStartsWith(const char* line, const char* prefix);
 
-        bool sendUserData(int clientId, unsigned char* data, size_t length);
-        bool sendUserData(int clientId, int config, unsigned char* data,
-                size_t length);
+    const char* idToString(int id);
 
-        int strStartsWith(const char *line, const char *prefix);
+    int getFeatureVersion(char* feature, int defaultVaule);
 
-        const char* idToString(int id);
+    int getFeatureVersion(char* feature);
 
-        int getFeatureVersion(char *feature, int defaultVaule);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        int getFeatureVersion(char *feature);
-    protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer() {}
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer() {}
+    virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState);
+    /*
+     * Convert the URC to the strings data without any logic
+     * msg: URC message
+     * rfxMsg: ID of rfxMsg
+     * maxLen: Expected max length of URC params.
+               Parse all params if it is 0.
+     * appendPhoneId: add phone Id to the rfx message for Fwk.
+     */
+    void notifyStringsDataToTcl(const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen,
+                                bool appendPhoneId = false);
+    /*
+     * Convert the URC to the ints data without any logic
+     * msg: URC message
+     * rfxMsg: ID of rfxMsg
+     * maxLen: Expected max length of URC params.
+               Parse all params if it is 0.
+     * appendPhoneId: add phone Id to the rfx message for Fwk.
+     */
+    void notifyIntsDataToTcl(const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen,
+                             bool appendPhoneId = false);
+    /*
+     * Handle the AT command which will response the void to the TCL
+     * Helpful to reduce the duplicate code
+     */
+    RIL_Errno handleCmdWithVoidResponse(const sp<RfxMclMessage>& msg, String8 cmd);
 
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  private:
+    RfxSender* getSender();
 
-        virtual bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-                RIL_RadioState radioState);
-        /*
-         * Convert the URC to the strings data without any logic
-         * msg: URC message
-         * rfxMsg: ID of rfxMsg
-         * maxLen: Expected max length of URC params.
-                   Parse all params if it is 0.
-         * appendPhoneId: add phone Id to the rfx message for Fwk.
-         */
-        void notifyStringsDataToTcl(
-            const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen, bool appendPhoneId = false);
-        /*
-         * Convert the URC to the ints data without any logic
-         * msg: URC message
-         * rfxMsg: ID of rfxMsg
-         * maxLen: Expected max length of URC params.
-                   Parse all params if it is 0.
-         * appendPhoneId: add phone Id to the rfx message for Fwk.
-         */
-        void notifyIntsDataToTcl(
-            const sp<RfxMclMessage>& msg, int rfxMsg, int maxLen, bool appendPhoneId = false);
-        /*
-         * Handle the AT command which will response the void to the TCL
-         * Helpful to reduce the duplicate code
-         */
-        RIL_Errno handleCmdWithVoidResponse(const sp<RfxMclMessage>& msg, String8 cmd);
-
-    private:
-        RfxSender *getSender();
-
-    protected:
-
-        int m_slot_id;
-        int m_channel_id;
+  protected:
+    int m_slot_id;
+    int m_channel_id;
 };
 
 #endif

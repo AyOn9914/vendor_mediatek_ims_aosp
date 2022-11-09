@@ -27,24 +27,23 @@
  *****************************************************************************/
 
 class RmcOpSCBMUrcHandler : public RfxBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcOpSCBMUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcOpSCBMUrcHandler);
 
-public:
+  public:
     RmcOpSCBMUrcHandler(int slot_id, int channel_id);
     virtual ~RmcOpSCBMUrcHandler();
 
-protected:
+  protected:
     // Process URC here
     virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
     // URC handler
     void handleSCBMStatusMessage(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     String8 mTag;
-
 };
 #endif /* __RMC_OP_SCBM_URC_HANDLER_H__ */

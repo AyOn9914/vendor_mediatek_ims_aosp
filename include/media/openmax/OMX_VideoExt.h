@@ -44,7 +44,7 @@ typedef enum OMX_NALUFORMATSTYPE {
 } OMX_NALUFORMATSTYPE;
 
 /** NAL Stream Format */
-typedef struct OMX_NALSTREAMFORMATTYPE{
+typedef struct OMX_NALSTREAMFORMATTYPE {
     OMX_U32 nSize;
     OMX_VERSIONTYPE nVersion;
     OMX_U32 nPortIndex;
@@ -53,8 +53,8 @@ typedef struct OMX_NALSTREAMFORMATTYPE{
 
 /** AVC additional profiles */
 typedef enum OMX_VIDEO_AVCPROFILEEXTTYPE {
-    OMX_VIDEO_AVCProfileConstrainedBaseline = 0x10000,   /**< Constrained baseline profile */
-    OMX_VIDEO_AVCProfileConstrainedHigh     = 0x80000,   /**< Constrained high profile */
+    OMX_VIDEO_AVCProfileConstrainedBaseline = 0x10000, /**< Constrained baseline profile */
+    OMX_VIDEO_AVCProfileConstrainedHigh = 0x80000,     /**< Constrained high profile */
 } OMX_VIDEO_AVCPROFILEEXTTYPE;
 
 /** VP8 profiles */
@@ -136,10 +136,10 @@ typedef struct OMX_VIDEO_PARAM_ANDROID_VP8ENCODERTYPE {
     OMX_U32 nSize;
     OMX_VERSIONTYPE nVersion;
     OMX_U32 nPortIndex;
-    OMX_U32 nKeyFrameInterval;        // distance between consecutive key_frames (including one
-                                      // of the key_frames). 0 means interval is unspecified and
-                                      // can be freely chosen by the codec. 1 means a stream of
-                                      // only key_frames.
+    OMX_U32 nKeyFrameInterval;  // distance between consecutive key_frames (including one
+                                // of the key_frames). 0 means interval is unspecified and
+                                // can be freely chosen by the codec. 1 means a stream of
+                                // only key_frames.
 
     OMX_VIDEO_ANDROID_VPXTEMPORALLAYERPATTERNTYPE eTemporalPattern;
     OMX_U32 nTemporalLayerCount;
@@ -165,18 +165,18 @@ typedef enum OMX_VIDEO_VP9PROFILETYPE {
 
 /** VP9 levels */
 typedef enum OMX_VIDEO_VP9LEVELTYPE {
-    OMX_VIDEO_VP9Level1  = 0x1,
+    OMX_VIDEO_VP9Level1 = 0x1,
     OMX_VIDEO_VP9Level11 = 0x2,
-    OMX_VIDEO_VP9Level2  = 0x4,
+    OMX_VIDEO_VP9Level2 = 0x4,
     OMX_VIDEO_VP9Level21 = 0x8,
-    OMX_VIDEO_VP9Level3  = 0x10,
+    OMX_VIDEO_VP9Level3 = 0x10,
     OMX_VIDEO_VP9Level31 = 0x20,
-    OMX_VIDEO_VP9Level4  = 0x40,
+    OMX_VIDEO_VP9Level4 = 0x40,
     OMX_VIDEO_VP9Level41 = 0x80,
-    OMX_VIDEO_VP9Level5  = 0x100,
+    OMX_VIDEO_VP9Level5 = 0x100,
     OMX_VIDEO_VP9Level51 = 0x200,
     OMX_VIDEO_VP9Level52 = 0x400,
-    OMX_VIDEO_VP9Level6  = 0x800,
+    OMX_VIDEO_VP9Level6 = 0x800,
     OMX_VIDEO_VP9Level61 = 0x1000,
     OMX_VIDEO_VP9Level62 = 0x2000,
     OMX_VIDEO_VP9LevelUnknown = 0x6EFFFFFF,
@@ -184,13 +184,13 @@ typedef enum OMX_VIDEO_VP9LEVELTYPE {
 } OMX_VIDEO_VP9LEVELTYPE;
 
 /**
-* VP9 Parameters.
-*   Encoder specific parameters (decoders should ignore these fields):
-*     - bErrorResilientMode
-*     - nTileRows
-*     - nTileColumns
-*     - bEnableFrameParallelDecoding
-*/
+ * VP9 Parameters.
+ *   Encoder specific parameters (decoders should ignore these fields):
+ *     - bErrorResilientMode
+ *     - nTileRows
+ *     - nTileColumns
+ *     - bEnableFrameParallelDecoding
+ */
 typedef struct OMX_VIDEO_PARAM_VP9TYPE {
     OMX_U32 nSize;
     OMX_VERSIONTYPE nVersion;
@@ -205,46 +205,46 @@ typedef struct OMX_VIDEO_PARAM_VP9TYPE {
 
 /** HEVC Profile enum type */
 typedef enum OMX_VIDEO_HEVCPROFILETYPE {
-    OMX_VIDEO_HEVCProfileUnknown      = 0x0,
-    OMX_VIDEO_HEVCProfileMain         = 0x1,
-    OMX_VIDEO_HEVCProfileMain10       = 0x2,
-    OMX_VIDEO_HEVCProfileMainStill    = 0x4,
+    OMX_VIDEO_HEVCProfileUnknown = 0x0,
+    OMX_VIDEO_HEVCProfileMain = 0x1,
+    OMX_VIDEO_HEVCProfileMain10 = 0x2,
+    OMX_VIDEO_HEVCProfileMainStill = 0x4,
     // Main10 profile with HDR SEI support.
-    OMX_VIDEO_HEVCProfileMain10HDR10  = 0x1000,
-    OMX_VIDEO_HEVCProfileMain10HDR10Plus  = 0x2000,
-    OMX_VIDEO_HEVCProfileMax     = 0x7FFFFFFF
+    OMX_VIDEO_HEVCProfileMain10HDR10 = 0x1000,
+    OMX_VIDEO_HEVCProfileMain10HDR10Plus = 0x2000,
+    OMX_VIDEO_HEVCProfileMax = 0x7FFFFFFF
 } OMX_VIDEO_HEVCPROFILETYPE;
 
 /** HEVC Level enum type */
 typedef enum OMX_VIDEO_HEVCLEVELTYPE {
-    OMX_VIDEO_HEVCLevelUnknown    = 0x0,
-    OMX_VIDEO_HEVCMainTierLevel1  = 0x1,
-    OMX_VIDEO_HEVCHighTierLevel1  = 0x2,
-    OMX_VIDEO_HEVCMainTierLevel2  = 0x4,
-    OMX_VIDEO_HEVCHighTierLevel2  = 0x8,
+    OMX_VIDEO_HEVCLevelUnknown = 0x0,
+    OMX_VIDEO_HEVCMainTierLevel1 = 0x1,
+    OMX_VIDEO_HEVCHighTierLevel1 = 0x2,
+    OMX_VIDEO_HEVCMainTierLevel2 = 0x4,
+    OMX_VIDEO_HEVCHighTierLevel2 = 0x8,
     OMX_VIDEO_HEVCMainTierLevel21 = 0x10,
     OMX_VIDEO_HEVCHighTierLevel21 = 0x20,
-    OMX_VIDEO_HEVCMainTierLevel3  = 0x40,
-    OMX_VIDEO_HEVCHighTierLevel3  = 0x80,
+    OMX_VIDEO_HEVCMainTierLevel3 = 0x40,
+    OMX_VIDEO_HEVCHighTierLevel3 = 0x80,
     OMX_VIDEO_HEVCMainTierLevel31 = 0x100,
     OMX_VIDEO_HEVCHighTierLevel31 = 0x200,
-    OMX_VIDEO_HEVCMainTierLevel4  = 0x400,
-    OMX_VIDEO_HEVCHighTierLevel4  = 0x800,
+    OMX_VIDEO_HEVCMainTierLevel4 = 0x400,
+    OMX_VIDEO_HEVCHighTierLevel4 = 0x800,
     OMX_VIDEO_HEVCMainTierLevel41 = 0x1000,
     OMX_VIDEO_HEVCHighTierLevel41 = 0x2000,
-    OMX_VIDEO_HEVCMainTierLevel5  = 0x4000,
-    OMX_VIDEO_HEVCHighTierLevel5  = 0x8000,
+    OMX_VIDEO_HEVCMainTierLevel5 = 0x4000,
+    OMX_VIDEO_HEVCHighTierLevel5 = 0x8000,
     OMX_VIDEO_HEVCMainTierLevel51 = 0x10000,
     OMX_VIDEO_HEVCHighTierLevel51 = 0x20000,
     OMX_VIDEO_HEVCMainTierLevel52 = 0x40000,
     OMX_VIDEO_HEVCHighTierLevel52 = 0x80000,
-    OMX_VIDEO_HEVCMainTierLevel6  = 0x100000,
-    OMX_VIDEO_HEVCHighTierLevel6  = 0x200000,
+    OMX_VIDEO_HEVCMainTierLevel6 = 0x100000,
+    OMX_VIDEO_HEVCHighTierLevel6 = 0x200000,
     OMX_VIDEO_HEVCMainTierLevel61 = 0x400000,
     OMX_VIDEO_HEVCHighTierLevel61 = 0x800000,
     OMX_VIDEO_HEVCMainTierLevel62 = 0x1000000,
     OMX_VIDEO_HEVCHighTierLevel62 = 0x2000000,
-    OMX_VIDEO_HEVCHighTiermax     = 0x7FFFFFFF
+    OMX_VIDEO_HEVCHighTiermax = 0x7FFFFFFF
 } OMX_VIDEO_HEVCLEVELTYPE;
 
 /** Structure for controlling HEVC video encoding */
@@ -254,10 +254,10 @@ typedef struct OMX_VIDEO_PARAM_HEVCTYPE {
     OMX_U32 nPortIndex;
     OMX_VIDEO_HEVCPROFILETYPE eProfile;
     OMX_VIDEO_HEVCLEVELTYPE eLevel;
-    OMX_U32 nKeyFrameInterval;        // distance between consecutive I-frames (including one
-                                      // of the I frames). 0 means interval is unspecified and
-                                      // can be freely chosen by the codec. 1 means a stream of
-                                      // only I frames.
+    OMX_U32 nKeyFrameInterval;  // distance between consecutive I-frames (including one
+                                // of the I frames). 0 means interval is unspecified and
+                                // can be freely chosen by the codec. 1 means a stream of
+                                // only I frames.
 } OMX_VIDEO_PARAM_HEVCTYPE;
 
 /** Structure to define if dependent slice segments should be used */
@@ -273,13 +273,13 @@ typedef struct OMX_VIDEO_SLICESEGMENTSTYPE {
  *  for tunneled components.
  */
 typedef struct OMX_VIDEO_RENDEREVENTTYPE {
-    OMX_S64 nMediaTimeUs;  // timestamp of rendered video frame
-    OMX_S64 nSystemTimeNs; // system monotonic time at the time frame was rendered
-                           // Use INT64_MAX for nMediaTimeUs to signal that the EOS
-                           // has been reached. In this case, nSystemTimeNs MUST be
-                           // the system time when the last frame was rendered.
-                           // This MUST be done in addition to returning (and
-                           // following) the render information for the last frame.
+    OMX_S64 nMediaTimeUs;   // timestamp of rendered video frame
+    OMX_S64 nSystemTimeNs;  // system monotonic time at the time frame was rendered
+                            // Use INT64_MAX for nMediaTimeUs to signal that the EOS
+                            // has been reached. In this case, nSystemTimeNs MUST be
+                            // the system time when the last frame was rendered.
+                            // This MUST be done in addition to returning (and
+                            // following) the render information for the last frame.
 } OMX_VIDEO_RENDEREVENTTYPE;
 
 /** Dolby Vision Profile enum type */
@@ -293,24 +293,24 @@ typedef enum OMX_VIDEO_DOLBYVISIONPROFILETYPE {
     OMX_VIDEO_DolbyVisionProfileDvheStn = 0x20,
     OMX_VIDEO_DolbyVisionProfileDvheDth = 0x40,
     OMX_VIDEO_DolbyVisionProfileDvheDtb = 0x80,
-    OMX_VIDEO_DolbyVisionProfileDvheSt  = 0x100,
-    OMX_VIDEO_DolbyVisionProfileDvavSe  = 0x200,
-    OMX_VIDEO_DolbyVisionProfileMax     = 0x7FFFFFFF
+    OMX_VIDEO_DolbyVisionProfileDvheSt = 0x100,
+    OMX_VIDEO_DolbyVisionProfileDvavSe = 0x200,
+    OMX_VIDEO_DolbyVisionProfileMax = 0x7FFFFFFF
 } OMX_VIDEO_DOLBYVISIONPROFILETYPE;
 
 /** Dolby Vision Level enum type */
 typedef enum OMX_VIDEO_DOLBYVISIONLEVELTYPE {
     OMX_VIDEO_DolbyVisionLevelUnknown = 0x0,
-    OMX_VIDEO_DolbyVisionLevelHd24    = 0x1,
-    OMX_VIDEO_DolbyVisionLevelHd30    = 0x2,
-    OMX_VIDEO_DolbyVisionLevelFhd24   = 0x4,
-    OMX_VIDEO_DolbyVisionLevelFhd30   = 0x8,
-    OMX_VIDEO_DolbyVisionLevelFhd60   = 0x10,
-    OMX_VIDEO_DolbyVisionLevelUhd24   = 0x20,
-    OMX_VIDEO_DolbyVisionLevelUhd30   = 0x40,
-    OMX_VIDEO_DolbyVisionLevelUhd48   = 0x80,
-    OMX_VIDEO_DolbyVisionLevelUhd60   = 0x100,
-    OMX_VIDEO_DolbyVisionLevelmax     = 0x7FFFFFFF
+    OMX_VIDEO_DolbyVisionLevelHd24 = 0x1,
+    OMX_VIDEO_DolbyVisionLevelHd30 = 0x2,
+    OMX_VIDEO_DolbyVisionLevelFhd24 = 0x4,
+    OMX_VIDEO_DolbyVisionLevelFhd30 = 0x8,
+    OMX_VIDEO_DolbyVisionLevelFhd60 = 0x10,
+    OMX_VIDEO_DolbyVisionLevelUhd24 = 0x20,
+    OMX_VIDEO_DolbyVisionLevelUhd30 = 0x40,
+    OMX_VIDEO_DolbyVisionLevelUhd48 = 0x80,
+    OMX_VIDEO_DolbyVisionLevelUhd60 = 0x100,
+    OMX_VIDEO_DolbyVisionLevelmax = 0x7FFFFFFF
 } OMX_VIDEO_DOLBYVISIONLEVELTYPE;
 
 /**
@@ -420,18 +420,18 @@ typedef struct OMX_VIDEO_CONFIG_ANDROID_TEMPORALLAYERINGTYPE {
 
 /** @ingroup comp */
 typedef struct OMX_PARAM_S64TYPE {
-    OMX_U32 nSize;                    /**< Size of this structure, in Bytes */
-    OMX_VERSIONTYPE nVersion;         /**< OMX specification version information */
-    OMX_U32 nPortIndex;               /**< port that this structure applies to */
-    OMX_S64 nS64;                     /**< S64 value */
+    OMX_U32 nSize;            /**< Size of this structure, in Bytes */
+    OMX_VERSIONTYPE nVersion; /**< OMX specification version information */
+    OMX_U32 nPortIndex;       /**< port that this structure applies to */
+    OMX_S64 nS64;             /**< S64 value */
 } OMX_PARAM_S64TYPE;
 
 /** @ingroup comp */
 typedef struct OMX_PARAM_S32TYPE {
-    OMX_U32 nSize;                    /**< Size of this structure, in Bytes */
-    OMX_VERSIONTYPE nVersion;         /**< OMX specification version information */
-    OMX_U32 nPortIndex;               /**< port that this structure applies to */
-    OMX_S32 nS32;                     /**< S32 value */
+    OMX_U32 nSize;            /**< Size of this structure, in Bytes */
+    OMX_VERSIONTYPE nVersion; /**< OMX specification version information */
+    OMX_U32 nPortIndex;       /**< port that this structure applies to */
+    OMX_S32 nS32;             /**< S32 value */
 } OMX_PARAM_S32TYPE;
 
 /**
@@ -440,14 +440,13 @@ typedef struct OMX_PARAM_S32TYPE {
  *  App ID = 0x01 WeChat
  */
 typedef enum OMX_VIDEO_MTK_SPECIFIC_SCENARIOTYPE {
-    OMX_VIDEO_MTKSpecificScenario_Unknown       = 0x0,
-    OMX_VIDEO_MTKSpecificScenario_LivePhoto     = 0x1,
-    OMX_VIDEO_MTKSpecificScenario_ViLTE         = 0x2,
-    OMX_VIDEO_MTKSpecificScenario_CrossMount    = 0x4,
+    OMX_VIDEO_MTKSpecificScenario_Unknown = 0x0,
+    OMX_VIDEO_MTKSpecificScenario_LivePhoto = 0x1,
+    OMX_VIDEO_MTKSpecificScenario_ViLTE = 0x2,
+    OMX_VIDEO_MTKSpecificScenario_CrossMount = 0x4,
     OMX_VIDEO_MTKSpecificScenario_WeChatCameraRecord = 0x101,
-    OMX_VIDEO_MTKSpecificScenarioMax            = 0x7FFFFFFF
+    OMX_VIDEO_MTKSpecificScenarioMax = 0x7FFFFFFF
 } OMX_VIDEO_MTK_SPECIFIC_SCENARIOTYPE;
-
 
 /**
  * Android specific param for specifying image grid layout information for image encoding

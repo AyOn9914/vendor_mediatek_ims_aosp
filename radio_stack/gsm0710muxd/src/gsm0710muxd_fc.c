@@ -44,44 +44,43 @@
 
 /******************************************************************************/
 
-#define TCOOFF  0
-#define TCOON   1
-#define TCIOFF  2
-#define TCION   3
+#define TCOOFF 0
+#define TCOON 1
+#define TCIOFF 2
+#define TCION 3
 
 /******************************************************************************/
 
-static inline GSM0710_FrameList *_fl_init(GSM0710_FrameList *list);
-static inline void _fl_destroy(GSM0710_FrameList *list);
-static inline void _fl_cleanNodes(GSM0710_FrameList *list);
-static inline int _fl_isEmpty(GSM0710_FrameList *list);
-static inline GSM0710_FrameList *_fl_pushFrame(GSM0710_FrameList *list, GSM0710_Frame *frame);
-static inline GSM0710_Frame *_fl_popFrame(GSM0710_FrameList *list);
+static inline GSM0710_FrameList* _fl_init(GSM0710_FrameList* list);
+static inline void _fl_destroy(GSM0710_FrameList* list);
+static inline void _fl_cleanNodes(GSM0710_FrameList* list);
+static inline int _fl_isEmpty(GSM0710_FrameList* list);
+static inline GSM0710_FrameList* _fl_pushFrame(GSM0710_FrameList* list, GSM0710_Frame* frame);
+static inline GSM0710_Frame* _fl_popFrame(GSM0710_FrameList* list);
 
 /******************************************************************************/
 
-void _fc_chokePty(Channel *channel);
-void _fc_releasePty(Channel *channel);
-void _fc_initContext(Channel *channel);
-void _fc_closeContext(Channel *channel);
-void _fc_cacheRemainingFrameData(Channel *channel, GSM0710_Frame *frame, int written);
-void _fc_cacheFrameData(Channel *channel, GSM0710_Frame *frame);
+void _fc_chokePty(Channel* channel);
+void _fc_releasePty(Channel* channel);
+void _fc_initContext(Channel* channel);
+void _fc_closeContext(Channel* channel);
+void _fc_cacheRemainingFrameData(Channel* channel, GSM0710_Frame* frame, int written);
+void _fc_cacheFrameData(Channel* channel, GSM0710_Frame* frame);
 
 /******************************************************************************/
 
-extern int watchdog(Serial *serial);
+extern int watchdog(Serial* serial);
 extern void set_main_exit_signal(int signal);
-extern int create_thread(pthread_t *thread_id, void *thread_function, void *thread_function_arg);
-extern int write_frame(int channel, const unsigned char *input, int length, unsigned char type);
-extern void destroy_frame(GSM0710_Frame *frame);
+extern int create_thread(pthread_t* thread_id, void* thread_function, void* thread_function_arg);
+extern int write_frame(int channel, const unsigned char* input, int length, unsigned char type);
+extern void destroy_frame(GSM0710_Frame* frame);
 
 /******************************************************************************/
 
-static inline GSM0710_FrameList *_fl_init(GSM0710_FrameList *list)
-{
+static inline GSM0710_FrameList* _fl_init(GSM0710_FrameList* list) {
     if (list == NULL) {
-        GSM0710_FrameList *head = (GSM0710_FrameList *)calloc(1, sizeof(GSM0710_FrameList));
-        if(head != NULL) {
+        GSM0710_FrameList* head = (GSM0710_FrameList*)calloc(1, sizeof(GSM0710_FrameList));
+        if (head != NULL) {
             head->next = head;
         } else {
             LOGMUX(LOG_ERR, "malloc failed");
@@ -93,19 +92,16 @@ static inline GSM0710_FrameList *_fl_init(GSM0710_FrameList *list)
     }
 }
 
-static inline void _fl_destroy(GSM0710_FrameList *list)
-{
+static inline void _fl_destroy(GSM0710_FrameList* list) {
     if (list != NULL) {
         if (!(_fl_isEmpty(list))) _fl_cleanNodes(list);
         free(list);
     }
 }
 
-GSM0710_FrameList *_fl_pushFrame(GSM0710_FrameList *    list,
-                 GSM0710_Frame *    frame)
-{
-    GSM0710_FrameList *head = (GSM0710_FrameList *)calloc(1, sizeof(GSM0710_FrameList));
-    if(head != NULL) {
+GSM0710_FrameList* _fl_pushFrame(GSM0710_FrameList* list, GSM0710_Frame* frame) {
+    GSM0710_FrameList* head = (GSM0710_FrameList*)calloc(1, sizeof(GSM0710_FrameList));
+    if (head != NULL) {
         head->next = list->next;
         head->frame = list->frame;
 
@@ -117,13 +113,12 @@ GSM0710_FrameList *_fl_pushFrame(GSM0710_FrameList *    list,
     return head;
 }
 
-GSM0710_Frame *_fl_popFrame(GSM0710_FrameList *list)
-{
+GSM0710_Frame* _fl_popFrame(GSM0710_FrameList* list) {
     if (_fl_isEmpty(list)) {
         return NULL;
     } else {
-        GSM0710_FrameList *node = list->next;
-        GSM0710_Frame *frame = node->frame;
+        GSM0710_FrameList* node = list->next;
+        GSM0710_Frame* frame = node->frame;
 
         list->next = list->next->next;
         free(node);
@@ -132,9 +127,8 @@ GSM0710_Frame *_fl_popFrame(GSM0710_FrameList *list)
     }
 }
 
-static inline void _fl_cleanNodes(GSM0710_FrameList *list)
-{
-    GSM0710_Frame *frame;
+static inline void _fl_cleanNodes(GSM0710_FrameList* list) {
+    GSM0710_Frame* frame;
 
     while (!_fl_isEmpty(list)) {
         frame = _fl_popFrame(list);
@@ -144,32 +138,28 @@ static inline void _fl_cleanNodes(GSM0710_FrameList *list)
     }
 }
 
-static inline int _fl_isEmpty(GSM0710_FrameList *list)
-{
-    if (list == NULL) return 1;
-    else return list->next == list;
+static inline int _fl_isEmpty(GSM0710_FrameList* list) {
+    if (list == NULL)
+        return 1;
+    else
+        return list->next == list;
 }
 
 /******************************************************************************/
 
-void _fc_chokePty(Channel *channel)
-{
-    if (channel->id != MUXD_VT_CH_NUM)
-        LOGMUX(LOG_NOTICE, "Chock Pty of Channel:%d", channel->id);
+void _fc_chokePty(Channel* channel) {
+    if (channel->id != MUXD_VT_CH_NUM) LOGMUX(LOG_NOTICE, "Chock Pty of Channel:%d", channel->id);
 
     ioctl(channel->fd, TCXONC, TCIOFF);
 }
 
-void _fc_releasePty(Channel *channel)
-{
-    if (channel->id != MUXD_VT_CH_NUM)
-        LOGMUX(LOG_NOTICE, "Release Pty of Channel:%d", channel->id);
+void _fc_releasePty(Channel* channel) {
+    if (channel->id != MUXD_VT_CH_NUM) LOGMUX(LOG_NOTICE, "Release Pty of Channel:%d", channel->id);
 
     ioctl(channel->fd, TCXONC, TCION);
 }
 
-void _fc_initContext(Channel *channel)
-{
+void _fc_initContext(Channel* channel) {
     pthread_mutex_lock(&channel->tx_fc_lock);
     channel->tx_fc_off = 0;
     pthread_mutex_unlock(&channel->tx_fc_lock);
@@ -192,8 +182,7 @@ void _fc_initContext(Channel *channel)
 #endif
 }
 
-void _fc_closeContext(Channel *channel)
-{
+void _fc_closeContext(Channel* channel) {
     pthread_mutex_lock(&channel->tx_fc_lock);
     channel->tx_fc_off = 0;
     pthread_mutex_unlock(&channel->tx_fc_lock);
@@ -208,19 +197,17 @@ void _fc_closeContext(Channel *channel)
     _fl_destroy(channel->rx_fl);
 }
 
-void _fc_cacheFrameData(
-    Channel *    channel,
-    GSM0710_Frame * frame)
-{
+void _fc_cacheFrameData(Channel* channel, GSM0710_Frame* frame) {
     LOGMUX(LOG_DEBUG, "Enter");
 
-    /* All data sent from the modem before receiving the MSC with FC OFF Rsp will be inserted into the link list */
+    /* All data sent from the modem before receiving the MSC with FC OFF Rsp will be inserted into
+     * the link list */
     if ((channel->rx_fl_total + frame->length) > RX_FLOW_CTRL_HIGH_WATERMARK) {
         LOGMUX(LOG_DEBUG, "Accumulated_pending_frame_bytes is larger than mark val=%d, drop it",
                RX_FLOW_CTRL_HIGH_WATERMARK);
         serial.in_buf->dropped_count++;
-        //mtk02863
-        //Gsm0710Muxd_Assert(19);
+        // mtk02863
+        // Gsm0710Muxd_Assert(19);
     } else {
         channel->rx_fl_total += frame->length;
         channel->rx_fl = _fl_pushFrame(channel->rx_fl, frame);
@@ -231,21 +218,16 @@ void _fc_cacheFrameData(
     return;
 }
 
-void _fc_cacheRemainingFrameData(
-    Channel *    channel,
-    GSM0710_Frame * frame,
-    int        written)
-{
+void _fc_cacheRemainingFrameData(Channel* channel, GSM0710_Frame* frame, int written) {
     LOGMUX(LOG_INFO, "Enter");
 
-    if (!_fl_isEmpty(channel->rx_fl))
-        Gsm0710Muxd_Assert(GSM0710MUXD_FRAMELIST_INIT_ERR);
+    if (!_fl_isEmpty(channel->rx_fl)) Gsm0710Muxd_Assert(GSM0710MUXD_FRAMELIST_INIT_ERR);
 
     channel->rx_fl = _fl_init(channel->rx_fl);
 
     channel->rx_fl_total = (frame->length - written);
     channel->rx_fl = _fl_pushFrame(channel->rx_fl, frame);
-    //todo
+    // todo
     channel->rx_fl_written = written;
 
     /* This is 1st node due to pty channel's buffer is full */
@@ -260,11 +242,9 @@ void _fc_cacheRemainingFrameData(
  * Input:
  * Return:
  */
-static void *retry_write_pty_thread(
-    void *arg)
-{
-    Channel *channel = (Channel *)arg;
-    GSM0710_Frame *frame;
+static void* retry_write_pty_thread(void* arg) {
+    Channel* channel = (Channel*)arg;
+    GSM0710_Frame* frame;
     int write_result = 0, written = 0;
     unsigned char msc_cmd[4];
     unsigned int waiting = 0;
@@ -284,17 +264,19 @@ static void *retry_write_pty_thread(
     // First frame doesn't exist, ASSERT
     if (frame == NULL) Gsm0710Muxd_Assert(GSM0710MUXD_RXTHREAD_ERR);
 
-    /* This function is thread execution function: It should runs as a while loop until some error happens!*/
+    /* This function is thread execution function: It should runs as a while loop until some error
+     * happens!*/
     do {
         while (1) {
             LOGMUX(LOG_DEBUG, "written=%d, frame_ptr=0x%08X, frame_len=%d", written,
                    (unsigned int)frame, frame->length);
 
-            if ((write_result = write(channel->fd, frame->data + written,
-                          frame->length - written)) >= 0) {
+            if ((write_result =
+                         write(channel->fd, frame->data + written, frame->length - written)) >= 0) {
                 LOGMUX(LOG_INFO, "Write %dBytes to PTY Channel:%d", write_result, channel->id);
-                //LOGMUX(LOG_DEBUG,"Write PTY data val=0x%02X", *(node->frame_data + already_written_len));
-                //syslogdump("<P ", node->frame_data + already_written_len, written_len);
+                // LOGMUX(LOG_DEBUG,"Write PTY data val=0x%02X", *(node->frame_data +
+                // already_written_len)); syslogdump("<P ", node->frame_data + already_written_len,
+                // written_len);
                 written += write_result;
                 waiting = 0;
 
@@ -302,29 +284,30 @@ static void *retry_write_pty_thread(
                     usleep(msec * (++waiting));
                 } else {
                     written = 0;
-                    //This frame is sent to pty, free it here.
+                    // This frame is sent to pty, free it here.
                     destroy_frame(frame);
                     break;
                 }
             } else {
                 switch (errno) {
-                case EINTR:
-                    LOGMUX(LOG_NOTICE, "Interrupt signal EINTR caught");
-                    break;
-                case EAGAIN:
-                    LOGMUX(LOG_NOTICE, "Interrupt signal EAGAIN caught");
-                    usleep(msec * ((waiting >= 10) ? waiting : waiting++));
-                    break;
-                default:
-                    if (channel->reopen) {
-                        LOGMUX(LOG_ERR, "channel%d needs to be reopened\n", channel->id);
-                        watchdog(&serial);
-                    } else {
-                        LOGMUX(LOG_ERR, "Unknown interrupt signal errno=%d caught from write()\n"
-                               , errno);
-                        Gsm0710Muxd_Assert(GSM0710MUXD_PTY_WRITE_ERR);
-                    }
-                    break;
+                    case EINTR:
+                        LOGMUX(LOG_NOTICE, "Interrupt signal EINTR caught");
+                        break;
+                    case EAGAIN:
+                        LOGMUX(LOG_NOTICE, "Interrupt signal EAGAIN caught");
+                        usleep(msec * ((waiting >= 10) ? waiting : waiting++));
+                        break;
+                    default:
+                        if (channel->reopen) {
+                            LOGMUX(LOG_ERR, "channel%d needs to be reopened\n", channel->id);
+                            watchdog(&serial);
+                        } else {
+                            LOGMUX(LOG_ERR,
+                                   "Unknown interrupt signal errno=%d caught from write()\n",
+                                   errno);
+                            Gsm0710Muxd_Assert(GSM0710MUXD_PTY_WRITE_ERR);
+                        }
+                        break;
                 }
             }
         }
@@ -346,7 +329,8 @@ static void *retry_write_pty_thread(
     if (channel->id < (MAX_NON_GEMINI_NON_DATA_CHNL_NUM + 1)) {
         write_frame(0, msc_cmd, 4, GSM0710_TYPE_UIH | GSM0710_PF);
     } else {
-        /* Channel_Num >= (MAX_NON_GEMINI_NON_DATA_CHNL_NUM+1) are used to UT Test: Its peer is a virtual serail device which will not parse the recv data from AP side */
+        /* Channel_Num >= (MAX_NON_GEMINI_NON_DATA_CHNL_NUM+1) are used to UT Test: Its peer is a
+         * virtual serail device which will not parse the recv data from AP side */
         /* For UT Chnl: signal the rx_fc_on_req to ut_thread_serial */
 #if 0
         pthread_cond_signal(&channel->rx_fc_on_req_signal);
@@ -369,10 +353,7 @@ static void *retry_write_pty_thread(
  * Input:
  * Return:
  */
-void start_retry_write_thread(
-    Channel *channel
-    )
-{
+void start_retry_write_thread(Channel* channel) {
     unsigned char msc_cmd[4];
 
     LOGMUX(LOG_DEBUG, "Enter");
@@ -394,17 +375,16 @@ void start_retry_write_thread(
 
 #endif
 
-    /* After receving the MSC FC OFF Rsp from the modem, AP side should keep to store the data already sent into CCCI Driver */
+    /* After receving the MSC FC OFF Rsp from the modem, AP side should keep to store the data
+     * already sent into CCCI Driver */
     LOGMUX(LOG_INFO, "Set FC_OFF_SENDING and rx_fc_off as 1");
     pthread_mutex_lock(&channel->rx_fc_lock);
-    if (channel->rx_thread)
-        pthread_cond_wait(&channel->rx_fc_on_signal, &channel->rx_fc_lock);
+    if (channel->rx_thread) pthread_cond_wait(&channel->rx_fc_on_signal, &channel->rx_fc_lock);
     channel->rx_fc_off = 1;
     pthread_mutex_unlock(&channel->rx_fc_lock);
 
     // Start retry thread
-    if (create_thread(&channel->push_thread_id, retry_write_pty_thread,
-              (void *)channel) != 0) {
+    if (create_thread(&channel->push_thread_id, retry_write_pty_thread, (void*)channel) != 0) {
         LOGMUX(LOG_ERR, "Could not create thread retry pty write thread for channel=%d",
                channel->id);
         return;

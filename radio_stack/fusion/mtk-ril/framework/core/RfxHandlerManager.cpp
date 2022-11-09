@@ -36,8 +36,7 @@ RfxHandlerManager* RfxHandlerManager::init() {
 }
 
 void RfxHandlerManager::registerHandler(RfxCreateHandlerFuncptr func_ptr, int c_id,
-        int slot_category, bool isOpReplaced, bool isOpHandler) {
-
+                                        int slot_category, bool isOpReplaced, bool isOpHandler) {
     if (isOpReplaced && RfxOpUtils::getOpHandler() != NULL) {
         RFX_LOG_I(RFX_LOG_TAG, "skip creating om handler, it will be repaced by op handler");
         return;
@@ -46,141 +45,148 @@ void RfxHandlerManager::registerHandler(RfxCreateHandlerFuncptr func_ptr, int c_
         return;
     }
 
-    // Because using dynamic  initialization to register request/urc/event, we need to ensure that RfxHandlerManager
-    // has created first
+    // Because using dynamic  initialization to register request/urc/event, we need to ensure that
+    // RfxHandlerManager has created first
     init();
     RFX_LOG_D(RFX_LOG_TAG, "registerHandler slot_category = %d, c_id = %d, func_ptr = %p",
-            slot_category, c_id, func_ptr);
+              slot_category, c_id, func_ptr);
     if (SLOT == slot_category) {
         s_self->registerInternal(s_self->m_slot_handler_list[c_id], func_ptr, c_id);
     } else {
         s_self->registerInternal(s_self->m_non_slot_handler_list[c_id], func_ptr, c_id);
     }
- }
+}
 
-void RfxHandlerManager::registerInternal(Vector<RfxCreateHandlerFuncptr> &list,
-        RfxCreateHandlerFuncptr func_ptr, int c_id) {
+void RfxHandlerManager::registerInternal(Vector<RfxCreateHandlerFuncptr>& list,
+                                         RfxCreateHandlerFuncptr func_ptr, int c_id) {
     RFX_UNUSED(c_id);
     list.add(func_ptr);
 }
 
-void RfxHandlerManager::registerToHandleRequest(RfxBaseHandler *handler, int channel_id,
-        int slot_id, const int *request_id_list, int length) {
+void RfxHandlerManager::registerToHandleRequest(RfxBaseHandler* handler, int channel_id,
+                                                int slot_id, const int* request_id_list,
+                                                int length) {
     init();
     s_self->registerInternal(s_self->m_request_list[channel_id], handler, channel_id, slot_id,
-            request_id_list, length);
+                             request_id_list, length);
 }
 
-void RfxHandlerManager::registerToHandleUrc(RfxBaseHandler *handler, int channel_id, int slot_id,
-        const char **urc_prefix_list, int length, bool needAllMatch) {
+void RfxHandlerManager::registerToHandleUrc(RfxBaseHandler* handler, int channel_id, int slot_id,
+                                            const char** urc_prefix_list, int length,
+                                            bool needAllMatch) {
     init();
     s_self->registerInternal(s_self->m_urc_list[channel_id], handler, channel_id, slot_id,
-            urc_prefix_list, length, needAllMatch);
+                             urc_prefix_list, length, needAllMatch);
 }
 
-void RfxHandlerManager::registerToHandleEvent(RfxBaseHandler *handler, int channel_id, int slot_id,
-        const int *event_id_list, int length) {
+void RfxHandlerManager::registerToHandleEvent(RfxBaseHandler* handler, int channel_id, int slot_id,
+                                              const int* event_id_list, int length) {
     init();
     s_self->registerInternal(s_self->m_event_list[channel_id], handler, channel_id, slot_id,
-            event_id_list, length);
+                             event_id_list, length);
 }
 
-void RfxHandlerManager::registerToHandleEvent(RfxBaseHandler *handler, int channel_id, int slot_id,
-        int client_id, const int *event_id_list, int length) {
+void RfxHandlerManager::registerToHandleEvent(RfxBaseHandler* handler, int channel_id, int slot_id,
+                                              int client_id, const int* event_id_list, int length) {
     init();
     s_self->registerInternal(s_self->m_event_list[channel_id], handler, channel_id, slot_id,
-            client_id, event_id_list, length);
+                             client_id, event_id_list, length);
 }
 
-
-void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry> &list,
-        RfxBaseHandler *handler, int channel_id, int slot_id, const int *id_list, int length) {
+void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry>& list,
+                                         RfxBaseHandler* handler, int channel_id, int slot_id,
+                                         const int* id_list, int length) {
     s_self->m_mutex[channel_id].lock();
     // wp<RfxBaseHandler> ptr;
 
     for (int i = 0; i < length; i++) {
         RFX_LOG_D(RFX_LOG_TAG, "registerInternal, register handler = %p, channel = %s, id = %d",
-                handler, RfxChannelManager::proxyIdToString(channel_id), id_list[i]);
+                  handler, RfxChannelManager::proxyIdToString(channel_id), id_list[i]);
         // ptr = handler;
         RfxHandlerRegisterEntry entry(handler, channel_id, slot_id, id_list[i], String8(), false);
         size_t old_size = list.size();
         list.add(entry);
         if (list.size() == old_size) {
-            RfxBaseHandler *dup_handler = findMsgHandlerInternal(list, channel_id, slot_id,
-                    id_list[i], -1, NULL, false);
+            RfxBaseHandler* dup_handler =
+                    findMsgHandlerInternal(list, channel_id, slot_id, id_list[i], -1, NULL, false);
             if (handler == dup_handler) {
-                continue; // same registry, framework allows
+                continue;  // same registry, framework allows
             }
-            RFX_LOG_E(RFX_LOG_TAG, "duplicate register handler = %p, dup_handler = %p, id = %d,\
-channel_id = %d, slot_id = %d", handler, dup_handler, id_list[i], channel_id,
-                    slot_id);
+            RFX_LOG_E(RFX_LOG_TAG,
+                      "duplicate register handler = %p, dup_handler = %p, id = %d,\
+channel_id = %d, slot_id = %d",
+                      handler, dup_handler, id_list[i], channel_id, slot_id);
             RFX_ASSERT(0);
         }
     }
     s_self->m_mutex[channel_id].unlock();
 }
 
-
-void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry> &list,
-        RfxBaseHandler *handler, int channel_id, int slot_id, int client_id,
-        const int *id_list, int length) {
+void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry>& list,
+                                         RfxBaseHandler* handler, int channel_id, int slot_id,
+                                         int client_id, const int* id_list, int length) {
     s_self->m_mutex[channel_id].lock();
     // wp<RfxBaseHandler> ptr;
 
     for (int i = 0; i < length; i++) {
-        RFX_LOG_D(RFX_LOG_TAG, "registerInternal, register handler = %p, channel = %s, id = %d, \
-client_id = %d", handler, RfxChannelManager::proxyIdToString(channel_id), id_list[i], client_id);
+        RFX_LOG_D(RFX_LOG_TAG,
+                  "registerInternal, register handler = %p, channel = %s, id = %d, \
+client_id = %d",
+                  handler, RfxChannelManager::proxyIdToString(channel_id), id_list[i], client_id);
         // ptr = handler;
         RfxHandlerRegisterEntry entry(handler, channel_id, slot_id, id_list[i], client_id,
-                String8(), false);
+                                      String8(), false);
         size_t old_size = list.size();
         list.add(entry);
 
         if (list.size() == old_size) {
-            RfxBaseHandler *dup_handler = findMsgHandlerInternal(list, channel_id, slot_id,
-                    client_id, id_list[i], NULL, false);
+            RfxBaseHandler* dup_handler = findMsgHandlerInternal(
+                    list, channel_id, slot_id, client_id, id_list[i], NULL, false);
             if (handler == dup_handler) {
-                continue; // same registry, framework allows
+                continue;  // same registry, framework allows
             }
-            RFX_LOG_E(RFX_LOG_TAG, "duplicate register handler = %p, dup_handler = %p, id = %d,\
-                    channel_id = %d, slot_id = %d, client_id = %d", handler, dup_handler,
-                    id_list[i], channel_id, slot_id, client_id);
+            RFX_LOG_E(RFX_LOG_TAG,
+                      "duplicate register handler = %p, dup_handler = %p, id = %d,\
+                    channel_id = %d, slot_id = %d, client_id = %d",
+                      handler, dup_handler, id_list[i], channel_id, slot_id, client_id);
             RFX_ASSERT(0);
         }
     }
     s_self->m_mutex[channel_id].unlock();
 }
 
-void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry> &list,
-        RfxBaseHandler *handler, int channel_id, int slot_id, const char **urc_list, int length,
-        bool needAllMatch) {
+void RfxHandlerManager::registerInternal(SortedVector<RfxHandlerRegisterEntry>& list,
+                                         RfxBaseHandler* handler, int channel_id, int slot_id,
+                                         const char** urc_list, int length, bool needAllMatch) {
     s_self->m_mutex[channel_id].lock();
-    //wp<RfxBaseHandler> ptr;
+    // wp<RfxBaseHandler> ptr;
 
     for (int i = 0; i < length; i++) {
         RFX_LOG_D(RFX_LOG_TAG, "registerInternal, register handler = %p, channel = %s, urc = %s",
-                handler, RfxChannelManager::proxyIdToString(channel_id), urc_list[i]);
+                  handler, RfxChannelManager::proxyIdToString(channel_id), urc_list[i]);
         // ptr = handler;
         RfxHandlerRegisterEntry entry(handler, channel_id, slot_id, -1, urc_list[i], needAllMatch);
         size_t old_size = list.size();
         list.add(entry);
         if (list.size() == old_size) {
-            RfxBaseHandler *dup_handler = findMsgHandlerInternal(list, channel_id, slot_id, -1,
-                    -1, urc_list[i], needAllMatch);
+            RfxBaseHandler* dup_handler = findMsgHandlerInternal(list, channel_id, slot_id, -1, -1,
+                                                                 urc_list[i], needAllMatch);
             if (handler == dup_handler) {
-                continue; // same registry, framework allows
+                continue;  // same registry, framework allows
             }
-            RFX_LOG_E(RFX_LOG_TAG, "duplicate register handler = %p, dup_handler = %p, raw_urc =\
-%s, channel_id = %d, slot_id = %d", handler, dup_handler, urc_list[i], channel_id,
-                    slot_id);
+            RFX_LOG_E(RFX_LOG_TAG,
+                      "duplicate register handler = %p, dup_handler = %p, raw_urc =\
+%s, channel_id = %d, slot_id = %d",
+                      handler, dup_handler, urc_list[i], channel_id, slot_id);
             RFX_ASSERT(0);
         }
     }
     s_self->m_mutex[channel_id].unlock();
 }
 
-RfxBaseHandler* RfxHandlerManager::findMsgHandler(SortedVector<RfxHandlerRegisterEntry> &list,
-        int channelId, int slotId, int id, int clientId, const char* urc) {
+RfxBaseHandler* RfxHandlerManager::findMsgHandler(SortedVector<RfxHandlerRegisterEntry>& list,
+                                                  int channelId, int slotId, int id, int clientId,
+                                                  const char* urc) {
     RfxBaseHandler* handler = NULL;
     m_mutex[channelId].lock();
     handler = findMsgHandlerInternal(list, channelId, slotId, id, clientId, urc, false);
@@ -189,35 +195,41 @@ RfxBaseHandler* RfxHandlerManager::findMsgHandler(SortedVector<RfxHandlerRegiste
 }
 
 RfxBaseHandler* RfxHandlerManager::findMsgHandlerInternal(
-        SortedVector<RfxHandlerRegisterEntry> &list, int channelId, int slotId, int id,
-                int clientId, const char* urc, bool needAllMatch) {
+        SortedVector<RfxHandlerRegisterEntry>& list, int channelId, int slotId, int id,
+        int clientId, const char* urc, bool needAllMatch) {
     if (NULL == urc) {
-        RfxHandlerRegisterEntry query_entry(NULL, channelId, slotId, id, clientId,
-                String8(), needAllMatch);
+        RfxHandlerRegisterEntry query_entry(NULL, channelId, slotId, id, clientId, String8(),
+                                            needAllMatch);
         ssize_t index = list.indexOf(query_entry);
         if (index >= 0) {
-            const RfxHandlerRegisterEntry &item = list.itemAt(index);
-            //return item.m_handler.promote().get();
-            RFX_LOG_D(RFX_LOG_TAG, "findMsgHandlerInternal, (request) channel id = %d, slot id =\
-%d, request = %d, client = %d, raw_urc = %s, index = %zd", item.m_channel_id, item.m_slot_id,
-                    item.m_id, item.m_client_id, item.m_raw_urc.string(), index);
+            const RfxHandlerRegisterEntry& item = list.itemAt(index);
+            // return item.m_handler.promote().get();
+            RFX_LOG_D(RFX_LOG_TAG,
+                      "findMsgHandlerInternal, (request) channel id = %d, slot id =\
+%d, request = %d, client = %d, raw_urc = %s, index = %zd",
+                      item.m_channel_id, item.m_slot_id, item.m_id, item.m_client_id,
+                      item.m_raw_urc.string(), index);
             return item.m_handler;
         }
     } else {
         for (size_t i = 0; i < list.size(); i++) {
-            const RfxHandlerRegisterEntry &item = list.itemAt(i);
+            const RfxHandlerRegisterEntry& item = list.itemAt(i);
             if (needAllMatch) {
                 if (String8(urc) == item.m_raw_urc) {
-                    RFX_LOG_D(RFX_LOG_TAG, "findMsgHandlerInternal, (specific urc) channel id = %d,\
-slot id = %d, request = %d, raw_urc = %s", item.m_channel_id, item.m_slot_id, item.m_id,
-                            item.m_raw_urc.string());
+                    RFX_LOG_D(RFX_LOG_TAG,
+                              "findMsgHandlerInternal, (specific urc) channel id = %d,\
+slot id = %d, request = %d, raw_urc = %s",
+                              item.m_channel_id, item.m_slot_id, item.m_id,
+                              item.m_raw_urc.string());
                     return item.m_handler;
                 }
             } else {
                 if (RfxMisc::strStartsWith(urc, item.m_raw_urc.string())) {
-                    RFX_LOG_D(RFX_LOG_TAG, "findMsgHandlerInternal, (urc) channel id = %d, \
-slot id = %d, request = %d, raw_urc = %s", item.m_channel_id, item.m_slot_id, item.m_id,
-                            item.m_raw_urc.string());
+                    RFX_LOG_D(RFX_LOG_TAG,
+                              "findMsgHandlerInternal, (urc) channel id = %d, \
+slot id = %d, request = %d, raw_urc = %s",
+                              item.m_channel_id, item.m_slot_id, item.m_id,
+                              item.m_raw_urc.string());
                     return item.m_handler;
                 }
             }
@@ -227,7 +239,7 @@ slot id = %d, request = %d, raw_urc = %s", item.m_channel_id, item.m_slot_id, it
 }
 
 int RfxHandlerManager::findMsgChannel(int type, int slot_id, int id, int client_id,
-        const char *urc) {
+                                      const char* urc) {
     SortedVector<RfxHandlerRegisterEntry>* list = s_self->findListByType(type);
     int index = 0;
     char urc_temp[MAX_HIDEN_LOG_LEN] = {0};
@@ -235,11 +247,12 @@ int RfxHandlerManager::findMsgChannel(int type, int slot_id, int id, int client_
         strncpy(urc_temp, (String8::format("%s:***", getHidenLogPreFix(index))).string(),
                 (MAX_HIDEN_LOG_LEN - 1));
     }
-    RFX_LOG_D(RFX_LOG_TAG, "findMsgChannel, type = %d, slot_id = %d, id = %d, client_id = %d, \
-            urc = %s", type, slot_id, id, client_id, (strlen(urc_temp) == 0 ? urc : urc_temp));
+    RFX_LOG_D(RFX_LOG_TAG,
+              "findMsgChannel, type = %d, slot_id = %d, id = %d, client_id = %d, \
+            urc = %s",
+              type, slot_id, id, client_id, (strlen(urc_temp) == 0 ? urc : urc_temp));
     if (NULL == urc) {
-        RfxHandlerRegisterEntry query_entry(NULL, -1, slot_id, id, client_id,
-                String8(), false);
+        RfxHandlerRegisterEntry query_entry(NULL, -1, slot_id, id, client_id, String8(), false);
         int offset = slot_id * RIL_CHANNEL_OFFSET;
         for (int i = 0; i < RIL_CHANNEL_OFFSET; i++) {
             int targetChannel = i + offset;
@@ -248,35 +261,40 @@ int RfxHandlerManager::findMsgChannel(int type, int slot_id, int id, int client_
             // RFX_LOG_D(RFX_LOG_TAG, "findMsgChannel, query_entry, slot id = %d, request = %d",
             //         query_entry.m_slot_id, query_entry.m_id);
             if (index >= 0) {
-                const RfxHandlerRegisterEntry &item = list[targetChannel].itemAt(index);
-                RFX_LOG_D(RFX_LOG_TAG, "findMsgChannel, (request) channel id = %d, slot id = %d, \
-request = %d, client_id = %d, raw_urc = %s, index = %zd", item.m_channel_id, item.m_slot_id,
-                        item.m_id, item.m_client_id, item.m_raw_urc.string(), index);
+                const RfxHandlerRegisterEntry& item = list[targetChannel].itemAt(index);
+                RFX_LOG_D(RFX_LOG_TAG,
+                          "findMsgChannel, (request) channel id = %d, slot id = %d, \
+request = %d, client_id = %d, raw_urc = %s, index = %zd",
+                          item.m_channel_id, item.m_slot_id, item.m_id, item.m_client_id,
+                          item.m_raw_urc.string(), index);
                 return item.m_channel_id;
             }
         }
     } else {
         int offset = slot_id * RIL_CHANNEL_OFFSET;
-        for(int i = 0; i < RIL_CHANNEL_OFFSET; i++) {
+        for (int i = 0; i < RIL_CHANNEL_OFFSET; i++) {
             int targetChannel = i + offset;
             Mutex::Autolock autoLock(s_self->m_mutex[targetChannel]);
             SortedVector<RfxHandlerRegisterEntry> targetList = list[targetChannel];
             int size = targetList.size();
             for (int j = 0; j < size; j++) {
-                const RfxHandlerRegisterEntry &item = targetList.itemAt(j);
+                const RfxHandlerRegisterEntry& item = targetList.itemAt(j);
                 if (item.mNeedAllMatch) {
                     if (String8(urc) == item.m_raw_urc) {
-                        RFX_LOG_D(RFX_LOG_TAG, "findMsgChannel, (specific urc) channel id = %d,\
-slot id = %d, request = %d, client_id = %d, raw_urc = %s", item.m_channel_id, item.m_slot_id, item.m_id,
-                                item.m_client_id, item.m_raw_urc.string());
+                        RFX_LOG_D(RFX_LOG_TAG,
+                                  "findMsgChannel, (specific urc) channel id = %d,\
+slot id = %d, request = %d, client_id = %d, raw_urc = %s",
+                                  item.m_channel_id, item.m_slot_id, item.m_id, item.m_client_id,
+                                  item.m_raw_urc.string());
                         return item.m_channel_id;
                     }
                 } else {
                     if (RfxMisc::strStartsWith(urc, item.m_raw_urc.string())) {
-                        RFX_LOG_D(RFX_LOG_TAG, "findMsgChannel, (urc) channel id = %d,\
+                        RFX_LOG_D(RFX_LOG_TAG,
+                                  "findMsgChannel, (urc) channel id = %d,\
 slot id = %d, request = %d, client_id = %d, raw_urc = %s",
-                                item.m_channel_id, item.m_slot_id, item.m_id,
-                                item.m_client_id, item.m_raw_urc.string());
+                                  item.m_channel_id, item.m_slot_id, item.m_id, item.m_client_id,
+                                  item.m_raw_urc.string());
                         return item.m_channel_id;
                     }
                 }
@@ -288,29 +306,29 @@ slot id = %d, request = %d, client_id = %d, raw_urc = %s",
 
 void RfxHandlerManager::processMessage(const sp<RfxMclMessage>& msg) {
     // dispatch to correspend handler
-    SortedVector <RfxHandlerRegisterEntry> list = s_self->findListByChannel(msg->getType(),
-            msg->getChannelId());
+    SortedVector<RfxHandlerRegisterEntry> list =
+            s_self->findListByChannel(msg->getType(), msg->getChannelId());
     int slotId;
     if (msg->getSendToMainProtocol()) {
-        slotId = RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN)->getIntValue(
-                RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+        slotId = RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN)
+                         ->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
     } else {
         slotId = msg->getSlotId();
     }
 
-    RfxBaseHandler* handler = s_self->findMsgHandler(list, msg->getChannelId(),
-            slotId, msg->getId(), msg->getClientId(),
+    RfxBaseHandler* handler = s_self->findMsgHandler(
+            list, msg->getChannelId(), slotId, msg->getId(), msg->getClientId(),
             (msg->getRawUrc() == NULL ? NULL : msg->getRawUrc()->getLine()));
     if (handler != NULL) {
-        RFX_LOG_D(RFX_LOG_TAG, "processMessage, handler: %p, message = %s. execute on %s",
-                handler, msg->toString().string(),
-                RfxChannelManager::proxyIdToString(msg->getChannelId()));
+        RFX_LOG_D(RFX_LOG_TAG, "processMessage, handler: %p, message = %s. execute on %s", handler,
+                  msg->toString().string(),
+                  RfxChannelManager::proxyIdToString(msg->getChannelId()));
         handler->processMessage(msg);
     } else {
         RFX_LOG_E(RFX_LOG_TAG, "processMessage, no one register id: %d", msg->getId());
         // send response with error code: not support
-        sp<RfxMclMessage> resMsg = RfxMclMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED,
-                RfxVoidData(), msg);
+        sp<RfxMclMessage> resMsg =
+                RfxMclMessage::obtainResponse(RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg);
         RfxDispatchThread::enqueueResponseMessage(resMsg);
     }
 }
@@ -319,16 +337,16 @@ void RfxHandlerManager::initHandler(int channel_id) {
     multimap<int, RfxCreateHandlerFuncptr>::iterator iter, beg, end;
     int count = 0;
     // for slot
-    int slot = channel_id/RIL_PROXY_OFFSET;
-    int target_channel = channel_id%RIL_PROXY_OFFSET;
+    int slot = channel_id / RIL_PROXY_OFFSET;
+    int target_channel = channel_id % RIL_PROXY_OFFSET;
     count = s_self->m_slot_handler_list[target_channel].size();
     RFX_LOG_D(RFX_LOG_TAG, "initHandler slot handler count = %d, channel = %s", count,
-            RfxChannelManager::proxyIdToString(channel_id));
+              RfxChannelManager::proxyIdToString(channel_id));
     for (int i = 0; i < count; i++) {
         RFX_LOG_D(RFX_LOG_TAG, "initHandler counter = %d", i);
         RfxCreateHandlerFuncptr ptr =
-                (RfxCreateHandlerFuncptr) s_self->m_slot_handler_list[target_channel].itemAt(i);
-        ptr(slot, target_channel/*Hanlder will not get real channel*/);
+                (RfxCreateHandlerFuncptr)s_self->m_slot_handler_list[target_channel].itemAt(i);
+        ptr(slot, target_channel /*Hanlder will not get real channel*/);
     }
 
     // for non-slot
@@ -343,7 +361,7 @@ void RfxHandlerManager::initHandler(int channel_id) {
 }
 
 SortedVector<RfxHandlerRegisterEntry>* RfxHandlerManager::findListByType(int type) {
-    switch(type) {
+    switch (type) {
         case REQUEST:
         case SAP_REQUEST:
             return m_request_list;
@@ -358,9 +376,9 @@ SortedVector<RfxHandlerRegisterEntry>* RfxHandlerManager::findListByType(int typ
 }
 
 SortedVector<RfxHandlerRegisterEntry> RfxHandlerManager::findListByChannel(int type,
-        int channel_id) {
+                                                                           int channel_id) {
     RFX_ASSERT(0 <= channel_id && channel_id < RfxChannelManager::getSupportChannels());
-    switch(type) {
+    switch (type) {
         case REQUEST:
         case SAP_REQUEST:
             return m_request_list[channel_id];

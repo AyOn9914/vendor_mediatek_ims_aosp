@@ -29,9 +29,9 @@
 /*****************************************************************************
  * Import
  *****************************************************************************/
-using std::string;
-using std::shared_ptr;
 using std::make_shared;
+using std::shared_ptr;
+using std::string;
 
 /*****************************************************************************
  * Class RtcImsConfigController
@@ -39,29 +39,28 @@ using std::make_shared;
 class RtcImsConfigController : public RfxController {
     RFX_DECLARE_CLASS(RtcImsConfigController);  // Required: declare this class
 
-
-public:
+  public:
     RtcImsConfigController(){};
     virtual ~RtcImsConfigController(){};
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-private:
+  private:
     void initProvisionValue();
     void setFeatureValue(const sp<RfxMessage>& message);
     void handleSetFeatureValue(bool success, const sp<RfxMessage>& message);
     void getFeatureValue(const sp<RfxMessage>& message);
     void handleGetFeatureValue(bool success, int value, const sp<RfxMessage>& message);
     void setProvisionValue(const sp<RfxMessage>& messag);
-    bool handleImsConfigExt(const sp<RfxMessage> &message);
+    bool handleImsConfigExt(const sp<RfxMessage>& message);
     void handleSetProvisionValue(bool success, const sp<RfxMessage>& message);
     void handleSetProvisionResponse(const sp<RfxMessage>& message);
     void getProvisionValue(const sp<RfxMessage>& message);
@@ -92,17 +91,17 @@ private:
 
     bool isLogEnable();
 
-private:
+  private:
     std::map<int, bool> mFeatureSendCmd;
-    std::map<int, int> mFeatureResource;            // <Resource Id, Resource Value>
-    std::map<int, int> mVoLteFeatureValue;          // <Network Id, Feature Value>
-    std::map<int, int> mViLteFeatureValue;          // <Network Id, Feature Value>
-    std::map<int, int> mVoWifiFeatureValue;         // <Network Id, Feature Value>
-    std::map<int, int> mViWifiFeatureValue;         // <Network Id, Feature Value>
+    std::map<int, int> mFeatureResource;           // <Resource Id, Resource Value>
+    std::map<int, int> mVoLteFeatureValue;         // <Network Id, Feature Value>
+    std::map<int, int> mViLteFeatureValue;         // <Network Id, Feature Value>
+    std::map<int, int> mVoWifiFeatureValue;        // <Network Id, Feature Value>
+    std::map<int, int> mViWifiFeatureValue;        // <Network Id, Feature Value>
     std::map<int, int> mVoNrFeatureValue;          // <Network Id, Feature Value>
     std::map<int, int> mViNrFeatureValue;          // <Network Id, Feature Value>
-    std::map<int, std::string> mProvisionValue;     // <Provision Id, Provision Value>
-    std::map<int, std::string> mProvisionedValue;   // <Provisioned Id, Provisioned Value>
+    std::map<int, std::string> mProvisionValue;    // <Provision Id, Provision Value>
+    std::map<int, std::string> mProvisionedValue;  // <Provisioned Id, Provisioned Value>
     std::map<int, int> mFeatureSendValue;
 
     bool mECCAllowSendCmd = false;
@@ -110,19 +109,15 @@ private:
     bool mInitDone = false;
     int mMccmnc = -1;
     sp<RfxMessage> mSetProvisionMessage;
-    int mGetProvisionId = 0;;
+    int mGetProvisionId = 0;
+    ;
     sp<RfxMessage> mGetProvisionMessage;
-    int mSendCfgMccmnc = -1;    // Use to check if call triggerImsCfgCommand() directly.
-    String8 mSendCfgIccid;      // Use to check if call triggerImsCfgCommand() directly.
+    int mSendCfgMccmnc = -1;  // Use to check if call triggerImsCfgCommand() directly.
+    String8 mSendCfgIccid;    // Use to check if call triggerImsCfgCommand() directly.
 
     bool DEBUG = false;
 
-    typedef enum {
-        ISLAST_NULL = -1,
-        ISLAST_FALSE = 0,
-        ISLAST_TRUE = 1
-    } ENUM_ISLAST;
-
+    typedef enum { ISLAST_NULL = -1, ISLAST_FALSE = 0, ISLAST_TRUE = 1 } ENUM_ISLAST;
 };
 
 #endif /* __RFX_IMS_CONFIGSTORAGE_H__ */

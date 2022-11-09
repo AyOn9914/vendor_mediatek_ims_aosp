@@ -34,13 +34,13 @@
  *****************************************************************************/
 
 class RfxGwsdUtils {
-public:
+  public:
     static void initHandler();
     static RfxGwsdSettingBaseHandler* getSettingHandler();
     static RfxGwsdCallControlBaseHandler* getCallControlHandler();
     static void deInitHandler();
 
-private:
+  private:
     static RfxGwsdSettingBaseHandler* m_settingHandler;
     static RfxGwsdCallControlBaseHandler* m_callcontrolHandler;
     static void* m_dlHandler;

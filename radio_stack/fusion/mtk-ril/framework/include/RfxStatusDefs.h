@@ -23,37 +23,36 @@
 
 enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_START,
-    /*Please add your keys below this line*/
+/*Please add your keys below this line*/
 
-    #define RFX_WAIT_FOR_ECPIN 1
-    #define RFX_ECPIN_DONE 0
+#define RFX_WAIT_FOR_ECPIN 1
+#define RFX_ECPIN_DONE 0
 
+#define RFX_UICC_APPLIST_UNKNOWN -1
+#define RFX_UICC_APPLIST_NONE 0x00
+#define RFX_UICC_APPLIST_USIM 0x02
+#define RFX_UICC_APPLIST_CSIM 0x04
 
-    #define RFX_UICC_APPLIST_UNKNOWN  -1
-    #define RFX_UICC_APPLIST_NONE     0x00
-    #define RFX_UICC_APPLIST_USIM     0x02
-    #define RFX_UICC_APPLIST_CSIM     0x04
+/* CDMA card type */
+#define UIM_CARD 1
+#define SIM_CARD 2
+#define UIM_SIM_CARD 3
+#define UNKOWN_CARD 4
+#define CT_3G_UIM_CARD 5
+#define CT_UIM_SIM_CARD 6
+#define NEED_TO_INPUT_PIN 7
+#define CT_4G_UICC_CARD 8
+#define NOT_CT_UICC_CARD 9
+#define CT_EXCEL_GG_CARD 10
+#define LOCKED_CARD 18
+#define IVSR_LOST 19
+#define CARD_NOT_INSERTED 255
 
-    /* CDMA card type */
-    #define UIM_CARD  1
-    #define SIM_CARD  2
-    #define UIM_SIM_CARD  3
-    #define UNKOWN_CARD  4
-    #define CT_3G_UIM_CARD  5
-    #define CT_UIM_SIM_CARD  6
-    #define NEED_TO_INPUT_PIN  7
-    #define CT_4G_UICC_CARD  8
-    #define NOT_CT_UICC_CARD  9
-    #define CT_EXCEL_GG_CARD  10
-    #define LOCKED_CARD  18
-    #define IVSR_LOST  19
-    #define CARD_NOT_INSERTED  255
-
-    #define RFX_CDMA_CARD_READY_DEFAULT  0x00
-    #define RFX_CDMA_CARD_EUSIM_READY    0x01
-    #define RFX_CDMA_CARD_ECT3G_READY    0x02
-    #define RFX_CDMA_CARD_MCCMNC_READY   0x04
-    #define RFX_CDMA_CARD_LOCKCARD_READY 0x08
+#define RFX_CDMA_CARD_READY_DEFAULT 0x00
+#define RFX_CDMA_CARD_EUSIM_READY 0x01
+#define RFX_CDMA_CARD_ECT3G_READY 0x02
+#define RFX_CDMA_CARD_MCCMNC_READY 0x04
+#define RFX_CDMA_CARD_LOCKCARD_READY 0x08
 
     /**
      * The card type of SIM card.
@@ -146,13 +145,13 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_C2K_IMSI,
 
     /**
-      * Notify GSM MCC+MNC
-      */
+     * Notify GSM MCC+MNC
+     */
     RFX_STATUS_KEY_UICC_GSM_NUMERIC,
 
     /**
-      * Notify CDMA MCC+MNC
-      */
+     * Notify CDMA MCC+MNC
+     */
     RFX_STATUS_KEY_UICC_CDMA_NUMERIC,
 
     /**
@@ -267,15 +266,15 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_RADIO_STATE,
     RFX_STATUS_KEY_REQUEST_RADIO_POWER,
     RFX_STATUS_KEY_MODEM_POWER_OFF,
-  /**
-   * Modem off state.
-   * NOTE: Belong to non slot controller, use getNonSlotScopeStatusManager().
-   * value type : int
-   * MODEM_OFF_IN_IDLE
-   * MODEM_OFF_BY_MODE_SWITCH
-   * MODEM_OFF_BY_POWER_OFF
-   * MODEM_OFF_BY_SIM_SWITCH
-   */
+    /**
+     * Modem off state.
+     * NOTE: Belong to non slot controller, use getNonSlotScopeStatusManager().
+     * value type : int
+     * MODEM_OFF_IN_IDLE
+     * MODEM_OFF_BY_MODE_SWITCH
+     * MODEM_OFF_BY_POWER_OFF
+     * MODEM_OFF_BY_SIM_SWITCH
+     */
     RFX_STATUS_KEY_MODEM_OFF_STATE,
 
     /**
@@ -314,8 +313,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_VOICE_CALL_COUNT,
 
     /**
-      * Indicate the AP voice call count
-      */
+     * Indicate the AP voice call count
+     */
     RFX_STATUS_KEY_AP_VOICE_CALL_COUNT,
 
     /**
@@ -402,10 +401,9 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_OTA_STATUS,
 
     /**
-      * Notify the current call state
-      */
+     * Notify the current call state
+     */
     RFX_STATUS_KEY_CALL_STATE,
-
 
     /**
      * Indicate whether the UE is in emergency mdoe
@@ -474,11 +472,11 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_CDMA_MO_SMS_STATE,
 
     /**
-    * Store default data SIM.
-    * -1: Unset
-    * 0:  Slot 0
-    * 1:  Slot 1
-    */
+     * Store default data SIM.
+     * -1: Unset
+     * 0:  Slot 0
+     * 1:  Slot 1
+     */
     RFX_STATUS_KEY_DEFAULT_DATA_SIM,
 
     /**
@@ -531,16 +529,16 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_GCF_TEST_MODE,
 
     /*
-      * SMS_INBOUND_NONE (0)
-      * SMS_INBOUND_IMS_3GPP (1)
-      * SMS_INBOUND_CS_3GPP (2)
-      */
+     * SMS_INBOUND_NONE (0)
+     * SMS_INBOUND_IMS_3GPP (1)
+     * SMS_INBOUND_CS_3GPP (2)
+     */
     RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
 
     /**
-      * SMS_PHONE_STORAGE_AVAILABLE (0)
-      * SMS_PHONE_STORAGE_FULL (1)
-      */
+     * SMS_PHONE_STORAGE_AVAILABLE (0)
+     * SMS_PHONE_STORAGE_FULL (1)
+     */
     RFX_STATUS_KEY_SMS_PHONE_STORAGE,
 
     /**
@@ -616,8 +614,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_IS_CAT_RUNNING,
 
     /**
-    * Indicate UICC reset application
-    */
+     * Indicate UICC reset application
+     */
     RFX_STATUS_KEY_UICC_RESET_APPLICATION,
 
     /**
@@ -643,8 +641,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_PCO_STATUS,
 
     /*
-    * indicate AP has power off modem and power on yet
-    */
+     * indicate AP has power off modem and power on yet
+     */
     RFX_STATUS_KEY_HAD_POWER_OFF_MD,
 
     /**
@@ -660,9 +658,9 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_TRN,
 
     /*
-    * Indicate DSBP enhancement status
-    * Value type: int
-    */
+     * Indicate DSBP enhancement status
+     * Value type: int
+     */
     RFX_STATUS_KEY_DSBP_ENHANCEMENT_STATE,
 
     /**
@@ -730,8 +728,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_SIM_ICCID,
 
     /**
-    * indicate socket state betwwen RILD and RILJ
-    */
+     * indicate socket state betwwen RILD and RILJ
+     */
     RFX_STATUS_CONNECTION_STATE,
 
     /**
@@ -763,8 +761,8 @@ enum RfxStatusKeyEnum {
      * Operator specific ims conferenc mode.
      * To indicate the what kind of handling should be taken during conferenc process.
      * Mode 0 : normal mode (follow the IR.94)
-     * Mode 1 : KDDI mode (participant will still keep after merge on SIP layer and AP will view participant as terminated.
-     * value type: String8
+     * Mode 1 : KDDI mode (participant will still keep after merge on SIP layer and AP will view
+     * participant as terminated. value type: String8
      */
     RFX_STATUS_KEY_IMS_SPECIFIC_CONFERENCE_MODE,
 
@@ -800,9 +798,9 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_HIGH_PRIORITY_CLIR_PREFIX_SUPPORTED,
 
     /**
-    * For Native Carrier Config. Indicate VOLTE is available or not for current operator.
-    * value type: String
-    */
+     * For Native Carrier Config. Indicate VOLTE is available or not for current operator.
+     * value type: String
+     */
     RFX_STATUS_KEY_CONFIG_DEVICE_VOLTE_AVAILABLE,
 
     /**
@@ -818,15 +816,15 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_CONFIG_DEVICE_WFC_AVAILABLE,
 
     /**
-    * For Native Carrier Config. Indicate VONR is available or not for current operator.
-    * value type: String
-    */
+     * For Native Carrier Config. Indicate VONR is available or not for current operator.
+     * value type: String
+     */
     RFX_STATUS_KEY_CONFIG_DEVICE_VONR_AVAILABLE,
 
     /**
-    * For Native Carrier Config. Indicate VINR is available or not for current operator.
-    * value type: String
-    */
+     * For Native Carrier Config. Indicate VINR is available or not for current operator.
+     * value type: String
+     */
     RFX_STATUS_KEY_CONFIG_DEVICE_VINR_AVAILABLE,
 
     /**
@@ -969,8 +967,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_EIMS_PDN_DEACT_AID,
 
     /*
-    * Indicate modem reset or not
-    */
+     * Indicate modem reset or not
+     */
     RFX_STATUS_KEY_MODEM_RESET,
 
     /*
@@ -1014,18 +1012,18 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_IMS_EMERGENCY_BEARER_SUPPORT,
 
     /**
-    * VOPS indication. The contents of the URC +CIREPI
-    */
+     * VOPS indication. The contents of the URC +CIREPI
+     */
     RFX_STATUS_KEY_VOPS,
 
     /*
-    * indicate whether has checked the ESMLSTATUS
-    */
+     * indicate whether has checked the ESMLSTATUS
+     */
     RFX_STATUS_KEY_SML_SLOT_LOCK_CONFIG_CHECKED,
 
     /*
-    * indicate whether MD supports slot lock feature
-    */
+     * indicate whether MD supports slot lock feature
+     */
     RFX_STATUS_KEY_SML_SLOT_LOCK_MD_SUPPORTED,
 
     /**
@@ -1037,13 +1035,14 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_PREFERRED_DATA_SIM,
 
     /**
-     * Indicate the +EIMSESS state for checking if emergency service is supported in limited service.
+     * Indicate the +EIMSESS state for checking if emergency service is supported in limited
+     * service.
      */
     RFX_STATUS_KEY_IMS_EMERGENCY_SUPPORT_STATE,
 
     /**
-    * Indicate network scan(plmn list) ongoing or not
-    */
+     * Indicate network scan(plmn list) ongoing or not
+     */
     RFX_STATUS_KEY_NETWORK_SCAN_ONGOING,
     /*
      * DSDA mode
@@ -1125,8 +1124,8 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_USSD_SESSION_ONGOING,
 
     /*
-    * Indicate if consider the first user in CEP as host or not.
-    */
+     * Indicate if consider the first user in CEP as host or not.
+     */
     RFX_STATUS_KEY_IMS_CONFERENCE_FIRST_PARTICIPANT_AS_HOST,
 
     /**
@@ -1151,7 +1150,7 @@ enum RfxStatusKeyEnum {
     RFX_STATUS_KEY_END_OF_ENUM
 };
 
-#define RFX_CARD_TYPE_SIM  0x01
+#define RFX_CARD_TYPE_SIM 0x01
 #define RFX_CARD_TYPE_USIM 0x02
 #define RFX_CARD_TYPE_CSIM 0x04
 #define RFX_CARD_TYPE_RUIM 0x08
@@ -1168,14 +1167,13 @@ enum RfxStatusKeyEnum {
 #define RFX_SIM_STATE_CARD_IO_ERROR 8
 #define RFX_SIM_STATE_CARD_RESTRICTED 9
 
-
 /* MODEM_OFF_STATE*/
-#define MODEM_OFF_IN_IDLE             (0)
-#define MODEM_OFF_BY_MODE_SWITCH      (1)
-#define MODEM_OFF_BY_POWER_OFF        (2)
-#define MODEM_OFF_BY_SIM_SWITCH       (3)
-#define MODEM_OFF_BY_RESET_RADIO      (4)
-#define MODEM_OFF_BY_WORLD_PHONE      (5)
+#define MODEM_OFF_IN_IDLE (0)
+#define MODEM_OFF_BY_MODE_SWITCH (1)
+#define MODEM_OFF_BY_POWER_OFF (2)
+#define MODEM_OFF_BY_SIM_SWITCH (3)
+#define MODEM_OFF_BY_RESET_RADIO (4)
+#define MODEM_OFF_BY_WORLD_PHONE (5)
 
 /*SMS type*/
 #define SMS_INBOUND_NONE (0)
@@ -1190,16 +1188,16 @@ enum RfxStatusKeyEnum {
 #define CDMA_MO_SMS_SENDING (0)
 #define CDMA_MO_SMS_SENT (1)
 
-#define CDMA_SMS_INBOUND_NONE    (0)
-#define CDMA_SMS_INBOUND_COMM    (1)
-#define CDMA_SMS_INBOUND_VMI     (2)
+#define CDMA_SMS_INBOUND_NONE (0)
+#define CDMA_SMS_INBOUND_COMM (1)
+#define CDMA_SMS_INBOUND_VMI (2)
 
 #define AP_TRIGGER_SWITCH_SIM (1)
 #define GMSS_TRIGGER_SWITCH_SIM (2)
 #define AP_TRIGGER_SWITCH_RUIM (3)
 #define GMSS_TRIGGER_SWITCH_RUIM (4)
 
-#define RFX_NO_ONGOING_IMS_PDN_AID     -1
+#define RFX_NO_ONGOING_IMS_PDN_AID -1
 
 /* For RAT SWITCH*/
 typedef enum {
@@ -1224,8 +1222,8 @@ typedef enum {
 } RadioPowerLock;
 
 /* DATA CONNECTION STATE*/
-#define DATA_STATE_DISCONNECTED        (0)
-#define DATA_STATE_CONNECTED           (1)
+#define DATA_STATE_DISCONNECTED (0)
+#define DATA_STATE_CONNECTED (1)
 
 /*IMS/EIMS PDN CONNECTION STATE*/
 #define IMS_OR_EIMS_PDN_INIT 0
@@ -1235,14 +1233,13 @@ typedef enum {
 #define WORLD_MODE_SWITCHING (0)
 
 /* For Bluetooth SIM Access Profile */
-typedef enum
-{
-   BT_SAP_INIT,
-   BT_SAP_CONNECTION_SETUP,
-   BT_SAP_ONGOING_CONNECTION,
-   BT_SAP_DISCONNECT,
-   BT_SAP_POWER_ON,
-   BT_SAP_POWER_OFF,
+typedef enum {
+    BT_SAP_INIT,
+    BT_SAP_CONNECTION_SETUP,
+    BT_SAP_ONGOING_CONNECTION,
+    BT_SAP_DISCONNECT,
+    BT_SAP_POWER_ON,
+    BT_SAP_POWER_OFF,
 } BtSapStatus;
 
 /* RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE */
@@ -1303,14 +1300,15 @@ typedef enum {
     SML_SLOT_LOCK_POLICY_VALID_CARD_ABSENT = 2
 } SmlSlotLockValidCard;
 
-#define RFX_STATUS_DEFAULT_VALUE_ENTRY(key, value) {key, #key, value}
+#define RFX_STATUS_DEFAULT_VALUE_ENTRY(key, value) \
+    { key, #key, value }
 
-#define RFX_STATUS_DEFAULT_VALUE_TABLE_BEGIN(class_name)                       \
-        const class_name::StatusDefaultValueEntry class_name::s_default_value_table[] = {
+#define RFX_STATUS_DEFAULT_VALUE_TABLE_BEGIN(class_name) \
+    const class_name::StatusDefaultValueEntry class_name::s_default_value_table[] = {
+#define RFX_STATUS_DEFAULT_VALUE_TABLE_END                                   \
+    RFX_STATUS_DEFAULT_VALUE_ENTRY(RFX_STATUS_KEY_END_OF_ENUM, RfxVariant()) \
+    }
 
-#define RFX_STATUS_DEFAULT_VALUE_TABLE_END                         \
-        RFX_STATUS_DEFAULT_VALUE_ENTRY(RFX_STATUS_KEY_END_OF_ENUM, RfxVariant())}
-
-#define RFX_STATUS_DECLARE_DEFAULT_VALUE_TABLE                     \
-        static const StatusDefaultValueEntry s_default_value_table[]
+#define RFX_STATUS_DECLARE_DEFAULT_VALUE_TABLE \
+    static const StatusDefaultValueEntry s_default_value_table[]
 #endif /* __RFX_STATUS_DEFS_H__ */

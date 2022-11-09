@@ -23,18 +23,21 @@
 
 #define RFX_LOG_TAG "RmcImsRttCtlUrcHdl"
 
-class RmcImsRttControlUrcHandler: public RfxBaseHandler {
+class RmcImsRttControlUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcImsRttControlUrcHandler);
-    public:
-        RmcImsRttControlUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcImsRttControlUrcHandler();
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-    private:
-        void onRttModifyResponse(const sp<RfxMclMessage>& msg);
-        void onRttTextReceive(const sp<RfxMclMessage>& msg);
-        void onRttCapabilityIndication(const sp<RfxMclMessage>& msg);
-        void onRttModifyRequestReceive(const sp<RfxMclMessage>& msg);
-        void onAudioIndication(const sp<RfxMclMessage>& msg);
+
+  public:
+    RmcImsRttControlUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcImsRttControlUrcHandler();
+
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+
+  private:
+    void onRttModifyResponse(const sp<RfxMclMessage>& msg);
+    void onRttTextReceive(const sp<RfxMclMessage>& msg);
+    void onRttCapabilityIndication(const sp<RfxMclMessage>& msg);
+    void onRttModifyRequestReceive(const sp<RfxMclMessage>& msg);
+    void onAudioIndication(const sp<RfxMclMessage>& msg);
 };
 #endif

@@ -25,22 +25,21 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_QUERY_TRN);
 // register handler to channel
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpCallControlUrcHandler, RIL_CMD_PROXY_URC);
 
-RmcOpCallControlUrcHandler::RmcOpCallControlUrcHandler(
-    int slot_id, int channel_id) : RfxBaseHandler(slot_id, channel_id) {
-     const char* urc[] = {
-        "+QUERYTRN",
+RmcOpCallControlUrcHandler::RmcOpCallControlUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const char* urc[] = {
+            "+QUERYTRN",
     };
 
-    registerToHandleURC(urc, sizeof(urc) / sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcOpCallControlUrcHandler::~RmcOpCallControlUrcHandler() {
-}
+RmcOpCallControlUrcHandler::~RmcOpCallControlUrcHandler() {}
 
 void RmcOpCallControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
-    //logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
-    if(strstr(urc, "+QUERYTRN") != NULL) {
+    char* urc = msg->getRawUrc()->getLine();
+    // logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
+    if (strstr(urc, "+QUERYTRN") != NULL) {
         onQueryTrnIndication(msg);
     }
 }
@@ -49,7 +48,6 @@ void RmcOpCallControlUrcHandler::onHandleTimer() {
     // do something
 }
 
-
 // For Modem to query TRN from AP during CSFB
 void RmcOpCallControlUrcHandler::onQueryTrnIndication(const sp<RfxMclMessage>& msg) {
     /*
@@ -57,11 +55,13 @@ void RmcOpCallControlUrcHandler::onQueryTrnIndication(const sp<RfxMclMessage>& m
      */
     int ret;
     int callId;
-    char *number[2];
+    char* number[2];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     callId = line->atTokNextint(&ret);
     if (ret < 0) {
@@ -82,7 +82,7 @@ void RmcOpCallControlUrcHandler::onQueryTrnIndication(const sp<RfxMclMessage>& m
         return;
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_QUERY_TRN,
-                m_slot_id, RfxStringsData(number, 2));
+    sp<RfxMclMessage> urc =
+            RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_QUERY_TRN, m_slot_id, RfxStringsData(number, 2));
     responseToTelCore(urc);
 }

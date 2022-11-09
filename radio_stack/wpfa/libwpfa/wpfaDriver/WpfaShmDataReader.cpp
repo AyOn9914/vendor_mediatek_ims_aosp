@@ -16,18 +16,15 @@
 
 #include "WpfaShmDataReader.h"
 
-
 WpfaShmDataReader::WpfaShmDataReader() {
     mReaderThread = 0;
     mWpfaRingBuffer = NULL;
     cout << "-new()" << endl;
 }
 
-WpfaShmDataReader::~WpfaShmDataReader() {
-    cout << "-del()" << endl;
-}
+WpfaShmDataReader::~WpfaShmDataReader() { cout << "-del()" << endl; }
 
-bool WpfaShmDataReader::init(WpfaRingBuffer *ringBuf) {
+bool WpfaShmDataReader::init(WpfaRingBuffer* ringBuf) {
     mWpfaRingBuffer = ringBuf;
     return true;
 }
@@ -44,13 +41,13 @@ void WpfaShmDataReader::start() {
     if (ret != 0) {
         cout << "-start() fail" << endl;
     } else {
-        //cout << "WpfaShmDataReader-start() create reader thread OK!" << endl;
+        // cout << "WpfaShmDataReader-start() create reader thread OK!" << endl;
     }
 }
 
-void *WpfaShmDataReader::readerThreadStart(void *arg) {
-    //cout << "WpfaShmDataReader-readerThreadStart()" << endl;
-    WpfaShmDataReader *me = (WpfaShmDataReader*)arg;
+void* WpfaShmDataReader::readerThreadStart(void* arg) {
+    // cout << "WpfaShmDataReader-readerThreadStart()" << endl;
+    WpfaShmDataReader* me = (WpfaShmDataReader*)arg;
     me->runReaderLoop();
     return NULL;
 }
@@ -61,8 +58,8 @@ void WpfaShmDataReader::runReaderLoop() {
     unsigned char testChars1[] = "AAAAA";
     cout << "-runReaderLoop()" << endl;
 
-    //while(1) {
-    for(int i = 0; i < 2; i++) {
+    // while(1) {
+    for (int i = 0; i < 2; i++) {
         mWpfaRingBuffer->lock("Producer");
         mWpfaRingBuffer->waitCanWrite("Producer", 5);
         ret = mWpfaRingBuffer->writeDataToRingBuffer(testChars1, 5);

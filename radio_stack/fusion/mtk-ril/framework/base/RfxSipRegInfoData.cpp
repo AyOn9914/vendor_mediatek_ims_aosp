@@ -19,13 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSipRegInfoData);
 
-RfxSipRegInfoData::RfxSipRegInfoData(void *data, int length)
-    : RfxBaseData(data, length) {
+RfxSipRegInfoData::RfxSipRegInfoData(void* data, int length) : RfxBaseData(data, length) {
     if (NULL != data) {
-        RIL_SipRegInfo* pIn =
-                (RIL_SipRegInfo*)data;
-        RIL_SipRegInfo *pOut =
-                (RIL_SipRegInfo*)calloc(1, sizeof(RIL_SipRegInfo));
+        RIL_SipRegInfo* pIn = (RIL_SipRegInfo*)data;
+        RIL_SipRegInfo* pOut = (RIL_SipRegInfo*)calloc(1, sizeof(RIL_SipRegInfo));
 
         pOut->account_id = pIn->account_id;
         pOut->response_code = pIn->response_code;
@@ -51,7 +48,7 @@ RfxSipRegInfoData::RfxSipRegInfoData(void *data, int length)
 
 RfxSipRegInfoData::~RfxSipRegInfoData() {
     if (m_data) {
-        RIL_SipRegInfo *p = (RIL_SipRegInfo*)m_data;
+        RIL_SipRegInfo* p = (RIL_SipRegInfo*)m_data;
         if (p->direction != NULL) {
             free(p->direction);
         }

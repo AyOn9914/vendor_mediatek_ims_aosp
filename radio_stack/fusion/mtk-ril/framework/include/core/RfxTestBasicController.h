@@ -26,21 +26,18 @@
  * Class RfxTestBasicController
  *****************************************************************************/
 
-class RfxTestBasicController : public RfxController
-{
+class RfxTestBasicController : public RfxController {
     RFX_DECLARE_CLASS(RfxTestBasicController);
 
-
-// Constructor / Destructor
-public:
-
+    // Constructor / Destructor
+  public:
     RfxTestBasicController() {}
 
     virtual ~RfxTestBasicController() {}
 
-public:
-    void setUp(sp<RfxMessage> &message);
-    void tearDown(sp<RfxMessage> &message);
+  public:
+    void setUp(sp<RfxMessage>& message);
+    void tearDown(sp<RfxMessage>& message);
     void run();
     void checkSuccess();
 };

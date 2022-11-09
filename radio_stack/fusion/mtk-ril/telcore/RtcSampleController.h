@@ -30,22 +30,22 @@ class RtcHelloController;
 class RtcSampleController : public RfxController {
     RFX_DECLARE_CLASS(RtcSampleController);  // Required: declare this class
 
-public:
+  public:
     RtcSampleController() {}
 
     virtual ~RtcSampleController() {}
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
 
-private:
+  private:
     void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-public:
+  public:
     RfxSignal4<int, int, int, int> m_something_changed_singal;
 
-private:
+  private:
     wp<RtcHelloController> m_hello_controller;
 };
 

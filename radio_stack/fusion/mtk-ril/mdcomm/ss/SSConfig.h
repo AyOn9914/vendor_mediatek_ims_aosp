@@ -18,19 +18,19 @@
 #define SS_CONFIG
 
 class SSConfig {
-    public:
-        static const char* NOT_SHOW_FORWARDED_TOAST[];
-        static const char* USSI_WITH_NO_LANG[];
-        static const char* CONVERT_409_TO_NOT_SUPPROT_CALLER_ID[];
-        static const char* CONVERT_409_TO_NOT_SUPPROT_CB[];
-        static const char* NOT_SUPPORT_USSI_OVER_CALL[];
-        static bool notShowForwardedToast(const char* mccmnc);
-        static bool ussiWithNoLang(const char* mccmnc);
-        static bool convert409ToNotSupportCallerID(const char* mccmnc);
-        static bool convert409ToNotSupportCB(const char* mccmnc);
-        static bool isNotSupportUSSIOverCall(const char* mccmnc);
+  public:
+    static const char* NOT_SHOW_FORWARDED_TOAST[];
+    static const char* USSI_WITH_NO_LANG[];
+    static const char* CONVERT_409_TO_NOT_SUPPROT_CALLER_ID[];
+    static const char* CONVERT_409_TO_NOT_SUPPROT_CB[];
+    static const char* NOT_SUPPORT_USSI_OVER_CALL[];
+    static bool notShowForwardedToast(const char* mccmnc);
+    static bool ussiWithNoLang(const char* mccmnc);
+    static bool convert409ToNotSupportCallerID(const char* mccmnc);
+    static bool convert409ToNotSupportCB(const char* mccmnc);
+    static bool isNotSupportUSSIOverCall(const char* mccmnc);
 
-    private:
-        static bool isInList(const char* mccmnc, const char *list[], unsigned long size);
+  private:
+    static bool isInList(const char* mccmnc, const char* list[], unsigned long size);
 };
 #endif /* SS_CONFIG */

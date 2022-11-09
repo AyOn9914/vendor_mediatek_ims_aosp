@@ -21,20 +21,20 @@
 
 RFX_IMPLEMENT_OP_HANDLER_CLASS(RmcOpRadioRequestHandler, RIL_CMD_PROXY_9);
 
-RmcOpRadioRequestHandler::RmcOpRadioRequestHandler(int slotId, int channelId):
-        RmcRadioRequestHandler(slotId, channelId) {
-    const int requests[] = {RFX_MSG_REQUEST_COMMAND_BEFORE_RADIO_POWER,
-            };
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+RmcOpRadioRequestHandler::RmcOpRadioRequestHandler(int slotId, int channelId)
+    : RmcRadioRequestHandler(slotId, channelId) {
+    const int requests[] = {
+            RFX_MSG_REQUEST_COMMAND_BEFORE_RADIO_POWER,
+    };
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcOpRadioRequestHandler::~RmcOpRadioRequestHandler() {
-}
+RmcOpRadioRequestHandler::~RmcOpRadioRequestHandler() {}
 
 void RmcOpRadioRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
     logD(RFX_LOG_TAG, "onHandleRequest: %d", id);
-    switch(id) {
+    switch (id) {
         case RFX_MSG_REQUEST_COMMAND_BEFORE_RADIO_POWER:
             onhandlePreRadioCommand(msg);
             break;
@@ -46,9 +46,9 @@ void RmcOpRadioRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 
 void RmcOpRadioRequestHandler::onhandlePreRadioCommand(const sp<RfxMclMessage>& msg) {
     if (isOp12Support()) {
-        String8 pco = getMclStatusManager()->getString8Value(RFX_STATUS_KEY_PCO_STATUS,
-                String8(""));
-        int power = ((int *)msg->getData()->getData())[0];
+        String8 pco =
+                getMclStatusManager()->getString8Value(RFX_STATUS_KEY_PCO_STATUS, String8(""));
+        int power = ((int*)msg->getData()->getData())[0];
         char propValue[RFX_PROPERTY_VALUE_MAX] = {0};
         // new test case.: don't control radio flow at open device
         rfx_property_get("persist.vendor.pco5.radio.ctrl", propValue, "0");

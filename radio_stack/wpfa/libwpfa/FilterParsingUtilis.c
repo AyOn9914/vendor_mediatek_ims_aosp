@@ -26,18 +26,18 @@
 #include <stdarg.h>
 
 typedef enum {
-WPFA_FILTER_TYPE_ERROR                 =   -1,
-WPFA_FILTER_TYPE_ICMP_TYPE_AND_CODE    =   0,
-WPFA_FILTER_TYPE_ESP                =   1,
-WPFA_FILTER_TYPE_OTHERS             =   2,
-WPFA_FILTER_TYPE_MAX                =   255,
+    WPFA_FILTER_TYPE_ERROR = -1,
+    WPFA_FILTER_TYPE_ICMP_TYPE_AND_CODE = 0,
+    WPFA_FILTER_TYPE_ESP = 1,
+    WPFA_FILTER_TYPE_OTHERS = 2,
+    WPFA_FILTER_TYPE_MAX = 255,
 } wpfa_filter_type_e;
 
-//Records the handshake result with MD.
+// Records the handshake result with MD.
 filter_md_ap_ver_enum mFilterVersion;
 
 /*************** Example filter section starts ***************/
-void initTestingFilterStructue(wifiProxy_filter_reg_t *filter) {     //type d exapmle
+void initTestingFilterStructue(wifiProxy_filter_reg_t* filter) {  // type d exapmle
     filter->filter_config = 0x0049;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV6;
@@ -59,30 +59,31 @@ void initTestingFilterStructue(wifiProxy_filter_reg_t *filter) {     //type d ex
     filter->ip_src[13] = 0x08;
     filter->ip_src[14] = 0x08;
     filter->ip_src[15] = 0x08;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8;  //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
 }
 
-void initTestingFilterStructue1(wifiProxy_filter_reg_t *filter) {    //type c exapmle   but no protocol  will error
+void initTestingFilterStructue1(
+        wifiProxy_filter_reg_t* filter) {  // type c exapmle   but no protocol  will error
     filter->filter_config = 0x0040;
     filter->operation_config = 0x0000;
     filter->icmp_type = 0;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8;  //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
 }
 
-void initTestingFilterStructue2(wifiProxy_filter_reg_t *filter) {    //type c exapmle
+void initTestingFilterStructue2(wifiProxy_filter_reg_t* filter) {  // type c exapmle
     filter->filter_config = 0x0041;
     filter->operation_config = 0x0000;
     filter->icmp_type = 0;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
     filter->protocol = WIFIPROXY_FILTER_PROTOCOL_UDP;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8; //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
 }
 
-void initTestingFilterStructue3(wifiProxy_filter_reg_t *filter) {    //type b exapmle
+void initTestingFilterStructue3(wifiProxy_filter_reg_t* filter) {  // type b exapmle
     filter->filter_config = 0x0449;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
@@ -92,14 +93,14 @@ void initTestingFilterStructue3(wifiProxy_filter_reg_t *filter) {    //type b ex
     filter->ip_src[1] = 0x08;
     filter->ip_src[2] = 0x08;
     filter->ip_src[3] = 0x08;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8; //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
     filter->esp_spi = 0x00000065;
     filter->esp_spi_mask = 0xFFFFFFFF;
 }
 
-
-void initTestingFilterStructue4(wifiProxy_filter_reg_t *filter) {    //type a exapmle   protocol is wrong, will error.
+void initTestingFilterStructue4(
+        wifiProxy_filter_reg_t* filter) {  // type a exapmle   protocol is wrong, will error.
     filter->filter_config = 0x044F;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
@@ -109,13 +110,14 @@ void initTestingFilterStructue4(wifiProxy_filter_reg_t *filter) {    //type a ex
     filter->ip_src[1] = 0x08;
     filter->ip_src[2] = 0x08;
     filter->ip_src[3] = 0x08;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8; //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
     filter->esp_spi = 0x00000065;
     filter->esp_spi_mask = 0xFFFFFFFF;
 }
 
-void initTestingFilterStructue5(wifiProxy_filter_reg_t *filter) {    //type a exapmle  only type no code
+void initTestingFilterStructue5(
+        wifiProxy_filter_reg_t* filter) {  // type a exapmle  only type no code
     filter->filter_config = 0x044B;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
@@ -125,13 +127,13 @@ void initTestingFilterStructue5(wifiProxy_filter_reg_t *filter) {    //type a ex
     filter->ip_src[1] = 0x08;
     filter->ip_src[2] = 0x08;
     filter->ip_src[3] = 0x08;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8; //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
     filter->esp_spi = 0x00000065;
     filter->esp_spi_mask = 0xFFFFFFFF;
 }
 
-void initTestingFilterStructue6(wifiProxy_filter_reg_t *filter) {    //type a exapmle   type & code
+void initTestingFilterStructue6(wifiProxy_filter_reg_t* filter) {  // type a exapmle   type & code
     filter->filter_config = 0x044F;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
@@ -142,32 +144,34 @@ void initTestingFilterStructue6(wifiProxy_filter_reg_t *filter) {    //type a ex
     filter->ip_src[1] = 0x08;
     filter->ip_src[2] = 0x08;
     filter->ip_src[3] = 0x08;
-    filter->dst_port = 0x0064; //1100100
-    filter->dst_port_mask = 0xFFF8; //1111111111111000    means port 1100000~1100111
+    filter->dst_port = 0x0064;       // 1100100
+    filter->dst_port_mask = 0xFFF8;  // 1111111111111000    means port 1100000~1100111
     filter->esp_spi = 0x00000065;
     filter->esp_spi_mask = 0xFFFFFFFF;
 }
 
-void initTestingFilterStructue7(wifiProxy_filter_reg_t *filter) {    //type d exapmle   icmpv4 & src add specified
+void initTestingFilterStructue7(
+        wifiProxy_filter_reg_t* filter) {  // type d exapmle   icmpv4 & src add specified
     filter->filter_config = 0x0009;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
     filter->protocol = WIFIPROXY_FILTER_PROTOCOL_TCP;
     filter->icmp_type = 0;
-    //104.16.181.30
+    // 104.16.181.30
     filter->ip_src[0] = 0x68;
     filter->ip_src[1] = 0x10;
     filter->ip_src[2] = 0xB5;
     filter->ip_src[3] = 0x1E;
 }
 
-void initTestingFilterStructue8(wifiProxy_filter_reg_t *filter) {    //type d exapmle   icmpv4 & src add specified
+void initTestingFilterStructue8(
+        wifiProxy_filter_reg_t* filter) {  // type d exapmle   icmpv4 & src add specified
     filter->filter_config = 0x0009;
     filter->operation_config = 0x0000;
     filter->ip_ver = WIFIPROXY_FILTER_IP_VER_IPV4;
     filter->protocol = WIFIPROXY_FILTER_PROTOCOL_TCP;
     filter->icmp_type = 0;
-    //104.16.182.30
+    // 104.16.182.30
     filter->ip_src[0] = 0x68;
     filter->ip_src[1] = 0x10;
     filter->ip_src[2] = 0xB6;
@@ -184,8 +188,8 @@ WPFA_filter_reg_t preProcessFilter(wifiProxy_filter_reg_t rawFilter) {
     myFilter.protocol = rawFilter.protocol;
     myFilter.icmp_type = rawFilter.icmp_type;
     myFilter.icmp_code = rawFilter.icmp_code;
-    mtkLogD(FP_LOG_TAG, "sizeof(ip_src) = %lu\n" , (unsigned long) sizeof(myFilter.ip_src));
-    for (i = 0 ; i < sizeof(myFilter.ip_src) ; i++) {
+    mtkLogD(FP_LOG_TAG, "sizeof(ip_src) = %lu\n", (unsigned long)sizeof(myFilter.ip_src));
+    for (i = 0; i < sizeof(myFilter.ip_src); i++) {
         myFilter.ip_src[i] = rawFilter.ip_src[i];
         myFilter.ip_dest[i] = rawFilter.ip_dest[i];
     }
@@ -201,14 +205,14 @@ WPFA_filter_reg_t preProcessFilter(wifiProxy_filter_reg_t rawFilter) {
 }
 
 int checkFilterConfig(wifiProxy_filter_config_e filter_config, wifiProxy_filter_config_e config) {
-    //return true if the filter_config has the config
+    // return true if the filter_config has the config
     return ((filter_config & config) == config);
 }
 
 int checkIfOnlyHasPortConfig(wifiProxy_filter_config_e filter_config) {
     mtkLogD(FP_LOG_TAG, "checkIfOnlyHasPortConfig: filter_config = %hu, masks = %hu, %hu, %hu\n",
-        filter_config, (WIFIPROXY_FILTER_TYPE_SRC_PORT | WIFIPROXY_FILTER_TYPE_DST_PORT),
-        WIFIPROXY_FILTER_TYPE_DST_PORT, WIFIPROXY_FILTER_TYPE_SRC_PORT);
+            filter_config, (WIFIPROXY_FILTER_TYPE_SRC_PORT | WIFIPROXY_FILTER_TYPE_DST_PORT),
+            WIFIPROXY_FILTER_TYPE_DST_PORT, WIFIPROXY_FILTER_TYPE_SRC_PORT);
     if (filter_config == (WIFIPROXY_FILTER_TYPE_SRC_PORT | WIFIPROXY_FILTER_TYPE_DST_PORT) ||
         filter_config == WIFIPROXY_FILTER_TYPE_DST_PORT ||
         filter_config == WIFIPROXY_FILTER_TYPE_SRC_PORT) {
@@ -220,44 +224,40 @@ int checkIfOnlyHasPortConfig(wifiProxy_filter_config_e filter_config) {
 int filterTypeParser(WPFA_filter_reg_t filter) {
     wifiProxy_filter_config_e mConfig = filter.filter_config;
     uint8_t pr = filter.protocol;
-    mtkLogD(FP_LOG_TAG, "filterTypeParser: mConfig = %d\n" , mConfig);
+    mtkLogD(FP_LOG_TAG, "filterTypeParser: mConfig = %d\n", mConfig);
     if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_ICMP_TYPE) ||
         checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_ICMP_CODE)) {
         if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_PROTOCOL) &&
             (pr == WIFIPROXY_FILTER_PROTOCOL_ICMP || pr == WIFIPROXY_FILTER_PROTOCOL_ICMPV6)) {
-            mtkLogD(FP_LOG_TAG, "type (a) = %d\n" , WPFA_FILTER_TYPE_ICMP_TYPE_AND_CODE);
+            mtkLogD(FP_LOG_TAG, "type (a) = %d\n", WPFA_FILTER_TYPE_ICMP_TYPE_AND_CODE);
             return WPFA_FILTER_TYPE_ICMP_TYPE_AND_CODE;
-        }
-        else {
-            mtkLogD(FP_LOG_TAG, "type (a) protocol error: mConfig: %hu , protocol: %hu\n" ,
-                mConfig, pr);
+        } else {
+            mtkLogD(FP_LOG_TAG, "type (a) protocol error: mConfig: %hu , protocol: %hu\n", mConfig,
+                    pr);
             return WPFA_FILTER_TYPE_ERROR;
         }
-    }
-    else if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_ESP_SPI)) {
-        if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_PROTOCOL)&&
+    } else if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_ESP_SPI)) {
+        if (checkFilterConfig(mConfig, WIFIPROXY_FILTER_TYPE_PROTOCOL) &&
             (pr == WIFIPROXY_FILTER_PROTOCOL_ESP || pr == WIFIPROXY_FILTER_PROTOCOL_AH)) {
-            mtkLogD(FP_LOG_TAG, "type (b) = %d\n" , WPFA_FILTER_TYPE_ESP);
+            mtkLogD(FP_LOG_TAG, "type (b) = %d\n", WPFA_FILTER_TYPE_ESP);
             return WPFA_FILTER_TYPE_ESP;
-        }
-        else {
-            mtkLogD(FP_LOG_TAG, "type (b) protocol error: mConfig: %hu , protocol: %hu\n",
-                mConfig, pr);
+        } else {
+            mtkLogD(FP_LOG_TAG, "type (b) protocol error: mConfig: %hu , protocol: %hu\n", mConfig,
+                    pr);
             return WPFA_FILTER_TYPE_ERROR;
         }
     }
     // Type (c) filter cases can be covered in type (d) filters.
-    //else if(checkIfOnlyHasPortConfig(mConfig)){
+    // else if(checkIfOnlyHasPortConfig(mConfig)){
     //    mtkLogD(FP_LOG_TAG, "type (c) = %d\n" , WPFA_FILTER_TYPE_PORT_RANGE_ONLY);
     //    return WPFA_FILTER_TYPE_PORT_RANGE_ONLY;
     //}
     else {
-       mtkLogD(FP_LOG_TAG, "type (d) = %d\n" , WPFA_FILTER_TYPE_OTHERS);
-       return WPFA_FILTER_TYPE_OTHERS;
+        mtkLogD(FP_LOG_TAG, "type (d) = %d\n", WPFA_FILTER_TYPE_OTHERS);
+        return WPFA_FILTER_TYPE_OTHERS;
     }
 
     return WPFA_FILTER_TYPE_ERROR;
-
 }
 
 int IptableRuleAdd(WPFA_filter_reg_t filter, int fid) {
@@ -295,7 +295,7 @@ int IptableRuleAdd(WPFA_filter_reg_t filter, int fid) {
 
 int IptableRuleDelete(int fid) {
     WPFA_filter_reg_t filter;
-    WPFA_filter_reg_t *filterPtr;
+    WPFA_filter_reg_t* filterPtr;
 
     if (findFilterById(fid) != 1) {
         return WPFA_FILTER_ID_NOT_EXIST;
@@ -355,9 +355,7 @@ void dumpFilter(WPFA_filter_reg_t filter) {
     mtkLogD(FP_LOG_TAG, "esp_spi_mask = %u\n", filter.esp_spi_mask);
 }
 
-filter_md_ap_ver_enum getUsingFilterVersion() {
-    return mFilterVersion;
-}
+filter_md_ap_ver_enum getUsingFilterVersion() { return mFilterVersion; }
 
 void setUsingFilterVersion(filter_md_ap_ver_enum ver) {
     mFilterVersion = ver;
@@ -375,8 +373,7 @@ int executeFilterReg(wifiproxy_m2a_reg_dl_filter_t m2a_reg_dl_filter) {
     dumpFilter(mfilter);
     result = IptableRuleAdd(mfilter, fid);
 
-    mtkLogD(FP_LOG_TAG, "executeFilterReg: fid=%d, Register result = %d\n",
-        fid, result);
+    mtkLogD(FP_LOG_TAG, "executeFilterReg: fid=%d, Register result = %d\n", fid, result);
     dumpAllFilterId();
 
     return result;
@@ -388,8 +385,7 @@ int executeFilterDeReg(uint32_t fid) {
 
     result = IptableRuleDelete(fid);
 
-    mtkLogD(FP_LOG_TAG, "executeFilterDeReg: fid=%d, DeRegister result = %d\n",
-        fid, result);
+    mtkLogD(FP_LOG_TAG, "executeFilterDeReg: fid=%d, DeRegister result = %d\n", fid, result);
     dumpAllFilterId();
 
     return result;
@@ -398,10 +394,11 @@ int executeFilterDeReg(uint32_t fid) {
 /*************** testing section starts ***************/
 void testingBasicFunctions() {
     mtkLogD(FP_LOG_TAG, "\ntry time: 0\n");
-    wifiProxy_filter_reg_t *testingMdFilter = (wifiProxy_filter_reg_t *) malloc(sizeof(wifiProxy_filter_reg_t));
+    wifiProxy_filter_reg_t* testingMdFilter =
+            (wifiProxy_filter_reg_t*)malloc(sizeof(wifiProxy_filter_reg_t));
     initTestingFilterStructue(testingMdFilter);
     WPFA_filter_reg_t myFilter = preProcessFilter(*testingMdFilter);
-    //dumpFilter(myFilter);
+    // dumpFilter(myFilter);
     IptableRuleAdd(myFilter, 0);
 
     mtkLogD(FP_LOG_TAG, "\ntry time: 1\n");
@@ -436,7 +433,7 @@ void testingBasicFunctions() {
 
     dumpAllFilterId();
 
-    //try delete///
+    // try delete///
     mtkLogD(FP_LOG_TAG, "\ntry delete for no. 5\n");
     IptableRuleDelete(5);
 
@@ -448,32 +445,33 @@ void testingBasicFunctions() {
 void testingFilter() {
     initialRuleContainer();
 
-    mtkLogD(FP_LOG_TAG, "size of raw filter = %lu\n" ,
-            (unsigned long) sizeof(wifiProxy_filter_reg_t));
+    mtkLogD(FP_LOG_TAG, "size of raw filter = %lu\n",
+            (unsigned long)sizeof(wifiProxy_filter_reg_t));
     wifiproxy_m2a_reg_dl_filter_t m2a_reg_dl_filter;
     wifiproxy_m2a_dereg_dl_filter_t m2a_dereg_dl_filter_t;
 
     mtkLogD(FP_LOG_TAG, "\ntry time: 1\n");
-    wifiProxy_filter_reg_t *testingMdFilter = (wifiProxy_filter_reg_t *) malloc(sizeof(wifiProxy_filter_reg_t));
+    wifiProxy_filter_reg_t* testingMdFilter =
+            (wifiProxy_filter_reg_t*)malloc(sizeof(wifiProxy_filter_reg_t));
     initTestingFilterStructue(testingMdFilter);
     m2a_reg_dl_filter.fid = 1;
     m2a_reg_dl_filter.reg_hdr = *testingMdFilter;
     executeFilterReg(m2a_reg_dl_filter);
-    //dumpAllFilterId();
+    // dumpAllFilterId();
 
     mtkLogD(FP_LOG_TAG, "\ntry time: 2\n");
     initTestingFilterStructue2(testingMdFilter);
     m2a_reg_dl_filter.fid = 3;
     m2a_reg_dl_filter.reg_hdr = *testingMdFilter;
     executeFilterReg(m2a_reg_dl_filter);
-    //dumpAllFilterId();
+    // dumpAllFilterId();
 
     mtkLogD(FP_LOG_TAG, "\ntry time: 3\n");
     initTestingFilterStructue3(testingMdFilter);
     m2a_reg_dl_filter.fid = 8;
     m2a_reg_dl_filter.reg_hdr = *testingMdFilter;
     executeFilterReg(m2a_reg_dl_filter);
-    //dumpAllFilterId();
+    // dumpAllFilterId();
 
     mtkLogD(FP_LOG_TAG, "\ntry time: 4\n");
     initTestingFilterStructue7(testingMdFilter);
@@ -489,6 +487,5 @@ void testingFilter() {
 
     executeFilterDeReg(3);
     free(testingMdFilter);
-
 }
 /*************** testing section Ends ***************/

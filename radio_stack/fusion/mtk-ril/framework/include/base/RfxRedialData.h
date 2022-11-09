@@ -22,29 +22,26 @@
 #include <telephony/mtk_ril.h>
 
 typedef struct {
-    RIL_Dial *dial_data;
+    RIL_Dial* dial_data;
     int call_id;
 } RFX_Redial;
 
 class RfxRedialData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxRedialData);
 
-public:
-    RfxRedialData(RIL_Dial *data, int callId);
+  public:
+    RfxRedialData(RIL_Dial* data, int callId);
 
-public:
-    int getCallId() const {
-        return mCallId;
-    }
+  public:
+    int getCallId() const { return mCallId; }
 
     int getClir();
-    char *getNumber();
+    char* getNumber();
     void dump();
 
-private:
-    RfxDialData *mDialData;
+  private:
+    RfxDialData* mDialData;
     int mCallId;
 };
-
 
 #endif

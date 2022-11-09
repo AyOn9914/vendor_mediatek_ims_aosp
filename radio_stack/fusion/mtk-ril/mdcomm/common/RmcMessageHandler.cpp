@@ -23,27 +23,26 @@
  * Class RmcBaseRequestHandler
  *****************************************************************************/
 RmcBaseRequestHandler::~RmcBaseRequestHandler() {
-    Vector<RmcAtRspInfo *>::iterator it;
+    Vector<RmcAtRspInfo*>::iterator it;
     for (it = m_atRspInfos.begin(); it != m_atRspInfos.end();) {
         delete (*it);
         it = m_atRspInfos.erase(it);
     }
 }
 
-
 /*****************************************************************************
  * Class RmcBaseRequestHandler
  *****************************************************************************/
-void RmcBaseRequestHandler::onHandleMessage(const sp<RfxMclMessage> &msg) {
-    RmcBaseReqData * req = (RmcBaseReqData *)msg->getData();
+void RmcBaseRequestHandler::onHandleMessage(const sp<RfxMclMessage>& msg) {
+    RmcBaseReqData* req = (RmcBaseReqData*)msg->getData();
     sendAtCmds(req);
-    RmcBaseRspData *rsp = getRspData(req);
+    RmcBaseRspData* rsp = getRspData(req);
     getHandler()->responseToTelCore(rsp->toMessage(msg));
     releaseRspData(rsp);
     onAfterResponse();
 }
 
-void RmcBaseRequestHandler::sendAtCmds(RmcBaseReqData *data) {
+void RmcBaseRequestHandler::sendAtCmds(RmcBaseReqData* data) {
     RmcAtSendInfo* info = data->getFirstAt(getHandler());
     if (info != NULL) {
         RmcAtRspInfo* rspInfo;
@@ -55,16 +54,15 @@ void RmcBaseRequestHandler::sendAtCmds(RmcBaseReqData *data) {
     }
 }
 
-RmcBaseRspData *RmcBaseRequestHandler::getRspData(RmcBaseReqData *data) {
+RmcBaseRspData* RmcBaseRequestHandler::getRspData(RmcBaseReqData* data) {
     return onGetRspData(data);
 }
 
-RmcBaseRspData *RmcBaseRequestHandler::onGetRspData(RmcBaseReqData *data) {
+RmcBaseRspData* RmcBaseRequestHandler::onGetRspData(RmcBaseReqData* data) {
     return new RmcVoidRsp(data->getError());
 }
 
-
-void RmcBaseRequestHandler::releaseRspData(RmcBaseRspData *data) {
+void RmcBaseRequestHandler::releaseRspData(RmcBaseRspData* data) {
     if (data != NULL) {
         delete data;
     }
@@ -73,17 +71,17 @@ void RmcBaseRequestHandler::releaseRspData(RmcBaseRspData *data) {
 /*****************************************************************************
  * Class RmcBaseUrcHandler
  *****************************************************************************/
-void RmcBaseUrcHandler::onHandleMessage(const sp<RfxMclMessage> &msg) {
-    RmcBaseUrspData *uRsp = getUrspData(msg);
+void RmcBaseUrcHandler::onHandleMessage(const sp<RfxMclMessage>& msg) {
+    RmcBaseUrspData* uRsp = getUrspData(msg);
     if (uRsp != NULL) {
         getHandler()->responseToTelCore(uRsp->toMessage());
         releaseUrspData(uRsp);
     }
 }
 
-RmcBaseUrspData *RmcBaseUrcHandler::getUrspData(const sp<RfxMclMessage> &msg) {
+RmcBaseUrspData* RmcBaseUrcHandler::getUrspData(const sp<RfxMclMessage>& msg) {
     int err;
-    RfxAtLine *urc = msg->getRawUrc();
+    RfxAtLine* urc = msg->getRawUrc();
     urc->atTokStart(&err);
     if (err < 0) {
         return NULL;
@@ -91,7 +89,7 @@ RmcBaseUrspData *RmcBaseUrcHandler::getUrspData(const sp<RfxMclMessage> &msg) {
     if (!onHandleRawUrc(urc)) {
         return NULL;
     }
-    RfxAtLine *urc2 = msg->getRawUrc2();
+    RfxAtLine* urc2 = msg->getRawUrc2();
     if (urc2 != NULL) {
         urc2->atTokStart(&err);
         if (err < 0) {
@@ -104,7 +102,7 @@ RmcBaseUrspData *RmcBaseUrcHandler::getUrspData(const sp<RfxMclMessage> &msg) {
     return onGetUrcData(msg->getSlotId());
 };
 
-void RmcBaseUrcHandler::releaseUrspData(RmcBaseUrspData * data) {
+void RmcBaseUrcHandler::releaseUrspData(RmcBaseUrspData* data) {
     if (data != NULL) {
         delete data;
     }

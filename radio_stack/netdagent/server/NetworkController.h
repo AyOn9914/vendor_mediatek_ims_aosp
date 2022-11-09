@@ -33,9 +33,7 @@ namespace netdagent {
  * equivalent to clearing the mapping.
  */
 class NetworkController {
-
-private:
-
+  private:
     // How the routing table number is determined for route modification requests.
     enum TableType {
         INTERFACE,       // Compute the table number based on the interface index.
@@ -46,9 +44,9 @@ private:
 
     uint32_t getRouteTableForInterface(const char* interface);
     int modifyIpRoute(uint16_t action, uint32_t table, const char* interface,
-                                     const char* destination, const char* nexthop);
+                      const char* destination, const char* nexthop);
     int modifyRoute(uint16_t action, const char* interface, const char* destination,
-                                         const char* nexthop, TableType tableType);
+                    const char* nexthop, TableType tableType);
 
     static const char* const IIF_NONE;
     static const char* const OIF_NONE;
@@ -68,23 +66,21 @@ private:
 
     static const int ROUTE_TABLE_OFFSET_FROM_INDEX;
 
-public:
-
+  public:
     int addRoute(const char* interface, const char* destination, const char* nexthop,
-                              TableType tableType);
-    int removeRoute(const char* interface, const char* destination,
-                                 const char* nexthop, TableType tableType);
+                 TableType tableType);
+    int removeRoute(const char* interface, const char* destination, const char* nexthop,
+                    TableType tableType);
     int flushRules();
     int flushRoutes(uint32_t table);
     int flushRoutes(const char* interface);
-    int forwardIpsec(char *inIface, char *outIface, char *nxthop, char *tableId,
-                           int family, int enable);
+    int forwardIpsec(char* inIface, char* outIface, char* nxthop, char* tableId, int family,
+                     int enable);
 
-    static const char* LOCAL_FILTER_FORWARD;  //AOSP chain
-    static const char* LOCAL_MANGLE_PREROUTING;  //mtk new chain
-    static const char* LOCAL_FILTER_INPUT;  //mtk new chain
-    static const char* LOCAL_FILTER_OUT;  //AOSP chain
-
+    static const char* LOCAL_FILTER_FORWARD;     // AOSP chain
+    static const char* LOCAL_MANGLE_PREROUTING;  // mtk new chain
+    static const char* LOCAL_FILTER_INPUT;       // mtk new chain
+    static const char* LOCAL_FILTER_OUT;         // AOSP chain
 };
 
 }  // namespace netdagent

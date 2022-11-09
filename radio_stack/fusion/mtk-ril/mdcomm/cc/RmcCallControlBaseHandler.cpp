@@ -32,8 +32,8 @@
 
 #define OPERATOR_VZW "OP12"
 
-RmcCallControlBaseHandler::RmcCallControlBaseHandler(int slot_id,
-        int channel_id) : RfxBaseHandler(slot_id, channel_id) {
+RmcCallControlBaseHandler::RmcCallControlBaseHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     // do nothing
 }
 
@@ -42,21 +42,21 @@ RmcCallControlBaseHandler::~RmcCallControlBaseHandler() {
 }
 
 char* RmcCallControlBaseHandler::getClirPrefix(int clir) {
-    char* clirPrefix = (char*)"";   /*subscription default*/
-    if (clir == 1) {  /*invocation*/
+    char* clirPrefix = (char*)""; /*subscription default*/
+    if (clir == 1) {              /*invocation*/
         clirPrefix = (char*)"#31#";
-    } else if (clir == 2) {  /*suppression*/
+    } else if (clir == 2) { /*suppression*/
         clirPrefix = (char*)"*31#";
     }
     return clirPrefix;
 }
 
 void RmcCallControlBaseHandler::responseVoidDataToTcl(const sp<RfxMclMessage>& msg, RIL_Errno err) {
-    //if (err != RIL_E_SUCCESS) {
-    //    logE(RFX_LOG_TAG, "%d failed!", msg->getId());
-    //}
+    // if (err != RIL_E_SUCCESS) {
+    //     logE(RFX_LOG_TAG, "%d failed!", msg->getId());
+    // }
     sp<RfxMclMessage> mclResponse =
-        RfxMclMessage::obtainResponse(msg->getId(), err, RfxVoidData(), msg);
+            RfxMclMessage::obtainResponse(msg->getId(), err, RfxVoidData(), msg);
     responseToTelCore(mclResponse);
 }
 
@@ -84,9 +84,9 @@ void RmcCallControlBaseHandler::setVDSAuto(bool isAuto, bool isEcc) {
     int prefRat = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_ECC_PREFERRED_RAT, 0);
 
     if (!isEcc) {
-        prefMode = 0; // no pref for normal call
+        prefMode = 0;  // no pref for normal call
         if (isAuto) {
-            mode = 0; // auto
+            mode = 0;  // auto
             enableVDSReport();
         } else {
             // here it is dialing CS call. No need to check service state.
@@ -95,13 +95,13 @@ void RmcCallControlBaseHandler::setVDSAuto(bool isAuto, bool isEcc) {
     } else {  // ECC
         if (isAuto) {
             enableVDSReport();
-            if (isGsmRat() && prefRat == 3) {      // gsm_pref
+            if (isGsmRat() && prefRat == 3) {  // gsm_pref
                 mode = 0;
                 prefMode = 1;
             } else if (isGsmRat() || isCdmaRat() || prefRat == 0) {  // ims+gsm+cdma
                 mode = 0;
                 prefMode = 0;
-            } else {  // no service with pref
+            } else {                 // no service with pref
                 if (prefRat == 1) {  // ims+gsm
                     mode = 2;
                     prefMode = 0;
@@ -120,7 +120,7 @@ void RmcCallControlBaseHandler::setVDSAuto(bool isAuto, bool isEcc) {
             if (isGsmRat() || isCdmaRat() || prefRat == 0) {  // gsm+cdma
                 mode = 5;
                 prefMode = 0;
-            } else {  // no service with pref
+            } else {                 // no service with pref
                 if (prefRat == 1) {  // gsm
                     mode = 1;
                     prefMode = 0;
@@ -138,7 +138,8 @@ void RmcCallControlBaseHandler::setVDSAuto(bool isAuto, bool isEcc) {
         }
     }
 
-    sp<RfxAtResponse> atResponse = atSendCommand(String8::format("%s=%d,%d", atCmd, mode, prefMode));
+    sp<RfxAtResponse> atResponse =
+            atSendCommand(String8::format("%s=%d,%d", atCmd, mode, prefMode));
     // check at cmd result, consider default as success
     if (atResponse->getError() != 0 || atResponse->getSuccess() != 1) {
         logE(RFX_LOG_TAG, "Setup VDS to %d,%d failed", mode, prefMode);
@@ -150,7 +151,7 @@ void RmcCallControlBaseHandler::enableVDSReport(bool isEnable) {
      * <enable>: 0 = disable; 1 = enable
      */
     char* atCmd = AT_ENABLE_VDS_REPORT;
-    int enableVal = isEnable? 1: 0;
+    int enableVal = isEnable ? 1 : 0;
     sp<RfxAtResponse> atResponse = atSendCommand(String8::format("%s=%d", atCmd, enableVal));
     // check at cmd result, consider default as success
     if (atResponse->getError()) {
@@ -160,13 +161,13 @@ void RmcCallControlBaseHandler::enableVDSReport(bool isEnable) {
 
 bool RmcCallControlBaseHandler::hasImsCall(int slotId) {
     RfxRootController* rootController = RFX_OBJ_GET_INSTANCE(RfxRootController);
-    RfxStatusManager* slotStatusMgr  = rootController->getStatusManager(slotId);
+    RfxStatusManager* slotStatusMgr = rootController->getStatusManager(slotId);
     return slotStatusMgr->getBoolValue(RFX_STATUS_KEY_IMS_CALL_EXIST, false);
 }
 
-char* RmcCallControlBaseHandler::extractSipUri(char *num) {
+char* RmcCallControlBaseHandler::extractSipUri(char* num) {
     // sip:0123456;234,4@xxx.com
-    char *result;
+    char* result;
     result = strsep(&num, ":");
     if (NULL != num) {
         result = num;
@@ -180,10 +181,10 @@ char* RmcCallControlBaseHandler::extractSipUri(char *num) {
 /// C2K specific start
 bool RmcCallControlBaseHandler::isGsmRat() {
     bool bGsmRat;
-    //RAT can be unknown, neither Gsm or Cdma
-    RfxNwServiceState defaultServiceState (0, 0, 0 ,0);
-    RfxNwServiceState ss = getMclStatusManager()
-            ->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE, defaultServiceState);
+    // RAT can be unknown, neither Gsm or Cdma
+    RfxNwServiceState defaultServiceState(0, 0, 0, 0);
+    RfxNwServiceState ss = getMclStatusManager()->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE,
+                                                                       defaultServiceState);
     int voiceRadioTech = ss.getRilVoiceRadioTech();
     bGsmRat = RfxNwServiceState::isGsmGroup(voiceRadioTech);
     if (!bGsmRat) {
@@ -194,9 +195,9 @@ bool RmcCallControlBaseHandler::isGsmRat() {
 
 // Check if this slot is in CDMA RAT
 bool RmcCallControlBaseHandler::isCdmaRat() {
-    RfxNwServiceState defaultServiceState (0, 0, 0 ,0);
-    RfxNwServiceState ss = getMclStatusManager()
-            ->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE, defaultServiceState);
+    RfxNwServiceState defaultServiceState(0, 0, 0, 0);
+    RfxNwServiceState ss = getMclStatusManager()->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE,
+                                                                       defaultServiceState);
     int voiceRadioTech = ss.getRilVoiceRadioTech();
     logD(RFX_LOG_TAG, "%s, voiceRadioTech:%d", __FUNCTION__, voiceRadioTech);
     return RfxNwServiceState::isCdmaGroup(voiceRadioTech);
@@ -207,23 +208,23 @@ String8 RmcCallControlBaseHandler::handleNumberWithPause(char* number) {
     if (number == NULL) {
         return String8::format("");
     }
-    char *formatNumber = NULL;
-    char *origNumber = NULL;
+    char* formatNumber = NULL;
+    char* origNumber = NULL;
     int len = strlen(number);
     int pos = 0;
     char* tmp = strchr(number, ',');
     if (tmp != NULL) {
         pos = (tmp - number) / sizeof(char);
-        formatNumber = (char *)alloca(pos + 1);
-        origNumber = (char *)alloca(len - pos);
+        formatNumber = (char*)alloca(pos + 1);
+        origNumber = (char*)alloca(len - pos);
         memset(formatNumber, 0, pos + 1);
         memset(origNumber, 0, len - pos);
         strncpy(formatNumber, number, pos);
         strncpy(origNumber, tmp + 1, len - pos - 1);
         if (RfxRilUtils::isUserLoad() != 1) {
             logD(RFX_LOG_TAG, "%s, number:%s, formatNum:%s, origNum:%s", __FUNCTION__,
-                    RfxRilUtils::pii(RFX_LOG_TAG, number), RfxRilUtils::pii(RFX_LOG_TAG, formatNumber),
-                    RfxRilUtils::pii(RFX_LOG_TAG, origNumber));
+                 RfxRilUtils::pii(RFX_LOG_TAG, number), RfxRilUtils::pii(RFX_LOG_TAG, formatNumber),
+                 RfxRilUtils::pii(RFX_LOG_TAG, origNumber));
         }
         return String8::format("%s", origNumber);
     } else {
@@ -233,28 +234,27 @@ String8 RmcCallControlBaseHandler::handleNumberWithPause(char* number) {
 
 // Check if Clir should be modify
 int RmcCallControlBaseHandler::handleClirSpecial(bool isEcc, int clir, char* number) {
-    String8 priorityString = getMclStatusManager()
-            ->getString8Value(RFX_STATUS_KEY_HIGH_PRIORITY_CLIR_PREFIX_SUPPORTED);
-    String8 ignoreClirWhenEcc = getMclStatusManager()
-            ->getString8Value(RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
-        logD(RFX_LOG_TAG, "ignoreClirWhenEcc %s", ignoreClirWhenEcc.string());
+    String8 priorityString = getMclStatusManager()->getString8Value(
+            RFX_STATUS_KEY_HIGH_PRIORITY_CLIR_PREFIX_SUPPORTED);
+    String8 ignoreClirWhenEcc =
+            getMclStatusManager()->getString8Value(RFX_STATUS_KEY_CARRIER_IGNORE_CLIR_WHEN_ECC);
+    logD(RFX_LOG_TAG, "ignoreClirWhenEcc %s", ignoreClirWhenEcc.string());
 
-    bool needSetDefaultWhenPriorityString =
-            strcmp(priorityString.string(), "true") == 0 &&
-            clir == 1 /*invocation*/ &&
-            strncmp(number, "*82", 3) == 0;
+    bool needSetDefaultWhenPriorityString = strcmp(priorityString.string(), "true") == 0 &&
+                                            clir == 1 /*invocation*/ &&
+                                            strncmp(number, "*82", 3) == 0;
     bool needSetDefaultWhenEcc = isEcc && (ignoreClirWhenEcc == "1");
 
     if (needSetDefaultWhenPriorityString || needSetDefaultWhenEcc) {
-        clir = 0; // use subscription default value
+        clir = 0;  // use subscription default value
     }
     return clir;
 }
 
 String8 RmcCallControlBaseHandler::handleNumberWithClirString(String8 number) {
-    RfxNwServiceState defaultServiceState (0, 0, 0 ,0);
-    RfxNwServiceState ss = getMclStatusManager()
-            ->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE, defaultServiceState);
+    RfxNwServiceState defaultServiceState(0, 0, 0, 0);
+    RfxNwServiceState ss = getMclStatusManager()->getServiceStateValue(RFX_STATUS_KEY_SERVICE_STATE,
+                                                                       defaultServiceState);
     if (isVzWProject() && (ss.getRilVoiceRegState() == 5)) {
         if (number.find("*67") == 0) {
             logD(RFX_LOG_TAG, "is *67, covert to #31#");
@@ -270,7 +270,7 @@ String8 RmcCallControlBaseHandler::handleNumberWithClirString(String8 number) {
 }
 
 bool RmcCallControlBaseHandler::isVzWProject() {
-    char optr_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char optr_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get("persist.vendor.operator.optr", optr_value, "0");
 

@@ -32,21 +32,21 @@
 /*****************************************************************************
  * Define
  *****************************************************************************/
-#define ENHANCEMENT_T_PLUS_T  (0x01)
-#define ENHANCEMENT_T_PLUS_W  (0x02)
-#define ENHANCEMENT_T_PLUS_C  (0x04)
-#define ENHANCEMENT_W_PLUS_C  (0x08)
-#define ENHANCEMENT_W_PLUS_W  (0x10)
+#define ENHANCEMENT_T_PLUS_T (0x01)
+#define ENHANCEMENT_T_PLUS_W (0x02)
+#define ENHANCEMENT_T_PLUS_C (0x04)
+#define ENHANCEMENT_W_PLUS_C (0x08)
+#define ENHANCEMENT_W_PLUS_W (0x10)
 #define ENHANCEMENT_W_PLUS_NA (0x20)
-#define ENHANCEMENT_C_PLUS_C  (0x40)
+#define ENHANCEMENT_C_PLUS_C (0x40)
 
 #define CURRENT_SLOT (-2)
 #define UNKNOWN_SLOT (-1)
-#define SLOT_0       (0)
-#define SLOT_1       (1)
-#define SLOT_2       (2)
+#define SLOT_0 (0)
+#define SLOT_1 (1)
+#define SLOT_2 (2)
 
-#define SIM_ON       (11)
+#define SIM_ON (11)
 
 /*****************************************************************************
  * Class RtcCapabilitySwitchChecker
@@ -86,7 +86,7 @@ class RtcCapabilitySwitchChecker : public RfxController {
   protected:
     long int m_waive_enhance_config;
     // add one more status manage for no-slot controllers
-    RfxStatusManager *m_status_managers[MAX_RFX_SLOT_ID + 1];
+    RfxStatusManager* m_status_managers[MAX_RFX_SLOT_ID + 1];
 };
 
 #endif /* __RTC_CAPABILITY_SWITCH_CHECKER_H__ */

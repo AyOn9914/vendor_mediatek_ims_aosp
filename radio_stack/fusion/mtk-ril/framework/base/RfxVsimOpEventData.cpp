@@ -21,28 +21,25 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVsimOpEventData);
 
-RfxVsimOpEventData::RfxVsimOpEventData(void *data, int length) : RfxBaseData(data, length) {
+RfxVsimOpEventData::RfxVsimOpEventData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
         RIL_VsimOperationEvent* pVsim = (RIL_VsimOperationEvent*)data;
-        RIL_VsimOperationEvent* pData = (RIL_VsimOperationEvent*)calloc(1,
-                sizeof(RIL_VsimOperationEvent));
+        RIL_VsimOperationEvent* pData =
+                (RIL_VsimOperationEvent*)calloc(1, sizeof(RIL_VsimOperationEvent));
         if (pData == NULL) {
-            RfxRilUtils::printLog(
-                    ERROR,
-                    String8::format("[RfxVsimOpEventData]"),
-                    String8::format("fail to allocate pData!"),
-                    0);
+            RfxRilUtils::printLog(ERROR, String8::format("[RfxVsimOpEventData]"),
+                                  String8::format("fail to allocate pData!"), 0);
             return;
         }
         pData->data_length = pVsim->data_length;
         if (pVsim->data != NULL) {
-            pData->data = (char*)calloc(1, 2*(pVsim->data_length+1));
+            pData->data = (char*)calloc(1, 2 * (pVsim->data_length + 1));
 
             if (pData->data != NULL) {
-                memcpy(pData->data, pVsim->data, 2*(pVsim->data_length));
+                memcpy(pData->data, pVsim->data, 2 * (pVsim->data_length));
             } else {
-                RfxRilUtils::printLog(ERROR,
-                        String8::format("[RfxVsimOpEventData]"),
+                RfxRilUtils::printLog(
+                        ERROR, String8::format("[RfxVsimOpEventData]"),
                         String8::format("fail to allocate memory, size = %d", pData->data_length),
                         0);
                 pData->data_length = 0;

@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimApduData);
 
-RfxSimApduData::RfxSimApduData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimApduData::RfxSimApduData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SIM_APDU *pSimApdu = (RIL_SIM_APDU*)_data;
-        RIL_SIM_APDU *pData = (RIL_SIM_APDU *)calloc(1, sizeof(RIL_SIM_APDU));
+        RIL_SIM_APDU* pSimApdu = (RIL_SIM_APDU*)_data;
+        RIL_SIM_APDU* pData = (RIL_SIM_APDU*)calloc(1, sizeof(RIL_SIM_APDU));
         RFX_ASSERT(pData != NULL);
 
         pData->sessionid = pSimApdu->sessionid;
@@ -43,7 +43,7 @@ RfxSimApduData::RfxSimApduData(void *_data, int _length) : RfxBaseData(_data, _l
 RfxSimApduData::~RfxSimApduData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SIM_APDU *pData = (RIL_SIM_APDU*)m_data;
+        RIL_SIM_APDU* pData = (RIL_SIM_APDU*)m_data;
         if (pData->data != NULL) {
             free(pData->data);
             pData->data = NULL;

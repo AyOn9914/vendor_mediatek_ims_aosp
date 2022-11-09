@@ -24,8 +24,7 @@
 
 #if defined(_WIN32)
 
-int socket_local_server(const char *name, int namespaceId, int type)
-{
+int socket_local_server(const char* name, int namespaceId, int type) {
     errno = ENOSYS;
     return -1;
 }
@@ -51,8 +50,7 @@ int socket_local_server(const char *name, int namespaceId, int type)
  *
  * Does not call listen()
  */
-int socket_local_server_bind(int s, const char *name, int namespaceId)
-{
+int socket_local_server_bind(int s, const char* name, int namespaceId) {
     struct sockaddr_un addr;
     socklen_t alen;
     int n;
@@ -68,8 +66,8 @@ int socket_local_server_bind(int s, const char *name, int namespaceId)
 #if !defined(__linux__)
     if (1) {
 #else
-    if (namespaceId == ANDROID_SOCKET_NAMESPACE_RESERVED
-        || namespaceId == ANDROID_SOCKET_NAMESPACE_FILESYSTEM) {
+    if (namespaceId == ANDROID_SOCKET_NAMESPACE_RESERVED ||
+        namespaceId == ANDROID_SOCKET_NAMESPACE_FILESYSTEM) {
 #endif
         /*ignore ENOENT*/
         unlink(addr.sun_path);
@@ -78,14 +76,12 @@ int socket_local_server_bind(int s, const char *name, int namespaceId)
     n = 1;
     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &n, sizeof(n));
 
-    if(bind(s, (struct sockaddr *) &addr, alen) < 0) {
+    if (bind(s, (struct sockaddr*)&addr, alen) < 0) {
         return -1;
     }
 
     return s;
-
 }
-
 
 /** Open a server-side UNIX domain datagram socket in the Linux non-filesystem
  *  namespace
@@ -93,8 +89,7 @@ int socket_local_server_bind(int s, const char *name, int namespaceId)
  *  Returns fd on success, -1 on fail
  */
 
-int socket_local_server(const char *name, int namespaceId, int type)
-{
+int socket_local_server(const char* name, int namespaceId, int type) {
     int err;
     int s;
 

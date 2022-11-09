@@ -28,14 +28,15 @@
  *****************************************************************************/
 
 class RfxGwsdSettingBaseHandler {
-    public:
-        RfxGwsdSettingBaseHandler() {}
-        virtual ~RfxGwsdSettingBaseHandler() {}
-        virtual RIL_Errno requestSetGwsdMode(RfxBaseHandler* handler, int mode, char* kaMode, char* kaCycle);
-        virtual RIL_Errno requestSetCallValidTimer(RfxBaseHandler* handler, int data);
-        virtual RIL_Errno requestSetIgnoreSameNumberInterval(RfxBaseHandler* handler, int data);
-        virtual RIL_Errno requestSetKeepAliveByPDCPCtrlPDU(RfxBaseHandler* handler, char* data);
-        virtual RIL_Errno requestSetKeepAliveByIpData(RfxBaseHandler* handler, char* data);
+  public:
+    RfxGwsdSettingBaseHandler() {}
+    virtual ~RfxGwsdSettingBaseHandler() {}
+    virtual RIL_Errno requestSetGwsdMode(RfxBaseHandler* handler, int mode, char* kaMode,
+                                         char* kaCycle);
+    virtual RIL_Errno requestSetCallValidTimer(RfxBaseHandler* handler, int data);
+    virtual RIL_Errno requestSetIgnoreSameNumberInterval(RfxBaseHandler* handler, int data);
+    virtual RIL_Errno requestSetKeepAliveByPDCPCtrlPDU(RfxBaseHandler* handler, char* data);
+    virtual RIL_Errno requestSetKeepAliveByIpData(RfxBaseHandler* handler, char* data);
 };
 
 typedef RfxGwsdSettingBaseHandler* createSettingHandler_t();

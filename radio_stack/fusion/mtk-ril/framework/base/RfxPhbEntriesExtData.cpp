@@ -20,25 +20,24 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhbEntriesExtData);
 
-RfxPhbEntriesExtData::RfxPhbEntriesExtData() : RfxBaseData(NULL, 0) {
-}
+RfxPhbEntriesExtData::RfxPhbEntriesExtData() : RfxBaseData(NULL, 0) {}
 
-RfxPhbEntriesExtData::RfxPhbEntriesExtData(void *data, int length) : RfxBaseData(data, length)  {
+RfxPhbEntriesExtData::RfxPhbEntriesExtData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    int countEntries = length/sizeof(RIL_PHB_ENTRY*);
-    copyPhbEntries((RIL_PHB_ENTRY **)data, countEntries);
+    int countEntries = length / sizeof(RIL_PHB_ENTRY*);
+    copyPhbEntries((RIL_PHB_ENTRY**)data, countEntries);
 }
 
-RfxPhbEntriesExtData::RfxPhbEntriesExtData(RIL_PHB_ENTRY **data, int countEntries) :
-        RfxBaseData(data, countEntries * sizeof(RIL_PHB_ENTRY*)) {
+RfxPhbEntriesExtData::RfxPhbEntriesExtData(RIL_PHB_ENTRY** data, int countEntries)
+    : RfxBaseData(data, countEntries * sizeof(RIL_PHB_ENTRY*)) {
     m_length = countEntries * sizeof(RIL_PHB_ENTRY*);
     copyPhbEntries(data, countEntries);
 }
 
-void RfxPhbEntriesExtData::copyPhbEntries(RIL_PHB_ENTRY **data, int countEntries) {
+void RfxPhbEntriesExtData::copyPhbEntries(RIL_PHB_ENTRY** data, int countEntries) {
     if (data != NULL) {
-        RIL_PHB_ENTRY **pInput = (RIL_PHB_ENTRY**)data;
-        RIL_PHB_ENTRY **pData = (RIL_PHB_ENTRY**)calloc(1, sizeof(RIL_PHB_ENTRY*)*countEntries);
+        RIL_PHB_ENTRY** pInput = (RIL_PHB_ENTRY**)data;
+        RIL_PHB_ENTRY** pData = (RIL_PHB_ENTRY**)calloc(1, sizeof(RIL_PHB_ENTRY*) * countEntries);
         RFX_ASSERT(pData != NULL);
         for (int i = 0; i < countEntries; i++) {
             pData[i] = (RIL_PHB_ENTRY*)calloc(1, sizeof(RIL_PHB_ENTRY));
@@ -74,8 +73,8 @@ void RfxPhbEntriesExtData::copyPhbEntries(RIL_PHB_ENTRY **data, int countEntries
 RfxPhbEntriesExtData::~RfxPhbEntriesExtData() {
     // free
     if (m_data != NULL) {
-        RIL_PHB_ENTRY **pTmp = (RIL_PHB_ENTRY **) m_data;
-        int countEntries = m_length/sizeof(RIL_PHB_ENTRY*);
+        RIL_PHB_ENTRY** pTmp = (RIL_PHB_ENTRY**)m_data;
+        int countEntries = m_length / sizeof(RIL_PHB_ENTRY*);
         for (int i = 0; i < countEntries; i++) {
             if (pTmp[i] != NULL) {
                 if (pTmp[i]->number != NULL) {

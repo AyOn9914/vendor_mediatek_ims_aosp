@@ -41,39 +41,35 @@ typedef enum {
     CLIENT_TYPE_ATCI,
 } RilClientType;
 
-struct ClientInformation
-{
-   int identity;
-   char* socketName;
-   RilClientType type;
+struct ClientInformation {
+    int identity;
+    char* socketName;
+    RilClientType type;
 };
 
 class RtcRilClientController : public RfxController {
     RFX_DECLARE_CLASS(RtcRilClientController);
 
-    public:
+  public:
+    RtcRilClientController();
+    virtual ~RtcRilClientController();
+    static int queryFileDescriptor(int clientId);
+    static RilClient* findClientWithId(int clientId);
+    static bool onClientRequestComplete(RIL_Token token, RIL_Errno e, void* response,
+                                        size_t responselen, int clientId);
+    static bool onClientUnsolicitedResponse(int slotId, int urcId, void* response,
+                                            size_t responselen, UrcDispatchRule rule);
+    static int sendResponse(Parcel& parcel, int fd);
+    static int blockingWrite(int fd, const void* buffer, size_t len);
+    static RilClientQueue* clientHead;
+    static int getCdmaSlotId();
 
-        RtcRilClientController();
-        virtual ~RtcRilClientController();
-        static int queryFileDescriptor(int clientId);
-        static RilClient* findClientWithId(int clientId);
-        static bool onClientRequestComplete(RIL_Token token, RIL_Errno e, void *response,
-                size_t responselen, int clientId);
-        static bool onClientUnsolicitedResponse(int slotId, int urcId,
-            void *response, size_t responselen, UrcDispatchRule rule);
-        static int sendResponse (Parcel& parcel, int fd);
-        static int blockingWrite(int fd, const void *buffer, size_t len);
-        static RilClientQueue* clientHead;
-        static int getCdmaSlotId();
-
-    protected:
-
-        virtual void onInit();
-        virtual void initRilClient();
-        void registerRilClient(RilClient* client);
-        void deregisterRilClient(RilClient* client);
-        void startListenSocket(ClientInformation information);
-
+  protected:
+    virtual void onInit();
+    virtual void initRilClient();
+    void registerRilClient(RilClient* client);
+    void deregisterRilClient(RilClient* client);
+    void startListenSocket(ClientInformation information);
 };
 
 #endif /* __RP_RADIO_CONTROLLER_H__ */

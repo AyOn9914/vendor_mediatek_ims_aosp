@@ -21,7 +21,6 @@
  * Include
  *****************************************************************************/
 
-
 /*****************************************************************************
  * Enum
  *****************************************************************************/
@@ -38,7 +37,7 @@ typedef enum {
     UICC_SP = 12,
     UICC_CP = 13,
     UICC_SIMP = 14,
-    UICC_PERM_BLOCKED = 15, // PERM_DISABLED
+    UICC_PERM_BLOCKED = 15,  // PERM_DISABLED
     // MTK-START: AOSP SIM PLUG IN/OUT
     UICC_NO_INIT = 16,
     // MTK-END
@@ -91,7 +90,7 @@ typedef enum {
     SML_RESTRICT_INVALID_ECC_FOR_VALID_NO_SERVICE = 9,
     SML_ALL_SIM_LOCK_AND_RSU_VZW = 10,
     SML_SLOTA_RSU_KDDI = 11,
-    SML_SLOTA_RSU_TMO = 12, //OP08 RSU modem-based solution
+    SML_SLOTA_RSU_TMO = 12,  // OP08 RSU modem-based solution
     SML_LEGACY_MODE = 255
 } SML_MD_RULE;
 
@@ -108,14 +107,9 @@ typedef enum {
     SML_INVALID_VOICE = 2
 } SML_INVALID_SIM_CAPABILITY;
 
-typedef enum {
-    SML_LOCK_OR_UNLOCK = 3
-} SML_LOCK_OPERATION;
+typedef enum { SML_LOCK_OR_UNLOCK = 3 } SML_LOCK_OPERATION;
 
-typedef enum {
-    SML_LOCK_DEVICE = 0,
-    SML_UNLOCK_DEVICE = 1
-} SML_LOCK_NEW_STATE;
+typedef enum { SML_LOCK_DEVICE = 0, SML_UNLOCK_DEVICE = 1 } SML_LOCK_NEW_STATE;
 // MTK-END
 
 typedef enum {
@@ -127,9 +121,9 @@ typedef enum {
  * Define
  *****************************************************************************/
 
-#define MAX_AUTH_RSP   (256*2+27)
+#define MAX_AUTH_RSP (256 * 2 + 27)
 #define MAX_SIM_ME_LOCK_CAT_NUM 7
-#define PROPERTY_GSM_GCF_TEST_MODE  "vendor.gsm.gcf.testmode"
+#define PROPERTY_GSM_GCF_TEST_MODE "vendor.gsm.gcf.testmode"
 #define PROPERTY_ICCID_PREIFX "vendor.ril.iccid.sim"
 #define PROPERTY_COMMON_SLOT_SUPPORT "ro.vendor.mtk_sim_hot_swap_common_slot"
 #define PROPERTY_FULL_UICC_TYPE "vendor.gsm.ril.fulluicctype"
@@ -138,24 +132,24 @@ typedef enum {
 #define ESIMS_CAUSE_SIM_NO_INIT 26
 // MTK-END
 // MTK-START: SIM SLOT LOCK
-#define SML_BITMASK_SLOT_LOCK_CONTEXT    (0x01)
-#define SML_BITMASK_INVALID_SIM_CAP      (0x0E)
+#define SML_BITMASK_SLOT_LOCK_CONTEXT (0x01)
+#define SML_BITMASK_INVALID_SIM_CAP (0x0E)
 
 static const char PROPERTY_SIM_SLOT_LOCK_POLICY[35] = "vendor.gsm.sim.slot.lock.policy";
 static const char PROPERTY_SIM_SLOT_LOCK_STATE[35] = "vendor.gsm.sim.slot.lock.state";
 static const char PROPERTY_SIM_SLOT_LOCK_DEVICE_LOCK_REMAIN_COUNT[55] =
-    "vendor.gsm.sim.slot.lock.device.lock.remain.count";
+        "vendor.gsm.sim.slot.lock.device.lock.remain.count";
 static const char PROPERTY_SIM_SLOT_LOCK_SERVICE_CAPABILITY[4][50] = {
-    "vendor.gsm.sim.slot.lock.service.capability",
-    "vendor.gsm.sim.slot.lock.service.capability.2",
-    "vendor.gsm.sim.slot.lock.service.capability.3",
-    "vendor.gsm.sim.slot.lock.service.capability.4",
+        "vendor.gsm.sim.slot.lock.service.capability",
+        "vendor.gsm.sim.slot.lock.service.capability.2",
+        "vendor.gsm.sim.slot.lock.service.capability.3",
+        "vendor.gsm.sim.slot.lock.service.capability.4",
 };
 static const char PROPERTY_SIM_SLOT_LOCK_CARD_VALID[4][40] = {
-    "vendor.gsm.sim.slot.lock.card.valid",
-    "vendor.gsm.sim.slot.lock.card.valid.2",
-    "vendor.gsm.sim.slot.lock.card.valid.3",
-    "vendor.gsm.sim.slot.lock.card.valid.4",
+        "vendor.gsm.sim.slot.lock.card.valid",
+        "vendor.gsm.sim.slot.lock.card.valid.2",
+        "vendor.gsm.sim.slot.lock.card.valid.3",
+        "vendor.gsm.sim.slot.lock.card.valid.4",
 };
 // MTK-END
 
@@ -182,20 +176,18 @@ with AOSP, value starts from 10 and leaves a margin for following AOSP updates.
 #define SIM_POWER_STATE_SIM_SWITCHING_ON 13
 
 class RmcSimPinPukCount {
-
-    public:
-        int pin1;
-        int pin2;
-        int puk1;
-        int puk2;
+  public:
+    int pin1;
+    int pin2;
+    int puk1;
+    int puk2;
 };
 
 class RmcSimSlotLockDeviceLockInfo {
-
-    public:
-        int lock_state;
-        int algo;
-        int maximum;
-        int remain;
+  public:
+    int lock_state;
+    int algo;
+    int maximum;
+    int remain;
 };
 #endif /* __RMC_COMM_SIM_DEF_H__ */

@@ -36,17 +36,15 @@ int RmcCapabilitySwitchRequestHandler::s_sim_init_state;
 Mutex RmcCapabilitySwitchRequestHandler::s_first_instance_mutex;
 bool RmcCapabilitySwitchRequestHandler::s_first_instance = true;
 
-RmcCapabilitySwitchRequestHandler::RmcCapabilitySwitchRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcCapabilitySwitchRequestHandler::RmcCapabilitySwitchRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "constructor entered");
     setSIMInitState(0);
     int old_major_sim = RmcCapabilitySwitchUtil::getMajorSim();
     int main_sim = queryMainProtocol();
-    const int request1[] = {
-        RFX_MSG_REQUEST_SET_RADIO_CAPABILITY,
-        RFX_MSG_REQUEST_GET_RADIO_CAPABILITY,
-        RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM
-    };
+    const int request1[] = {RFX_MSG_REQUEST_SET_RADIO_CAPABILITY,
+                            RFX_MSG_REQUEST_GET_RADIO_CAPABILITY,
+                            RFX_MSG_REQUEST_CAPABILITY_SWITCH_SET_MAJOR_SIM};
     registerToHandleRequest(request1, sizeof(request1) / sizeof(int));
     if (old_major_sim != main_sim) {
         // RmcRadioRequestHandler will reset modem if major sim is unsync
@@ -58,14 +56,14 @@ RmcCapabilitySwitchRequestHandler::RmcCapabilitySwitchRequestHandler(int slot_id
     s_first_instance_mutex.lock();
     if (s_first_instance) {
         s_first_instance = false;
-        rfx_property_set(
-                "persist.vendor.radio.simswitch", String8::format("%d", main_sim).string());
-        getNonSlotMclStatusManager()->setIntValue(
-                RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, main_sim - 1, false, false);
+        rfx_property_set("persist.vendor.radio.simswitch",
+                         String8::format("%d", main_sim).string());
+        getNonSlotMclStatusManager()->setIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, main_sim - 1,
+                                                  false, false);
         queryNoResetSupport();
         queryTplusWSupport();
         queryKeep3GMode();
-        if(false == RfxRilUtils::isTplusWSupport()) {
+        if (false == RfxRilUtils::isTplusWSupport()) {
             queryActiveMode();
         }
     }
@@ -76,11 +74,10 @@ RmcCapabilitySwitchRequestHandler::RmcCapabilitySwitchRequestHandler(int slot_id
     sendEvent(RFX_MSG_EVENT_CAPABILITY_INIT_DONE, RfxVoidData(), m_channel_id, m_slot_id);
 }
 
-RmcCapabilitySwitchRequestHandler::~RmcCapabilitySwitchRequestHandler() {
-}
+RmcCapabilitySwitchRequestHandler::~RmcCapabilitySwitchRequestHandler() {}
 
-void RmcCapabilitySwitchRequestHandler::onHandleRequest(const sp<RfxMclMessage> &msg) {
-    //logD(RFX_LOG_TAG, "onHandleRequest: %s", idToString(msg->getId()));
+void RmcCapabilitySwitchRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
+    // logD(RFX_LOG_TAG, "onHandleRequest: %s", idToString(msg->getId()));
     int request = msg->getId();
     switch (request) {
         case RFX_MSG_REQUEST_SET_RADIO_CAPABILITY:
@@ -98,11 +95,11 @@ void RmcCapabilitySwitchRequestHandler::onHandleRequest(const sp<RfxMclMessage> 
     }
 }
 
-void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMclMessage> &msg) {
+void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMclMessage>& msg) {
     sp<RfxMclMessage> resMsg;
-    int *new_major_slot = (int *)msg->getData()->getData();
-    int old_major_slot = getNonSlotMclStatusManager()->getIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+    int* new_major_slot = (int*)msg->getData()->getData();
+    int old_major_slot =
+            getNonSlotMclStatusManager()->getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
     sp<RfxAtResponse> p_response = NULL;
     int real_channel_id = m_channel_id + RIL_PROXY_OFFSET * m_slot_id;
     bool no_reset_support = RmcCapabilitySwitchUtil::isDssNoResetSupport();
@@ -110,8 +107,8 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
     response_data[0] = new_major_slot[0];
     int channels_num = RfxChannelManager::getSupportChannels();
 
-    logI(RFX_LOG_TAG, "RadioCapability old_major_slot=%d, new_major_slot=%d",
-         old_major_slot, new_major_slot[0]);
+    logI(RFX_LOG_TAG, "RadioCapability old_major_slot=%d, new_major_slot=%d", old_major_slot,
+         new_major_slot[0]);
     if (no_reset_support || (!isVsimEnabled() && !isPersistVsim())) {
         int sim_count = RfxRilUtils::rfxGetSimCount();
         if (!no_reset_support) {
@@ -121,9 +118,8 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
             }
             p_response = atSendCommand(String8::format("AT+EFUN=0,%d", RFOFF_CAUSE_SIM_SWITCH));
             if (p_response != NULL && p_response->getSuccess() == 0) {
-                resMsg = RfxMclMessage::obtainResponse(
-                        msg->getId(), RIL_E_GENERIC_FAILURE,
-                        RfxIntsData(response_data, 1), msg, true);
+                resMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
+                                                       RfxIntsData(response_data, 1), msg, true);
                 responseToTelCore(resMsg);
                 return;
             }
@@ -132,16 +128,16 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
         if (RfxRilUtils::getRilRunMode() != RIL_RUN_MODE_MOCK) {
             // lock sms channel (RIL_CMD_8) before other channels
             // due to sms channel may pending for long time
-            for(int i = RIL_CMD_8; i < channels_num; i+=RIL_CHANNEL_OFFSET) {
+            for (int i = RIL_CMD_8; i < channels_num; i += RIL_CHANNEL_OFFSET) {
                 logD(RFX_LOG_TAG, "lock mutex %d!", i);
                 lockRestartMutex(i);
             }
 
-            for(int i = 0; i < channels_num; i++) {
+            for (int i = 0; i < channels_num; i++) {
                 if (i == real_channel_id || i % RIL_CHANNEL_OFFSET == RIL_CMD_IMS ||
-                        i % RIL_CHANNEL_OFFSET == RIL_URC ||
-                        (no_reset_support && i % RIL_CHANNEL_OFFSET == RIL_CMD_11) ||
-                        i % RIL_CHANNEL_OFFSET == RIL_CMD_8 ) {
+                    i % RIL_CHANNEL_OFFSET == RIL_URC ||
+                    (no_reset_support && i % RIL_CHANNEL_OFFSET == RIL_CMD_11) ||
+                    i % RIL_CHANNEL_OFFSET == RIL_CMD_8) {
                     continue;
                 }
                 if (i == 1) {
@@ -153,7 +149,7 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
             }
             if (no_reset_support == false) {
                 /* lock URC channels later than sender channels */
-                for(int i = RIL_URC; i < channels_num; i += RIL_CHANNEL_OFFSET) {
+                for (int i = RIL_URC; i < channels_num; i += RIL_CHANNEL_OFFSET) {
                     lockRestartMutex(i);
                 }
                 logI(RFX_LOG_TAG, "lock mutex done!");
@@ -180,14 +176,14 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
         p_response = atSendCommand(command);
         while (p_response != NULL && p_response->getSuccess() == 0) {
             logE(RFX_LOG_TAG, "at cmd returns ERROR:%d, retry", p_response->getError());
-            usleep(200*1000);
+            usleep(200 * 1000);
             p_response = atSendCommand(command);
         }
 
         // wait for URC channel switch done
         while (getNonSlotMclStatusManager()->getBoolValue(
                 RFX_STATUS_KEY_CAPABILITY_SWITCH_URC_CHANNEL, false)) {
-            usleep(100*1000);
+            usleep(100 * 1000);
         }
 
         if (RfxRilUtils::getRilRunMode() != RIL_RUN_MODE_MOCK) {
@@ -198,17 +194,16 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
                     return;
                 }
             }
-            for(int i = 0; i < RIL_CHANNEL_OFFSET; i++) {
+            for (int i = 0; i < RIL_CHANNEL_OFFSET; i++) {
                 if (i == RIL_CMD_IMS || i == RIL_URC || (no_reset_support && i == RIL_CMD_11)) {
                     continue;
                 }
                 switchChannel(i, old_major_slot, new_major_slot[0]);
             }
-            logD(RFX_LOG_TAG, "switchChannel done! old:%d,new:%d",
-                 old_major_slot, new_major_slot[0]);
-            for(int i = 0; i < channels_num; i++) {
-                if (i % RIL_CHANNEL_OFFSET == RIL_CMD_IMS ||
-                    i % RIL_CHANNEL_OFFSET == RIL_URC ||
+            logD(RFX_LOG_TAG, "switchChannel done! old:%d,new:%d", old_major_slot,
+                 new_major_slot[0]);
+            for (int i = 0; i < channels_num; i++) {
+                if (i % RIL_CHANNEL_OFFSET == RIL_CMD_IMS || i % RIL_CHANNEL_OFFSET == RIL_URC ||
                     i == real_channel_id ||
                     (no_reset_support && i % RIL_CHANNEL_OFFSET == RIL_CMD_11)) {
                     continue;
@@ -217,19 +212,19 @@ void RmcCapabilitySwitchRequestHandler::requestSetRadioCapability(const sp<RfxMc
             }
             if (no_reset_support == false) {
                 /* unlock URC channels later than sender channels */
-                for(int i = RIL_URC; i < channels_num; i+=RIL_CHANNEL_OFFSET) {
+                for (int i = RIL_URC; i < channels_num; i += RIL_CHANNEL_OFFSET) {
                     unlockRestartMutex(i);
                 }
             }
-            //logD(RFX_LOG_TAG, "unlock mutex done!");
+            // logD(RFX_LOG_TAG, "unlock mutex done!");
         } else {
             setSimSwitchProp(old_major_slot, new_major_slot[0]);
         }
-        resMsg = RfxMclMessage::obtainResponse(
-                msg->getId(), RIL_E_SUCCESS, RfxIntsData(response_data, 1), msg, true);
+        resMsg = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+                                               RfxIntsData(response_data, 1), msg, true);
         responseToTelCore(resMsg);
 
-        for(int i = 0; i < sim_count; i++) {
+        for (int i = 0; i < sim_count; i++) {
             int event_data[1];
             event_data[0] = getMclStatusManager(i)->getIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
             sendEvent(RFX_MSG_EVENT_RADIO_CAPABILITY_UPDATED, RfxIntsData(event_data, 1),
@@ -249,7 +244,7 @@ void RmcCapabilitySwitchRequestHandler::resetRadio() {
     atSendCommand("AT+EMDT=0");
     atSendCommand("AT+EPOF");
     RfxRilUtils::triggerCCCIIoctl(CCCI_IOC_ENTER_DEEP_FLIGHT_ENHANCED);
-    //power on modem
+    // power on modem
     RfxRilUtils::triggerCCCIIoctl(CCCI_IOC_LEAVE_DEEP_FLIGHT_ENHANCED);
 }
 
@@ -287,8 +282,8 @@ bool RmcCapabilitySwitchRequestHandler::isPersistVsim() {
     char persist_vsim_inserted_prop[RFX_PROPERTY_VALUE_MAX] = {0};
 
     for (int index = 0; index < RfxRilUtils::rfxGetSimCount(); index++) {
-        getMSimProperty(
-                index, (char*)"persist.vendor.radio.external.sim", persist_vsim_inserted_prop);
+        getMSimProperty(index, (char*)"persist.vendor.radio.external.sim",
+                        persist_vsim_inserted_prop);
         if (atoi(persist_vsim_inserted_prop) > 0) {
             persist = true;
             break;
@@ -301,7 +296,7 @@ bool RmcCapabilitySwitchRequestHandler::isPersistVsim() {
 void RmcCapabilitySwitchRequestHandler::queryTplusWSupport() {
     sp<RfxAtResponse> p_response = NULL;
     int TplusWsupport = 0;
-    RfxAtLine *line;
+    RfxAtLine* line;
     int err;
 
     p_response = atSendCommandSingleline("AT+ESBP=7,\"SBP_T_PLUS_W\"", "+ESBP:");
@@ -321,16 +316,16 @@ void RmcCapabilitySwitchRequestHandler::queryTplusWSupport() {
             logE(RFX_LOG_TAG, "queryTplusWSupport AT+ESBP atTokNextint error:%d", err);
             break;
         }
-    } while(0);
+    } while (0);
     logD(RFX_LOG_TAG, "queryTplusWSupport, TplusWSupport=%d", TplusWsupport);
     rfx_property_set("vendor.ril.simswitch.tpluswsupport",
-            String8::format("%d", TplusWsupport).string());
+                     String8::format("%d", TplusWsupport).string());
 }
 
 void RmcCapabilitySwitchRequestHandler::queryKeep3GMode() {
     sp<RfxAtResponse> p_response = NULL;
     int keep_3g_mode = 0;
-    RfxAtLine *line;
+    RfxAtLine* line;
     int err;
 
     p_response = atSendCommandSingleline("AT+ESBP=7,\"SBP_GEMINI_LG_WG_MODE\"", "+ESBP:");
@@ -350,31 +345,31 @@ void RmcCapabilitySwitchRequestHandler::queryKeep3GMode() {
             logE(RFX_LOG_TAG, "queryKeep3GMode AT+ESBP atTokNextint error:%d", err);
             break;
         }
-    } while(0);
+    } while (0);
     logD(RFX_LOG_TAG, "queryKeep3GMode, keep_3g_mode=%d", keep_3g_mode);
-    //keep_3g_mode, 0:keep TD-SCDMA, 1:keep WCDMA
+    // keep_3g_mode, 0:keep TD-SCDMA, 1:keep WCDMA
     rfx_property_set("vendor.ril.nw.worldmode.keep_3g_mode",
-            String8::format("%d", keep_3g_mode).string());
+                     String8::format("%d", keep_3g_mode).string());
 }
 
 void RmcCapabilitySwitchRequestHandler::queryNoResetSupport() {
     char feature[] = "DSS_NO_RESET";
     int support = getFeatureVersion(feature);
-    //no reset support, 0:disable, 1:enable
-    logD(RFX_LOG_TAG, "queryNoResetSupport, %s=%d",feature, support);
+    // no reset support, 0:disable, 1:enable
+    logD(RFX_LOG_TAG, "queryNoResetSupport, %s=%d", feature, support);
     if (support == 1) {
         rfx_property_set("vendor.ril.simswitch.no_reset_support",
-                String8::format("%d", support).string());
+                         String8::format("%d", support).string());
     } else {
         rfx_property_set("vendor.ril.simswitch.no_reset_support",
-                String8::format("%d", 0).string());
+                         String8::format("%d", 0).string());
     }
 }
 
 void RmcCapabilitySwitchRequestHandler::queryActiveMode() {
     sp<RfxAtResponse> p_response = NULL;
     int csraaResponse[3] = {0};
-    RfxAtLine *line;
+    RfxAtLine* line;
     int err;
 
     p_response = atSendCommandMultiline("AT+CSRA?", "+CSRAA:");
@@ -397,21 +392,20 @@ void RmcCapabilitySwitchRequestHandler::queryActiveMode() {
         if (err < 0) {
             break;
         }
-        //logD(RFX_LOG_TAG, "+CSRAA:<UTRANFDD> = %d", csraaResponse[1]);
+        // logD(RFX_LOG_TAG, "+CSRAA:<UTRANFDD> = %d", csraaResponse[1]);
         csraaResponse[2] = line->atTokNextint(&err);
         if (err < 0) {
             break;
         }
-        //logD(RFX_LOG_TAG, "+CSRAA:<UTRAN-TDD-LCR> = %d", csraaResponse[2]);
+        // logD(RFX_LOG_TAG, "+CSRAA:<UTRAN-TDD-LCR> = %d", csraaResponse[2]);
         if ((csraaResponse[1] == 1) && (csraaResponse[2] == 0)) {
-            //FDD mode
+            // FDD mode
             rfx_property_set("vendor.ril.nw.worldmode.activemode",
-                    String8::format("%d", 1).string());
-        }
-        else if ((csraaResponse[1] == 0) && (csraaResponse[2] == 1)) {
-            //TDD mode
+                             String8::format("%d", 1).string());
+        } else if ((csraaResponse[1] == 0) && (csraaResponse[2] == 1)) {
+            // TDD mode
             rfx_property_set("vendor.ril.nw.worldmode.activemode",
-                    String8::format("%d", 2).string());
+                             String8::format("%d", 2).string());
         }
     } while (0);
 }
@@ -428,7 +422,7 @@ int RmcCapabilitySwitchRequestHandler::getActiveMode() {
 int RmcCapabilitySwitchRequestHandler::queryMainProtocol() {
     sp<RfxAtResponse> p_response = NULL;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     int ret = 0;
     int main_sim = 1;
 
@@ -467,13 +461,13 @@ int RmcCapabilitySwitchRequestHandler::queryMainProtocol() {
 void RmcCapabilitySwitchRequestHandler::queryBearer() {
     sp<RfxAtResponse> p_response = NULL;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     int ret = 0;
     int modem_rat = RAF_GPRS;
     int ap_max_rat = RAF_GPRS;
     int radio_capability;
     int main_slot = RmcCapabilitySwitchUtil::getMajorSim() - 1;
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     logD(RFX_LOG_TAG, "queryBearer");
 
@@ -548,17 +542,15 @@ void RmcCapabilitySwitchRequestHandler::queryBearer() {
         modem_rat |= RAF_GPRS;
     }
     radio_capability = (modem_rat & ap_max_rat);
-    getMclStatusManager(m_slot_id)->setIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, radio_capability, false, false);
+    getMclStatusManager(m_slot_id)->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY,
+                                                radio_capability, false, false);
 
     if (major_slot != m_slot_id && getActiveMode() == 2 &&
-        RfxRilUtils::isTplusWSupport() == false &&
-        RfxRilUtils::getKeep3GMode() == 0) {
+        RfxRilUtils::isTplusWSupport() == false && RfxRilUtils::getKeep3GMode() == 0) {
         // Remove 3G raf for non major SIMs in TDD mode
         radio_capability &= ~RAF_UMTS;
     }
-    if(RmcCapabilitySwitchUtil::isDisableC2kCapability() == false &&
-            RatConfig_isC2kSupported()) {
+    if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         memset(tempstr, 0, sizeof(tempstr));
         rfx_property_get("persist.vendor.radio.c_capability_slot", tempstr, "1");
         int cslot = atoi(tempstr) - 1;
@@ -568,27 +560,26 @@ void RmcCapabilitySwitchRequestHandler::queryBearer() {
         }
     }
     logD(RFX_LOG_TAG, "radio_capability=%d", radio_capability);
-    getMclStatusManager(m_slot_id)->setIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability, false, false);
+    getMclStatusManager(m_slot_id)->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, radio_capability,
+                                                false, false);
 }
 
 void RmcCapabilitySwitchRequestHandler::sendRadioCapabilityDoneIfNeeded() {
-    int radio_capability = getMclStatusManager(m_slot_id)->getIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
+    int radio_capability =
+            getMclStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
     int event_data[1];
 
-    if(RmcCapabilitySwitchUtil::isDisableC2kCapability() == false &&
-            RatConfig_isC2kSupported()) {
+    if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         // always send CDMA capability from Android Q
         radio_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
     }
 
     event_data[0] = radio_capability;
-    sendEvent(RFX_MSG_EVENT_RADIO_CAPABILITY_UPDATED, RfxIntsData(event_data, 1),
-              m_channel_id, m_slot_id);
+    sendEvent(RFX_MSG_EVENT_RADIO_CAPABILITY_UPDATED, RfxIntsData(event_data, 1), m_channel_id,
+              m_slot_id);
 }
 
-void RmcCapabilitySwitchRequestHandler::requestGetRadioCapability(const sp<RfxMclMessage> &msg) {
+void RmcCapabilitySwitchRequestHandler::requestGetRadioCapability(const sp<RfxMclMessage>& msg) {
     int radio_capability;
     int session_id = -1;
     RIL_RadioCapability rc;
@@ -597,10 +588,9 @@ void RmcCapabilitySwitchRequestHandler::requestGetRadioCapability(const sp<RfxMc
     rc.session = session_id;
     rc.phase = RC_PHASE_UNSOL_RSP;
     rc.status = RC_STATUS_SUCCESS;
-    radio_capability = getMclStatusManager(m_slot_id)->getIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
-    if(RmcCapabilitySwitchUtil::isDisableC2kCapability() == false &&
-            RatConfig_isC2kSupported()) {
+    radio_capability =
+            getMclStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, 0);
+    if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         // always send CDMA capability from Android Q
         radio_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
     }
@@ -617,13 +607,13 @@ void RmcCapabilitySwitchRequestHandler::setSimSwitchProp(int old_major_slot, int
     switchCapability(old_major_slot, new_major_slot);
     rfx_property_set("persist.vendor.radio.simswitch",
                      String8::format("%d", new_major_slot + 1).string());
-    getNonSlotMclStatusManager()->setIntValue(
-            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, new_major_slot, false, false);
+    getNonSlotMclStatusManager()->setIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, new_major_slot,
+                                              false, false);
 }
 
 void RmcCapabilitySwitchRequestHandler::lockRestartMutex(int channel_id) {
-    RfxChannel *p_channel;
-    RfxChannelContext *p_channel_context;
+    RfxChannel* p_channel;
+    RfxChannelContext* p_channel_context;
 
     p_channel = RfxChannelManager::getChannel(channel_id);
     p_channel_context = p_channel->getContext();
@@ -633,8 +623,8 @@ void RmcCapabilitySwitchRequestHandler::lockRestartMutex(int channel_id) {
 }
 
 void RmcCapabilitySwitchRequestHandler::unlockRestartMutex(int channel_id) {
-    RfxChannel *p_channel;
-    RfxChannelContext *p_channel_context;
+    RfxChannel* p_channel;
+    RfxChannelContext* p_channel_context;
 
     p_channel = RfxChannelManager::getChannel(channel_id);
     p_channel_context = p_channel->getContext();
@@ -648,12 +638,12 @@ void RmcCapabilitySwitchRequestHandler::switchChannelByRealId(int channel_id1, i
     RfxChannel *channel1, *channel2;
     RfxReader *reader1, *reader2;
     RfxSender *sender1, *sender2;
-    RfxChannelContext *tmp_context;
+    RfxChannelContext* tmp_context;
     int tmp_fd;
     if (channel_id1 == channel_id2) {
         return;
     }
-    //RFX_LOG_D(RFX_LOG_TAG, "switchChannel:%d <-> %d", channel_id1, channel_id2);
+    // RFX_LOG_D(RFX_LOG_TAG, "switchChannel:%d <-> %d", channel_id1, channel_id2);
     channel1 = RfxChannelManager::getChannel(channel_id1);
     channel2 = RfxChannelManager::getChannel(channel_id2);
     reader1 = channel1->getReader();
@@ -681,20 +671,20 @@ void RmcCapabilitySwitchRequestHandler::switchChannel(int channel, int old_major
         return;
     }
     if (RfxRilUtils::rfxGetSimCount() < 3) {
-        //Switch main protocol channel from old main slot to slot 0
+        // Switch main protocol channel from old main slot to slot 0
         switchChannelByRealId(channel, channel + old_major_slot * RIL_CHANNEL_OFFSET);
-        //Switch main protocol channel from 0 to new main slot id
+        // Switch main protocol channel from 0 to new main slot id
         switchChannelByRealId(channel, channel + new_major_slot * RIL_CHANNEL_OFFSET);
     } else {
         int step = (new_major_slot > old_major_slot) ? 1 : -1;
         for (int i = old_major_slot; i != new_major_slot; i += step) {
-            switchChannelByRealId(
-                    channel + i * RIL_CHANNEL_OFFSET, channel + (i + step) * RIL_CHANNEL_OFFSET);
+            switchChannelByRealId(channel + i * RIL_CHANNEL_OFFSET,
+                                  channel + (i + step) * RIL_CHANNEL_OFFSET);
         }
     }
 }
 
-//shift capability for the new EPSMAP mapping logic
+// shift capability for the new EPSMAP mapping logic
 void RmcCapabilitySwitchRequestHandler::shiftCapability(int old_major_slot, int new_major_slot) {
     if (old_major_slot == new_major_slot) {
         RFX_LOG_D(RFX_LOG_TAG, "shiftCapability:old=new=%d", old_major_slot);
@@ -709,25 +699,26 @@ void RmcCapabilitySwitchRequestHandler::shiftCapability(int old_major_slot, int 
 }
 
 void RmcCapabilitySwitchRequestHandler::switchFixedCapability(int slot_a, int slot_b) {
-    int tmp_capability = getMclStatusManager(slot_a)->getIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+    int tmp_capability =
+            getMclStatusManager(slot_a)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     getMclStatusManager(slot_a)->setIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, getMclStatusManager(slot_b)->getIntValue(
-                    RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0), false, false);
-    getMclStatusManager(slot_b)->setIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability, false, false);
+            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY,
+            getMclStatusManager(slot_b)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0),
+            false, false);
+    getMclStatusManager(slot_b)->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability,
+                                             false, false);
 }
 
 void RmcCapabilitySwitchRequestHandler::setCapabilityByConfig(int slot, bool is_major_slot) {
     int cslot = -1;
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
     if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         memset(tempstr, 0, sizeof(tempstr));
         rfx_property_get("persist.vendor.radio.c_capability_slot", tempstr, "1");
         cslot = atoi(tempstr) - 1;
     }
-    int tmp_capability = getMclStatusManager(slot)->getIntValue(
-        RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+    int tmp_capability =
+            getMclStatusManager(slot)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     if (!is_major_slot && getActiveMode() == 2 && RfxRilUtils::isTplusWSupport() == false &&
         RfxRilUtils::getKeep3GMode() == 0) {
         // Remove 3G raf for non major SIMs in TDD mode
@@ -737,35 +728,39 @@ void RmcCapabilitySwitchRequestHandler::setCapabilityByConfig(int slot, bool is_
         tmp_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
     }
     logD(RFX_LOG_TAG, "setCapabilityByConfig, cslot=%d,capa=%d", cslot, tmp_capability);
-    getMclStatusManager(slot)->setIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
+    getMclStatusManager(slot)->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false,
+                                           false);
 }
 
 void RmcCapabilitySwitchRequestHandler::switchCapability(int old_major_slot, int new_major_slot) {
     int tmp_capability;
     int cslot = -1;
-    char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
 
     if (RfxRilUtils::rfxGetSimCount() > 2) {
         return shiftCapability(old_major_slot, new_major_slot);
     }
     if (old_major_slot != 0) {
-        tmp_capability = getMclStatusManager(old_major_slot)->getIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
-        getMclStatusManager(old_major_slot)->setIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, getMclStatusManager(0)->getIntValue(
-                        RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0), false, false);
-        getMclStatusManager(0)->setIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability, false, false);
+        tmp_capability = getMclStatusManager(old_major_slot)
+                                 ->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+        getMclStatusManager(old_major_slot)
+                ->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY,
+                              getMclStatusManager(0)->getIntValue(
+                                      RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0),
+                              false, false);
+        getMclStatusManager(0)->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability,
+                                            false, false);
     }
     if (new_major_slot != 0) {
-        tmp_capability = getMclStatusManager(new_major_slot)->getIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
-        getMclStatusManager(new_major_slot)->setIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, getMclStatusManager(0)->getIntValue(
-                        RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0), false, false);
-        getMclStatusManager(0)->setIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability, false, false);
+        tmp_capability = getMclStatusManager(new_major_slot)
+                                 ->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+        getMclStatusManager(new_major_slot)
+                ->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY,
+                              getMclStatusManager(0)->getIntValue(
+                                      RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0),
+                              false, false);
+        getMclStatusManager(0)->setIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, tmp_capability,
+                                            false, false);
     }
     if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         memset(tempstr, 0, sizeof(tempstr));
@@ -774,8 +769,8 @@ void RmcCapabilitySwitchRequestHandler::switchCapability(int old_major_slot, int
         logI(RFX_LOG_TAG, "switchCapability, cslot=%d", cslot);
     }
     if (old_major_slot != 0 && new_major_slot != 0) {
-        tmp_capability = getMclStatusManager(0)->getIntValue(
-                RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+        tmp_capability =
+                getMclStatusManager(0)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
         if (getActiveMode() == 2 && RfxRilUtils::isTplusWSupport() == false &&
             RfxRilUtils::getKeep3GMode() == 0) {
             // Remove 3G raf for non major SIMs in TDD mode
@@ -784,12 +779,12 @@ void RmcCapabilitySwitchRequestHandler::switchCapability(int old_major_slot, int
         if (cslot == 0) {
             tmp_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
         }
-        getMclStatusManager(0)->setIntValue(
-                RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
+        getMclStatusManager(0)->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false,
+                                            false);
     }
 
-    tmp_capability = getMclStatusManager(old_major_slot)->getIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+    tmp_capability = getMclStatusManager(old_major_slot)
+                             ->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     if (getActiveMode() == 2 && RfxRilUtils::isTplusWSupport() == false &&
         RfxRilUtils::getKeep3GMode() == 0) {
         // Remove 3G raf for non major SIMs in TDD mode
@@ -798,26 +793,25 @@ void RmcCapabilitySwitchRequestHandler::switchCapability(int old_major_slot, int
     if (cslot == old_major_slot) {
         tmp_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
     }
-    getMclStatusManager(old_major_slot)->setIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
+    getMclStatusManager(old_major_slot)
+            ->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
 
-    tmp_capability = getMclStatusManager(new_major_slot)->getIntValue(
-            RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
+    tmp_capability = getMclStatusManager(new_major_slot)
+                             ->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     if (cslot == new_major_slot) {
         tmp_capability |= (RAF_CDMA_GROUP | RAF_EVDO_GROUP);
     }
-    getMclStatusManager(new_major_slot)->setIntValue(
-            RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
+    getMclStatusManager(new_major_slot)
+            ->setIntValue(RFX_STATUS_KEY_SLOT_CAPABILITY, tmp_capability, false, false);
 }
 
 void RmcCapabilitySwitchRequestHandler::sendEGRAT() {
     int raf = getMclStatusManager(m_slot_id)->getIntValue(RFX_STATUS_KEY_SLOT_FIXED_CAPABILITY, 0);
     int rat;
-    if(RmcCapabilitySwitchUtil::isDisableC2kCapability() == false &&
-            RatConfig_isC2kSupported()) {
+    if (RmcCapabilitySwitchUtil::isDisableC2kCapability() == false && RatConfig_isC2kSupported()) {
         raf |= RAF_CDMA_GROUP;
     }
-    if(!RatConfig_isGsmSupported()) {
+    if (!RatConfig_isGsmSupported()) {
         raf &= ~RAF_GSM_GROUP;
     }
     raf = RmcCapabilitySwitchUtil::getAdjustedRaf(raf);
@@ -918,8 +912,8 @@ void RmcCapabilitySwitchRequestHandler::sendEGRAT() {
 }
 
 void RmcCapabilitySwitchRequestHandler::notifySIMInitDone(int slot_id) {
-    RFX_LOG_I(RFX_LOG_TAG, "notifySIMInitDone, slot:%d, sim_init_state:0x%x",
-              slot_id, s_sim_init_state);
+    RFX_LOG_I(RFX_LOG_TAG, "notifySIMInitDone, slot:%d, sim_init_state:0x%x", slot_id,
+              s_sim_init_state);
     s_sim_init_state_mutex.lock();
     s_sim_init_state |= (1 << slot_id);
     s_sim_init_state_mutex.unlock();
@@ -943,9 +937,9 @@ bool RmcCapabilitySwitchRequestHandler::waitSIMInitDone() {
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         int retry_count = 0;
         while ((getSIMInitState() & (1 << i)) == 0) {
-            usleep(100*1000);
+            usleep(100 * 1000);
             retry_count++;
-            //logD(RFX_LOG_TAG, "wait SIM[%d] init done, retry:%d", i, retry_count);
+            // logD(RFX_LOG_TAG, "wait SIM[%d] init done, retry:%d", i, retry_count);
             if (retry_count > 100) {
                 rfx_property_set("vendor.gsm.ril.eboot", "1");
                 resetRadio();

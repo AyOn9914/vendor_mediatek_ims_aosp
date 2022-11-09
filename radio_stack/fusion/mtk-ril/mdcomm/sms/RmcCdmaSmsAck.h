@@ -28,34 +28,31 @@
  *****************************************************************************/
 class RmcCdmaSmsAck : public RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaSmsAck);
-public:
+
+  public:
     RmcCdmaSmsAck(int type, int replyReqNo, RIL_CDMA_SMS_Ack ack,
-            const RIL_CDMA_SMS_Address *pAddr);
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
+                  const RIL_CDMA_SMS_Address* pAddr);
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
 
-    bool setCmd(int type, int replySeqNo, const RIL_CDMA_SMS_Address *pAddr);
+    bool setCmd(int type, int replySeqNo, const RIL_CDMA_SMS_Address* pAddr);
 
-    const String8& getCmd() const {
-        return m_cmd;
-    }
+    const String8& getCmd() const { return m_cmd; }
 
-private:
+  private:
     RIL_CDMA_SMS_Ack m_ack;
     String8 m_cmd;
 };
-
 
 /*****************************************************************************
  * Class RmcCdmaSmsAckHdlr
  *****************************************************************************/
 class RmcCdmaSmsAckHdlr : public RmcBaseRequestHandler {
-public:
-    RmcCdmaSmsAckHdlr(RfxBaseHandler *h) :RmcBaseRequestHandler(h){}
+  public:
+    RmcCdmaSmsAckHdlr(RfxBaseHandler* h) : RmcBaseRequestHandler(h) {}
     virtual ~RmcCdmaSmsAckHdlr() {}
-public:
+
+  public:
     virtual void onAfterResponse();
 };
-
-
 
 #endif /* __RMC_CDMA_SMS_ACK__ */

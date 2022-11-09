@@ -51,12 +51,12 @@ typedef struct {
  * Class SmsHeader
  *****************************************************************************/
 class SmsHeader {
-public:
+  public:
     SmsHeader();
     virtual ~SmsHeader();
     static SmsHeader* fromByteArray(BYTE* data, int headerLength);
 
-public:
+  public:
     ConcatRef mConcatRef;
     PortAddrs mPortAddrs;
     int mLanguageShiftTable;
@@ -66,7 +66,7 @@ public:
     static const int PORT_WAP_PUSH;
     static const int PORT_SUPL;
 
-private:
+  private:
     static const int ELT_ID_CONCATENATED_8_BIT_REFERENCE = 0x00;
     static const int ELT_ID_CONCATENATED_16_BIT_REFERENCE = 0x08;
     static const int ELT_ID_APPLICATION_PORT_ADDRESSING_8_BIT = 0x04;

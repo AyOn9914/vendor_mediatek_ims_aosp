@@ -72,7 +72,7 @@ int socket_network_client_timeout(const char* host, int port, int type, int time
     int s = socket(family, type, protocol);
     if (s == -1 || toggle_O_NONBLOCK(s) == -1) return -1;
 
-    int rc = connect(s, (const struct sockaddr*) &addr, addr_len);
+    int rc = connect(s, (const struct sockaddr*)&addr, addr_len);
     if (rc == 0) {
         return toggle_O_NONBLOCK(s);
     } else if (rc == -1 && errno != EINPROGRESS) {
@@ -92,7 +92,7 @@ int socket_network_client_timeout(const char* host, int port, int type, int time
         close(s);
         return -1;
     }
-    if (rc == 0) {   // we had a timeout
+    if (rc == 0) {  // we had a timeout
         errno = ETIMEDOUT;
         close(s);
         return -1;

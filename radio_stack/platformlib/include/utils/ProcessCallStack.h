@@ -31,7 +31,7 @@ class Printer;
 
 // Collect/print the call stack (function, file, line) traces for all threads in a process.
 class ProcessCallStack {
-public:
+  public:
     // Create an empty call stack. No-op.
     ProcessCallStack();
     // Copy the existing process callstack (no other side effects).
@@ -57,7 +57,7 @@ public:
     // Get the number of threads whose stack traces were collected.
     size_t size() const;
 
-private:
+  private:
     void printInternal(Printer& printer, Printer& csPrinter) const;
 
     // Reset the process's stack frames and metadata.
@@ -74,6 +74,6 @@ private:
     struct tm mTimeUpdated;
 };
 
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_PROCESS_CALLSTACK_H
+#endif  // ANDROID_PROCESS_CALLSTACK_H

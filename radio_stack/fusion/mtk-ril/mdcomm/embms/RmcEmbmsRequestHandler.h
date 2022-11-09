@@ -49,61 +49,62 @@
 class RmcEmbmsRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcEmbmsRequestHandler);
 
-    public:
-        RmcEmbmsRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcEmbmsRequestHandler();
+  public:
+    RmcEmbmsRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcEmbmsRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestEmbmsAt(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsEnable(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsDisable(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsStartSession(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsStopSession(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsGetNetworkTime(const sp<RfxMclMessage>& msg);
-        void requestLocalEmbmsSetCoverageStatus(const sp<RfxMclMessage>& msg);
-        void requestEmbmsGetCoverageStatus(const sp<RfxMclMessage>& msg);
-        void requestLocalTriggerCellInfoNotify(const sp<RfxMclMessage>& msg);
-        void requestAtGetSaiList_old(const sp<RfxMclMessage>& msg);
-        void requestAtGetSaiList(const sp<RfxMclMessage>& msg);
-        void requestAtNetworkInfo(const sp<RfxMclMessage>& msg);
-        void requestAtBssiSignalLevel(const sp<RfxMclMessage>& msg);
-        void requestAtModemStatus(const sp<RfxMclMessage>& msg);
-        void requestAtEnableUrcEvents(const sp<RfxMclMessage>& msg);
-        void requestAtAvailService(const sp<RfxMclMessage>& msg);
-        void requestAtDeviceInfo(const sp<RfxMclMessage>& msg);
-        void requestAtSetPreference(const sp<RfxMclMessage>& msg);
-        void requestAtNetworkRegSupport(const sp<RfxMclMessage>& msg);
-        void requestAtNetworkRegStatus(const sp<RfxMclMessage>& msg);
-        void postEpsNetworkUpdate(const sp<RfxMclMessage>& msg);
-        void postHvolteUpdate(const sp<RfxMclMessage>& msg);
-        void postSaiListUpdate(const sp<RfxMclMessage>& msg);
-        void postSessionListUpdate(const sp<RfxMclMessage>& msg);
+  private:
+    void requestEmbmsAt(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsEnable(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsDisable(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsStartSession(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsStopSession(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsGetNetworkTime(const sp<RfxMclMessage>& msg);
+    void requestLocalEmbmsSetCoverageStatus(const sp<RfxMclMessage>& msg);
+    void requestEmbmsGetCoverageStatus(const sp<RfxMclMessage>& msg);
+    void requestLocalTriggerCellInfoNotify(const sp<RfxMclMessage>& msg);
+    void requestAtGetSaiList_old(const sp<RfxMclMessage>& msg);
+    void requestAtGetSaiList(const sp<RfxMclMessage>& msg);
+    void requestAtNetworkInfo(const sp<RfxMclMessage>& msg);
+    void requestAtBssiSignalLevel(const sp<RfxMclMessage>& msg);
+    void requestAtModemStatus(const sp<RfxMclMessage>& msg);
+    void requestAtEnableUrcEvents(const sp<RfxMclMessage>& msg);
+    void requestAtAvailService(const sp<RfxMclMessage>& msg);
+    void requestAtDeviceInfo(const sp<RfxMclMessage>& msg);
+    void requestAtSetPreference(const sp<RfxMclMessage>& msg);
+    void requestAtNetworkRegSupport(const sp<RfxMclMessage>& msg);
+    void requestAtNetworkRegStatus(const sp<RfxMclMessage>& msg);
+    void postEpsNetworkUpdate(const sp<RfxMclMessage>& msg);
+    void postHvolteUpdate(const sp<RfxMclMessage>& msg);
+    void postSaiListUpdate(const sp<RfxMclMessage>& msg);
+    void postSessionListUpdate(const sp<RfxMclMessage>& msg);
 
-        int isTmgiEmpty(char * tmgi);
-        bool parseSIB16Time(sp<RfxAtResponse> p_response, RIL_EMBMS_GetTimeResp* time_response);
-        bool parseNitzTime(sp<RfxAtResponse> p_response, RIL_EMBMS_GetTimeResp* time_response);
-        int convertLteRegState(int status, int eAct);
-        bool parseCellId(RfxAtLine* p_response, int* status, unsigned int* cell_id);
-        bool parseSailist(sp<RfxAtResponse> p_response, RIL_EMBMS_LocalSaiNotify* p_embms_sailist);
-        bool isRjilSupport();
-        bool isAtCmdEnableSupport();
-        void ril_data_setflags(int s, struct ifreq *ifr, int set, int clr);
-        void ril_embms_ioctl_init();
-        void setNwIntfDown(const char * pzIfName);
-        void configureEmbmsNetworkInterface(int interfaceId, int isUp);
-        int getSignalStrength(RfxAtLine *line, int* rssi);
-        void dummyOkResponse(const sp<RfxMclMessage>& msg);
-        void forceEnableMdEmbms(const sp<RfxMclMessage>& msg);
-    private:
-        static int embms_sock_fd;
-        static int embms_sock6_fd;
-        static const char* CCMNI_IFNAME_CCMNI;
-        RIL_EMBMS_LocalSessionNotify g_active_session;
-        RIL_EMBMS_LocalSessionNotify g_available_session;
+    int isTmgiEmpty(char* tmgi);
+    bool parseSIB16Time(sp<RfxAtResponse> p_response, RIL_EMBMS_GetTimeResp* time_response);
+    bool parseNitzTime(sp<RfxAtResponse> p_response, RIL_EMBMS_GetTimeResp* time_response);
+    int convertLteRegState(int status, int eAct);
+    bool parseCellId(RfxAtLine* p_response, int* status, unsigned int* cell_id);
+    bool parseSailist(sp<RfxAtResponse> p_response, RIL_EMBMS_LocalSaiNotify* p_embms_sailist);
+    bool isRjilSupport();
+    bool isAtCmdEnableSupport();
+    void ril_data_setflags(int s, struct ifreq* ifr, int set, int clr);
+    void ril_embms_ioctl_init();
+    void setNwIntfDown(const char* pzIfName);
+    void configureEmbmsNetworkInterface(int interfaceId, int isUp);
+    int getSignalStrength(RfxAtLine* line, int* rssi);
+    void dummyOkResponse(const sp<RfxMclMessage>& msg);
+    void forceEnableMdEmbms(const sp<RfxMclMessage>& msg);
+
+  private:
+    static int embms_sock_fd;
+    static int embms_sock6_fd;
+    static const char* CCMNI_IFNAME_CCMNI;
+    RIL_EMBMS_LocalSessionNotify g_active_session;
+    RIL_EMBMS_LocalSessionNotify g_available_session;
 };
 
 #endif

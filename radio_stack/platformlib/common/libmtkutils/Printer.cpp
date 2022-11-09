@@ -45,7 +45,7 @@ void Printer::printFormatLine(const char* format, ...) {
     char* formattedString;
 
 #ifndef USE_MINGW
-    if (vasprintf(&formattedString, format, arglist) < 0) { // returns -1 on error
+    if (vasprintf(&formattedString, format, arglist) < 0) {  // returns -1 on error
         ALOGE("%s: Failed to format string", __FUNCTION__);
         return;
     }
@@ -62,15 +62,12 @@ void Printer::printFormatLine(const char* format, ...) {
 /*
  * Implementation of LogPrinter
  */
-LogPrinter::LogPrinter(const char* logtag,
-                       android_LogPriority priority,
-                       const char* prefix,
-                       bool ignoreBlankLines) :
-        mLogTag(logtag),
-        mPriority(priority),
-        mPrefix(prefix ?: ""),
-        mIgnoreBlankLines(ignoreBlankLines) {
-}
+LogPrinter::LogPrinter(const char* logtag, android_LogPriority priority, const char* prefix,
+                       bool ignoreBlankLines)
+    : mLogTag(logtag),
+      mPriority(priority),
+      mPrefix(prefix ?: ""),
+      mIgnoreBlankLines(ignoreBlankLines) {}
 
 void LogPrinter::printLine(const char* string) {
     if (string == NULL) {
@@ -87,17 +84,13 @@ void LogPrinter::printLine(const char* string) {
     }
 }
 
-void LogPrinter::printRaw(const char* string) {
-    ALOGD("%s%s", mPrefix, string);
-}
-
+void LogPrinter::printRaw(const char* string) { ALOGD("%s%s", mPrefix, string); }
 
 /*
  * Implementation of FdPrinter
  */
-FdPrinter::FdPrinter(int fd, unsigned int indent, const char* prefix) :
-        mFd(fd), mIndent(indent), mPrefix(prefix ?: "") {
-
+FdPrinter::FdPrinter(int fd, unsigned int indent, const char* prefix)
+    : mFd(fd), mIndent(indent), mPrefix(prefix ?: "") {
     if (fd < 0) {
         ALOGW("%s: File descriptor out of range (%d)", __FUNCTION__, fd);
     }
@@ -123,10 +116,8 @@ void FdPrinter::printLine(const char* string) {
 /*
  * Implementation of String8Printer
  */
-String8Printer::String8Printer(String8* target, const char* prefix) :
-        mTarget(target),
-        mPrefix(prefix ?: "") {
-
+String8Printer::String8Printer(String8* target, const char* prefix)
+    : mTarget(target), mPrefix(prefix ?: "") {
     if (target == NULL) {
         ALOGW("%s: Target string was NULL", __FUNCTION__);
     }
@@ -149,12 +140,11 @@ void String8Printer::printLine(const char* string) {
 /*
  * Implementation of PrefixPrinter
  */
-PrefixPrinter::PrefixPrinter(Printer& printer, const char* prefix) :
-        mPrinter(printer), mPrefix(prefix ?: "") {
-}
+PrefixPrinter::PrefixPrinter(Printer& printer, const char* prefix)
+    : mPrinter(printer), mPrefix(prefix ?: "") {}
 
 void PrefixPrinter::printLine(const char* string) {
     mPrinter.printFormatLine("%s%s", mPrefix, string);
 }
 
-}; //namespace android
+};  // namespace android

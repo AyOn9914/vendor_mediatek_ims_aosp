@@ -20,22 +20,22 @@
 // Notice: All the buffer pointers are required to be
 //         four-byte-aligned to avoid the potential on-target process error !!!
 
-#define LIMITER_FRAME_SAMPLE_COUNT  64
+#define LIMITER_FRAME_SAMPLE_COUNT 64
 // Notice: Limiter SWIP frame size is 64-sample (one pair of L / R counts as one sample),
 //         If input / output PCM sample count is not multiple of 64,
 //         driver needs to take care of the residual PCM samples !!!
 
 typedef enum {
-    LMTR_IN_Q33P31_OUT_Q1P31    = 0,    // 64-bit Q33.31 input, 32-bit Q1.31 output
-    LMTR_IN_FLOAT32_OUT_FLOAT32 = 1,    // 32-bit floating input, 32-bit floating output
-    LMTR_IN_Q5P27_OUT_Q5P27     = 2     // 32-bit Q5.27 input, 32-bit Q5.27 output
+    LMTR_IN_Q33P31_OUT_Q1P31 = 0,     // 64-bit Q33.31 input, 32-bit Q1.31 output
+    LMTR_IN_FLOAT32_OUT_FLOAT32 = 1,  // 32-bit floating input, 32-bit floating output
+    LMTR_IN_Q5P27_OUT_Q5P27 = 2       // 32-bit Q5.27 input, 32-bit Q5.27 output
 } LMTR_PCM_FORMAT;
 
 typedef enum {
-    LMTR_TO_NORMAL_STATE   = 0, // Change to normal state
-    LMTR_TO_BYPASS_STATE   = 1, // Change to bypass state
-    LMTR_CHANGE_PCM_FORMAT = 2, // Change PCM format
-    LMTR_RESET             = 3  // Clear history buffer
+    LMTR_TO_NORMAL_STATE = 0,    // Change to normal state
+    LMTR_TO_BYPASS_STATE = 1,    // Change to bypass state
+    LMTR_CHANGE_PCM_FORMAT = 2,  // Change PCM format
+    LMTR_RESET = 3               // Clear history buffer
 } LMTR_COMMAND;
 
 typedef enum {
@@ -156,9 +156,8 @@ typedef struct {
     p_temp_buf_size_in_byte     [O] Required temp buffer size in bytes
     PCM_Format                  [I] Input / output PCM format
 */
-int Limiter_GetBufferSize(  unsigned int *p_internal_buf_size_in_byte,
-                            unsigned int *p_temp_buf_size_in_byte,
-                            unsigned int PCM_Format);
+int Limiter_GetBufferSize(unsigned int* p_internal_buf_size_in_byte,
+                          unsigned int* p_temp_buf_size_in_byte, unsigned int PCM_Format);
 
 /*
     Initialize the limiter
@@ -169,9 +168,7 @@ int Limiter_GetBufferSize(  unsigned int *p_internal_buf_size_in_byte,
     p_internal_buf  [I] Pointer to the internal buffer
     p_init_param    [I] Pointer to the initial parameters
 */
-int Limiter_Open(   Limiter_Handle **pp_handle,
-                    void *p_internal_buf,
-                    Limiter_InitParam *p_init_param);
+int Limiter_Open(Limiter_Handle** pp_handle, void* p_internal_buf, Limiter_InitParam* p_init_param);
 
 /*
     Process 16-bit / 32-bit / 64-bit data from input buffer to output buffer
@@ -188,12 +185,8 @@ int Limiter_Open(   Limiter_Handle **pp_handle,
     p_ou_byte_cnt   [I] Available output buffer size in bytes
                     [O] Produced output buffer size in bytes
 */
-int Limiter_Process(    Limiter_Handle *p_handle,
-                        char *p_temp_buf,
-                        void *p_in_buf,
-                        unsigned int *p_in_byte_cnt,
-                        void *p_ou_buf,
-                        unsigned int *p_ou_byte_cnt);
+int Limiter_Process(Limiter_Handle* p_handle, char* p_temp_buf, void* p_in_buf,
+                    unsigned int* p_in_byte_cnt, void* p_ou_buf, unsigned int* p_ou_byte_cnt);
 
 /*
     Set the runtime parameters
@@ -202,8 +195,7 @@ int Limiter_Process(    Limiter_Handle *p_handle,
     p_handle            [I] Handle of the limiter
     p_runtime_param     [I] Pointer to the runtime parameters
 */
-int Limiter_SetParameters(  Limiter_Handle *p_handle,
-                            Limiter_RuntimeParam *p_runtime_param);
+int Limiter_SetParameters(Limiter_Handle* p_handle, Limiter_RuntimeParam* p_runtime_param);
 
 /*
     Get the runtime status
@@ -212,8 +204,7 @@ int Limiter_SetParameters(  Limiter_Handle *p_handle,
     p_handle            [I] Handle of the limiter
     p_runtime_status    [O] Pointer to the runtime status
 */
-int Limiter_GetStatus(  Limiter_Handle *p_handle,
-                        Limiter_RuntimeStatus *p_runtime_status);
+int Limiter_GetStatus(Limiter_Handle* p_handle, Limiter_RuntimeStatus* p_runtime_status);
 
 /*
     Clear the internal status for the discontinuous input buffer
@@ -222,7 +213,7 @@ int Limiter_GetStatus(  Limiter_Handle *p_handle,
                         >= 0 : Normal
     p_handle        [I] Handle of the limiter
 */
-int Limiter_Reset(Limiter_Handle *p_handle);
+int Limiter_Reset(Limiter_Handle* p_handle);
 
 /*
                       +------- Main Feature Version
@@ -249,4 +240,4 @@ int Limiter_Reset(Limiter_Handle *p_handle);
 */
 int Limiter_GetVersion(void);
 
-#endif // __LIMITER_EXP_H__
+#endif  // __LIMITER_EXP_H__

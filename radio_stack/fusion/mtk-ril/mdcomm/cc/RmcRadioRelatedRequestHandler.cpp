@@ -23,19 +23,18 @@
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcRadioRelatedRequestHandler, RIL_CMD_PROXY_9);
 
-RmcRadioRelatedRequestHandler::RmcRadioRelatedRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcRadioRelatedRequestHandler::RmcRadioRelatedRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcRadioRelatedRequestHandler constructor");
     // For commands that need to send on same channel as EFUN, usally before EFUN=1
     const int requests[] = {
-        RFX_MSG_REQUEST_SET_ECC_MODE,            //AT+EMCS
+            RFX_MSG_REQUEST_SET_ECC_MODE,  // AT+EMCS
     };
 
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcRadioRelatedRequestHandler::~RmcRadioRelatedRequestHandler() {
-}
+RmcRadioRelatedRequestHandler::~RmcRadioRelatedRequestHandler() {}
 
 void RmcRadioRelatedRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
@@ -59,7 +58,7 @@ void RmcRadioRelatedRequestHandler::requestSetEccMode(const sp<RfxMclMessage>& m
     char** params = (char**)data->getData();
     int enable = atoi(params[1]);
     int airplaneMode = atoi(params[2]);
-    //int imsReg = atoi(params[3]);
+    // int imsReg = atoi(params[3]);
     /*
     AT+EMCS:<emc_session>,<airplane_mode>
     <emc_session> :  1 : emergency session begin
@@ -83,16 +82,16 @@ void RmcRadioRelatedRequestHandler::requestSetEccMode(const sp<RfxMclMessage>& m
             } else {
                 p_response = atSendCommand(String8::format("AT+EMCS=1,%d", airplaneMode));
             }
-            getNonSlotMclStatusManager()->setBoolValue(
-                    RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE, true);
+            getNonSlotMclStatusManager()->setBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE,
+                                                       true);
         } else {
             if (RfxRilUtils::isEmciSupport()) {
                 p_response = atSendCommand(String8::format("AT+EMCI=0"));
             } else {
                 p_response = atSendCommand(String8::format("AT+EMCS=0"));
             }
-            getNonSlotMclStatusManager()->setBoolValue(
-                    RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE, false);
+            getNonSlotMclStatusManager()->setBoolValue(RFX_STATUS_KEY_EMERGENCY_MODE_IN_FLIGHT_MODE,
+                                                       false);
         }
         // set result
         if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
@@ -100,7 +99,7 @@ void RmcRadioRelatedRequestHandler::requestSetEccMode(const sp<RfxMclMessage>& m
         }
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }

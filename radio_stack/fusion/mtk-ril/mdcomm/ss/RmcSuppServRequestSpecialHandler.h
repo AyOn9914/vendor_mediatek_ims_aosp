@@ -28,21 +28,21 @@
 class RmcSuppServRequestSpecialHandler : public RmcSuppServRequestBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcSuppServRequestSpecialHandler);
 
-    public:
-        RmcSuppServRequestSpecialHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServRequestSpecialHandler();
+  public:
+    RmcSuppServRequestSpecialHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServRequestSpecialHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void requestQueryCallForwardStatus(const sp<RfxMclMessage>& msg);
-        void requestQueryCallForwardInTimeSlotStatus(const sp<RfxMclMessage>& msg);
-        void requestGetClir(const sp<RfxMclMessage>& msg);
-        void requestQueryCallWaiting(const sp<RfxMclMessage>& msg);
-        void requestQueryCallBarring(const sp<RfxMclMessage>& msg);
-        void requestSetCallBarring(const sp<RfxMclMessage>& msg);
+  private:
+    void requestQueryCallForwardStatus(const sp<RfxMclMessage>& msg);
+    void requestQueryCallForwardInTimeSlotStatus(const sp<RfxMclMessage>& msg);
+    void requestGetClir(const sp<RfxMclMessage>& msg);
+    void requestQueryCallWaiting(const sp<RfxMclMessage>& msg);
+    void requestQueryCallBarring(const sp<RfxMclMessage>& msg);
+    void requestSetCallBarring(const sp<RfxMclMessage>& msg);
 };
 
 #endif

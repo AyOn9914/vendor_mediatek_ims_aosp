@@ -16,30 +16,23 @@
 
 #include "WpfaDriverMessage.h"
 
-
-using ::android::String8;
 using ::android::RefBase;
 using ::android::sp;
+using ::android::String8;
 
 #define WPFA_D_LOG_TAG "WpfaDriverMessage"
 
-WpfaDriverMessage::WpfaDriverMessage() :
-        mMsgId(0),
-        mTid(0),
-        mType(0),
-        mParams(0),
-        mData(NULL) {
-
-}
+WpfaDriverMessage::WpfaDriverMessage() : mMsgId(0), mTid(0), mType(0), mParams(0), mData(NULL) {}
 
 WpfaDriverMessage::~WpfaDriverMessage() {
     if (mData != NULL) {
-        delete(mData);
+        delete (mData);
     }
 }
 
-sp<WpfaDriverMessage> WpfaDriverMessage::obtainMessage(uint16_t msgId, uint16_t tId,
-            uint16_t type, uint16_t params, const WpfaDriverBaseData &data) {
+sp<WpfaDriverMessage> WpfaDriverMessage::obtainMessage(uint16_t msgId, uint16_t tId, uint16_t type,
+                                                       uint16_t params,
+                                                       const WpfaDriverBaseData& data) {
     sp<WpfaDriverMessage> msg = new WpfaDriverMessage();
     msg->mMsgId = msgId;
     msg->mTid = tId;
@@ -49,8 +42,8 @@ sp<WpfaDriverMessage> WpfaDriverMessage::obtainMessage(uint16_t msgId, uint16_t 
     return msg;
 }
 
-sp<WpfaDriverMessage> WpfaDriverMessage::obtainMessage(uint16_t msgId, uint16_t tId,
-            uint16_t type, uint16_t params) {
+sp<WpfaDriverMessage> WpfaDriverMessage::obtainMessage(uint16_t msgId, uint16_t tId, uint16_t type,
+                                                       uint16_t params) {
     sp<WpfaDriverMessage> msg = new WpfaDriverMessage();
     msg->mMsgId = msgId;
     msg->mTid = tId;
@@ -88,7 +81,7 @@ int WpfaDriverMessage::getCcciMsgBodySize(uint16_t msgId) {
     }
 }
 
-WpfaDriverBaseData* WpfaDriverMessage::copyData(uint16_t msgId, const WpfaDriverBaseData *data) {
+WpfaDriverBaseData* WpfaDriverMessage::copyData(uint16_t msgId, const WpfaDriverBaseData* data) {
     switch (msgId) {
         case MSG_M2A_REG_DL_FILTER:
             return WpfaDriverRegFilterData::copyDataByObj(data);
@@ -118,7 +111,5 @@ WpfaDriverBaseData* WpfaDriverMessage::copyData(uint16_t msgId, const WpfaDriver
 }
 
 String8 WpfaDriverMessage::toString() const {
-    return String8::format(
-            "MsgId=%d, Tid=%d, Type=%d, Params=%d",
-            mMsgId, mTid, mType, mParams);
+    return String8::format("MsgId=%d, Tid=%d, Type=%d, Params=%d", mMsgId, mTid, mType, mParams);
 }

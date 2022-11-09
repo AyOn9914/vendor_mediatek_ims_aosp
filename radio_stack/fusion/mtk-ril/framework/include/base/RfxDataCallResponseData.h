@@ -23,17 +23,18 @@
 #include "RfxLog.h"
 
 #define FREEIF(data)    \
-if (data != NULL) {     \
-    free(data);         \
-    data = NULL;        \
-}
+    if (data != NULL) { \
+        free(data);     \
+        data = NULL;    \
+    }
 
 class RfxDataCallResponseData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxDataCallResponseData);
 
-    public:
-        RfxDataCallResponseData(MTK_RIL_Data_Call_Response_v11 *data, int num);
-    private:
-        void copyDataCallResponseData(MTK_RIL_Data_Call_Response_v11 *data);
+  public:
+    RfxDataCallResponseData(MTK_RIL_Data_Call_Response_v11* data, int num);
+
+  private:
+    void copyDataCallResponseData(MTK_RIL_Data_Call_Response_v11* data);
 };
 #endif

@@ -29,13 +29,12 @@
 #define TRUE 1
 #define FALSE 0
 
-
 /** the block of defination
     must be sync with
     RatConfiguration.java **/
-#define PROPERTY_BUILD_RAT_CONFIG    "ro.vendor.mtk_protocol1_rat_config"
-#define PROPERTY_RAT_CONFIG     "ro.vendor.mtk_ps1_rat"
-#define PROPERTY_IS_USING_DEFAULT_CONFIG    "ro.boot.opt_using_default"
+#define PROPERTY_BUILD_RAT_CONFIG "ro.vendor.mtk_protocol1_rat_config"
+#define PROPERTY_RAT_CONFIG "ro.vendor.mtk_ps1_rat"
+#define PROPERTY_IS_USING_DEFAULT_CONFIG "ro.boot.opt_using_default"
 
 #define CDMA "C"
 #define LteFdd "Lf"
@@ -46,13 +45,13 @@
 #define NR "N"
 #define DELIMITER "/"
 
-#define MASK_NR    (1 << 6)
-#define MASK_CDMA    (1 << 5)
-#define MASK_LteFdd    (1 << 4)
-#define MASK_LteTdd    (1 << 3)
-#define MASK_WCDMA    (1 << 2)
-#define MASK_TDSCDMA    (1 << 1)
-#define MASK_GSM    (1)
+#define MASK_NR (1 << 6)
+#define MASK_CDMA (1 << 5)
+#define MASK_LteFdd (1 << 4)
+#define MASK_LteTdd (1 << 3)
+#define MASK_WCDMA (1 << 2)
+#define MASK_TDSCDMA (1 << 1)
+#define MASK_GSM (1)
 /*************************/
 
 static unsigned int max_rat = 0x0;
@@ -65,23 +64,22 @@ static unsigned int getMaxRat();
 static int checkRatConfig(unsigned int iRat);
 static unsigned int getRatConfig();
 
-
 /*
  * transfer the rat from "L/T/G" to bitmask.
  * @return unsigned int, rat in bitmask.
  */
 static unsigned int ratToBitmask(const char* rat) {
     unsigned int iRat = 0x0;
-    if (strstr(rat, CDMA)  !=  NULL) {
+    if (strstr(rat, CDMA) != NULL) {
         iRat |= MASK_CDMA;
     }
-    if (strstr(rat, LteFdd)  !=  NULL) {
+    if (strstr(rat, LteFdd) != NULL) {
         iRat |= MASK_LteFdd;
     }
-    if (strstr(rat, LteTdd)  != NULL) {
+    if (strstr(rat, LteTdd) != NULL) {
         iRat |= MASK_LteTdd;
     }
-    if (strstr(rat, WCDMA)  !=  NULL) {
+    if (strstr(rat, WCDMA) != NULL) {
         iRat |= MASK_WCDMA;
     }
     if (strstr(rat, TDSCDMA) != NULL) {
@@ -101,7 +99,7 @@ static unsigned int ratToBitmask(const char* rat) {
  * @return int, the rat of project config in bitmask.
  */
 static unsigned int getMaxRat() {
-    if ( !max_rat_initialized ) {
+    if (!max_rat_initialized) {
         char rat[MTK_PROPERTY_VALUE_MAX];
         int mIsDefault = 1;
         mtk_property_get(PROPERTY_BUILD_RAT_CONFIG, rat, "");
@@ -174,7 +172,7 @@ static unsigned int getRatConfig() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isC2kSupported() {
-    int result = (getMaxRat() & getRatConfig() &  MASK_CDMA) == MASK_CDMA ? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_CDMA) == MASK_CDMA ? TRUE : FALSE;
     return result;
 }
 
@@ -185,8 +183,7 @@ int RatConfig_isC2kSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isLteFddSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_LteFdd) ==
-            MASK_LteFdd ? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_LteFdd) == MASK_LteFdd ? TRUE : FALSE;
     return result;
 }
 
@@ -197,8 +194,7 @@ int RatConfig_isLteFddSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isLteTddSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_LteTdd) ==
-            MASK_LteTdd ? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_LteTdd) == MASK_LteTdd ? TRUE : FALSE;
     return result;
 }
 
@@ -209,8 +205,7 @@ int RatConfig_isLteTddSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isWcdmaSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_WCDMA) ==
-            MASK_WCDMA ? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_WCDMA) == MASK_WCDMA ? TRUE : FALSE;
     return result;
 }
 
@@ -221,8 +216,7 @@ int RatConfig_isWcdmaSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isTdscdmaSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_TDSCDMA) ==
-        MASK_TDSCDMA? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_TDSCDMA) == MASK_TDSCDMA ? TRUE : FALSE;
     return result;
 }
 
@@ -233,8 +227,7 @@ int RatConfig_isTdscdmaSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isGsmSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_GSM) ==
-            MASK_GSM? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_GSM) == MASK_GSM ? TRUE : FALSE;
     return result;
 }
 
@@ -245,7 +238,6 @@ int RatConfig_isGsmSupported() {
  *       0, rat is inactive no matter project config supports.
  */
 int RatConfig_isNrSupported() {
-    int result = (getMaxRat() & getRatConfig() & MASK_NR) ==
-            MASK_NR? TRUE : FALSE;
+    int result = (getMaxRat() & getRatConfig() & MASK_NR) == MASK_NR ? TRUE : FALSE;
     return result;
 }

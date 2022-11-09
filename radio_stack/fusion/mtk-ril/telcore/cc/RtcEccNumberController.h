@@ -42,22 +42,21 @@ class RtcEccNumberController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcEccNumberController);
 
-public:
+  public:
     RtcEccNumberController();
     virtual ~RtcEccNumberController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual void onInit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
-    //virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-            const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    // virtual bool onHandleResponse(const sp<RfxMessage>& message);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-// External Method
-public:
-
+    // External Method
+  public:
     // Get the emergency call routing for the corresponding emergency number
     //
     // RETURNS:
@@ -81,35 +80,28 @@ public:
     string getPlmn(int slot);
 
     bool isSimInserted();
-    void updateEmergencySourcesForAllSimStateChanges(bool isSimInserted) ;
+    void updateEmergencySourcesForAllSimStateChanges(bool isSimInserted);
     void updateEmergencyNumber();
 
-private:
-    void onCardTypeChanged(RfxStatusKeyEnum key,
-            RfxVariant oldValue, RfxVariant newValue);
-    void onPlmnChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onSimRecovery(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onSimStateChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onConnectionStateChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onGsmUiccMccMncChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
-    void onCdmaUiccMccMncChanged(RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
+  private:
+    void onCardTypeChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
+    void onPlmnChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onSimRecovery(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onSimStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onConnectionStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onGsmUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onCdmaUiccMccMncChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     void handleGsmSimEcc(const sp<RfxMessage>& message);
     void handleC2kSimEcc(const sp<RfxMessage>& message);
-    void parseSimEcc(RfxAtLine *line, bool isGsm);
+    void parseSimEcc(RfxAtLine* line, bool isGsm);
     bool isCdmaCard(int cardType);
     void handleSetEccNum(const sp<RfxMessage>& message);
     void handleGetEccNum(const sp<RfxMessage>& message);
     void handleUpdateNetworkEmergencyNumber(const sp<RfxMessage>& message);
     void initEmergencyNumberSource();
     bool isEccMatchInList(String8 number, String8 eccList);
-    void createEmergencyNumberListResponse(RIL_EmergencyNumber *data);
-    void freeEmergencyNumberListResponse(RIL_EmergencyNumber *data);
+    void createEmergencyNumberListResponse(RIL_EmergencyNumber* data);
+    void freeEmergencyNumberListResponse(RIL_EmergencyNumber* data);
     string getSourcesString(int sources);
     void updateSpecialEmergencyNumber();
     void delaySetFwkReady();
@@ -124,23 +116,23 @@ private:
     bool hasSimInAnySlot();
     void updateForSimStateChanges(bool isSimInserted);
 
-private:
+  private:
     String8 mGsmEcc;
     String8 mC2kEcc;
-    RfxAtLine *mCachedGsmUrc;
-    RfxAtLine *mCachedC2kUrc;
+    RfxAtLine* mCachedGsmUrc;
+    RfxAtLine* mCachedC2kUrc;
     bool mIsSimInsert;
-    vector<EccNumberSource *> mEccNumberSourceList;
-    SimEccNumberSource *mSimEccSource;
-    NetworkEccNumberSource *mNetworkEccSource;
-    DefaultEccNumberSource *mDefaultEccSource;
-    XmlEccNumberSource *mXmlEccSource;
-    FrameworkEccNumberSource *mFrameworkEccSource;
-    OemPropertyEccNumberSource *mPropertyEccSource;
-    TestEccNumberSource *mTestEccSource;
-    CtaEccNumberSource *mCtaEccSource;
+    vector<EccNumberSource*> mEccNumberSourceList;
+    SimEccNumberSource* mSimEccSource;
+    NetworkEccNumberSource* mNetworkEccSource;
+    DefaultEccNumberSource* mDefaultEccSource;
+    XmlEccNumberSource* mXmlEccSource;
+    FrameworkEccNumberSource* mFrameworkEccSource;
+    OemPropertyEccNumberSource* mPropertyEccSource;
+    TestEccNumberSource* mTestEccSource;
+    CtaEccNumberSource* mCtaEccSource;
     vector<EmergencyNumber> mEccList;
-    bool mIsFwkReady; // Indicate if framework is ready to receive emergency number
+    bool mIsFwkReady;  // Indicate if framework is ready to receive emergency number
     bool mIsPendingUpdate;
     TimerHandle mTimerHandle;
 };

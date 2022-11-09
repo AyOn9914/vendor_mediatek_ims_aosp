@@ -18,13 +18,13 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxEmergencyDialData);
 
-RfxEmergencyDialData::RfxEmergencyDialData(void *data, int length) : RfxBaseData(data, length)  {
+RfxEmergencyDialData::RfxEmergencyDialData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
-    RIL_Emergency_Dial *dupData;
-    RIL_Emergency_Dial *srcData = (RIL_Emergency_Dial*)data;
+    RIL_Emergency_Dial* dupData;
+    RIL_Emergency_Dial* srcData = (RIL_Emergency_Dial*)data;
     int strLength;
 
-    dupData = (RIL_Emergency_Dial *)calloc(1, sizeof(RIL_Emergency_Dial));
+    dupData = (RIL_Emergency_Dial*)calloc(1, sizeof(RIL_Emergency_Dial));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_Emergency_Dial));
     m_data = dupData;
@@ -38,7 +38,7 @@ RfxEmergencyDialData::RfxEmergencyDialData(void *data, int length) : RfxBaseData
     RFX_ASSERT(dupData->dialData != NULL);
 
     strLength = strlen(srcData->dialData->address) + 1;
-    dupData->dialData->address = (char *)calloc(strLength, sizeof(char));
+    dupData->dialData->address = (char*)calloc(strLength, sizeof(char));
     RFX_ASSERT(dupData->dialData->address != NULL);
     memset(dupData->dialData->address, 0, strLength);
     memcpy(dupData->dialData->address, srcData->dialData->address, strLength);
@@ -58,12 +58,12 @@ RfxEmergencyDialData::RfxEmergencyDialData(void *data, int length) : RfxBaseData
             dupData->dialData->uusInfo->uusData = NULL;
         } else {
             dupData->dialData->uusInfo->uusData =
-                    (char *)calloc(dupData->dialData->uusInfo->uusLength + 1, sizeof(char));
+                    (char*)calloc(dupData->dialData->uusInfo->uusLength + 1, sizeof(char));
             RFX_ASSERT(dupData->dialData->uusInfo->uusData != NULL);
             memset(dupData->dialData->uusInfo->uusData, 0,
-                    dupData->dialData->uusInfo->uusLength + 1);
+                   dupData->dialData->uusInfo->uusLength + 1);
             memcpy(dupData->dialData->uusInfo->uusData, srcData->dialData->uusInfo->uusData,
-                    dupData->dialData->uusInfo->uusLength + 1);
+                   dupData->dialData->uusInfo->uusLength + 1);
         }
     }
 
@@ -75,12 +75,11 @@ RfxEmergencyDialData::RfxEmergencyDialData(void *data, int length) : RfxBaseData
 
     /* isTesting */
     dupData->isTesting = srcData->isTesting;
-
- }
+}
 
 RfxEmergencyDialData::~RfxEmergencyDialData() {
     // free
-    RIL_Emergency_Dial *data = (RIL_Emergency_Dial*)m_data;
+    RIL_Emergency_Dial* data = (RIL_Emergency_Dial*)m_data;
     if (data != NULL) {
         if (data->dialData->address != NULL) {
             free(data->dialData->address);

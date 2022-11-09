@@ -18,40 +18,41 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSuppServNotificationData);
 
-RfxSuppServNotificationData::RfxSuppServNotificationData(void *data, int length) : RfxBaseData(data, length)  {
+RfxSuppServNotificationData::RfxSuppServNotificationData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data == NULL) {
         m_data = NULL;
         return;
     }
 
     m_length = length;
-    RIL_SuppSvcNotification *dupData;
+    RIL_SuppSvcNotification* dupData;
     RIL_SuppSvcNotification* srcData = (RIL_SuppSvcNotification*)data;
 
-    dupData = (RIL_SuppSvcNotification *) calloc(1, sizeof(RIL_SuppSvcNotification));
+    dupData = (RIL_SuppSvcNotification*)calloc(1, sizeof(RIL_SuppSvcNotification));
     RFX_ASSERT(dupData != NULL);
     memset(dupData, 0x00, sizeof(RIL_SuppSvcNotification));
     m_data = dupData;
 
     dupData->notificationType = srcData->notificationType;
-    dupData->code             = srcData->code;
-    dupData->index            = srcData->index;
-    dupData->type             = srcData->type;
+    dupData->code = srcData->code;
+    dupData->index = srcData->index;
+    dupData->type = srcData->type;
 
     if (srcData->number != NULL) {
         int len = strlen(srcData->number);
-        dupData->number = (char *) calloc(len + 1, sizeof(char));
+        dupData->number = (char*)calloc(len + 1, sizeof(char));
         RFX_ASSERT(dupData->number != NULL);
         strncpy(dupData->number, srcData->number, len);
     }
- }
+}
 
 RfxSuppServNotificationData::~RfxSuppServNotificationData() {
     // free
-    RIL_SuppSvcNotification *tmp = (RIL_SuppSvcNotification *)m_data;
+    RIL_SuppSvcNotification* tmp = (RIL_SuppSvcNotification*)m_data;
     if (tmp != NULL) {
         if (tmp->number != NULL) {
-          free(tmp->number);
+            free(tmp->number);
         }
         free(tmp);
     }

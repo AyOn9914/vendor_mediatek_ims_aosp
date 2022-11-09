@@ -44,7 +44,6 @@ namespace android {
 #define IMS_RIL3_SERVICE_NAME "imsSlot3"
 #define IMS_RIL4_SERVICE_NAME "imsSlot4"
 
-
 /// MTK: ForSE @{
 // for SE - AOSP APIs
 #define SE_RIL_SERVICE_NAME_BASE "se"
@@ -97,14 +96,14 @@ namespace android {
 
 // Define Multiple Client of Radio HIDL
 enum ClientId {
-  CLIENT_RILJ = 0,
-  CLIENT_IMS,
-  CLIENT_SE,
-  CLIENT_EM,
-  CLIENT_ASSIST,
-  CLIENT_RCS,
-  CLIENT_CAP,
-  CLIENT_COUNT
+    CLIENT_RILJ = 0,
+    CLIENT_IMS,
+    CLIENT_SE,
+    CLIENT_EM,
+    CLIENT_ASSIST,
+    CLIENT_RCS,
+    CLIENT_CAP,
+    CLIENT_COUNT
 };
 
 typedef enum {
@@ -133,69 +132,69 @@ typedef enum {
 #define VDBG 0
 
 #ifndef MIN
-#define MIN(a,b) ((a)<(b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
 // Enable RILC log
 #define RILC_LOG 0
 
 #if RILC_LOG
-    #define startRequest           sprintf(printBuf, "(")
-    #define closeRequest           sprintf(printBuf, "%s)", printBuf)
-    #define printRequest(token, req)           \
-            RFX_LOG_D(LOG_TAG, "[%04d]> %s %s", token, requestToString(req), printBuf)
+#define startRequest sprintf(printBuf, "(")
+#define closeRequest sprintf(printBuf, "%s)", printBuf)
+#define printRequest(token, req) \
+    RFX_LOG_D(LOG_TAG, "[%04d]> %s %s", token, requestToString(req), printBuf)
 
-    #define startResponse           sprintf(printBuf, "%s {", printBuf)
-    #define closeResponse           sprintf(printBuf, "%s}", printBuf)
-    #define printResponse           RFX_LOG_D(LOG_TAG, "%s", printBuf)
+#define startResponse sprintf(printBuf, "%s {", printBuf)
+#define closeResponse sprintf(printBuf, "%s}", printBuf)
+#define printResponse RFX_LOG_D(LOG_TAG, "%s", printBuf)
 
-    #define clearPrintBuf           printBuf[0] = 0
-    #define removeLastChar          printBuf[strlen(printBuf)-1] = 0
-    #define appendPrintBuf(x...)    snprintf(printBuf, PRINTBUF_SIZE, x)
+#define clearPrintBuf printBuf[0] = 0
+#define removeLastChar printBuf[strlen(printBuf) - 1] = 0
+#define appendPrintBuf(x...) snprintf(printBuf, PRINTBUF_SIZE, x)
 #else
-    #define startRequest
-    #define closeRequest
-    #define printRequest(token, req)
-    #define startResponse
-    #define closeResponse
-    #define printResponse
-    #define clearPrintBuf
-    #define removeLastChar
-    #define appendPrintBuf(x...)
+#define startRequest
+#define closeRequest
+#define printRequest(token, req)
+#define startResponse
+#define closeResponse
+#define printResponse
+#define clearPrintBuf
+#define removeLastChar
+#define appendPrintBuf(x...)
 #endif
 
 typedef struct CommandInfo CommandInfo;
 
-extern "C" const char * requestToString(int request);
+extern "C" const char* requestToString(int request);
 
 typedef struct RequestInfo {
-    int32_t token;      //this is not RIL_Token
-    CommandInfo *pCI;
-    struct RequestInfo *p_next;
+    int32_t token;  // this is not RIL_Token
+    CommandInfo* pCI;
+    struct RequestInfo* p_next;
     char cancelled;
-    char local;         // responses to local commands do not go back to command process
+    char local;  // responses to local commands do not go back to command process
     RIL_SOCKET_ID socket_id;
-    int wasAckSent;    // Indicates whether an ack was sent earlier
+    int wasAckSent;  // Indicates whether an ack was sent earlier
 } RequestInfo;
 
 typedef struct CommandInfo {
     int requestNumber;
-    int(*responseFunction) (int slotId, ClientId clientId, int responseType, int token,
-            RIL_Errno e, void *response, size_t responselen);
+    int (*responseFunction)(int slotId, ClientId clientId, int responseType, int token, RIL_Errno e,
+                            void* response, size_t responselen);
 } CommandInfo;
 
-enum WakeType {DONT_WAKE, WAKE_PARTIAL};
+enum WakeType { DONT_WAKE, WAKE_PARTIAL };
 
 typedef struct {
     int requestNumber;
-    int (*responseFunction) (int slotId, int responseType, int token,
-            RIL_Errno e, void *response, size_t responselen);
+    int (*responseFunction)(int slotId, int responseType, int token, RIL_Errno e, void* response,
+                            size_t responselen);
     WakeType wakeType;
 } UnsolResponseInfo;
 
-RequestInfo * addRequestToList(int serial, int slotId, int request);
+RequestInfo* addRequestToList(int serial, int slotId, int request);
 
-char * RIL_getServiceName();
+char* RIL_getServiceName();
 
 void releaseWakeLock();
 
@@ -203,6 +202,6 @@ void onNewCommandConnect(RIL_SOCKET_ID socket_id, ClientType clientType);
 
 void onCommandDisconnect(RIL_SOCKET_ID socket_id, ClientType clientType);
 
-}   // namespace android
+}  // namespace android
 
-#endif //ANDROID_RIL_INTERNAL_H
+#endif  // ANDROID_RIL_INTERNAL_H

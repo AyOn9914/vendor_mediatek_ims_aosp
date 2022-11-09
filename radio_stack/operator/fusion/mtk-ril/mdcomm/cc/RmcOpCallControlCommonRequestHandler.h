@@ -24,27 +24,27 @@
 class RmcOpCallControlCommonRequestHandler : public RmcCallControlCommonRequestHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpCallControlCommonRequestHandler);
 
-    public:
-        RmcOpCallControlCommonRequestHandler(int slotId, int channelId);
-        virtual ~RmcOpCallControlCommonRequestHandler();
+  public:
+    RmcOpCallControlCommonRequestHandler(int slotId, int channelId);
+    virtual ~RmcOpCallControlCommonRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestOp08GetCurrentCalls(const sp<RfxMclMessage>& msg);
-        int callFromCLCCSLineOp08(RfxAtLine *pLine, RIL_Call *p_call);
-        int callFromCLCCLineOp08(RfxAtLine *pLine, RIL_Call *p_call);
-        void setIncomingVirtualLine(const sp<RfxMclMessage>& msg);
-        void setTrn(const sp<RfxMclMessage>& msg);
+  private:
+    void requestOp08GetCurrentCalls(const sp<RfxMclMessage>& msg);
+    int callFromCLCCSLineOp08(RfxAtLine* pLine, RIL_Call* p_call);
+    int callFromCLCCLineOp08(RfxAtLine* pLine, RIL_Call* p_call);
+    void setIncomingVirtualLine(const sp<RfxMclMessage>& msg);
+    void setTrn(const sp<RfxMclMessage>& msg);
 
-        void handleVirtualLineTimeout(const sp<RfxMclMessage>& msg);
+    void handleVirtualLineTimeout(const sp<RfxMclMessage>& msg);
 
-        static char cachedVirtualFrom[MAX_INCOMING_LINE_LENGTH];
-        static char cachedVirtualTo[MAX_INCOMING_LINE_LENGTH];
-        static int cachedVirtualToken;
-        static int mtCallCount;
+    static char cachedVirtualFrom[MAX_INCOMING_LINE_LENGTH];
+    static char cachedVirtualTo[MAX_INCOMING_LINE_LENGTH];
+    static int cachedVirtualToken;
+    static int mtCallCount;
 };
 
 #endif

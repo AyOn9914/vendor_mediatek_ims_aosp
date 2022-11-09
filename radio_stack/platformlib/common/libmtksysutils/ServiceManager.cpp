@@ -24,8 +24,7 @@
 
 #define LOG_TAG "Service"
 
-ServiceManager::ServiceManager() {
-}
+ServiceManager::ServiceManager() {}
 
 /* The service name should not exceed SERVICE_NAME_MAX to avoid
  * some weird things. This is due to the fact that:
@@ -45,17 +44,17 @@ ServiceManager::ServiceManager() {
  * read its state due to the truncation of "init.svc.<name>" into a
  * zero-terminated buffer of PROPERTY_KEY_MAX characters.
  */
-#define SERVICE_NAME_MAX  (32-10)
+#define SERVICE_NAME_MAX (32 - 10)
 
 /* The maximum amount of time to wait for a service to start or stop,
  * in micro-seconds (really an approximation) */
-#define  SLEEP_MAX_USEC     2000000  /* 2 seconds */
+#define SLEEP_MAX_USEC 2000000 /* 2 seconds */
 
 /* The minimal sleeping interval between checking for the service's state
  * when looping for SLEEP_MAX_USEC */
-#define  SLEEP_MIN_USEC      200000  /* 200 msec */
+#define SLEEP_MIN_USEC 200000 /* 200 msec */
 
-int ServiceManager::start(const char *name) {
+int ServiceManager::start(const char* name) {
     if (strlen(name) > SERVICE_NAME_MAX) {
         SLOGE("Service name '%s' is too long", name);
         return 0;
@@ -66,14 +65,13 @@ int ServiceManager::start(const char *name) {
     }
 
     SLOGD("Starting service '%s'", name);
-    //property_set("ctl.start", name);
+    // property_set("ctl.start", name);
 
     int count = SLEEP_MAX_USEC;
-    while(count > 0) {
+    while (count > 0) {
         usleep(SLEEP_MIN_USEC);
         count -= SLEEP_MIN_USEC;
-        if (isRunning(name))
-            break;
+        if (isRunning(name)) break;
     }
     if (count <= 0) {
         SLOGW("Timed out waiting for service '%s' to start", name);
@@ -84,7 +82,7 @@ int ServiceManager::start(const char *name) {
     return 0;
 }
 
-int ServiceManager::stop(const char *name) {
+int ServiceManager::stop(const char* name) {
     if (strlen(name) > SERVICE_NAME_MAX) {
         SLOGE("Service name '%s' is too long", name);
         return 0;
@@ -95,14 +93,13 @@ int ServiceManager::stop(const char *name) {
     }
 
     SLOGD("Stopping service '%s'", name);
-    //property_set("ctl.stop", name);
+    // property_set("ctl.stop", name);
 
     int count = SLEEP_MAX_USEC;
-    while(count > 0) {
+    while (count > 0) {
         usleep(SLEEP_MIN_USEC);
         count -= SLEEP_MIN_USEC;
-        if (!isRunning(name))
-            break;
+        if (!isRunning(name)) break;
     }
 
     if (count <= 0) {
@@ -114,20 +111,19 @@ int ServiceManager::stop(const char *name) {
     return 0;
 }
 
-bool ServiceManager::isRunning(const char *name) {
+bool ServiceManager::isRunning(const char* name) {
     char propVal[92];
     char propName[92];
-    int  ret;
+    int ret;
 
     ret = snprintf(propName, sizeof(propName), "init.svc.%s", name);
-    if (ret > (int)sizeof(propName)-1) {
+    if (ret > (int)sizeof(propName) - 1) {
         SLOGD("Service name '%s' is too long", name);
         return false;
     }
 
     if (0) {
-        if (!strcmp(propVal, "running"))
-            return true;
+        if (!strcmp(propVal, "running")) return true;
     }
     return false;
 }

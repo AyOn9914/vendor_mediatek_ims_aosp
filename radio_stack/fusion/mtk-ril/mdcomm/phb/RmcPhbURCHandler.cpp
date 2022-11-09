@@ -19,7 +19,7 @@
 #include "RfxMessageId.h"
 #include <libmtkrilutils.h>
 
-#define TRUE  1
+#define TRUE 1
 #define FALSE 0
 #define RFX_LOG_TAG "RmcPhbUrc"
 
@@ -28,22 +28,18 @@ using ::android::String8;
 RFX_IMPLEMENT_HANDLER_CLASS(RmcPhbURCHandler, RIL_CMD_PROXY_URC);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_PHB_READY_NOTIFICATION);
 
-RmcPhbURCHandler::RmcPhbURCHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-    const char* urc[] = {
-        "+EIND: 2",
-        "+EIND: 32"
-    };
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+RmcPhbURCHandler::RmcPhbURCHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    const char* urc[] = {"+EIND: 2", "+EIND: 32"};
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
     mLock = PTHREAD_MUTEX_INITIALIZER;
     mPLock = &mLock;
 }
 
-RmcPhbURCHandler::~RmcPhbURCHandler() {
-}
+RmcPhbURCHandler::~RmcPhbURCHandler() {}
 
 void RmcPhbURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = (char*)msg->getRawUrc()->getLine();
+    char* urc = (char*)msg->getRawUrc()->getLine();
     if (strStartsWith(urc, "+EIND: 2")) {
         onPhbStateChanged(TRUE);
     } else if (strStartsWith(urc, "+EIND: 32")) {
@@ -52,7 +48,7 @@ void RmcPhbURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
 }
 
 bool RmcPhbURCHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
-        RIL_RadioState radioState) {
+                                              RIL_RadioState radioState) {
     bool reject = false;
     RFX_UNUSED(msg);
     logD(RFX_LOG_TAG, "onCheckIfRejectMessage: %d %d", radioState, reject);
@@ -61,14 +57,14 @@ bool RmcPhbURCHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
 
 void RmcPhbURCHandler::onPhbStateChanged(int isPhbReady) {
     bool isModemResetStarted =
-        getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF, false);
+            getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_MODEM_POWER_OFF, false);
     int isSimInserted = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, FALSE);
 
     logI(RFX_LOG_TAG, "onPhbStateChanged slot=%d, isPhbReady=%d", m_slot_id, isPhbReady);
 
     if (RFX_SLOT_COUNT >= 2) {
         logI(RFX_LOG_TAG, "onPhbStateChanged isSimInserted=%d, isModemResetStarted=%d",
-                isSimInserted, isModemResetStarted);
+             isSimInserted, isModemResetStarted);
 
         if (isSimInserted == FALSE) {
             return;
@@ -80,16 +76,15 @@ void RmcPhbURCHandler::onPhbStateChanged(int isPhbReady) {
     }
 
     if (isPhbReady == TRUE) {
-        setMSimPropertyThreadSafe(
-                m_slot_id, (char*)PROPERTY_RIL_PHB_READY, (char*)"true", mPLock);
+        setMSimPropertyThreadSafe(m_slot_id, (char*)PROPERTY_RIL_PHB_READY, (char*)"true", mPLock);
     } else {
-        sendEvent(RFX_MSG_EVENT_PHB_CURRENT_STORAGE_RESET, RfxVoidData(), RIL_CMD_PROXY_1, m_slot_id);
-        setMSimPropertyThreadSafe(
-                m_slot_id, (char*)PROPERTY_RIL_PHB_READY, (char*)"false", mPLock);
+        sendEvent(RFX_MSG_EVENT_PHB_CURRENT_STORAGE_RESET, RfxVoidData(), RIL_CMD_PROXY_1,
+                  m_slot_id);
+        setMSimPropertyThreadSafe(m_slot_id, (char*)PROPERTY_RIL_PHB_READY, (char*)"false", mPLock);
     }
 
     // response to TeleCore
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PHB_READY_NOTIFICATION,
-            m_slot_id, RfxIntsData((void*)&isPhbReady, sizeof(int)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_PHB_READY_NOTIFICATION, m_slot_id,
+                                                     RfxIntsData((void*)&isPhbReady, sizeof(int)));
     responseToTelCore(urc);
 }

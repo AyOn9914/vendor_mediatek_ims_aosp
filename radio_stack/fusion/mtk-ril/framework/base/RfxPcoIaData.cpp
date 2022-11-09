@@ -24,11 +24,11 @@
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RfxPcoIaData);
 
-RfxPcoIaData::RfxPcoIaData(void *data, int length) : RfxBaseData(data, length) {
+RfxPcoIaData::RfxPcoIaData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_PCO_Data_attached *pdata = (RIL_PCO_Data_attached *) data;
-        RIL_PCO_Data_attached *response = (RIL_PCO_Data_attached *)
-                calloc(1, sizeof(RIL_PCO_Data_attached));
+        RIL_PCO_Data_attached* pdata = (RIL_PCO_Data_attached*)data;
+        RIL_PCO_Data_attached* response =
+                (RIL_PCO_Data_attached*)calloc(1, sizeof(RIL_PCO_Data_attached));
         RFX_ASSERT(response != NULL);
 
         response->cid = pdata->cid;
@@ -44,21 +44,21 @@ RfxPcoIaData::RfxPcoIaData(void *data, int length) : RfxBaseData(data, length) {
 }
 
 RfxPcoIaData::~RfxPcoIaData() {
-    RIL_PCO_Data_attached *pdata = (RIL_PCO_Data_attached *) m_data;
+    RIL_PCO_Data_attached* pdata = (RIL_PCO_Data_attached*)m_data;
     free(pdata->apn_name);
     free(pdata->bearer_proto);
     free(pdata->contents);
     free(pdata);
 }
 
-void RfxPcoIaData::copyString(char **dst, char *src) {
+void RfxPcoIaData::copyString(char** dst, char* src) {
     RFX_ASSERT(dst != NULL);
     if (src != NULL) {
-        *dst = (char *) calloc(strlen(src) + 1, sizeof(char));
+        *dst = (char*)calloc(strlen(src) + 1, sizeof(char));
         RFX_ASSERT((*dst) != NULL);
         strncpy(*dst, src, strlen(src));
     } else {
-        *dst = (char *) calloc(1, sizeof(char));
+        *dst = (char*)calloc(1, sizeof(char));
         RFX_ASSERT((*dst) != NULL);
         (*dst)[0] = 0;
     }

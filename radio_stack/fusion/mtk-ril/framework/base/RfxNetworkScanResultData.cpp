@@ -18,38 +18,58 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxNetworkScanResultData);
 
-RfxNetworkScanResultData::RfxNetworkScanResultData(void *data, int length) : RfxBaseData(data, length)  {
+RfxNetworkScanResultData::RfxNetworkScanResultData(void* data, int length)
+    : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_NetworkScanResult *pResult = (RIL_NetworkScanResult *) data;
-        RIL_NetworkScanResult *pData = (RIL_NetworkScanResult *) calloc(1, sizeof(RIL_NetworkScanResult));
+        RIL_NetworkScanResult* pResult = (RIL_NetworkScanResult*)data;
+        RIL_NetworkScanResult* pData =
+                (RIL_NetworkScanResult*)calloc(1, sizeof(RIL_NetworkScanResult));
         if (pData == NULL) goto error;
         pData->status = pResult->status;
         pData->network_infos_length = pResult->network_infos_length;
         if (pData->network_infos_length > 0) {
             int countCell = pResult->network_infos_length;
-            pData->network_infos = (RIL_CellInfo_v12 *) calloc(countCell, sizeof(RIL_CellInfo_v12));
+            pData->network_infos = (RIL_CellInfo_v12*)calloc(countCell, sizeof(RIL_CellInfo_v12));
             if (pData->network_infos == NULL) goto error;
             memcpy(pData->network_infos, pResult->network_infos,
-                    pData->network_infos_length * sizeof(RIL_CellInfo_v12));
+                   pData->network_infos_length * sizeof(RIL_CellInfo_v12));
             for (int i = 0; i < countCell; i++) {
-                switch(pData->network_infos[i].cellInfoType) {
+                switch (pData->network_infos[i].cellInfoType) {
                     case RIL_CELL_INFO_TYPE_GSM:
-                        asprintf(&(pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.long_name),
-                                "%s", pResult->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.long_name);
-                        asprintf(&(pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.short_name),
-                                "%s", pResult->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.short_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.gsm.cellIdentityGsm.operName.long_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.gsm.cellIdentityGsm.operName.long_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.gsm.cellIdentityGsm.operName.short_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.gsm.cellIdentityGsm.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_WCDMA:
-                        asprintf(&(pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name),
-                                "%s", pResult->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
-                        asprintf(&(pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name),
-                                "%s", pResult->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.wcdma.cellIdentityWcdma.operName.long_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.wcdma.cellIdentityWcdma.operName.short_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_LTE:
-                        asprintf(&(pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.long_name),
-                                "%s", pResult->network_infos[i].CellInfo.lte.cellIdentityLte.operName.long_name);
-                        asprintf(&(pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.short_name),
-                                "%s", pResult->network_infos[i].CellInfo.lte.cellIdentityLte.operName.short_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.lte.cellIdentityLte.operName.long_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.lte.cellIdentityLte.operName.long_name);
+                        asprintf(&(pData->network_infos[i]
+                                           .CellInfo.lte.cellIdentityLte.operName.short_name),
+                                 "%s",
+                                 pResult->network_infos[i]
+                                         .CellInfo.lte.cellIdentityLte.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_NR:
                         // TODO
@@ -63,7 +83,7 @@ RfxNetworkScanResultData::RfxNetworkScanResultData(void *data, int length) : Rfx
         m_data = pData;
         m_length = length;
         return;
-error:
+    error:
         if (pData) free(pData);
         m_data = NULL;
         m_length = 0;
@@ -71,29 +91,39 @@ error:
 }
 
 RfxNetworkScanResultData::~RfxNetworkScanResultData() {
-    RIL_NetworkScanResult * pData = (RIL_NetworkScanResult *) m_data;
+    RIL_NetworkScanResult* pData = (RIL_NetworkScanResult*)m_data;
     if (pData) {
         if (pData->network_infos_length > 0 && pData->network_infos != NULL) {
             int countCell = pData->network_infos_length;
             for (int i = 0; i < countCell; i++) {
-                switch(pData->network_infos[i].cellInfoType) {
+                switch (pData->network_infos[i].cellInfoType) {
                     case RIL_CELL_INFO_TYPE_GSM:
                         if (pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.long_name)
-                            free(pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.long_name);
-                        if (pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.short_name)
-                            free(pData->network_infos[i].CellInfo.gsm.cellIdentityGsm.operName.short_name);
+                            free(pData->network_infos[i]
+                                         .CellInfo.gsm.cellIdentityGsm.operName.long_name);
+                        if (pData->network_infos[i]
+                                    .CellInfo.gsm.cellIdentityGsm.operName.short_name)
+                            free(pData->network_infos[i]
+                                         .CellInfo.gsm.cellIdentityGsm.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_WCDMA:
-                        if (pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name)
-                            free(pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
-                        if(pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name)
-                            free(pData->network_infos[i].CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
+                        if (pData->network_infos[i]
+                                    .CellInfo.wcdma.cellIdentityWcdma.operName.long_name)
+                            free(pData->network_infos[i]
+                                         .CellInfo.wcdma.cellIdentityWcdma.operName.long_name);
+                        if (pData->network_infos[i]
+                                    .CellInfo.wcdma.cellIdentityWcdma.operName.short_name)
+                            free(pData->network_infos[i]
+                                         .CellInfo.wcdma.cellIdentityWcdma.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_LTE:
                         if (pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.long_name)
-                            free(pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.long_name);
-                        if (pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.short_name)
-                            free(pData->network_infos[i].CellInfo.lte.cellIdentityLte.operName.short_name);
+                            free(pData->network_infos[i]
+                                         .CellInfo.lte.cellIdentityLte.operName.long_name);
+                        if (pData->network_infos[i]
+                                    .CellInfo.lte.cellIdentityLte.operName.short_name)
+                            free(pData->network_infos[i]
+                                         .CellInfo.lte.cellIdentityLte.operName.short_name);
                         break;
                     case RIL_CELL_INFO_TYPE_NR:
                         // TODO

@@ -25,20 +25,20 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcWpURCHandler, RIL_CMD_PROXY_URC);
 int RmcWpURCHandler::mSlotId = 0;
 int RmcWpURCHandler::ecsraUrcParams[5] = {0};
 
-RmcWpURCHandler::RmcWpURCHandler(int slot_id, int channel_id):RfxBaseHandler(slot_id, channel_id) {
+RmcWpURCHandler::RmcWpURCHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     const char* urc[] = {
-        "+ECSRA",
+            "+ECSRA",
     };
     logD(WP_LOG_TAG, "constructor slot_id = %d, channel_id = %d", slot_id, channel_id);
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcWpURCHandler::~RmcWpURCHandler() {
-}
+RmcWpURCHandler::~RmcWpURCHandler() {}
 
 void RmcWpURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     logD(WP_LOG_TAG, "+ECSRA info = %s", msg->getRawUrc()->getLine());
-    if(strStartsWith(msg->getRawUrc()->getLine(), "+ECSRA:")) {
+    if (strStartsWith(msg->getRawUrc()->getLine(), "+ECSRA:")) {
         mSlotId = msg->getSlotId();
         handleWorldModeUrc(msg);
     }
@@ -46,7 +46,7 @@ void RmcWpURCHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
 
 void RmcWpURCHandler::handleWorldModeUrc(const sp<RfxMclMessage>& msg) {
     int err;
-    //parse urc info
+    // parse urc info
     logD(WP_LOG_TAG, "handleWorldModeUrc begin");
     RfxAtLine* Urcline = msg->getRawUrc();
     Urcline->atTokStart(&err);
@@ -64,29 +64,28 @@ void RmcWpURCHandler::handleWorldModeUrc(const sp<RfxMclMessage>& msg) {
         }
     }
 
-    //set world mode prepare state
+    // set world mode prepare state
     rfx_property_set("persist.vendor.radio.wm_state", "-1");
-    //inform telcore to world mode change start
+    // inform telcore to world mode change start
     int WorldModeState[2];
     WorldModeState[0] = 0;
     // send cause to RTC
     WorldModeState[1] = ecsraUrcParams[4];
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-            RFX_MSG_URC_WORLD_MODE_CHANGED, mSlotId, RfxIntsData(WorldModeState, 2));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_WORLD_MODE_CHANGED, mSlotId,
+                                                     RfxIntsData(WorldModeState, 2));
     responseToTelCore(urc);
     logD(WP_LOG_TAG, "handleWorldModeUrc state = %d", WorldModeState[0]);
 }
 
-int RmcWpURCHandler::getSlotId() {
-    return mSlotId;
-}
+int RmcWpURCHandler::getSlotId() { return mSlotId; }
 
 int RmcWpURCHandler::getEcsraUrcParam(int index) {
     assert(index >= 0 && index <= 4);
     return ecsraUrcParams[index];
 }
 
-bool RmcWpURCHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState) {
+bool RmcWpURCHandler::onCheckIfRejectMessage(const sp<RfxMclMessage>& msg,
+                                             RIL_RadioState radioState) {
     bool reject = false;
     if (RADIO_STATE_UNAVAILABLE == radioState) {
         if (strStartsWith(msg->getRawUrc()->getLine(), "+ECSRA:")) {

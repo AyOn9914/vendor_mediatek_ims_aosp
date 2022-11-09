@@ -22,23 +22,22 @@
  *****************************************************************************/
 #include "RmcGsmSmsBaseHandler.h"
 
-
 /*****************************************************************************
  * Class RpSimController
  *****************************************************************************/
 
 class RmcGsmSmsUrcHandler : public RmcGsmSmsBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcGsmSmsUrcHandler);
 
-public:
+  public:
     RmcGsmSmsUrcHandler(int slot_id, int channel_id);
 
-protected:
+  protected:
     // Process URC here
     virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
     // Utility functions
     void onNewSms(const sp<RfxMclMessage>& msg);
@@ -46,18 +45,17 @@ private:
 
     // URC handler
     void handleNewSms(const sp<RfxMclMessage>& msg);
-    //FIXME: Remove handleNewImsSms after modem handle all IMS cases
+    // FIXME: Remove handleNewImsSms after modem handle all IMS cases
     void handleNewImsSms(const sp<RfxMclMessage>& msg);
     void handleNewSmsStatusReport(const sp<RfxMclMessage>& msg);
-    //FIXME: Remove handleNewImsSmsStatusReport after modem handle all IMS cases
+    // FIXME: Remove handleNewImsSmsStatusReport after modem handle all IMS cases
     void handleNewImsSmsStatusReport(const sp<RfxMclMessage>& msg);
     void handleNewSmsOnSim(const sp<RfxMclMessage>& msg);
     void handleSimSmsStorageStatus(const sp<RfxMclMessage>& msg);
     void handleNewBroadcastSms(const sp<RfxMclMessage>& msg);
     void handleNewEtwsNotification(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     String8 mTag;
-
 };
 #endif /* __RMC_GSM_SMS_URC_HANDLER_H__ */

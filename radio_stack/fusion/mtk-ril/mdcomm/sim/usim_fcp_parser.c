@@ -51,8 +51,8 @@
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_tlv_search_tag(unsigned char *in_ptr, unsigned short len, usim_fcp_tag_enum tag, unsigned char **out_ptr)
-{
+unsigned char fcp_tlv_search_tag(unsigned char* in_ptr, unsigned short len, usim_fcp_tag_enum tag,
+                                 unsigned char** out_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
@@ -61,30 +61,26 @@ unsigned char fcp_tlv_search_tag(unsigned char *in_ptr, unsigned short len, usim
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
-    for (*out_ptr = in_ptr; len > 0; *out_ptr += tag_len)
-    {
+    for (*out_ptr = in_ptr; len > 0; *out_ptr += tag_len) {
         tag_len = (*(*out_ptr + 1) + 2);
-        if (**out_ptr == (unsigned char) tag)
-        {
+        if (**out_ptr == (unsigned char)tag) {
             *out_ptr += 2;
             return *(*out_ptr - 1);
         }
 
         if (len <= tag_len) {
-            //RLOGE("fcp_tlv_search_tag, len: %d, tag_len: %d", len, tag_len);
+            // RLOGE("fcp_tlv_search_tag, len: %d, tag_len: %d", len, tag_len);
             len = 0;
         } else {
             len -= tag_len;
         }
     }
-    if(len != 0)
-    {
+    if (len != 0) {
         assert(0);
     }
     *out_ptr = NULL;
     return 0;
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -101,12 +97,9 @@ unsigned char fcp_tlv_search_tag(unsigned char *in_ptr, unsigned short len, usim
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char prop_info_tlv_search_tag(
-            unsigned char *in_ptr,
-            unsigned short len,
-            usim_fcp_proprietary_info_tag_enum tag,
-            unsigned char **out_ptr)
-{
+unsigned char prop_info_tlv_search_tag(unsigned char* in_ptr, unsigned short len,
+                                       usim_fcp_proprietary_info_tag_enum tag,
+                                       unsigned char** out_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
@@ -114,22 +107,19 @@ unsigned char prop_info_tlv_search_tag(
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
-    for (*out_ptr = in_ptr; len > 0; len -= (*(*out_ptr + 1) + 2), *out_ptr += (*(*out_ptr + 1) + 2))
-    {
-        if (**out_ptr == (unsigned char) tag)
-        {
+    for (*out_ptr = in_ptr; len > 0;
+         len -= (*(*out_ptr + 1) + 2), *out_ptr += (*(*out_ptr + 1) + 2)) {
+        if (**out_ptr == (unsigned char)tag) {
             *out_ptr += 2;
             return *(*out_ptr - 1);
         }
     }
-    if(len != 0)
-    {
+    if (len != 0) {
         assert(0);
     }
     *out_ptr = NULL;
     return 0;
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -145,43 +135,38 @@ unsigned char prop_info_tlv_search_tag(
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_file_descriptor_query(unsigned char *in_ptr, unsigned short len, usim_file_descriptor_struct *filled_struct_ptr)
-{
+unsigned char fcp_file_descriptor_query(unsigned char* in_ptr, unsigned short len,
+                                        usim_file_descriptor_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_file_descriptor_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_file_descriptor_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_FILE_DES_T, &out_ptr);
     /* File descriptor is mandatory for all FCP template */
-    if(!((NULL != out_ptr) && ((value_len == 2) || (value_len == 5))))
-    {
-        //assert(0);
-        //RLOGE("fcp_file_descriptor_query, no valid file descriptor! value_len: %d", value_len);
+    if (!((NULL != out_ptr) && ((value_len == 2) || (value_len == 5)))) {
+        // assert(0);
+        // RLOGE("fcp_file_descriptor_query, no valid file descriptor! value_len: %d", value_len);
         return FALSE;
     }
     if (out_ptr != NULL) {
         query_ptr->fd = out_ptr[0];
         query_ptr->data_coding = out_ptr[1];
-        if (value_len == 5)
-        {
-            query_ptr->rec_len = (short) ((out_ptr[2] << 8) | out_ptr[3]);
+        if (value_len == 5) {
+            query_ptr->rec_len = (short)((out_ptr[2] << 8) | out_ptr[3]);
             query_ptr->num_rec = out_ptr[4];
-        }
-        else
-        {
+        } else {
             query_ptr->rec_len = 0;
             query_ptr->num_rec = 0;
         }
     }
     return TRUE;
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -197,35 +182,30 @@ unsigned char fcp_file_descriptor_query(unsigned char *in_ptr, unsigned short le
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_file_identifier_query(unsigned char *in_ptr, unsigned short len, usim_file_identifier_struct *filled_struct_ptr)
-{
+unsigned char fcp_file_identifier_query(unsigned char* in_ptr, unsigned short len,
+                                        usim_file_identifier_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_file_identifier_struct *query_ptr = (usim_file_identifier_struct*) filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_file_identifier_struct* query_ptr = (usim_file_identifier_struct*)filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_FILE_ID_T, &out_ptr);
-    if (NULL != out_ptr)
-    {
-        if(value_len != 2)
-        {
+    if (NULL != out_ptr) {
+        if (value_len != 2) {
             assert(0);
         }
-        query_ptr->file_id = (short) ((out_ptr[0] << 8) | out_ptr[1]);
+        query_ptr->file_id = (short)((out_ptr[0] << 8) | out_ptr[1]);
         return TRUE;
-    }
-    else
-    {
+    } else {
         query_ptr->file_id = 0;
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -241,37 +221,32 @@ unsigned char fcp_file_identifier_query(unsigned char *in_ptr, unsigned short le
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_df_name_query(unsigned char *in_ptr, unsigned short len, usim_df_name_struct *filled_struct_ptr)
-{
+unsigned char fcp_df_name_query(unsigned char* in_ptr, unsigned short len,
+                                usim_df_name_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_df_name_struct *query_ptr = (usim_df_name_struct*) filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_df_name_struct* query_ptr = (usim_df_name_struct*)filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_DF_NAME_T, &out_ptr);
-    if(value_len > 16)
-    {
+    if (value_len > 16) {
         assert(0);
     }
     memset(query_ptr->df_name, 0x00, 16);
-    if (NULL != out_ptr)
-    {
+    if (NULL != out_ptr) {
         query_ptr->length = value_len;
         memcpy(query_ptr->df_name, out_ptr, value_len);
         return TRUE;
-    }
-    else
-    {
+    } else {
         query_ptr->length = 0;
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -287,17 +262,14 @@ unsigned char fcp_df_name_query(unsigned char *in_ptr, unsigned short len, usim_
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_proprietary_info_query(
-            unsigned char *in_ptr,
-            unsigned short len,
-            usim_proprietary_information_struct *filled_struct_ptr)
-{
+unsigned char fcp_proprietary_info_query(unsigned char* in_ptr, unsigned short len,
+                                         usim_proprietary_information_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_proprietary_information_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_proprietary_information_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
@@ -306,32 +278,29 @@ unsigned char fcp_proprietary_info_query(
     memset(query_ptr, 0x00, sizeof(usim_proprietary_information_struct));
 
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_PROPRIETARY_T, &out_ptr);
-    if(value_len > 17) {
-        //RLOGW("WARNING_FCP_PROP_INFO_SIZE:%d",value_len);
+    if (value_len > 17) {
+        // RLOGW("WARNING_FCP_PROP_INFO_SIZE:%d",value_len);
     }
 
-    if (value_len)
-    {
-        unsigned char *prop_ptr = NULL;
+    if (value_len) {
+        unsigned char* prop_ptr = NULL;
         unsigned char prop_len = 0;
 
         /* Query UICC characteristics */
-        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short) value_len, PROP_UICC_CHAR_T, &prop_ptr);
-        if (prop_len)
-        {
-            if(prop_len != 1)
-            {
+        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short)value_len, PROP_UICC_CHAR_T,
+                                            &prop_ptr);
+        if (prop_len) {
+            if (prop_len != 1) {
                 assert(0);
             }
             SET_PROP_UICC_CHAR_EXIST(query_ptr->do_flag);
             query_ptr->char_byte = prop_ptr[0];
         }
         /* Query Application power consumption */
-        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short) value_len, PROP_APP_PWR_T, &prop_ptr);
-        if (prop_len)
-        {
-            if(prop_len != 3)
-            {
+        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short)value_len, PROP_APP_PWR_T,
+                                            &prop_ptr);
+        if (prop_len) {
+            if (prop_len != 3) {
                 assert(0);
             }
             SET_PROP_APP_PWR_EXIST(query_ptr->do_flag);
@@ -341,12 +310,11 @@ unsigned char fcp_proprietary_info_query(
         }
 
         /* Query Minimum application clock frequency */
-        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short) value_len, PROP_MIN_APP_CLK_T, &prop_ptr);
+        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short)value_len, PROP_MIN_APP_CLK_T,
+                                            &prop_ptr);
 
-        if (prop_len)
-        {
-            if(prop_len != 1)
-            {
+        if (prop_len) {
+            if (prop_len != 1) {
                 assert(0);
             }
             SET_PROP_MIN_APP_CLK_EXIST(query_ptr->do_flag);
@@ -354,29 +322,25 @@ unsigned char fcp_proprietary_info_query(
         }
 
         /* Query Amount of available memory */
-        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short) value_len, PROP_AVAIL_MEM_T, &prop_ptr);
-        if (prop_len)
-        {
+        prop_len = prop_info_tlv_search_tag(out_ptr, (unsigned short)value_len, PROP_AVAIL_MEM_T,
+                                            &prop_ptr);
+        if (prop_len) {
             unsigned char i = 0;
 
-            if(prop_len > 4)
-            {
+            if (prop_len > 4) {
                 assert(0);
             }
             SET_PROP_AVAIL_MEM_EXIST(query_ptr->do_flag);
-            for (i = 0; i < prop_len; i++)
-            {
-                query_ptr->available_mem_bytes |= (unsigned int) (prop_ptr[prop_len - i - 1] << i * 8);
+            for (i = 0; i < prop_len; i++) {
+                query_ptr->available_mem_bytes |=
+                        (unsigned int)(prop_ptr[prop_len - i - 1] << i * 8);
             }
         }
         return TRUE;
-    }
-    else
-    {
+    } else {
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -392,30 +356,26 @@ unsigned char fcp_proprietary_info_query(
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_life_cycle_query(
-            unsigned char *in_ptr,
-            unsigned short len,
-            usim_life_cycle_status_integer_struct *filled_struct_ptr)
-{
+unsigned char fcp_life_cycle_query(unsigned char* in_ptr, unsigned short len,
+                                   usim_life_cycle_status_integer_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_life_cycle_status_integer_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_life_cycle_status_integer_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_LIFE_CYCLE_T, &out_ptr);
-    if(!((NULL != out_ptr) && (value_len == 1)))  /* Life Cycle Status Integer is mandatory */
+    if (!((NULL != out_ptr) && (value_len == 1))) /* Life Cycle Status Integer is mandatory */
     {
-          assert(0);
+        assert(0);
     }
     query_ptr->life_cycle_status = *out_ptr;
     return TRUE;
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -431,11 +391,8 @@ unsigned char fcp_life_cycle_query(
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_security_attribute_query(
-            unsigned char *in_ptr,
-            unsigned short len,
-            usim_security_attributes_struct *filled_struct_ptr)
-{
+unsigned char fcp_security_attribute_query(unsigned char* in_ptr, unsigned short len,
+                                           usim_security_attributes_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
@@ -443,17 +400,15 @@ unsigned char fcp_security_attribute_query(
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
-    //unsigned char value_len = 0;
-    //unsigned char * out_ptr = NULL;
-    //usim_security_attributes_struct * query_ptr = filled_struct_ptr;
+    // unsigned char value_len = 0;
+    // unsigned char * out_ptr = NULL;
+    // usim_security_attributes_struct * query_ptr = filled_struct_ptr;
     FCP_PARSER_UNUSED(in_ptr);
     FCP_PARSER_UNUSED(len);
     FCP_PARSER_UNUSED(filled_struct_ptr);
 
     return FALSE;
-
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -469,237 +424,205 @@ unsigned char fcp_security_attribute_query(
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_pin_status_do_query(unsigned char *in_ptr, unsigned short len, usim_pin_status_temp_do_struct *filled_struct_ptr)
-{
+unsigned char fcp_pin_status_do_query(unsigned char* in_ptr, unsigned short len,
+                                      usim_pin_status_temp_do_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned short value_len = 0;
-    unsigned char *out_ptr = NULL;
-    unsigned char *tag = NULL;
-    unsigned char *pin_ps_do_ptr = NULL;
+    unsigned char* out_ptr = NULL;
+    unsigned char* tag = NULL;
+    unsigned char* pin_ps_do_ptr = NULL;
     unsigned char pin_ps_do_len = 0;
     unsigned char length = 0, count = 0;
-    usim_pin_status_temp_do_struct *query_ptr = filled_struct_ptr;
+    usim_pin_status_temp_do_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_PIN_DO_T, &out_ptr);
 
-    if (NULL != out_ptr)
-    {
+    if (NULL != out_ptr) {
         tag = out_ptr;
-        while (value_len > 0)
-        {
+        while (value_len > 0) {
             length = *(tag + 1);
-            switch (*tag)
-            {
+            switch (*tag) {
                 case PIN_PS_DO_T:
                     /* keep for next time used! */
                     pin_ps_do_ptr = &(tag[2]);
                     pin_ps_do_len = length;
                     break;
                 case PIN_USAGE_QUALIFIER_T:
-                    //RLOGD("PIN_DO: usage qualifier found!");
+                    // RLOGD("PIN_DO: usage qualifier found!");
                     break;
                 case PIN_KEY_REF_T:
-                    if((count / 8) >= length)
-                    {
+                    if ((count / 8) >= length) {
                         assert(0);
                     }
                     if (pin_ps_do_ptr == NULL) {
                         break;
                     }
-                    switch (tag[2])
-                    {
+                    switch (tag[2]) {
                         case USIM_PIN1_APP1:
                             query_ptr->pin_flag |= APP1_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP1_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP2:
                             query_ptr->pin_flag |= APP2_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP2_PIN1_M;
                             }
 
                             break;
                         case USIM_PIN1_APP3:
                             query_ptr->pin_flag |= APP3_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP3_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP4:
                             query_ptr->pin_flag |= APP4_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP4_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP5:
                             query_ptr->pin_flag |= APP5_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP5_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP6:
                             query_ptr->pin_flag |= APP6_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP6_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP7:
                             query_ptr->pin_flag |= APP7_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP7_PIN1_M;
                             }
                             break;
                         case USIM_PIN1_APP8:
                             query_ptr->pin_flag |= APP8_PIN1_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP8_PIN1_M;
                             }
                             break;
                         case USIM_PIN2_APP1:
                             query_ptr->pin_flag |= APP1_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP1_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP2:
                             query_ptr->pin_flag |= APP2_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP2_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP3:
                             query_ptr->pin_flag |= APP3_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP3_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP4:
                             query_ptr->pin_flag |= APP4_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP4_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP5:
                             query_ptr->pin_flag |= APP5_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP5_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP6:
                             query_ptr->pin_flag |= APP6_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP6_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP7:
                             query_ptr->pin_flag |= APP7_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP7_PIN2_M;
                             }
                             break;
                         case USIM_PIN2_APP8:
                             query_ptr->pin_flag |= APP8_PIN2_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= APP8_PIN2_M;
                             }
                             break;
                         case USIM_PIN_ADM1:
                             query_ptr->pin_flag |= ADM01_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM01_M;
                             }
                             break;
                         case USIM_PIN_ADM2:
                             query_ptr->pin_flag |= ADM02_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM02_M;
                             }
                             break;
                         case USIM_PIN_ADM3:
                             query_ptr->pin_flag |= ADM03_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM03_M;
                             }
                             break;
                         case USIM_PIN_ADM4:
                             query_ptr->pin_flag |= ADM04_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM04_M;
                             }
                             break;
                         case USIM_PIN_ADM5:
                             query_ptr->pin_flag |= ADM05_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM05_M;
                             }
                             break;
                         case USIM_PIN_ADM6:
                             query_ptr->pin_flag |= ADM06_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM06_M;
                             }
                             break;
                         case USIM_PIN_ADM7:
                             query_ptr->pin_flag |= ADM07_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM07_M;
                             }
                             break;
                         case USIM_PIN_ADM8:
                             query_ptr->pin_flag |= ADM08_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM08_M;
                             }
                             break;
                         case USIM_PIN_ADM9:
                             query_ptr->pin_flag |= ADM09_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM09_M;
                             }
                             break;
                         case USIM_PIN_ADM10:
                             query_ptr->pin_flag |= ADM10_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= ADM10_M;
                             }
                             break;
                         case USIM_PIN_UNIV:
                             query_ptr->pin_flag |= UNIV_PIN_M;
-                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8)))
-                            {
+                            if (pin_ps_do_ptr[count / 8] & (0x80 >> (count % 8))) {
                                 query_ptr->enabled_pin_flag |= UNIV_PIN_M;
                             }
                             break;
@@ -716,14 +639,11 @@ unsigned char fcp_pin_status_do_query(unsigned char *in_ptr, unsigned short len,
             value_len -= (length + 2);
         }
         return TRUE;
-    }
-    else
-    {
+    } else {
         query_ptr->pin_flag = 0;
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -739,40 +659,34 @@ unsigned char fcp_pin_status_do_query(unsigned char *in_ptr, unsigned short len,
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_total_file_size_query(unsigned char *in_ptr, unsigned short len, usim_total_file_size_struct *filled_struct_ptr)
-{
+unsigned char fcp_total_file_size_query(unsigned char* in_ptr, unsigned short len,
+                                        usim_total_file_size_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_total_file_size_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_total_file_size_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_TOTAL_FILE_SIZE_T, &out_ptr);
-    if (NULL != out_ptr)
-    {
+    if (NULL != out_ptr) {
         unsigned char i = 0;
 
-        if(value_len > 4)
-        {
+        if (value_len > 4) {
             assert(0);
         }
-        for (i = 0; i < value_len; i++)
-        {
-            query_ptr->tot_file_size |= (unsigned int) (out_ptr[value_len - i - 1] << i * 8);
+        for (i = 0; i < value_len; i++) {
+            query_ptr->tot_file_size |= (unsigned int)(out_ptr[value_len - i - 1] << i * 8);
         }
         return TRUE;
-    }
-    else
-    {
+    } else {
         query_ptr->tot_file_size = 0;
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -788,35 +702,30 @@ unsigned char fcp_total_file_size_query(unsigned char *in_ptr, unsigned short le
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_file_size_query(unsigned char *in_ptr, unsigned short len, usim_file_size_struct *filled_struct_ptr)
-{
+unsigned char fcp_file_size_query(unsigned char* in_ptr, unsigned short len,
+                                  usim_file_size_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_file_size_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_file_size_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_FILE_SIZE_T, &out_ptr);
-    if (NULL != out_ptr)
-    {
-        if(value_len != 2)
-        {
+    if (NULL != out_ptr) {
+        if (value_len != 2) {
             assert(0);
         }
-        query_ptr->file_size = (short) (out_ptr[0] << 8 | out_ptr[1]);
+        query_ptr->file_size = (short)(out_ptr[0] << 8 | out_ptr[1]);
         return TRUE;
-    }
-    else
-    {
+    } else {
         query_ptr->file_size = 0;
         return FALSE;
     }
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -832,43 +741,35 @@ unsigned char fcp_file_size_query(unsigned char *in_ptr, unsigned short len, usi
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char fcp_sfi_query(unsigned char *in_ptr, unsigned short len, usim_short_file_identifier_struct *filled_struct_ptr)
-{
+unsigned char fcp_sfi_query(unsigned char* in_ptr, unsigned short len,
+                            usim_short_file_identifier_struct* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = 0;
-    unsigned char *out_ptr = NULL;
-    usim_short_file_identifier_struct *query_ptr = filled_struct_ptr;
+    unsigned char* out_ptr = NULL;
+    usim_short_file_identifier_struct* query_ptr = filled_struct_ptr;
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
     value_len = fcp_tlv_search_tag(in_ptr, len, FCP_SFI_T, &out_ptr);
-    if (NULL != out_ptr)
-    {
-        if (value_len == 0)
-        {
+    if (NULL != out_ptr) {
+        if (value_len == 0) {
             query_ptr->sfi_usage = SFI_NOT_SUPPORT;
-        }
-        else
-        {
-            if(value_len != 1)
-            {
+        } else {
+            if (value_len != 1) {
                 assert(0);
             }
             query_ptr->sfi_usage = SFI_PROP_ID;
             query_ptr->sfi_prop = out_ptr[0];
         }
-    }
-    else
-    {
+    } else {
         query_ptr->sfi_usage = SFI_FILE_ID;
     }
     /* This is because this TLV always its meaning even when it is not present */
     return TRUE;
 }
-
 
 /*****************************************************************************
  * FUNCTION
@@ -885,63 +786,61 @@ unsigned char fcp_sfi_query(unsigned char *in_ptr, unsigned short len, usim_shor
  * GLOBALS AFFECTED
  *  void
  *****************************************************************************/
-unsigned char usim_fcp_query_tag(unsigned char *in_ptr, unsigned short len, usim_fcp_tag_enum tag, void *filled_struct_ptr)
-{
+unsigned char usim_fcp_query_tag(unsigned char* in_ptr, unsigned short len, usim_fcp_tag_enum tag,
+                                 void* filled_struct_ptr) {
     /*----------------------------------------------------------------*/
     /* Local Variables                                                */
     /*----------------------------------------------------------------*/
     unsigned char value_len = in_ptr[1];
-    unsigned char *data_ptr = &in_ptr[2];
+    unsigned char* data_ptr = &in_ptr[2];
 
     /*----------------------------------------------------------------*/
     /* Code Body                                                      */
     /*----------------------------------------------------------------*/
-    if((len == 0) || (in_ptr[0] != FCP_TEMP_T))
-    {
+    if ((len == 0) || (in_ptr[0] != FCP_TEMP_T)) {
         assert(0);
     }
     /* We shall handle the 2 bytes length now we only handle one */
 
-    switch (tag)
-    {
+    switch (tag) {
         case FCP_FILE_DES_T:
-            return fcp_file_descriptor_query(data_ptr, value_len, (usim_file_descriptor_struct*) filled_struct_ptr);
+            return fcp_file_descriptor_query(data_ptr, value_len,
+                                             (usim_file_descriptor_struct*)filled_struct_ptr);
             break;
         case FCP_FILE_ID_T:
-            return fcp_file_identifier_query(data_ptr, value_len, (usim_file_identifier_struct*) filled_struct_ptr);
+            return fcp_file_identifier_query(data_ptr, value_len,
+                                             (usim_file_identifier_struct*)filled_struct_ptr);
             break;
         case FCP_DF_NAME_T:
-            return fcp_df_name_query(data_ptr, value_len, (usim_df_name_struct*) filled_struct_ptr);
+            return fcp_df_name_query(data_ptr, value_len, (usim_df_name_struct*)filled_struct_ptr);
             break;
         case FCP_PROPRIETARY_T:
             return fcp_proprietary_info_query(
-                    data_ptr,
-                    value_len,
-                    (usim_proprietary_information_struct*) filled_struct_ptr);
+                    data_ptr, value_len, (usim_proprietary_information_struct*)filled_struct_ptr);
             break;
         case FCP_LIFE_CYCLE_T:
-            return fcp_life_cycle_query(
-                    data_ptr,
-                    value_len,
-                    (usim_life_cycle_status_integer_struct*) filled_struct_ptr);
+            return fcp_life_cycle_query(data_ptr, value_len,
+                                        (usim_life_cycle_status_integer_struct*)filled_struct_ptr);
             break;
         case FCP_SEC_ATTRIBUTE_QUERY:
             return fcp_security_attribute_query(
-                    data_ptr,
-                    value_len,
-                    (usim_security_attributes_struct*) filled_struct_ptr);
+                    data_ptr, value_len, (usim_security_attributes_struct*)filled_struct_ptr);
             break;
         case FCP_PIN_DO_T:
-            return fcp_pin_status_do_query(data_ptr, value_len, (usim_pin_status_temp_do_struct*) filled_struct_ptr);
+            return fcp_pin_status_do_query(data_ptr, value_len,
+                                           (usim_pin_status_temp_do_struct*)filled_struct_ptr);
             break;
         case FCP_TOTAL_FILE_SIZE_T:
-            return fcp_total_file_size_query(data_ptr, value_len, (usim_total_file_size_struct*) filled_struct_ptr);
+            return fcp_total_file_size_query(data_ptr, value_len,
+                                             (usim_total_file_size_struct*)filled_struct_ptr);
             break;
         case FCP_FILE_SIZE_T:
-            return fcp_file_size_query(data_ptr, value_len, (usim_file_size_struct*) filled_struct_ptr);
+            return fcp_file_size_query(data_ptr, value_len,
+                                       (usim_file_size_struct*)filled_struct_ptr);
             break;
         case FCP_SFI_T:
-            return fcp_sfi_query(data_ptr, value_len, (usim_short_file_identifier_struct*) filled_struct_ptr);
+            return fcp_sfi_query(data_ptr, value_len,
+                                 (usim_short_file_identifier_struct*)filled_struct_ptr);
             break;
         default:
             assert(0);
@@ -950,45 +849,39 @@ unsigned char usim_fcp_query_tag(unsigned char *in_ptr, unsigned short len, usim
     }
 }
 
-
-static int toByte(char c)
-{
+static int toByte(char c) {
     if (c >= '0' && c <= '9') return (c - '0');
     if (c >= 'A' && c <= 'F') return (c - 'A' + 10);
     if (c >= 'a' && c <= 'f') return (c - 'a' + 10);
 
-    //RLOGE("toByte Error: %c",c);
+    // RLOGE("toByte Error: %c",c);
     return 0;
 }
 
-int hexStringToByteArray(unsigned char* hexString, unsigned char ** byte)
-{
+int hexStringToByteArray(unsigned char* hexString, unsigned char** byte) {
     int length = strlen((char*)hexString);
     unsigned char* buffer = calloc(1, length / 2);
     assert(buffer != NULL);
     int i = 0;
 
-    for (i = 0 ; i < length ; i += 2)
-    {
-        buffer[i / 2] = (unsigned char)((toByte(hexString[i]) << 4) | toByte(hexString[i+1]));
+    for (i = 0; i < length; i += 2) {
+        buffer[i / 2] = (unsigned char)((toByte(hexString[i]) << 4) | toByte(hexString[i + 1]));
     }
 
     *byte = buffer;
 
-    return (length/2);
+    return (length / 2);
 }
 
-const char HEX_DIGITS[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+const char HEX_DIGITS[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                             '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-
-unsigned char* byteArrayToHexString(unsigned char* array,int length)
-{
-    unsigned char* buf = calloc(1, length*2+1);
+unsigned char* byteArrayToHexString(unsigned char* array, int length) {
+    unsigned char* buf = calloc(1, length * 2 + 1);
     assert(buf != NULL);
     int bufIndex = 0;
     int i = 0;
-    for (i = 0 ; i < length; i++)
-    {
+    for (i = 0; i < length; i++) {
         unsigned char b = array[i];
         buf[bufIndex++] = HEX_DIGITS[(b >> 4) & 0x0F];
         buf[bufIndex++] = HEX_DIGITS[b & 0x0F];

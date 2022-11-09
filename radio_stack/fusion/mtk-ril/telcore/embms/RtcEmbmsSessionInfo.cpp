@@ -25,32 +25,30 @@
  * Class RpDataConnectionInfo
  *****************************************************************************/
 
-RtcEmbmsSessionInfo::RtcEmbmsSessionInfo() :
-    mTransId(-1),
-    mTmgiLen(0),
-    mTmgi{0},
-    mSaiCount(0),
-    mSais{0},
-    mFreqCount(0),
-    mFreqs{0},
-    mOriginalRequest(NULL) {
-}
+RtcEmbmsSessionInfo::RtcEmbmsSessionInfo()
+    : mTransId(-1),
+      mTmgiLen(0),
+      mTmgi{0},
+      mSaiCount(0),
+      mSais{0},
+      mFreqCount(0),
+      mFreqs{0},
+      mOriginalRequest(NULL) {}
 
-RtcEmbmsSessionInfo::~RtcEmbmsSessionInfo() {
-}
+RtcEmbmsSessionInfo::~RtcEmbmsSessionInfo() {}
 
 void RtcEmbmsSessionInfo::copy(RtcEmbmsSessionInfo& src) {
     this->mTransId = src.mTransId;
     this->mTmgiLen = src.mTmgiLen;
-    memcpy( this->mTmgi, src.mTmgi, sizeof(this->mTmgi[0]) * (EMBMS_MAX_LEN_TMGI+1) );
+    memcpy(this->mTmgi, src.mTmgi, sizeof(this->mTmgi[0]) * (EMBMS_MAX_LEN_TMGI + 1));
     this->mSaiCount = src.mSaiCount;
-    memcpy( this->mSais, src.mSais, sizeof(this->mSais[0]) * EMBMS_MAX_NUM_SAI);
+    memcpy(this->mSais, src.mSais, sizeof(this->mSais[0]) * EMBMS_MAX_NUM_SAI);
     this->mFreqCount = src.mFreqCount;
-    memcpy( this->mFreqs, src.mFreqs, sizeof(this->mFreqs[0]) * EMBMS_MAX_NUM_FREQ);
+    memcpy(this->mFreqs, src.mFreqs, sizeof(this->mFreqs[0]) * EMBMS_MAX_NUM_FREQ);
     this->mOriginalRequest = src.mOriginalRequest;
 }
 
 void RtcEmbmsSessionInfo::dump() {
-    RFX_LOG_D(RFX_LOG_TAG, "TransId:[%d],Tmgi:[%s],mSaiCount:[%d],mFreqCount:[%d]",
-                           mTransId, mTmgi, mSaiCount, mFreqCount);
+    RFX_LOG_D(RFX_LOG_TAG, "TransId:[%d],Tmgi:[%s],mSaiCount:[%d],mFreqCount:[%d]", mTransId, mTmgi,
+              mSaiCount, mFreqCount);
 }

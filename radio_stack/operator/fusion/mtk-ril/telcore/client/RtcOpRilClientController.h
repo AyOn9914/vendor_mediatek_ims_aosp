@@ -28,12 +28,12 @@
 class RtcOpRilClientController : public RtcRilClientController {
     RFX_DECLARE_CLASS(RtcOpRilClientController);
 
-    public:
+  public:
+    RtcOpRilClientController();
+    virtual ~RtcOpRilClientController();
 
-        RtcOpRilClientController();
-        virtual ~RtcOpRilClientController();
-    protected:
-        virtual void initRilClient();
+  protected:
+    virtual void initRilClient();
 };
 
 #endif /* __RTC_OP_RIL_CLIENT_CONTROLLER_H__ */

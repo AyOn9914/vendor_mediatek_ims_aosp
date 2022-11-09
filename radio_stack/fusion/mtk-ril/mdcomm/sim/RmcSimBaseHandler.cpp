@@ -40,49 +40,43 @@ extern "C" {
 #define OPERATOR_OP09 "OP09"
 #define SPEC_OP09_A "SEGDEFAULT"
 
-RmcSimBaseHandler::RmcSimBaseHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcSimBaseHandler::RmcSimBaseHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcSimBaseHandler"));
 }
 
-RmcSimBaseHandler::~RmcSimBaseHandler() {
-}
+RmcSimBaseHandler::~RmcSimBaseHandler() {}
 
-RmcSimBaseHandler::SIM_HANDLE_RESULT RmcSimBaseHandler::needHandle(
-        const sp<RfxMclMessage>& msg) {
+RmcSimBaseHandler::SIM_HANDLE_RESULT RmcSimBaseHandler::needHandle(const sp<RfxMclMessage>& msg) {
     RFX_UNUSED(msg);
     return RESULT_IGNORE;
 }
 
-void RmcSimBaseHandler::handleRequest(const sp<RfxMclMessage>& msg) {
-    RFX_UNUSED(msg);
-}
+void RmcSimBaseHandler::handleRequest(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-void RmcSimBaseHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcSimBaseHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     RFX_UNUSED(msg);
     RFX_UNUSED(urc);
 }
 
-const int* RmcSimBaseHandler::queryTable(int channel_id, int *record_num) {
+const int* RmcSimBaseHandler::queryTable(int channel_id, int* record_num) {
     RFX_UNUSED(channel_id);
     RFX_UNUSED(record_num);
     return NULL;
 }
 
-const char** RmcSimBaseHandler::queryUrcTable(int *record_num) {
+const char** RmcSimBaseHandler::queryUrcTable(int* record_num) {
     RFX_UNUSED(record_num);
     return NULL;
 }
 
-void RmcSimBaseHandler::setTag(String8 s) {
-    mTag = s;
-}
+void RmcSimBaseHandler::setTag(String8 s) { mTag = s; }
 
 UICC_Status RmcSimBaseHandler::getSimStatus() {
     int err, count = 0;
     UICC_Status ret = UICC_NOT_READY;
-    RfxAtLine *line = NULL;
-    char *cpinResult = NULL;
+    RfxAtLine* line = NULL;
+    char* cpinResult = NULL;
     sp<RfxAtResponse> p_response = NULL;
     int pivot = 0;
     int inserted = 0;
@@ -90,15 +84,15 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
     int currRadioState = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE);
 
     pthread_mutex_lock(&simStatusMutex);
-    logD(mTag, "getSIMStatus: currRadioState %d, currSimInsertedState %d",
-            currRadioState,currSimInsertedState);
+    logD(mTag, "getSIMStatus: currRadioState %d, currSimInsertedState %d", currRadioState,
+         currSimInsertedState);
     // Get SIM status
     do {
         // JB MR1, it will request sim status after receiver iccStatusChangedRegistrants,
         // but MD is off in the mean time, so it will get the exception result of CPIN.
         // For this special case, handle it specially.
-        // check md off and sim inserted status, then return the result directly instead of request CPIN.
-        // not insert: return SIM_ABSENT, insert: return SIM_NOT_READY or USIM_NOT_READY
+        // check md off and sim inserted status, then return the result directly instead of request
+        // CPIN. not insert: return SIM_ABSENT, insert: return SIM_NOT_READY or USIM_NOT_READY
         // TODO: wait s_md_off support
         /*
         if (s_md_off) {
@@ -120,8 +114,8 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
         }
         */
         if (currRadioState == RADIO_STATE_UNAVAILABLE) {
-             ret = UICC_NOT_READY;
-             break;
+            ret = UICC_NOT_READY;
+            break;
         }
         p_response = atSendCommandSingleline("AT+CPIN?", "+CPIN:");
         if (p_response == NULL) {
@@ -129,10 +123,10 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
         }
         err = p_response->getError();
         if (err != 0) {
-            //if (err == AT_ERROR_INVALID_THREAD) {
-            //  ret = UICC_BUSY;
-            //} else {
-                ret = UICC_NOT_READY;
+            // if (err == AT_ERROR_INVALID_THREAD) {
+            //   ret = UICC_BUSY;
+            // } else {
+            ret = UICC_NOT_READY;
             //}
         } else if (p_response->getSuccess() == 0) {
             switch (p_response->atGetCmeError()) {
@@ -144,13 +138,13 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
                     ret = UICC_ABSENT;
                     break;
                 case CME_SIM_WRONG: {
-                    RmcSimPinPukCount *retry = getPinPukRetryCount();
+                    RmcSimPinPukCount* retry = getPinPukRetryCount();
                     if (retry != NULL && retry->pin1 == 0 && retry->puk1 == 0) {
-                        ret = UICC_PERM_BLOCKED; // PERM_DISABLED
-                    } else if (retry->pin1 == -1 && retry->puk1 == -1 &&
-                        retry->pin2 == -1 && retry->puk2 == -1) {
+                        ret = UICC_PERM_BLOCKED;  // PERM_DISABLED
+                    } else if (retry->pin1 == -1 && retry->puk1 == -1 && retry->pin2 == -1 &&
+                               retry->puk2 == -1) {
                         ret = UICC_ABSENT;
-                    }else {
+                    } else {
                         ret = UICC_NOT_READY;
                     }
                     if (retry != NULL) {
@@ -190,27 +184,27 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
             } else if (cpinStr == String8::format("SIM PUK")) {
                 ret = UICC_PUK;
             } else if (cpinStr == String8::format("PH-NET PIN") ||
-                cpinStr == String8::format("PH-NET PUK")) {
+                       cpinStr == String8::format("PH-NET PUK")) {
                 ret = UICC_NP;
             } else if (cpinStr == String8::format("PH-NETSUB PIN") ||
-                cpinStr == String8::format("PH-NETSUB PUK")) {
+                       cpinStr == String8::format("PH-NETSUB PUK")) {
                 ret = UICC_NSP;
             } else if (cpinStr == String8::format("PH-SP PIN") ||
-                cpinStr == String8::format("PH-SP PUK")) {
+                       cpinStr == String8::format("PH-SP PUK")) {
                 ret = UICC_SP;
             } else if (cpinStr == String8::format("PH-CORP PIN") ||
-                cpinStr == String8::format("PH-CORP PUK")) {
+                       cpinStr == String8::format("PH-CORP PUK")) {
                 ret = UICC_CP;
             } else if (cpinStr == String8::format("PH-FSIM PIN") ||
-                cpinStr == String8::format("PH-FSIM PUK")) {
+                       cpinStr == String8::format("PH-FSIM PUK")) {
                 ret = UICC_SIMP;
             } else if (cpinStr == String8::format("PH-NSSP PIN") ||
-                    cpinStr == String8::format("PH-NSSP PUK")) {
+                       cpinStr == String8::format("PH-NSSP PUK")) {
                 ret = UICC_NS_SP;
             } else if (cpinStr == String8::format("PH-SIMC PIN") ||
-                    cpinStr == String8::format("PH-SIMC PUK")) {
+                       cpinStr == String8::format("PH-SIMC PUK")) {
                 ret = UICC_SIM_C;
-            } else if (cpinStr != String8::format("READY"))  {
+            } else if (cpinStr != String8::format("READY")) {
                 /* we're treating unsupported lock types as "sim absent" */
                 ret = UICC_ABSENT;
             } else {
@@ -224,14 +218,14 @@ UICC_Status RmcSimBaseHandler::getSimStatus() {
 }
 
 int RmcSimBaseHandler::queryAppTypeId(String8 aid) {
-    int appTypeId = UICC_APP_SIM; // Default is SIM
-    char *string8Null = NULL;
+    int appTypeId = UICC_APP_SIM;  // Default is SIM
+    char* string8Null = NULL;
 
     if (aid.isEmpty() || aid == String8::format("%s", string8Null)) {
         // SIM or RUIM
         int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
         logD(mTag, "queryAppTypeId aid is empty or \"(null)\", aid = %s, cardType = %d",
-                aid.string(), cardType);
+             aid.string(), cardType);
         if (cardType & RFX_CARD_TYPE_SIM) {
             appTypeId = UICC_APP_SIM;
         } else if (cardType & RFX_CARD_TYPE_USIM) {
@@ -245,7 +239,7 @@ int RmcSimBaseHandler::queryAppTypeId(String8 aid) {
         }
     } else if (strncmp(aid.string(), "A0000000871002", 14) == 0) {
         // USIM
-        appTypeId = UICC_APP_USIM; // USIM
+        appTypeId = UICC_APP_USIM;  // USIM
     } else if (strncmp(aid.string(), "A0000000871004", 14) == 0) {
         // ISIM
         appTypeId = UICC_APP_ISIM;
@@ -263,13 +257,11 @@ int RmcSimBaseHandler::queryAppTypeId(String8 aid) {
     return appTypeId;
 }
 
-bool RmcSimBaseHandler::bIsTc1()
-{
+bool RmcSimBaseHandler::bIsTc1() {
     static int siTc1 = -1;
 
-    if (siTc1 < 0)
-    {
-        char cTc1[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    if (siTc1 < 0) {
+        char cTc1[RFX_PROPERTY_VALUE_MAX] = {0};
 
         rfx_property_get("ro.vendor.mtk_tc1_feature", cTc1, "0");
         siTc1 = atoi(cTc1);
@@ -285,7 +277,7 @@ bool RmcSimBaseHandler::isSimInserted() {
     prop.append(String8::format("%d", (m_slot_id + 1)));
     rfx_property_get(prop.string(), iccid, "");
 
-    if ((strlen(iccid) > 0) && (strcmp(iccid, "N/A") != 0)){
+    if ((strlen(iccid) > 0) && (strcmp(iccid, "N/A") != 0)) {
         return true;
     }
     return false;
@@ -316,24 +308,24 @@ bool RmcSimBaseHandler::isSimSlotLockSupport() {
 
     rfx_property_get("ro.vendor.sim_me_lock_mode", property_value, "");
 
-    if ((strlen(property_value) > 0) && (strcmp(property_value, "3") == 0)){
+    if ((strlen(property_value) > 0) && (strcmp(property_value, "3") == 0)) {
         return true;
     }
     return false;
 }
 
 bool RmcSimBaseHandler::isCommontSlotSupport() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_COMMON_SLOT_SUPPORT, property_value, "0");
-    return atoi(property_value) == 1 ? true:false;
+    return atoi(property_value) == 1 ? true : false;
 }
 
 RmcSimPinPukCount* RmcSimBaseHandler::getPinPukRetryCount() {
     sp<RfxAtResponse> p_response = NULL;
     int err;
     int ret;
-    RfxAtLine*line;
-    RmcSimPinPukCount *retry = (RmcSimPinPukCount*)calloc(1, sizeof(RmcSimPinPukCount));
+    RfxAtLine* line;
+    RmcSimPinPukCount* retry = (RmcSimPinPukCount*)calloc(1, sizeof(RmcSimPinPukCount));
     assert(retry != NULL);
     retry->pin1 = -1;
     retry->pin2 = -1;
@@ -379,29 +371,29 @@ RmcSimPinPukCount* RmcSimBaseHandler::getPinPukRetryCount() {
             }
 
             setPinPukRetryCountProp(retry);
-        } while(0);
+        } while (0);
 
     } else {
         logE(mTag, "Fail to get PIN and PUK retry count!");
     }
 
     p_response = NULL;
-    logD(mTag, "pin1:%d, pin2:%d, puk1:%d, puk2:%d",
-            retry->pin1,retry->pin2,retry->puk1,retry->puk2);
+    logD(mTag, "pin1:%d, pin2:%d, puk1:%d, puk2:%d", retry->pin1, retry->pin2, retry->puk1,
+         retry->puk2);
 
     return retry;
 }
 
-void RmcSimBaseHandler::setPinPukRetryCountProp(RmcSimPinPukCount *retry) {
+void RmcSimBaseHandler::setPinPukRetryCountProp(RmcSimPinPukCount* retry) {
     String8 pin1("vendor.gsm.sim.retry.pin1");
     String8 pin2("vendor.gsm.sim.retry.pin2");
     String8 puk1("vendor.gsm.sim.retry.puk1");
     String8 puk2("vendor.gsm.sim.retry.puk2");
 
-    pin1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id+1)));
-    pin2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id+1)));
-    puk1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id+1)));
-    puk2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id+1)));
+    pin1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    pin2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
 
     rfx_property_set(pin1.string(), String8::format("%d", retry->pin1).string());
     rfx_property_set(pin2.string(), String8::format("%d", retry->pin2).string());
@@ -416,7 +408,7 @@ void RmcSimBaseHandler::setPinPukRetryCountProp(RmcSimPinPukCount *retry) {
 
         if (RfxRilUtils::rfxGetSimCount() >= 2) {
             String8 slot("gsm.slot");
-            slot.append(String8::format("%d", (m_slot_id+1)));
+            slot.append(String8::format("%d", (m_slot_id + 1)));
             aospPin = String8::format("%s%s", slot.string(), ".num.pin1");
             aospPin2 = String8::format("%s%s", slot.string(), ".num.pin2");
             aospPuk = String8::format("%s%s", slot.string(), ".num.puk1");
@@ -439,9 +431,9 @@ RmcSimSlotLockDeviceLockInfo* RmcSimBaseHandler::getSimSlotLockDeviceLockInfo() 
     sp<RfxAtResponse> p_response = NULL;
     int err;
     int ret;
-    RfxAtLine*line;
-    RmcSimSlotLockDeviceLockInfo *retry = (RmcSimSlotLockDeviceLockInfo*)calloc(1,
-            sizeof(RmcSimSlotLockDeviceLockInfo));
+    RfxAtLine* line;
+    RmcSimSlotLockDeviceLockInfo* retry =
+            (RmcSimSlotLockDeviceLockInfo*)calloc(1, sizeof(RmcSimSlotLockDeviceLockInfo));
     RFX_ASSERT(retry != NULL);
     retry->lock_state = -1;
     retry->algo = -1;
@@ -494,43 +486,41 @@ RmcSimSlotLockDeviceLockInfo* RmcSimBaseHandler::getSimSlotLockDeviceLockInfo() 
     }
 
     p_response = NULL;
-    logD(mTag, "lock_state:%d, algo:%d, maximum:%d, remain:%d",
-            retry->lock_state, retry->algo, retry->maximum, retry->remain);
+    logD(mTag, "lock_state:%d, algo:%d, maximum:%d, remain:%d", retry->lock_state, retry->algo,
+         retry->maximum, retry->remain);
 
     return retry;
 }
 
-void RmcSimBaseHandler::setSimSlotLockDeviceLockInfoProp(RmcSimSlotLockDeviceLockInfo *retry) {
+void RmcSimBaseHandler::setSimSlotLockDeviceLockInfoProp(RmcSimSlotLockDeviceLockInfo* retry) {
     rfx_property_set(PROPERTY_SIM_SLOT_LOCK_DEVICE_LOCK_REMAIN_COUNT,
-            String8::format("%d", retry->remain).string());
+                     String8::format("%d", retry->remain).string());
 }
 
 bool RmcSimBaseHandler::isOP09AProject() {
-    char optr_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
-    char seg_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char optr_value[RFX_PROPERTY_VALUE_MAX] = {0};
+    char seg_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get("persist.vendor.operator.optr", optr_value, "0");
     rfx_property_get("persist.vendor.operator.seg", seg_value, "0");
 
     if ((strncmp(optr_value, OPERATOR_OP09, strlen(OPERATOR_OP09)) == 0) &&
-            (strncmp(seg_value, SPEC_OP09_A, strlen(SPEC_OP09_A)) == 0)) {
+        (strncmp(seg_value, SPEC_OP09_A, strlen(SPEC_OP09_A)) == 0)) {
         return true;
     }
 
     return false;
 }
 
-char* RmcSimBaseHandler::stringToUpper(char *str) {
-    char *p = str;
+char* RmcSimBaseHandler::stringToUpper(char* str) {
+    char* p = str;
     for (; *p != '\0'; p++) {
         *p = toupper(*p);
     }
     return str;
 }
 
-bool RmcSimBaseHandler::isAOSPPropSupport() {
-    return true;
-}
+bool RmcSimBaseHandler::isAOSPPropSupport() { return true; }
 
 bool RmcSimBaseHandler::isSimIoFcp(char* response) {
     bool isFcp = false;
@@ -546,16 +536,16 @@ bool RmcSimBaseHandler::isSimIoFcp(char* response) {
 
 void RmcSimBaseHandler::sendSimStatusChanged() {
     sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_RESPONSE_SIM_STATUS_CHANGED,
-            m_slot_id, RfxVoidData());
+                                                       m_slot_id, RfxVoidData());
     responseToTelCore(unsol);
 }
 
-void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
+void RmcSimBaseHandler::handleCdmaCardType(const char* iccid) {
     int cardType = UNKOWN_CARD;
     String8 cdmaCardType("vendor.ril.cdma.card.type");
     cdmaCardType.append(String8::format(".%d", (m_slot_id + 1)));
 
-    bool cdmalockedcard =  getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA_LOCKED_CARD);
+    bool cdmalockedcard = getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA_LOCKED_CARD);
 
     // Card is locked if ESIMS:0,16 is reported.
     if (cdmalockedcard == true) {
@@ -568,8 +558,7 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
         } else {
             if (isOp09Card(iccid)) {
                 // OP09 card type
-                if (getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA3G_DUALMODE_CARD)
-                        == 1) {
+                if (getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA3G_DUALMODE_CARD) == 1) {
                     // OP09 3G dual mode card.
                     cardType = CT_UIM_SIM_CARD;
                 } else {
@@ -580,12 +569,12 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
                         // Rarely happen, iccid exists but card type is empty.
                         cardType = CARD_NOT_INSERTED;
                     } else if (((eusim & RFX_CARD_TYPE_SIM) == 0) &&
-                            ((eusim & RFX_CARD_TYPE_USIM) == 0) &&
-                            ((eusim & RFX_CARD_TYPE_ISIM) == 0)) {
+                               ((eusim & RFX_CARD_TYPE_USIM) == 0) &&
+                               ((eusim & RFX_CARD_TYPE_ISIM) == 0)) {
                         // OP09 3G single mode card.
                         cardType = CT_3G_UIM_CARD;
                     } else if (((eusim & RFX_CARD_TYPE_CSIM) != 0) &&
-                            ((eusim & RFX_CARD_TYPE_USIM) != 0)) {
+                               ((eusim & RFX_CARD_TYPE_USIM) != 0)) {
                         // Typical OP09 4G dual mode card.
                         cardType = CT_4G_UICC_CARD;
                     } else if (eusim == RFX_CARD_TYPE_SIM) {
@@ -593,11 +582,11 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
                         // "SIM" card and "+ECT3G" value is false.
                         cardType = CT_UIM_SIM_CARD;
                     } else if (((eusim & RFX_CARD_TYPE_USIM) != 0) &&
-                            (strStartsWith(iccid, "8985231"))) {
+                               (strStartsWith(iccid, "8985231"))) {
                         // OP09 CTEXCEL card.
                         cardType = CT_EXCEL_GG_CARD;
                     } else if ((eusim == RFX_CARD_TYPE_USIM) ||
-                            (eusim == (RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM))) {
+                               (eusim == (RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM))) {
                         if (!RatConfig_isC2kSupported()) {
                             // CT 4G card
                             cardType = CT_4G_UICC_CARD;
@@ -612,8 +601,7 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
                 }
             } else {
                 // Non-OP09 card type.
-                if (getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA3G_DUALMODE_CARD)
-                        == 1) {
+                if (getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CDMA3G_DUALMODE_CARD) == 1) {
                     // Non-OP09 CDMA 3G dual mode card.
                     cardType = UIM_SIM_CARD;
                 } else {
@@ -626,12 +614,12 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
                         // Rarely happen, iccid exists but card type is empty.
                         cardType = CARD_NOT_INSERTED;
                     } else if (((eusim & RFX_CARD_TYPE_SIM) == 0) &&
-                            ((eusim & RFX_CARD_TYPE_USIM) == 0) &&
-                            ((eusim & RFX_CARD_TYPE_ISIM) == 0)) {
+                               ((eusim & RFX_CARD_TYPE_USIM) == 0) &&
+                               ((eusim & RFX_CARD_TYPE_ISIM) == 0)) {
                         // Non-OP09 3G single mode card.
                         cardType = UIM_CARD;
                     } else if (((eusim & RFX_CARD_TYPE_CSIM) != 0) &&
-                            ((eusim & RFX_CARD_TYPE_USIM) != 0)) {
+                               ((eusim & RFX_CARD_TYPE_USIM) != 0)) {
                         if (strStartsWith(iccid, "898601")) {
                             cardType = CT_4G_UICC_CARD;
                         } else {
@@ -644,7 +632,7 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
                         // SIM card.
                         cardType = SIM_CARD;
                     } else if ((eusim == RFX_CARD_TYPE_USIM) ||
-                            (eusim == (RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM))) {
+                               (eusim == (RFX_CARD_TYPE_USIM | RFX_CARD_TYPE_ISIM))) {
                         if (!RatConfig_isC2kSupported() && strStartsWith(iccid, "898601")) {
                             // Wait Gsm +ESIMAPP: reported and set CDMA card type
                             // according to gsm mccmnc.
@@ -671,27 +659,25 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
         simType.append(String8::format("%d%s", (m_slot_id + 1), ".type"));
         int aospType = -1;
 
-        if (cardType ==  SIM_CARD) {
-            if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                    == RFX_CARD_TYPE_SIM) {
+        if (cardType == SIM_CARD) {
+            if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == RFX_CARD_TYPE_SIM) {
                 aospType = SINGLE_MODE_SIM_CARD;
-            } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                    == RFX_CARD_TYPE_USIM) {
+            } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) ==
+                       RFX_CARD_TYPE_USIM) {
                 aospType = SINGLE_MODE_USIM_CARD;
             }
-        } else if ((cardType ==  UIM_CARD) || (cardType ==  CT_3G_UIM_CARD)) {
+        } else if ((cardType == UIM_CARD) || (cardType == CT_3G_UIM_CARD)) {
             aospType = SINGLE_MODE_RUIM_CARD;
-        } else if ((cardType ==  UIM_SIM_CARD) || (cardType ==  CT_UIM_SIM_CARD)) {
-            if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                    == RFX_CARD_TYPE_SIM) {
+        } else if ((cardType == UIM_SIM_CARD) || (cardType == CT_UIM_SIM_CARD)) {
+            if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == RFX_CARD_TYPE_SIM) {
                 aospType = SINGLE_MODE_SIM_CARD;
-            } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE)
-                    == RFX_CARD_TYPE_USIM) {
+            } else if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) ==
+                       RFX_CARD_TYPE_USIM) {
                 aospType = SINGLE_MODE_USIM_CARD;
             } else {
                 aospType = SINGLE_MODE_RUIM_CARD;
             }
-        } else if (cardType ==  CT_EXCEL_GG_CARD) {
+        } else if (cardType == CT_EXCEL_GG_CARD) {
             aospType = CT_NATIONAL_ROAMING_CARD;
         }
 
@@ -700,27 +686,24 @@ void RmcSimBaseHandler::handleCdmaCardType(const char *iccid) {
     }
 }
 
-bool RmcSimBaseHandler::isOp09Card(const char *iccid) {
+bool RmcSimBaseHandler::isOp09Card(const char* iccid) {
     bool isOp09Card = false;
 
     // Compare with OP09 iccid prefix.
-    if ((strStartsWith(iccid, "898603")) ||
-            (strStartsWith(iccid, "898611")) ||
-            (strStartsWith(iccid, "8985302")) ||
-            (strStartsWith(iccid, "8985307")) ||
-            (strStartsWith(iccid, "8985231")) ||
-            (strStartsWith(iccid, "898120"))) {
+    if ((strStartsWith(iccid, "898603")) || (strStartsWith(iccid, "898611")) ||
+        (strStartsWith(iccid, "8985302")) || (strStartsWith(iccid, "8985307")) ||
+        (strStartsWith(iccid, "8985231")) || (strStartsWith(iccid, "898120"))) {
         isOp09Card = true;
     }
     return isOp09Card;
 }
 
-int RmcSimBaseHandler::isApplicationIdExist(const char *aid) {
+int RmcSimBaseHandler::isApplicationIdExist(const char* aid) {
     int isAidExist = -1;
     sp<RfxAtResponse> p_response;
     int err;
-    char *atr;
-    RfxAtLine *line;
+    char* atr;
+    RfxAtLine* line;
 
     // AT+CUAD[=<option>]
     // <option>: integer type.
@@ -769,12 +752,12 @@ error:
     return isAidExist;
 }
 
-void RmcSimBaseHandler::makeSimRspFromUsimFcp(unsigned char ** simResponse) {
+void RmcSimBaseHandler::makeSimRspFromUsimFcp(unsigned char** simResponse) {
     int format_wrong = 0;
-    unsigned char * fcpByte = NULL;
-    unsigned short  fcpLen = 0;
+    unsigned char* fcpByte = NULL;
+    unsigned short fcpLen = 0;
     usim_file_descriptor_struct fDescriptor = {0, 0, 0, 0};
-    usim_file_size_struct fSize  = {0};
+    usim_file_size_struct fSize = {0};
     unsigned char simRspByte[GET_RESPONSE_EF_SIZE_BYTES] = {0};
 
     fcpLen = hexStringToByteArray(*simResponse, &fcpByte);
@@ -785,8 +768,8 @@ void RmcSimBaseHandler::makeSimRspFromUsimFcp(unsigned char ** simResponse) {
         goto done;
     }
 
-    if ((!IS_DF_ADF(fDescriptor.fd)) && (FALSE == usim_fcp_query_tag(fcpByte, fcpLen,
-            FCP_FILE_SIZE_T, &fSize))) {
+    if ((!IS_DF_ADF(fDescriptor.fd)) &&
+        (FALSE == usim_fcp_query_tag(fcpByte, fcpLen, FCP_FILE_SIZE_T, &fSize))) {
         logE(mTag, "USIM File Size fail:%s", *simResponse);
         format_wrong = 1;
         goto done;
@@ -813,7 +796,6 @@ void RmcSimBaseHandler::makeSimRspFromUsimFcp(unsigned char ** simResponse) {
         simRspByte[RESPONSE_DATA_RECORD_LENGTH] = fDescriptor.rec_len;
     }
 
-
 done:
     free(*simResponse);
     free(fcpByte);
@@ -831,7 +813,7 @@ done:
 void RmcSimBaseHandler::resetSimPropertyAndStatusKey() {
     // reset CDMA systemProperty and statusKey
     String8 cdmaMccMnc("vendor.cdma.ril.uicc.mccmnc");
-    cdmaMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+    cdmaMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
     rfx_property_set(cdmaMccMnc.string(), "");
     getMclStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_CDMA_NUMERIC, String8(""));
 
@@ -848,20 +830,19 @@ void RmcSimBaseHandler::resetSimPropertyAndStatusKey() {
     String8 pin2("vendor.gsm.sim.retry.pin2");
     String8 puk1("vendor.gsm.sim.retry.puk1");
     String8 puk2("vendor.gsm.sim.retry.puk2");
-    pin1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    pin2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    puk1.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
-    puk2.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
+    pin1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    pin2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk1.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
+    puk2.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
     rfx_property_set(pin1.string(), "");
     rfx_property_set(pin2.string(), "");
     rfx_property_set(puk1.string(), "");
     rfx_property_set(puk2.string(), "");
 
     String8 gsmMccMnc("vendor.gsm.ril.uicc.mccmnc");
-    gsmMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+    gsmMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
     rfx_property_set(gsmMccMnc.string(), "");
-    getMclStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC,
-            String8(""));
+    getMclStatusManager()->setString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, String8(""));
 
     getMclStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_IMSI, String8(""));
     getMclStatusManager()->setString8Value(RFX_STATUS_KEY_GSM_SPN, String8(""));
@@ -882,12 +863,12 @@ void RmcSimBaseHandler::resetSimPropertyAndStatusKey() {
 
         mlplMspl.append(String8::format("%d", m_slot_id));
         iccidPre.append(String8::format("%d", m_slot_id));
-        lockCount.append((m_slot_id == 0)? ".num.simlock" : String8::format("%d%s", m_slot_id,
-                ".num.simlock"));
+        lockCount.append((m_slot_id == 0) ? ".num.simlock"
+                                          : String8::format("%d%s", m_slot_id, ".num.simlock"));
         simType.append(String8::format("%d%s", (m_slot_id + 1), ".type"));
         if (RfxRilUtils::rfxGetSimCount() >= 2) {
             String8 slot("gsm.slot");
-            slot.append(String8::format("%d", (m_slot_id+1)));
+            slot.append(String8::format("%d", (m_slot_id + 1)));
             aospPin = String8::format("%s%s", slot.string(), ".num.pin1");
             aospPin2 = String8::format("%s%s", slot.string(), ".num.pin2");
             aospPuk = String8::format("%s%s", slot.string(), ".num.puk1");
@@ -910,12 +891,12 @@ void RmcSimBaseHandler::resetSimPropertyAndStatusKey() {
     }
 }
 
-RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *decodeerr,
-        int *slotnum) {
+RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine* line, int* decodeerr,
+                                                        int* slotnum) {
     int err = -1;
     int slotNum = 0;
-    RIL_SimSlotStatus *p_slot_status = NULL;
-    RIL_SimSlotStatus **pp_slot_status = NULL;
+    RIL_SimSlotStatus* p_slot_status = NULL;
+    RIL_SimSlotStatus** pp_slot_status = NULL;
     *decodeerr = -1;
 
     if (line == NULL) {
@@ -928,7 +909,7 @@ RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *de
     slotNum = line->atTokNextint(&err);
     if (err < 0) goto error;
     logD(mTag, "decodeEslotsinfo slotNum %d, RfxRilUtils::rfxGetSimCount() = %d", slotNum,
-            RfxRilUtils::rfxGetSimCount());
+         RfxRilUtils::rfxGetSimCount());
 
     // Just report slot info with valid logical slotId.
     // TODO: it should be udpated if AOSP changes and needs to reports all of slot infos.
@@ -936,9 +917,9 @@ RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *de
         slotNum = RfxRilUtils::rfxGetSimCount();
     }
 
-    pp_slot_status = (RIL_SimSlotStatus **)calloc(slotNum, sizeof(RIL_SimSlotStatus *));
+    pp_slot_status = (RIL_SimSlotStatus**)calloc(slotNum, sizeof(RIL_SimSlotStatus*));
     RFX_ASSERT(pp_slot_status != NULL);
-    p_slot_status = (RIL_SimSlotStatus *)calloc(slotNum, sizeof(RIL_SimSlotStatus));
+    p_slot_status = (RIL_SimSlotStatus*)calloc(slotNum, sizeof(RIL_SimSlotStatus));
     RFX_ASSERT(p_slot_status != NULL);
     memset(p_slot_status, 0, slotNum * sizeof(RIL_SimSlotStatus));
 
@@ -948,11 +929,12 @@ RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *de
     }
 
     for (int i = 0; i < slotNum; i++) {
-        char *pinState = NULL;
+        char* pinState = NULL;
         pinState = line->atTokNextstr(&err);
         if (err < 0) goto error;
 
-        if (strstr(pinState, "+CME ERROR: 14") != NULL || strstr(pinState, "+CME ERROR:14") != NULL) {
+        if (strstr(pinState, "+CME ERROR: 14") != NULL ||
+            strstr(pinState, "+CME ERROR:14") != NULL) {
             *decodeerr = RIL_E_SIM_ERR;
         }
 
@@ -968,7 +950,7 @@ RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *de
         if (!((p_slot_status[i].eid == NULL) || (strlen(p_slot_status[i].eid) == 0))) {
             getMclStatusManager(i)->setBoolValue(RFX_STATUS_KEY_IS_EUICC_CARD, true);
             getMclStatusManager(i)->setString8Value(RFX_STATUS_KEY_SIM_EID,
-                    String8::format("%s", p_slot_status[i].eid));
+                                                    String8::format("%s", p_slot_status[i].eid));
         } else {
             getMclStatusManager(i)->setBoolValue(RFX_STATUS_KEY_IS_EUICC_CARD, false);
             getMclStatusManager(i)->setString8Value(RFX_STATUS_KEY_SIM_EID, String8("N/A"));
@@ -979,14 +961,13 @@ RIL_SimSlotStatus** RmcSimBaseHandler::decodeEslotsinfo(RfxAtLine *line, int *de
 
         if (strstr(pinState, "+CPIN: CARD_RESTRICTED") != NULL) {
             p_slot_status[i].card_state = RIL_CARDSTATE_RESTRICTED;
-        } else if (!((p_slot_status[i].eid == NULL) || (strlen(p_slot_status[i].eid) == 0))
-                || !((p_slot_status[i].iccId == NULL) || (strlen(p_slot_status[i].iccId) == 0))) {
+        } else if (!((p_slot_status[i].eid == NULL) || (strlen(p_slot_status[i].eid) == 0)) ||
+                   !((p_slot_status[i].iccId == NULL) || (strlen(p_slot_status[i].iccId) == 0))) {
             p_slot_status[i].card_state = RIL_CARDSTATE_PRESENT;
         } else {
             p_slot_status[i].card_state = RIL_CARDSTATE_ABSENT;
         }
     }
-
 
     if (*decodeerr != RIL_E_SIM_ERR) {
         *decodeerr = RIL_E_SUCCESS;

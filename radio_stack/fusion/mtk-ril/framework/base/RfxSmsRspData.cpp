@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSmsRspData);
 
-RfxSmsRspData::RfxSmsRspData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSmsRspData::RfxSmsRspData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SMS_Response *pSmsRsp = (RIL_SMS_Response*)_data;
-        RIL_SMS_Response *pData = (RIL_SMS_Response *)calloc(1, sizeof(RIL_SMS_Response));
+        RIL_SMS_Response* pSmsRsp = (RIL_SMS_Response*)_data;
+        RIL_SMS_Response* pData = (RIL_SMS_Response*)calloc(1, sizeof(RIL_SMS_Response));
 
         if (pData != NULL) {
             pData->messageRef = pSmsRsp->messageRef;
@@ -41,7 +41,7 @@ RfxSmsRspData::RfxSmsRspData(void *_data, int _length) : RfxBaseData(_data, _len
 RfxSmsRspData::~RfxSmsRspData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SMS_Response *pData = (RIL_SMS_Response*)m_data;
+        RIL_SMS_Response* pData = (RIL_SMS_Response*)m_data;
         if (pData->ackPDU != NULL) {
             free(pData->ackPDU);
             pData->ackPDU = NULL;

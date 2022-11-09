@@ -43,8 +43,10 @@
 RFX_IMPLEMENT_CLASS("RtcImsConferenceController", RtcImsConferenceController, RfxController);
 
 // register request to RfxData
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxVoidData, RFX_MSG_REQUEST_CONFERENCE);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_URC_IMS_EVENT_PACKAGE_INDICATION);
@@ -52,14 +54,14 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxImsConfData, RFX_MSG_UNSOL_IMS_CONFERENCE_INFO_IN
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_LTE_MESSAGE_WAITING_INDICATION);
 RFX_REGISTER_DATA_TO_URC_ID(RfxDialogInfoData, RFX_MSG_URC_IMS_DIALOG_INDICATION);
 
+RtcImsConferenceController::RtcImsConferenceController()
+    : mNormalCallsMerge(false),
+      mInviteByNumber(false),
+      mIsMerging(false),
+      mEconfCount(0),
+      mFakeDisconnectedCallProcessingCount(0) {}
 
-RtcImsConferenceController::RtcImsConferenceController() : mNormalCallsMerge(false),
-        mInviteByNumber(false), mIsMerging(false), mEconfCount(0),
-        mFakeDisconnectedCallProcessingCount(0) {
-}
-
-RtcImsConferenceController::~RtcImsConferenceController() {
-}
+RtcImsConferenceController::~RtcImsConferenceController() {}
 
 void RtcImsConferenceController::onInit() {
     // Required: invoke super class implementation
@@ -69,19 +71,19 @@ void RtcImsConferenceController::onInit() {
     mRtcImsDialogHandler = new RtcImsDialogHandler(getSlotId());
 
     const int request_id_list[] = {
-        RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
-        RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
-        RFX_MSG_REQUEST_CONFERENCE,
+            RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
+            RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
+            RFX_MSG_REQUEST_CONFERENCE,
     };
 
     const int urc_id_list[] = {
-        RFX_MSG_URC_IMS_EVENT_PACKAGE_INDICATION,
+            RFX_MSG_URC_IMS_EVENT_PACKAGE_INDICATION,
     };
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 }
 
 void RtcImsConferenceController::onDeinit() {
@@ -105,9 +107,8 @@ bool RtcImsConferenceController::onHandleResponse(const sp<RfxMessage>& message)
     return handleResponse(message);
 }
 
-bool RtcImsConferenceController::onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState) {
-
+bool RtcImsConferenceController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
+                                                        bool isModemPowerOff, int radioState) {
     int isWfcSupport = RfxRilUtils::isWfcSupport();
 
     if (isWfcSupport == 1 && !isModemPowerOff) {
@@ -119,7 +120,7 @@ bool RtcImsConferenceController::onCheckIfRejectMessage(
 
 bool RtcImsConferenceController::handleMessgae(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
     bool needSendRequestToMcl = true;
 
     switch (msg_id) {
@@ -147,7 +148,7 @@ bool RtcImsConferenceController::handleMessgae(const sp<RfxMessage>& message) {
 
 bool RtcImsConferenceController::handleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
     bool needSendRespone = true;
     switch (msg_id) {
         case RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER:
@@ -234,7 +235,7 @@ void RtcImsConferenceController::handleAddMember(const sp<RfxMessage>& message) 
             getStatusManager(m_slot_id)->getImsCallInfosValue(RFX_STATUS_KEY_IMS_CALL_LIST);
     logD(RFX_LOG_TAG, "handleAddMember: %d", callId);
 
-    if(callId == -1) {  // One-key add member
+    if (callId == -1) {  // One-key add member
         mInviteByNumber = true;
         if (mRtcImsConferenceHandler != NULL && address != NULL) {
             mRtcImsConferenceHandler->tryOneKeyAddParticipant(address);
@@ -257,7 +258,7 @@ void RtcImsConferenceController::handleRemoveMember(const sp<RfxMessage>& messag
     RfxStringsData* data = (RfxStringsData*)message->getData();
     char** params = (char**)data->getData();
     char* address = params[1];
-    char **newData = (char **) calloc(4, sizeof(char *));
+    char** newData = (char**)calloc(4, sizeof(char*));
     string newAddressStr;
     string retryAddressStr;
     if (newData == NULL) {
@@ -278,8 +279,8 @@ void RtcImsConferenceController::handleRemoveMember(const sp<RfxMessage>& messag
     newData[3] = strdup(retryAddressStr.c_str());
 
     mIsRemovingMember = true;
-    sp<RfxMessage> request = RfxMessage::obtainRequest(msg_id,
-            RfxStringsData(newData, 4), message, false);
+    sp<RfxMessage> request =
+            RfxMessage::obtainRequest(msg_id, RfxStringsData(newData, 4), message, false);
     requestToMcl(request);
     for (int i = 0; i < 4; i++) {
         if (newData[i] != NULL) {
@@ -298,7 +299,7 @@ void RtcImsConferenceController::handleMergeConferenece(const sp<RfxMessage>& me
     Vector<string> numbers;
     Vector<string> callIds;
 
-  for (int i = 0; i < (int)calls.size(); i++) {
+    for (int i = 0; i < (int)calls.size(); i++) {
         if (calls[i]->isConferenceHost() == true) {
             confCallId = calls[i]->getCallId();
         }
@@ -310,22 +311,23 @@ void RtcImsConferenceController::handleMergeConferenece(const sp<RfxMessage>& me
 
     // Handle Confernece call & Normal call merge.
     if (confCallId > 0 && callIds.size() > 0) {
-        char **newData = (char **) calloc(3, sizeof(char *));
+        char** newData = (char**)calloc(3, sizeof(char*));
         if (newData == NULL) {
             logE(RFX_LOG_TAG, "handleMergeConferenece, newData calloc fail!");
-            sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_NO_MEMORY, message, false);
+            sp<RfxMessage> responseMsg =
+                    RfxMessage::obtainResponse(RIL_E_NO_MEMORY, message, false);
             responseToRilj(responseMsg);
             return;
         }
         newData[0] = strdup(to_string(confCallId).c_str());
         newData[1] = strdup(numbers[0].c_str());
         newData[2] = strdup(callIds[0].c_str());
-        sp<RfxMessage> request = RfxMessage::obtainRequest(
-                RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
-                RfxStringsData(newData, 3), message, false);
+        sp<RfxMessage> request =
+                RfxMessage::obtainRequest(RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,
+                                          RfxStringsData(newData, 3), message, false);
         handleAddMember(request);
-        mOriginalMergeMessage = RfxMessage::obtainRequest(
-                m_slot_id, RFX_MSG_REQUEST_CONFERENCE, message);
+        mOriginalMergeMessage =
+                RfxMessage::obtainRequest(m_slot_id, RFX_MSG_REQUEST_CONFERENCE, message);
         requestToMcl(request);
 
         for (int i = 0; i < 3; i++) {
@@ -359,10 +361,9 @@ void RtcImsConferenceController::handleImsEventPackageIndication(const sp<RfxMes
     /*
      * +EIMSEVTPKG: <call_id>,<type>,<urc_index>,<total_urc_count>,<data>
      * <call_id>:  0~255
-     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event Package
-     * <urc_index>: 1~255, the index of URC part
-     * <total_urc_count>: 1~255
-     * <data>: xml raw data, max length = 1950
+     * <type>: 1 = Conference Event Package; 2 = Dialog Event Package; 3 = Message Waiting Event
+     * Package <urc_index>: 1~255, the index of URC part <total_urc_count>: 1~255 <data>: xml raw
+     * data, max length = 1950
      */
 
     RfxStringsData* data = (RfxStringsData*)message->getData();
@@ -384,23 +385,23 @@ void RtcImsConferenceController::handleImsEventPackageIndication(const sp<RfxMes
         mRtcImsDialogHandler->handleImsDialogMessage(message);
         return;
     } else if (msgType == 3) {
-        sp<RfxMessage> msg = RfxMessage::obtainUrc(message->getSlotId(),
-                RFX_MSG_UNSOL_LTE_MESSAGE_WAITING_INDICATION, message, true);
+        sp<RfxMessage> msg = RfxMessage::obtainUrc(
+                message->getSlotId(), RFX_MSG_UNSOL_LTE_MESSAGE_WAITING_INDICATION, message, true);
         responseToRilj(msg);
     }
 }
 
 void RtcImsConferenceController::handleImsCallInfoUpdate(const sp<RfxMessage>& message) {
     /* +ECPI: <call_id>, <msg_type>, <is_ibt>,
-    *        <is_tch>, <dir>, <call_mode>, <number>, <type>, "<pau>", [<cause>] */
+     *        <is_tch>, <dir>, <call_mode>, <number>, <type>, "<pau>", [<cause>] */
     RfxStringsData* data = (RfxStringsData*)message->getData();
     char** params = (char**)data->getData();
     int callId = atoi(params[0]);
     char* number = params[6];
     int msgType = atoi(params[1]);
     if (msgType == 133) {
-        Vector<RfxImsCallInfo*> calls = getStatusManager(m_slot_id)->getImsCallInfosValue(
-                RFX_STATUS_KEY_IMS_CALL_LIST);
+        Vector<RfxImsCallInfo*> calls =
+                getStatusManager(m_slot_id)->getImsCallInfosValue(RFX_STATUS_KEY_IMS_CALL_LIST);
         int count = (int)calls.size();
         for (int i = 0; i < count; i++) {
             if (calls[i]->getCallId() == callId && calls[i]->isConferenceHost() == true) {
@@ -467,8 +468,8 @@ void RtcImsConferenceController::handleEconfUpdate(const sp<RfxMessage>& message
 }
 
 bool RtcImsConferenceController::handleAddMemberResponse(const sp<RfxMessage>& response) {
-    RtcCallController *ctrl = (RtcCallController *) findController(m_slot_id,
-                    RFX_OBJ_CLASS_INFO(RtcCallController));
+    RtcCallController* ctrl =
+            (RtcCallController*)findController(m_slot_id, RFX_OBJ_CLASS_INFO(RtcCallController));
     bool needSendRespone = true;
 
     if (response->getError() != RIL_E_SUCCESS) {
@@ -518,8 +519,8 @@ void RtcImsConferenceController::modifyParticipantComplete() {
         onParticipantsUpdate(false);
     }
     logD(RFX_LOG_TAG, "start  Timer");
-    mTimeoutHandle = RfxTimer::start(RfxCallback0(this,
-            &RtcImsConferenceController::onTimeout), ms2ns(5000));
+    mTimeoutHandle = RfxTimer::start(RfxCallback0(this, &RtcImsConferenceController::onTimeout),
+                                     ms2ns(5000));
 }
 
 void RtcImsConferenceController::onTimeout() {
@@ -532,7 +533,7 @@ void RtcImsConferenceController::onTimeout() {
         return;
     }
 
-    if(mRtcImsConferenceHandler != NULL) {
+    if (mRtcImsConferenceHandler != NULL) {
         mRtcImsConferenceHandler->updateConferenceStateWithLocalCache();
     }
 }
@@ -556,8 +557,8 @@ void RtcImsConferenceController::tryhandleCachedCEP() {
 
 bool RtcImsConferenceController::tryhandleAddMemberByMerge(const sp<RfxMessage>& response) {
     if (mOriginalMergeMessage != NULL) {
-        sp<RfxMessage> newResponse = RfxMessage::obtainResponse(response->getError(),
-                mOriginalMergeMessage, false);
+        sp<RfxMessage> newResponse =
+                RfxMessage::obtainResponse(response->getError(), mOriginalMergeMessage, false);
         responseToRilj(newResponse);
         mOriginalMergeMessage = NULL;
         return false;
@@ -566,11 +567,9 @@ bool RtcImsConferenceController::tryhandleAddMemberByMerge(const sp<RfxMessage>&
 }
 
 void RtcImsConferenceController::onParticipantsUpdate(bool autoTerminate) {
-    vector<sp<ConferenceCallUser>> users =
-            mRtcImsConferenceHandler->getConfParticipantsInfo();
-    RtcCallController *ctrl =
-            (RtcCallController *) findController(m_slot_id,
-                    RFX_OBJ_CLASS_INFO(RtcCallController));
+    vector<sp<ConferenceCallUser>> users = mRtcImsConferenceHandler->getConfParticipantsInfo();
+    RtcCallController* ctrl =
+            (RtcCallController*)findController(m_slot_id, RFX_OBJ_CLASS_INFO(RtcCallController));
     ctrl->onParticipantsUpdate(users, autoTerminate);
 
     int count = (int)users.size();
@@ -578,33 +577,33 @@ void RtcImsConferenceController::onParticipantsUpdate(bool autoTerminate) {
 
     if (autoTerminate) return;
 
-    RIL_Conference_Participants* participants = (RIL_Conference_Participants*)
-            calloc(1, sizeof(RIL_Conference_Participants) * count);
+    RIL_Conference_Participants* participants =
+            (RIL_Conference_Participants*)calloc(1, sizeof(RIL_Conference_Participants) * count);
     if (participants == NULL) {
         logE(RFX_LOG_TAG, "participants calloc fail!");
         return;
     }
 
-    for(int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
         sp<ConferenceCallUser> user = users[i];
         int len = strlen(user->mDisplayText.c_str());
-        participants[i].display_text = (char*) calloc(1, len + 1);
+        participants[i].display_text = (char*)calloc(1, len + 1);
         strncpy(participants[i].display_text, user->mDisplayText.c_str(), len);
         len = strlen(user->mEndPoint.c_str());
-        participants[i].end_point    = (char*) calloc(1, len + 1);
+        participants[i].end_point = (char*)calloc(1, len + 1);
         strncpy(participants[i].end_point, user->mEndPoint.c_str(), len);
         len = strlen(user->mEntity.c_str());
-        participants[i].entity       = (char*) calloc(1, len + 1);
+        participants[i].entity = (char*)calloc(1, len + 1);
         strncpy(participants[i].entity, user->mEntity.c_str(), len);
         len = strlen(user->mStatus.c_str());
-        participants[i].status       = (char*) calloc(1, len + 1);
+        participants[i].status = (char*)calloc(1, len + 1);
         strncpy(participants[i].status, user->mStatus.c_str(), len);
         len = strlen(user->mUserAddr.c_str());
-        participants[i].useraddr     = (char*) calloc(1, len + 1);
+        participants[i].useraddr = (char*)calloc(1, len + 1);
         strncpy(participants[i].useraddr, user->mUserAddr.c_str(), len);
     }
-    sp<RfxMessage> msg = RfxMessage::obtainUrc(getSlotId(),
-            RFX_MSG_UNSOL_IMS_CONFERENCE_INFO_INDICATION,
+    sp<RfxMessage> msg = RfxMessage::obtainUrc(
+            getSlotId(), RFX_MSG_UNSOL_IMS_CONFERENCE_INFO_INDICATION,
             RfxImsConfData((void*)participants, sizeof(RIL_Conference_Participants) * count));
     if (participants != NULL) {
         for (int i = 0; i < count; i++) {
@@ -638,39 +637,42 @@ void RtcImsConferenceController::handleSpecificConferenceMode() {
         int count = (int)calls.size();
 
         for (int i = 0; i < count; i++) {
-            // +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>[, <number>, <toa>], "",<cause>
+            // +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>[, <number>,
+            // <toa>], "",<cause>
 
             if (calls[i]->isConference() == false) {
                 int maxLen = 10;
-                char *params[maxLen];
+                char* params[maxLen];
                 int callId = calls[i]->getCallId();
                 String8 callNumber = calls[i]->getNumber();
 
-                logD(RFX_LOG_TAG, "handleSpecificConferenceMode(), fake disconnect for call id = %d, number = %s",
-                        callId, RfxRilUtils::pii(RFX_LOG_TAG, callNumber.string()));
+                logD(RFX_LOG_TAG,
+                     "handleSpecificConferenceMode(), fake disconnect for call id = %d, number = "
+                     "%s",
+                     callId, RfxRilUtils::pii(RFX_LOG_TAG, callNumber.string()));
 
-                params[0] = (char *) alloca(3);
+                params[0] = (char*)alloca(3);
                 sprintf(params[0], "%d", callId);
 
-                params[1] = (char *) alloca(4);
+                params[1] = (char*)alloca(4);
                 sprintf(params[1], "%d", 133);
 
                 // for 133 case, these param is no need
-                for (int j=2; j < 5; j++) {
-                    params[j] = (char *) alloca(2);
+                for (int j = 2; j < 5; j++) {
+                    params[j] = (char*)alloca(2);
                     sprintf(params[j], "%d", 0);
                 }
 
                 // if KDDI support ViLTE, need to chang this
-                params[5] = (char *) alloca(3);
+                params[5] = (char*)alloca(3);
                 sprintf(params[5], "%d", 20);
 
-                params[6] = (char *) alloca(strlen(callNumber.string()) + 1);
+                params[6] = (char*)alloca(strlen(callNumber.string()) + 1);
                 sprintf(params[6], "%s", callNumber.string());
 
                 // for 133 case, these param is no need
-                for (int j=7; j < 10; j++) {
-                    params[j] = (char *) alloca(1);
+                for (int j = 7; j < 10; j++) {
+                    params[j] = (char*)alloca(1);
                     sprintf(params[j], "");
                 }
 
@@ -678,12 +680,10 @@ void RtcImsConferenceController::handleSpecificConferenceMode() {
                 mFakeDisconnectedCallIdList.push_back(callId);
 
                 RfxStringsData data(params, maxLen);
-                sp<RfxMessage> urcToRilj = RfxMessage::obtainUrc(
-                                            m_slot_id,
-                                            RFX_MSG_UNSOL_CALL_INFO_INDICATION,
-                                            data);
+                sp<RfxMessage> urcToRilj =
+                        RfxMessage::obtainUrc(m_slot_id, RFX_MSG_UNSOL_CALL_INFO_INDICATION, data);
 
-                RtcCallController *imsCallCtrl = (RtcCallController *) findController(
+                RtcCallController* imsCallCtrl = (RtcCallController*)findController(
                         m_slot_id, RFX_OBJ_CLASS_INFO(RtcCallController));
 
                 imsCallCtrl->notifyCallInfoUpdate(urcToRilj);
@@ -694,14 +694,14 @@ void RtcImsConferenceController::handleSpecificConferenceMode() {
 
 bool RtcImsConferenceController::needProcessFakeDisconnect() {
     logD(RFX_LOG_TAG, "needProcessFakeDisconnect(),  mFakeDisconnectedCallProcessingCount = %d",
-            mFakeDisconnectedCallProcessingCount);
+         mFakeDisconnectedCallProcessingCount);
 
     return (mFakeDisconnectedCallProcessingCount > 0);
 }
 
 void RtcImsConferenceController::processFakeDisconnectDone() {
     logD(RFX_LOG_TAG, "processFakeDisconnectDone(),  mFakeDisconnectedCallProcessingCount = %d",
-            mFakeDisconnectedCallProcessingCount);
+         mFakeDisconnectedCallProcessingCount);
 
     mFakeDisconnectedCallProcessingCount--;
 }
@@ -711,7 +711,6 @@ bool RtcImsConferenceController::needSkipDueToFakeDisconnect(int callid) {
 
     int listSize = mFakeDisconnectedCallIdList.size();
     for (int i = 0; i < listSize; i++) {
-
         int item = mFakeDisconnectedCallIdList.itemAt(i);
         if (item == callid) {
             logD(RFX_LOG_TAG, "needSkipDueToFakeDisconnect(), Need to skip");

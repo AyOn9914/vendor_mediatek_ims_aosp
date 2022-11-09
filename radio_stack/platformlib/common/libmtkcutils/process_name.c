@@ -38,7 +38,7 @@ static int running_in_emulator = -1;
 
 void set_process_name(const char* new_name) {
 #if defined(__ANDROID__)
-    char  propBuf[PROPERTY_VALUE_MAX];
+    char propBuf[PROPERTY_VALUE_MAX];
 #endif
 
     if (new_name == NULL) {
@@ -47,18 +47,18 @@ void set_process_name(const char* new_name) {
 
     // We never free the old name. Someone else could be using it.
     int len = strlen(new_name);
-    char* copy = (char*) malloc(len + 1);
+    char* copy = (char*)malloc(len + 1);
     if (copy == NULL) {
         return;
     }
     strcpy(copy, new_name);
-    process_name = (const char*) copy;
+    process_name = (const char*)copy;
 
 #if defined(__linux__)
     if (len < 16) {
-        prctl(PR_SET_NAME, (unsigned long) new_name, 0, 0, 0);
+        prctl(PR_SET_NAME, (unsigned long)new_name, 0, 0, 0);
     } else {
-        prctl(PR_SET_NAME, (unsigned long) new_name + len - 15, 0, 0, 0);
+        prctl(PR_SET_NAME, (unsigned long)new_name + len - 15, 0, 0, 0);
     }
 #endif
 
@@ -88,13 +88,10 @@ void set_process_name(const char* new_name) {
     // command line option, but we don't know that here and this function
     // isn't called frequently enough to bother optimizing that case.
     int fd = open(PROCESS_NAME_DEVICE, O_RDWR);
-    if (fd < 0)
-        return;
+    if (fd < 0) return;
     write(fd, process_name, strlen(process_name) + 1);
     close(fd);
 #endif
 }
 
-const char* get_process_name(void) {
-    return process_name;
-}
+const char* get_process_name(void) { return process_name; }

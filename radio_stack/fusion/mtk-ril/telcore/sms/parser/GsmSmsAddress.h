@@ -27,11 +27,11 @@
  * Class SmsMessage
  *****************************************************************************/
 class GsmSmsAddress : public SmsAddress {
-public:
-    GsmSmsAddress(BYTE *data, int length);
+  public:
+    GsmSmsAddress(BYTE* data, int length);
     virtual ~GsmSmsAddress();
 
-public:
+  public:
     static const int OFFSET_ADDRESS_LENGTH;
     static const int OFFSET_TOA;
     static const int OFFSET_ADDRESS_VALUE;

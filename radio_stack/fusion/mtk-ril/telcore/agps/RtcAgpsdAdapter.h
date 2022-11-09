@@ -10,25 +10,23 @@
 /*****************************************************************************
  * Defines
  *****************************************************************************/
-#define EVENT_AGPS_NETWORK_TYPE          1
-#define EVENT_AGPS_CDMA_PHONE_STATUS     2
-#define EVENT_AGPS_MOBILE_DATA_STATUS    3
-#define EVENT_AGPS_SET_APN               5
-#define EVENT_AGPS_DESTROY_APN           6
-#define EVENT_MTK_RILP_INIT              7
+#define EVENT_AGPS_NETWORK_TYPE 1
+#define EVENT_AGPS_CDMA_PHONE_STATUS 2
+#define EVENT_AGPS_MOBILE_DATA_STATUS 3
+#define EVENT_AGPS_SET_APN 5
+#define EVENT_AGPS_DESTROY_APN 6
+#define EVENT_MTK_RILP_INIT 7
 
-#define EVENT_UPDATE_STATE_TO_AGPSD      100
-#define EVENT_SET_APN_RESULT             101
+#define EVENT_UPDATE_STATE_TO_AGPSD 100
+#define EVENT_SET_APN_RESULT 101
 
-typedef enum {
-    APN_TYPE_CTWAP
-} ApnTypeEnum;
+typedef enum { APN_TYPE_CTWAP } ApnTypeEnum;
 
 /*****************************************************************************
  * Namespace Declaration
  *****************************************************************************/
-using ::android::LooperCallback;
 using ::android::Looper;
+using ::android::LooperCallback;
 
 /*****************************************************************************
  * Class Declaraion
@@ -42,20 +40,20 @@ class RtcAgpsMessage;
 /*
  * The looper callback when AGPS IN fd is readable
  */
-class AgpsLooperCallback: public LooperCallback {
-public:
+class AgpsLooperCallback : public LooperCallback {
+  public:
     // Constructor
-    AgpsLooperCallback(RtcAgpsdAdapter *adapter): m_adapter(adapter){}
+    AgpsLooperCallback(RtcAgpsdAdapter* adapter) : m_adapter(adapter) {}
 
     // Destructor
     virtual ~AgpsLooperCallback() {}
 
-// Override
-protected:
+    // Override
+  protected:
     int handleEvent(int fd, int events, void* data);
 
-// Implement
-private:
+    // Implement
+  private:
     // referenc of agps adapter
     wp<RtcAgpsdAdapter> m_adapter;
 };
@@ -66,21 +64,19 @@ private:
 /*
  * RtcAgpsdAdapter is a class that is used to communicate with AGPSD
  */
-class RtcAgpsdAdapter :public RfxObject {
+class RtcAgpsdAdapter : public RfxObject {
     RFX_DECLARE_CLASS(RtcAgpsdAdapter);
 
-public:
+  public:
     // process the message from the AGPS working that
     // these messages will be sent to AGPSD
-    void processOutputMessage(
-        sp<RtcAgpsMessage> &message // [IN] message to AGPSD
-        );
+    void processOutputMessage(sp<RtcAgpsMessage>& message  // [IN] message to AGPSD
+    );
 
     // register the input socket fd to the looper of the
     // AGPS working thread
-    void registerFd(
-        sp<Looper> looper // [IN] looper of the AGPS working thread
-        );
+    void registerFd(sp<Looper> looper  // [IN] looper of the AGPS working thread
+    );
 
     // Constructor
     RtcAgpsdAdapter();
@@ -88,77 +84,68 @@ public:
     // Destructor
     virtual ~RtcAgpsdAdapter();
 
-public:
+  public:
     // Write data to socket
-    static int safeWrite(int fd, void *buf, int len);
+    static int safeWrite(int fd, void* buf, int len);
     // Read data from socket
     static int safeRead(int fd, void* buf, int len);
     // Write a byte to the buffer
-    static void putByte(
-        char* buff,                 // [IN] buffer to write
-        int* offset,                // [IN] write position
-        const char input            // [IN] the value to be write
-        );
+    static void putByte(char* buff,       // [IN] buffer to write
+                        int* offset,      // [IN] write position
+                        const char input  // [IN] the value to be write
+    );
     // Write a 16 bit integer to the buffer
-    static void putInt16(
-        char* buff,                 // [IN] buffer to write
-        int* offset,                // [IN] write position
-        const int16_t input         // [IN] the value to be write
-        );
+    static void putInt16(char* buff,          // [IN] buffer to write
+                         int* offset,         // [IN] write position
+                         const int16_t input  // [IN] the value to be write
+    );
     // Write a 32 bit integer to the buffer
-    static void putInt32(
-        char* buff,                 // [IN] buffer to write
-        int* offset,                // [IN] write position
-        const int32_t input         // [IN] the value to be write
-        );
+    static void putInt32(char* buff,          // [IN] buffer to write
+                         int* offset,         // [IN] write position
+                         const int32_t input  // [IN] the value to be write
+    );
     // Read a byte from the buffer
-    static char getByte(
-        char* buff,                 // [IN] buffer to read to
-        int* offset                 // [IN/OUT] read position and next position
-        );
+    static char getByte(char* buff,  // [IN] buffer to read to
+                        int* offset  // [IN/OUT] read position and next position
+    );
     // Read a 16bit integer from the buffer
-    static int16_t getInt16(
-        char* buff,                 // [IN] buffer to read to
-        int* offset                 // [IN/OUT] read position and next position
-        );
+    static int16_t getInt16(char* buff,  // [IN] buffer to read to
+                            int* offset  // [IN/OUT] read position and next position
+    );
     // Read a 32bit integer from the buffer
-    static int32_t getInt32(
-        char* buff,                 // [IN] buffer to read to
-        int* offset                 // [IN/OUT] read position and next position
-        );
+    static int32_t getInt32(char* buff,  // [IN] buffer to read to
+                            int* offset  // [IN/OUT] read position and next position
+    );
 
-// Override
-protected:
+    // Override
+  protected:
     void onInit();
     void onDeinit();
 
-// Implement
-private:
+    // Implement
+  private:
     // Send Message to AGPSD
-    int sendToAgpsd(sp<RtcAgpsMessage> &message);
+    int sendToAgpsd(sp<RtcAgpsMessage>& message);
     // Create the linux abstract socket
-    int createSocket(
-        const char *name,         // [IN] socket name
-        int type,                 // [IN] socket type
-        struct sockaddr_un *addr, // [IN] socket address
-        socklen_t *len            // [IN] socket address len
-        );
+    int createSocket(const char* name,          // [IN] socket name
+                     int type,                  // [IN] socket type
+                     struct sockaddr_un* addr,  // [IN] socket address
+                     socklen_t* len             // [IN] socket address len
+    );
     // Create the TCP socket to send message to AGPSD
     int createOutSocket();
     // Create teh UDP socket to receve message from AGPSD
     int createInSocket();
     // make the linux abstract socket address
-    int makeAddress(
-        const char *name,           // [IN] socket name
-        struct sockaddr_un *addr,   // [IN] socket address
-        socklen_t *len              // [IN] socket address len
-        );
+    int makeAddress(const char* name,          // [IN] socket name
+                    struct sockaddr_un* addr,  // [IN] socket address
+                    socklen_t* len             // [IN] socket address len
+    );
 
     // Process the input from the AGPSD
-    void processInput(
-        void *buf,                 // [IN] input buffer
-        int len                    // [IN] len of the data
-        );
+    void processInput(void* buf,  // [IN] input buffer
+                      int len     // [IN] len of the data
+    );
 
     // Check the peer socket status
     int checkCanWrite(int sock_fd);
@@ -184,4 +171,3 @@ private:
 };
 
 #endif /* __RTC_AGPS_ADAPTER_H__ */
-

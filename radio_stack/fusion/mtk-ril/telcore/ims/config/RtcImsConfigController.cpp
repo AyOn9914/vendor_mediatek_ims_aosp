@@ -41,16 +41,16 @@ using ::android::String8;
 
 #define RFX_LOG_TAG "RtcImsConfigController"
 
-#define AP_WIFI_ONLY           0
-#define AP_CELLULAR_PREFERRED  1
-#define AP_WIFI_PREFERRED      2
-#define AP_CELLULAR_ONLY       3
-#define AP_4G_PREFER           4
+#define AP_WIFI_ONLY 0
+#define AP_CELLULAR_PREFERRED 1
+#define AP_WIFI_PREFERRED 2
+#define AP_CELLULAR_ONLY 3
+#define AP_4G_PREFER 4
 
-#define RIL_4G_PREFER          4
-#define RIL_WIFI_ONLY          3
+#define RIL_4G_PREFER 4
+#define RIL_WIFI_ONLY 3
 #define RIL_CELLULAR_PREFERRED 2
-#define RIL_WIFI_PREFERRED     1
+#define RIL_WIFI_PREFERRED 1
 
 /*****************************************************************************
  * Class RfxController
@@ -60,9 +60,12 @@ RFX_IMPLEMENT_CLASS("RtcImsConfigController", RtcImsConfigController, RfxControl
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_IMS_CONFIG_SET_FEATURE);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_IMS_CONFIG_GET_FEATURE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxStringData, RFX_MSG_REQUEST_IMS_CONFIG_GET_PROVISION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_IMS_CONFIG_GET_RESOURCE_CAP);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxStringData,
+                                RFX_MSG_REQUEST_IMS_CONFIG_GET_PROVISION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData,
+                                RFX_MSG_REQUEST_IMS_CONFIG_GET_RESOURCE_CAP);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_IMS_CONFIG_DYNAMIC_IMS_SWITCH_COMPLETE);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_IMS_CONFIG_FEATURE_CHANGED);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_IMS_CONFIG_CONFIG_CHANGED);
@@ -75,11 +78,14 @@ void RtcImsConfigController::onInit() {
 
     DEBUG = isLogEnable();
 
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_SIM_STATE,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_SIM_STATE,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onSimStateChanged));
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_RADIO_STATE,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_RADIO_STATE,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onRadioStateChanged));
-    getStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CARRIER_CONFIG_CHANGED,
+    getStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CARRIER_CONFIG_CHANGED,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onCarrierConfigChanged));
 
     resetFeatureSendCmd();
@@ -87,31 +93,29 @@ void RtcImsConfigController::onInit() {
     resetFeatureValue();
     resetFeatureSendValue();
 
-    const int request_id_list[] = {
-            RFX_MSG_REQUEST_IMS_CONFIG_SET_FEATURE,
-            RFX_MSG_REQUEST_IMS_CONFIG_GET_FEATURE,
-            RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION,
-            RFX_MSG_REQUEST_IMS_CONFIG_GET_PROVISION,
-            RFX_MSG_REQUEST_IMS_CONFIG_GET_MD_PROVISION,
-            RFX_MSG_REQUEST_IMS_CONFIG_GET_RESOURCE_CAP
-    };
-    const int urc_id_list[] = {
-            RFX_MSG_UNSOL_GET_PROVISION_DONE
-    };
+    const int request_id_list[] = {RFX_MSG_REQUEST_IMS_CONFIG_SET_FEATURE,
+                                   RFX_MSG_REQUEST_IMS_CONFIG_GET_FEATURE,
+                                   RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION,
+                                   RFX_MSG_REQUEST_IMS_CONFIG_GET_PROVISION,
+                                   RFX_MSG_REQUEST_IMS_CONFIG_GET_MD_PROVISION,
+                                   RFX_MSG_REQUEST_IMS_CONFIG_GET_RESOURCE_CAP};
+    const int urc_id_list[] = {RFX_MSG_UNSOL_GET_PROVISION_DONE};
 
     // register request & URC id list
     // NOTE. one id can only be registered by one controller
-    registerToHandleRequest(request_id_list, sizeof(request_id_list)/sizeof(const int));
-    registerToHandleUrc(urc_id_list, sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 }
 
-
 void RtcImsConfigController::onDeinit() {
-    getStatusManager()->unRegisterStatusChanged(RFX_STATUS_KEY_SIM_STATE,
+    getStatusManager()->unRegisterStatusChanged(
+            RFX_STATUS_KEY_SIM_STATE,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onSimStateChanged));
-    getStatusManager()->unRegisterStatusChanged(RFX_STATUS_KEY_RADIO_STATE,
+    getStatusManager()->unRegisterStatusChanged(
+            RFX_STATUS_KEY_RADIO_STATE,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onRadioStateChanged));
-    getStatusManager()->unRegisterStatusChanged(RFX_STATUS_KEY_CARRIER_CONFIG_CHANGED,
+    getStatusManager()->unRegisterStatusChanged(
+            RFX_STATUS_KEY_CARRIER_CONFIG_CHANGED,
             RfxStatusChangeCallback(this, &RtcImsConfigController::onCarrierConfigChanged));
     RfxController::onDeinit();
 }
@@ -125,8 +129,7 @@ void RtcImsConfigController::initProvisionValue() {
 
     mProvisionValue.clear();
 
-    vector<shared_ptr<ConfigValue>> data =
-            ImsConfigDataHelper::getConfigData(operatorId);
+    vector<shared_ptr<ConfigValue>> data = ImsConfigDataHelper::getConfigData(operatorId);
 
     for (int i = 0; i < (int)data.size(); i++) {
         mProvisionValue[data[i]->configId] = data[i]->provsionValue;
@@ -135,13 +138,12 @@ void RtcImsConfigController::initProvisionValue() {
     mInitDone = true;
 
     if (DEBUG) logD(RFX_LOG_TAG, "send config loaded urc");
-    sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                                               RFX_MSG_UNSOL_IMS_CONFIG_CONFIG_LOADED,
+    sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(), RFX_MSG_UNSOL_IMS_CONFIG_CONFIG_LOADED,
                                                RfxVoidData());
     responseToRilj(urc);
 }
 
-bool RtcImsConfigController::onHandleRequest(const sp<RfxMessage>& message){
+bool RtcImsConfigController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
     if (DEBUG) logD(RFX_LOG_TAG, "onHandleRequest - %s", RFX_ID_TO_STR(msg_id));
     switch (msg_id) {
@@ -180,7 +182,7 @@ bool RtcImsConfigController::onHandleUrc(const sp<RfxMessage>& message) {
     return true;
 }
 
-bool RtcImsConfigController::onHandleResponse(const sp<RfxMessage>& message){
+bool RtcImsConfigController::onHandleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
     logD(RFX_LOG_TAG, "onHandleResponse - %s", RFX_ID_TO_STR(msg_id));
     switch (msg_id) {
@@ -197,7 +199,7 @@ bool RtcImsConfigController::onHandleResponse(const sp<RfxMessage>& message){
 }
 
 bool RtcImsConfigController::onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState) {
+                                                    bool isModemPowerOff, int radioState) {
     RFX_UNUSED(isModemPowerOff);
 
     int msg_id = message->getId();
@@ -214,35 +216,35 @@ bool RtcImsConfigController::onCheckIfRejectMessage(const sp<RfxMessage>& messag
 }
 
 void RtcImsConfigController::onSimStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value) {
+                                               RfxVariant value) {
     RFX_UNUSED(key);
     RFX_UNUSED(old_value);
 
     int simState = value.asInt();
     logD(RFX_LOG_TAG, "onSimStateChanged, simState = %d", simState);
 
-    if (simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_PIN_REQUIRED || simState ==
-            RFX_SIM_STATE_PUK_REQUIRED || simState == RFX_SIM_STATE_NETWORK_LOCKED) {
+    if (simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_PIN_REQUIRED ||
+        simState == RFX_SIM_STATE_PUK_REQUIRED || simState == RFX_SIM_STATE_NETWORK_LOCKED) {
         mECCAllowSendCmd = true;
 
         int slot_id = getSlotId();
-        int volte = ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VOLTE_ENALBE,
-                                                        slot_id);
-        int vilte = ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VILTE_ENALBE,
-                                                        slot_id);
+        int volte =
+                ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VOLTE_ENALBE, slot_id);
+        int vilte =
+                ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VILTE_ENALBE, slot_id);
         int wfc = ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id);
         if (volte == 1 && vilte == 1 && wfc == 1) {
             mECCAllowNotify = true;
         }
     }
 
-    if(simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_NOT_READY || simState ==
-            RFX_SIM_STATE_PIN_REQUIRED || simState == RFX_SIM_STATE_PUK_REQUIRED || simState ==
-            RFX_SIM_STATE_NETWORK_LOCKED) {
+    if (simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_NOT_READY ||
+        simState == RFX_SIM_STATE_PIN_REQUIRED || simState == RFX_SIM_STATE_PUK_REQUIRED ||
+        simState == RFX_SIM_STATE_NETWORK_LOCKED) {
         resetFeatureSendCmd();
     }
 
-    if(simState != RFX_SIM_STATE_READY) {
+    if (simState != RFX_SIM_STATE_READY) {
         // For SIM state ready, will wait for onCarrierConfigChanged()
         processDynamicImsSwitch();
     }
@@ -255,10 +257,9 @@ void RtcImsConfigController::processDynamicImsSwitch() {
         return;
     }
 
-    int currentMccMnc  = getCurrentMccMnc();
+    int currentMccMnc = getCurrentMccMnc();
 
-    if (DEBUG)
-        logD(RFX_LOG_TAG, "processDynamicImsSwitch, currentMccMnc = %d", currentMccMnc);
+    if (DEBUG) logD(RFX_LOG_TAG, "processDynamicImsSwitch, currentMccMnc = %d", currentMccMnc);
 
     // Dynamic SIM Switch start
     int volte = FEATURE_VALUE_OFF;
@@ -277,26 +278,26 @@ void RtcImsConfigController::processDynamicImsSwitch() {
         } else {
             if (!ImsConfigUtils::isTestSim(getSlotId())) {
                 volte = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_CONFIG_DEVICE_VOLTE_AVAILABLE) == "1";
+                                RFX_STATUS_KEY_CONFIG_DEVICE_VOLTE_AVAILABLE) == "1";
                 vilte = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_CONFIG_DEVICE_VT_AVAILABLE) == "1";
+                                RFX_STATUS_KEY_CONFIG_DEVICE_VT_AVAILABLE) == "1";
                 vowifi = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_CONFIG_DEVICE_WFC_AVAILABLE) == "1";
-                viwifi = vilte; // Currently, only one DIMS config for ViLTE & ViWifi.
+                                 RFX_STATUS_KEY_CONFIG_DEVICE_WFC_AVAILABLE) == "1";
+                viwifi = vilte;  // Currently, only one DIMS config for ViLTE & ViWifi.
                 vonr = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_CONFIG_DEVICE_VONR_AVAILABLE) == "1";
+                               RFX_STATUS_KEY_CONFIG_DEVICE_VONR_AVAILABLE) == "1";
                 vinr = getStatusManager()->getString8Value(
-                        RFX_STATUS_KEY_CONFIG_DEVICE_VINR_AVAILABLE) == "1";
+                               RFX_STATUS_KEY_CONFIG_DEVICE_VINR_AVAILABLE) == "1";
 
                 if (DEBUG)
-                    logD(RFX_LOG_TAG, "DIMS volte:%d, vilte:%d, wfc:%d, vonr:%d, vinr:%d",
-                            volte, vilte, vowifi, vonr, vinr);
+                    logD(RFX_LOG_TAG, "DIMS volte:%d, vilte:%d, wfc:%d, vonr:%d, vinr:%d", volte,
+                         vilte, vowifi, vonr, vinr);
 
                 string iccid = ImsConfigUtils::getSystemPropStringValue(
                         ImsConfigUtils::PROPERTY_ICCID_SIM[getSlotId()]);
                 if (DEBUG)
                     logD(RFX_LOG_TAG, "processDynamicImsSwitch, iccid = %s",
-                            RfxRilUtils::pii(RFX_LOG_TAG, iccid.c_str()));
+                         RfxRilUtils::pii(RFX_LOG_TAG, iccid.c_str()));
 
                 int ctMccmnc = mMccmnc;
                 if (!iccid.empty()) {
@@ -313,8 +314,8 @@ void RtcImsConfigController::processDynamicImsSwitch() {
                         vilte = FEATURE_VALUE_ON;
                         vowifi = FEATURE_VALUE_ON;
                         viwifi = FEATURE_VALUE_ON;
-                    } else if (mMccmnc == 20404
-                            && (iccid.compare(0, CT_ICCID_1.size(), CT_ICCID_1) == 0 ||
+                    } else if (mMccmnc == 20404 &&
+                               (iccid.compare(0, CT_ICCID_1.size(), CT_ICCID_1) == 0 ||
                                 iccid.compare(0, CT_ICCID_2.size(), CT_ICCID_2) == 0)) {
                         ctMccmnc = 46003;
                         // special case for 46003 in case some CT sim use 20404 to get wrong result
@@ -343,9 +344,8 @@ void RtcImsConfigController::processDynamicImsSwitch() {
             }
         }
 
-        logD(RFX_LOG_TAG,
-                "setImsResourceCapability, volte:%d, vilte:%d, wfc:%d, vonr:%d, vinr:%d",
-                volte, vilte, vowifi, vonr, vinr);
+        logD(RFX_LOG_TAG, "setImsResourceCapability, volte:%d, vilte:%d, wfc:%d, vonr:%d, vinr:%d",
+             volte, vilte, vowifi, vonr, vinr);
 
         setImsResourceCapability(FEATURE_TYPE_VOICE_OVER_LTE, volte, false);
         setImsResourceCapability(FEATURE_TYPE_VIDEO_OVER_LTE, vilte, false);
@@ -356,8 +356,8 @@ void RtcImsConfigController::processDynamicImsSwitch() {
     }
 }
 
-void RtcImsConfigController::onCarrierConfigChanged(RfxStatusKeyEnum key,
-                                               RfxVariant old_value, RfxVariant value) {
+void RtcImsConfigController::onCarrierConfigChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                    RfxVariant value) {
     logD(RFX_LOG_TAG, "onCarrierConfigChanged()");
     RFX_UNUSED(key);
     RFX_UNUSED(old_value);
@@ -373,7 +373,7 @@ void RtcImsConfigController::onCarrierConfigChanged(RfxStatusKeyEnum key,
 }
 
 void RtcImsConfigController::onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value) {
+                                                 RfxVariant value) {
     int oldState = -1, newState = -1;
 
     RFX_UNUSED(key);
@@ -389,15 +389,15 @@ void RtcImsConfigController::onRadioStateChanged(RfxStatusKeyEnum key, RfxVarian
 
         if (DEBUG)
             logD(RFX_LOG_TAG, "onRadioStateChanged, currentIccid: %s, mSendCfgIccid: %s",
-                    RfxRilUtils::pii(RFX_LOG_TAG, currentIccid.string()),
-                    RfxRilUtils::pii(RFX_LOG_TAG, mSendCfgIccid.string()));
+                 RfxRilUtils::pii(RFX_LOG_TAG, currentIccid.string()),
+                 RfxRilUtils::pii(RFX_LOG_TAG, mSendCfgIccid.string()));
 
         if (DEBUG)
             logD(RFX_LOG_TAG, "onRadioStateChanged, currentMccmnc: %d, mSendCfgMccmnc: %d",
-                    currentMccmnc, mSendCfgMccmnc);
+                 currentMccmnc, mSendCfgMccmnc);
 
         if ((mSendCfgMccmnc != -1) && !mSendCfgIccid.isEmpty() &&
-                (currentIccid.compare(mSendCfgIccid) == 0) && (currentMccmnc == mSendCfgMccmnc)) {
+            (currentIccid.compare(mSendCfgIccid) == 0) && (currentMccmnc == mSendCfgMccmnc)) {
             triggerImsCfgCommand(slot_id);
         } else {
             resetFeatureSendCmd();
@@ -405,9 +405,9 @@ void RtcImsConfigController::onRadioStateChanged(RfxStatusKeyEnum key, RfxVarian
     }
     /// M: ALPS04270086 airplane mode ECC issue. @{
     int simState = getStatusManager()->getIntValue(RFX_STATUS_KEY_SIM_STATE);
-    if (newState == RADIO_STATE_ON && (simState == RFX_SIM_STATE_ABSENT || simState ==
-            RFX_SIM_STATE_PIN_REQUIRED || simState == RFX_SIM_STATE_PUK_REQUIRED || simState ==
-            RFX_SIM_STATE_NETWORK_LOCKED)) {
+    if (newState == RADIO_STATE_ON &&
+        (simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_PIN_REQUIRED ||
+         simState == RFX_SIM_STATE_PUK_REQUIRED || simState == RFX_SIM_STATE_NETWORK_LOCKED)) {
         mECCAllowSendCmd = true;
         logD(RFX_LOG_TAG, "onRadioStateChanged, mECCAllowSendCmd = true");
     }
@@ -420,7 +420,7 @@ string RtcImsConfigController::convertToString(int value) {
     return os.str();
 }
 
-void RtcImsConfigController::resetFeatureSendCmd(){
+void RtcImsConfigController::resetFeatureSendCmd() {
     mFeatureSendCmd[FEATURE_TYPE_VOICE_OVER_LTE] = false;
     mFeatureSendCmd[FEATURE_TYPE_VIDEO_OVER_LTE] = false;
     mFeatureSendCmd[FEATURE_TYPE_VOICE_OVER_WIFI] = false;
@@ -429,7 +429,7 @@ void RtcImsConfigController::resetFeatureSendCmd(){
     mFeatureSendCmd[FEATURE_TYPE_VIDEO_OVER_NR] = false;
 }
 
-void RtcImsConfigController::resetFeatureResource(){
+void RtcImsConfigController::resetFeatureResource() {
     mMccmnc = -1;
     mFeatureResource[FEATURE_TYPE_VOICE_OVER_LTE] = FEATURE_RESOURCE_OFF;
     mFeatureResource[FEATURE_TYPE_VIDEO_OVER_LTE] = FEATURE_RESOURCE_OFF;
@@ -439,7 +439,7 @@ void RtcImsConfigController::resetFeatureResource(){
     mFeatureResource[FEATURE_TYPE_VIDEO_OVER_NR] = FEATURE_RESOURCE_OFF;
 }
 
-void RtcImsConfigController::resetFeatureValue(){
+void RtcImsConfigController::resetFeatureValue() {
     int slot_id = getSlotId();
 
     mVoLteFeatureValue.clear();
@@ -449,21 +449,21 @@ void RtcImsConfigController::resetFeatureValue(){
     mVoNrFeatureValue.clear();
     mViNrFeatureValue.clear();
 
-    mVoLteFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VOLTE_ENALBE, slot_id);
-    mViLteFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VILTE_ENALBE, slot_id);
-    mVoWifiFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id);
-    mViWifiFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VIWIFI_ENALBE, slot_id);
-    mVoNrFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VONR_ENALBE, slot_id);
-    mViNrFeatureValue[NETWORK_TYPE_LTE] = ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VINR_ENALBE, slot_id);
+    mVoLteFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VOLTE_ENALBE, slot_id);
+    mViLteFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VILTE_ENALBE, slot_id);
+    mVoWifiFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id);
+    mViWifiFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VIWIFI_ENALBE, slot_id);
+    mVoNrFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VONR_ENALBE, slot_id);
+    mViNrFeatureValue[NETWORK_TYPE_LTE] =
+            ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VINR_ENALBE, slot_id);
 }
 
-void RtcImsConfigController::resetFeatureSendValue(){
+void RtcImsConfigController::resetFeatureSendValue() {
     mFeatureSendValue[FEATURE_TYPE_VOICE_OVER_LTE] = FEATURE_VALUE_OFF;
     mFeatureSendValue[FEATURE_TYPE_VIDEO_OVER_LTE] = FEATURE_VALUE_OFF;
     mFeatureSendValue[FEATURE_TYPE_VOICE_OVER_WIFI] = FEATURE_VALUE_OFF;
@@ -472,16 +472,16 @@ void RtcImsConfigController::resetFeatureSendValue(){
     mFeatureSendValue[FEATURE_TYPE_VIDEO_OVER_NR] = FEATURE_VALUE_OFF;
 }
 
-void RtcImsConfigController::setFeatureValue(const sp<RfxMessage>& message){
+void RtcImsConfigController::setFeatureValue(const sp<RfxMessage>& message) {
     int slot_id = getSlotId();
-    int *params = (int *)message->getData()->getData();
+    int* params = (int*)message->getData()->getData();
     int feature_id = params[0];
     int network = params[1];
     int value = params[2];
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "setFeatureValue, feature_id:%d,network:%d,value:%d,isLast:%d",
-                feature_id, network, value, params[3]);
+             feature_id, network, value, params[3]);
 
     if (feature_id == FEATURE_TYPE_VOICE_OVER_LTE) {
         mVoLteFeatureValue[network] = value;
@@ -496,8 +496,8 @@ void RtcImsConfigController::setFeatureValue(const sp<RfxMessage>& message){
     } else if (feature_id == FEATURE_TYPE_VIDEO_OVER_NR) {
         mViNrFeatureValue[network] = value;
     } else {
-        logD(RFX_LOG_TAG, "setFeatureValue, feature_id:%d, value:%d not support",
-             feature_id, value);
+        logD(RFX_LOG_TAG, "setFeatureValue, feature_id:%d, value:%d not support", feature_id,
+             value);
     }
 
     handleSetFeatureValue(true, message);
@@ -505,7 +505,7 @@ void RtcImsConfigController::setFeatureValue(const sp<RfxMessage>& message){
 
 void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMessage>& message) {
     int slot_id = getSlotId();
-    int *params = (int *)message->getData()->getData();
+    int* params = (int*)message->getData()->getData();
     int featureId = params[0];
     int network = params[1];
     int value = params[2];
@@ -517,43 +517,37 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "handleSetFeatureValue(), featureId:%d, network:%d, value:%d, isLast:%d",
-                featureId, network, value, isLast);
+             featureId, network, value, isLast);
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "handleSetFeatureValue(), success:%d, simState:%d", success, simState);
 
     if (simState == RFX_SIM_STATE_READY) {
         if (mFeatureSendCmd[featureId]) {
-            switch(featureId) {
+            switch (featureId) {
                 case FEATURE_TYPE_VOICE_OVER_LTE:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VOLTE_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_VOLTE_ENALBE, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_LTE:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VILTE_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_VILTE_ENALBE, slot_id);
                     break;
                 case FEATURE_TYPE_VOICE_OVER_WIFI:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_WFC_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_WIFI:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VIWIFI_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_VIWIFI_ENALBE, slot_id);
                     break;
                 case FEATURE_TYPE_VOICE_OVER_NR:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VONR_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_VONR_ENALBE, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_NR:
                     oldFeatureValue = ImsConfigUtils::getFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VINR_ENALBE,
-                            slot_id);
+                            ImsConfigUtils::PROPERTY_VINR_ENALBE, slot_id);
                     break;
                 default:
                     break;
@@ -562,8 +556,7 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
             if (DEBUG)
                 logD(RFX_LOG_TAG,
                      "Already send feature %d once, compare feature value old: %d, new: %d",
-                     featureId,
-                     oldFeatureValue, value);
+                     featureId, oldFeatureValue, value);
 
             if (value != oldFeatureValue || value != mFeatureSendValue[featureId]) {
                 isAllowSendAT = true;
@@ -573,12 +566,12 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
             mFeatureSendCmd[featureId] = true;
         }
     } else if (simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_PIN_REQUIRED ||
-            simState == RFX_SIM_STATE_PUK_REQUIRED || simState == RFX_SIM_STATE_NETWORK_LOCKED) {
+               simState == RFX_SIM_STATE_PUK_REQUIRED || simState == RFX_SIM_STATE_NETWORK_LOCKED) {
         if (DEBUG) logD(RFX_LOG_TAG, "ECCAllow : %d", mECCAllowSendCmd);
         if (mECCAllowSendCmd) {
-            isAllowSendAT = ((value == FEATURE_VALUE_ON) &&
-                    ((featureId == FEATURE_TYPE_VOICE_OVER_LTE) ||
-                     (featureId == FEATURE_TYPE_VOICE_OVER_NR)));
+            isAllowSendAT =
+                    ((value == FEATURE_VALUE_ON) && ((featureId == FEATURE_TYPE_VOICE_OVER_LTE) ||
+                                                     (featureId == FEATURE_TYPE_VOICE_OVER_NR)));
             if (isAllowSendAT) {
                 logD(RFX_LOG_TAG, "Allow to send enable VoLTE AT cmd once for ECC");
                 mECCAllowSendCmd = false;
@@ -586,11 +579,11 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
         }
     }
 
-    bool forceNotify = ((featureId == FEATURE_TYPE_VOICE_OVER_LTE ||
-                         featureId == FEATURE_TYPE_VIDEO_OVER_LTE ||
-                         featureId == FEATURE_TYPE_VOICE_OVER_NR ||
-                         featureId == FEATURE_TYPE_VIDEO_OVER_NR) &&
-                     ImsConfigUtils::isAllowForceNotify(getSlotId(), value));
+    bool forceNotify =
+            ((featureId == FEATURE_TYPE_VOICE_OVER_LTE ||
+              featureId == FEATURE_TYPE_VIDEO_OVER_LTE || featureId == FEATURE_TYPE_VOICE_OVER_NR ||
+              featureId == FEATURE_TYPE_VIDEO_OVER_NR) &&
+             ImsConfigUtils::isAllowForceNotify(getSlotId(), value));
     if (!isAllowSendAT) {
         isAllowSendAT = forceNotify;
     }
@@ -603,44 +596,32 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
     if (isAllowSendAT || (isLast == ISLAST_TRUE)) {
         if (isAllowSendAT) {
             char isEnable[10];
-            sprintf(isEnable,"%d",value);
+            sprintf(isEnable, "%d", value);
 
-            switch(featureId) {
+            switch (featureId) {
                 case FEATURE_TYPE_VOICE_OVER_LTE:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VOLTE_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_VOLTE_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_LTE:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VILTE_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_VILTE_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 case FEATURE_TYPE_VOICE_OVER_WIFI:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_WFC_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_WFC_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_WIFI:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VIWIFI_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_VIWIFI_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 case FEATURE_TYPE_VOICE_OVER_NR:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VONR_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_VONR_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 case FEATURE_TYPE_VIDEO_OVER_NR:
-                    ImsConfigUtils::setFeaturePropValue(
-                            ImsConfigUtils::PROPERTY_VINR_ENALBE,
-                            isEnable,
-                            slot_id);
+                    ImsConfigUtils::setFeaturePropValue(ImsConfigUtils::PROPERTY_VINR_ENALBE,
+                                                        isEnable, slot_id);
                     break;
                 default:
                     break;
@@ -654,7 +635,7 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
         }
     }
 
-    RIL_Errno error = success ? RIL_E_SUCCESS:RIL_E_GENERIC_FAILURE;
+    RIL_Errno error = success ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE;
     sp<RfxMessage> response = RfxMessage::obtainResponse(error, message, true);
     responseToRilj(response);
 
@@ -662,35 +643,35 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
         bool allowNotify = false;
         int simState = getStatusManager()->getIntValue(RFX_STATUS_KEY_SIM_STATE);
         bool featureOn = false;
-        if(mECCAllowNotify) {
-            allowNotify = ((simState == RFX_SIM_STATE_ABSENT || simState ==
-                    RFX_SIM_STATE_PIN_REQUIRED || simState == RFX_SIM_STATE_PUK_REQUIRED ||
-                    simState == RFX_SIM_STATE_NETWORK_LOCKED) &&
-                    ((featureId == FEATURE_TYPE_VOICE_OVER_LTE) ||
-                     (featureId == FEATURE_TYPE_VOICE_OVER_NR)));
+        if (mECCAllowNotify) {
+            allowNotify =
+                    ((simState == RFX_SIM_STATE_ABSENT || simState == RFX_SIM_STATE_PIN_REQUIRED ||
+                      simState == RFX_SIM_STATE_PUK_REQUIRED ||
+                      simState == RFX_SIM_STATE_NETWORK_LOCKED) &&
+                     ((featureId == FEATURE_TYPE_VOICE_OVER_LTE) ||
+                      (featureId == FEATURE_TYPE_VOICE_OVER_NR)));
             featureOn = value == FEATURE_VALUE_ON;
-            if(allowNotify && !featureOn) {
+            if (allowNotify && !featureOn) {
                 mECCAllowNotify = false;
             }
         }
 
         bool simStateAllow = simState == RFX_SIM_STATE_READY;
-        if(simStateAllow || (allowNotify && featureOn) || forceNotify) {
+        if (simStateAllow || (allowNotify && featureOn) || forceNotify) {
             if (DEBUG)
                 logD(RFX_LOG_TAG,
-                     "Notify feature changed, simStateAllow = %d allowNotify = %d featureOn = %d forceNotify = %d",
+                     "Notify feature changed, simStateAllow = %d allowNotify = %d featureOn = %d "
+                     "forceNotify = %d",
                      simStateAllow, allowNotify, featureOn, forceNotify);
             int data[2] = {featureId, value};
-            sp <RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                                                        RFX_MSG_UNSOL_IMS_CONFIG_FEATURE_CHANGED,
-                                                        RfxIntsData(data, 2));
+            sp<RfxMessage> urc = RfxMessage::obtainUrc(
+                    getSlotId(), RFX_MSG_UNSOL_IMS_CONFIG_FEATURE_CHANGED, RfxIntsData(data, 2));
             responseToRilj(urc);
             mECCAllowNotify = false;
         }
     }
 
-    if (((featureId == FEATURE_TYPE_VOICE_OVER_LTE) ||
-         (featureId == FEATURE_TYPE_VOICE_OVER_NR)) &&
+    if (((featureId == FEATURE_TYPE_VOICE_OVER_LTE) || (featureId == FEATURE_TYPE_VOICE_OVER_NR)) &&
         ImsConfigUtils::isAllowForceNotify(getSlotId(), value)) {
         ImsConfigUtils::setAllowForceNotify(getSlotId(), false, 0);
     }
@@ -698,7 +679,7 @@ void RtcImsConfigController::handleSetFeatureValue(bool success, const sp<RfxMes
 
 void RtcImsConfigController::getFeatureValue(const sp<RfxMessage>& message) {
     int slot_id = getSlotId();
-    int *params = (int *)message->getData()->getData();
+    int* params = (int*)message->getData()->getData();
     int feature_id = params[0];
     int network = params[1];
     std::map<int, int>::iterator iter;
@@ -745,8 +726,8 @@ void RtcImsConfigController::getFeatureValue(const sp<RfxMessage>& message) {
             params[0] = mViNrFeatureValue[network];
         }
     } else {
-        logD(RFX_LOG_TAG, "getFeatureValue, feature_id:%d, network:%d not support",
-             feature_id, network);
+        logD(RFX_LOG_TAG, "getFeatureValue, feature_id:%d, network:%d not support", feature_id,
+             network);
         error = RIL_E_GENERIC_FAILURE;
     }
 
@@ -759,12 +740,9 @@ void RtcImsConfigController::setImsResourceCapability(int feature_id, int value,
     if (DEBUG)
         logD(RFX_LOG_TAG, "setImsResourceCapability, feature_id:%d,value:%d", feature_id, value);
 
-    if (feature_id == FEATURE_TYPE_VOICE_OVER_LTE ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_LTE ||
-        feature_id == FEATURE_TYPE_VOICE_OVER_WIFI ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_WIFI ||
-        feature_id == FEATURE_TYPE_VOICE_OVER_NR ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_NR) {
+    if (feature_id == FEATURE_TYPE_VOICE_OVER_LTE || feature_id == FEATURE_TYPE_VIDEO_OVER_LTE ||
+        feature_id == FEATURE_TYPE_VOICE_OVER_WIFI || feature_id == FEATURE_TYPE_VIDEO_OVER_WIFI ||
+        feature_id == FEATURE_TYPE_VOICE_OVER_NR || feature_id == FEATURE_TYPE_VIDEO_OVER_NR) {
         mFeatureResource[feature_id] = value;
     } else {
         logD(RFX_LOG_TAG, "setImsResourceCapability, feature_id:%d, value:%d not support",
@@ -772,27 +750,23 @@ void RtcImsConfigController::setImsResourceCapability(int feature_id, int value,
     }
 
     if (isDynamicImsSwitchLast) {
-        sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                                                   RFX_MSG_UNSOL_IMS_CONFIG_DYNAMIC_IMS_SWITCH_COMPLETE,
-                                                   RfxVoidData());
+        sp<RfxMessage> urc = RfxMessage::obtainUrc(
+                getSlotId(), RFX_MSG_UNSOL_IMS_CONFIG_DYNAMIC_IMS_SWITCH_COMPLETE, RfxVoidData());
         responseToRilj(urc);
     }
 }
 
 void RtcImsConfigController::getImsResourceCapability(const sp<RfxMessage>& message) {
     int slot_id = getSlotId();
-    int *params = (int *)message->getData()->getData();
+    int* params = (int*)message->getData()->getData();
     int feature_id = params[0];
     RIL_Errno error = RIL_E_SUCCESS;
 
-    if (DEBUG) logD(RFX_LOG_TAG, "getImsResourceCapability, feature_id:%d",feature_id);
+    if (DEBUG) logD(RFX_LOG_TAG, "getImsResourceCapability, feature_id:%d", feature_id);
 
-    if (feature_id == FEATURE_TYPE_VOICE_OVER_LTE ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_LTE ||
-        feature_id == FEATURE_TYPE_VOICE_OVER_WIFI ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_WIFI ||
-        feature_id == FEATURE_TYPE_VOICE_OVER_NR ||
-        feature_id == FEATURE_TYPE_VIDEO_OVER_NR) {
+    if (feature_id == FEATURE_TYPE_VOICE_OVER_LTE || feature_id == FEATURE_TYPE_VIDEO_OVER_LTE ||
+        feature_id == FEATURE_TYPE_VOICE_OVER_WIFI || feature_id == FEATURE_TYPE_VIDEO_OVER_WIFI ||
+        feature_id == FEATURE_TYPE_VOICE_OVER_NR || feature_id == FEATURE_TYPE_VIDEO_OVER_NR) {
         params[0] = mFeatureResource[feature_id];
     } else {
         logD(RFX_LOG_TAG, "getImsResourceCapability, feature_id:%d not support", feature_id);
@@ -804,30 +778,24 @@ void RtcImsConfigController::getImsResourceCapability(const sp<RfxMessage>& mess
     responseToRilj(response);
 }
 
-bool RtcImsConfigController::ensureStorageInitStatus(const sp<RfxMessage> &message) {
+bool RtcImsConfigController::ensureStorageInitStatus(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
     if (!mInitDone) {
         logD(RFX_LOG_TAG, "storage not ready while - %s", RFX_ID_TO_STR(msg_id));
         switch (msg_id) {
             case RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION: {
-                sp<RfxMessage> response = RfxMessage::obtainResponse(message->getSlotId(),
-                                                                     message->getId(),
-                                                                     RIL_E_GENERIC_FAILURE,
-                                                                     RfxVoidData(),
-                                                                     message);
+                sp<RfxMessage> response =
+                        RfxMessage::obtainResponse(message->getSlotId(), message->getId(),
+                                                   RIL_E_GENERIC_FAILURE, RfxVoidData(), message);
                 responseToRilj(response);
-            }
-                break;
+            } break;
             case RFX_MSG_REQUEST_IMS_CONFIG_GET_PROVISION: {
                 char data[] = "n/a";
-                sp<RfxMessage> response = RfxMessage::obtainResponse(message->getSlotId(),
-                                                                     message->getId(),
-                                                                     RIL_E_GENERIC_FAILURE,
-                                                                     RfxStringData(data),
-                                                                     message);
+                sp<RfxMessage> response = RfxMessage::obtainResponse(
+                        message->getSlotId(), message->getId(), RIL_E_GENERIC_FAILURE,
+                        RfxStringData(data), message);
                 responseToRilj(response);
-            }
-                break;
+            } break;
             default:
                 break;
         }
@@ -838,19 +806,19 @@ bool RtcImsConfigController::ensureStorageInitStatus(const sp<RfxMessage> &messa
     }
 }
 
-void RtcImsConfigController::setProvisionValue(const sp<RfxMessage> &message) {
+void RtcImsConfigController::setProvisionValue(const sp<RfxMessage>& message) {
     if (!ensureStorageInitStatus(message)) {
         return;
     }
 
     int slot_id = getSlotId();
-    char** params = (char**) message->getData()->getData();
+    char** params = (char**)message->getData()->getData();
     int config_id = std::atoi(params[0]);
     const char* value = (params[1] == NULL) ? "" : params[1];
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "setProvisionValue(), config_id: %d, params: %s, %s, value: %s",
-                config_id, params[0], params[1], value);
+             config_id, params[0], params[1], value);
 
     mProvisionValue[config_id] = value;
 
@@ -864,8 +832,8 @@ void RtcImsConfigController::setProvisionValue(const sp<RfxMessage> &message) {
     handleSetProvisionValue(true, message);
 }
 
-bool RtcImsConfigController::handleImsConfigExt(const sp<RfxMessage> &message) {
-    char** params = (char**) message->getData()->getData();
+bool RtcImsConfigController::handleImsConfigExt(const sp<RfxMessage>& message) {
+    char** params = (char**)message->getData()->getData();
     int config_id = std::atoi(params[0]);
     const char* value = (params[1] == NULL) ? "" : params[1];
     int iValue;
@@ -886,7 +854,7 @@ bool RtcImsConfigController::handleImsConfigExt(const sp<RfxMessage> &message) {
 
             int rilValue = RIL_WIFI_PREFERRED;
 
-            switch(iValue) {
+            switch (iValue) {
                 case AP_WIFI_ONLY:
                     rilValue = RIL_WIFI_ONLY;
                     break;
@@ -905,7 +873,7 @@ bool RtcImsConfigController::handleImsConfigExt(const sp<RfxMessage> &message) {
             }
 
             newMsg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_WFC_PROFILE,
-                    RfxIntsData((void *) &rilValue, sizeof(int)));
+                                               RfxIntsData((void*)&rilValue, sizeof(int)));
             RfxMainThread::enqueueMessage(newMsg);
             return true;
         }
@@ -916,24 +884,24 @@ bool RtcImsConfigController::handleImsConfigExt(const sp<RfxMessage> &message) {
     }
 }
 
-void RtcImsConfigController::handleSetProvisionValue(bool success, const sp<RfxMessage> &message) {
-    char **params = (char **) message->getData()->getData();
+void RtcImsConfigController::handleSetProvisionValue(bool success, const sp<RfxMessage>& message) {
+    char** params = (char**)message->getData()->getData();
     int config_id = std::atoi(params[0]);
     const char* value = (params[1] == NULL) ? "" : params[1];
 
     bool isProvisionToModem = ImsConfigDataHelper::isProvisionToModem(config_id);
     if (isProvisionToModem) {
         // Store message for response to RILJ.
-        mSetProvisionMessage = RfxMessage::obtainRequest(message->getSlotId(), message->getId(),
-                message);
+        mSetProvisionMessage =
+                RfxMessage::obtainRequest(message->getSlotId(), message->getId(), message);
 
-        //request to MCL
+        // request to MCL
         string provisionStr = ImsConfigDataHelper::getConfigProvisionStr(config_id);
 
         logD(RFX_LOG_TAG, "set provision to MD, provisionStr: %s, value: %s", provisionStr.c_str(),
              value);
 
-        char **data = (char **) calloc(2, sizeof(char *));
+        char** data = (char**)calloc(2, sizeof(char*));
 
         if (data != NULL) {
             data[0] = strdup(provisionStr.c_str());
@@ -942,9 +910,7 @@ void RtcImsConfigController::handleSetProvisionValue(bool success, const sp<RfxM
 
         if ((data != NULL) && (data[0] != NULL) && (data[1] != NULL)) {
             sp<RfxMessage> message = RfxMessage::obtainRequest(
-                    getSlotId(),
-                    RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION,
-                    RfxStringsData(data, 2));
+                    getSlotId(), RFX_MSG_REQUEST_IMS_CONFIG_SET_PROVISION, RfxStringsData(data, 2));
             requestToMcl(message);
             free(data[0]);
             free(data[1]);
@@ -964,54 +930,51 @@ void RtcImsConfigController::handleSetProvisionValue(bool success, const sp<RfxM
                 free(data);
             }
 
-            sp<RfxMessage> response = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message,
-                                                                 true);
+            sp<RfxMessage> response =
+                    RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE, message, true);
             responseToRilj(response);
         }
     } else {
         RIL_Errno error = success ? RIL_E_SUCCESS : RIL_E_GENERIC_FAILURE;
-        sp<RfxMessage> response = RfxMessage::obtainResponse(error, message,
-                                                             true);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(error, message, true);
         responseToRilj(response);
     }
 
     if (success) {
         if (DEBUG) logD(RFX_LOG_TAG, "send config changed urc, data: %s,%s", params[0], params[1]);
-        sp<RfxMessage> urc = RfxMessage::obtainUrc(getSlotId(),
-                                                   RFX_MSG_UNSOL_IMS_CONFIG_CONFIG_CHANGED,
-                                                   RfxStringsData(params, 2));
+        sp<RfxMessage> urc = RfxMessage::obtainUrc(
+                getSlotId(), RFX_MSG_UNSOL_IMS_CONFIG_CONFIG_CHANGED, RfxStringsData(params, 2));
         responseToRilj(urc);
     }
-    if(!isProvisionToModem) {
+    if (!isProvisionToModem) {
     }
 }
 
-void RtcImsConfigController::handleSetProvisionResponse(const sp <RfxMessage> &message) {
-    sp<RfxMessage> response = RfxMessage::obtainResponse(mSetProvisionMessage->getSlotId(),
-            mSetProvisionMessage->getId(), message->getError(), RfxVoidData(),
-            mSetProvisionMessage);
+void RtcImsConfigController::handleSetProvisionResponse(const sp<RfxMessage>& message) {
+    sp<RfxMessage> response = RfxMessage::obtainResponse(
+            mSetProvisionMessage->getSlotId(), mSetProvisionMessage->getId(), message->getError(),
+            RfxVoidData(), mSetProvisionMessage);
     responseToRilj(response);
 }
 
-void RtcImsConfigController::getProvisionValue(const sp <RfxMessage> &message) {
+void RtcImsConfigController::getProvisionValue(const sp<RfxMessage>& message) {
     if (!ensureStorageInitStatus(message)) {
         return;
     }
 
     int slot_id = getSlotId();
-    int *params = (int *) message->getData()->getData();
+    int* params = (int*)message->getData()->getData();
     int configId = params[0];
 
-    if (DEBUG)
-        logD(RFX_LOG_TAG, "getProvisionValue(), configId: %d", configId);
+    if (DEBUG) logD(RFX_LOG_TAG, "getProvisionValue(), configId: %d", configId);
 
     if (ImsConfigDataHelper::isProvisionToModem(configId)) {
         // Store message for response when receive URC.
         mGetProvisionId = configId;
-        mGetProvisionMessage = RfxMessage::obtainRequest(message->getSlotId(), message->getId(),
-                message);
+        mGetProvisionMessage =
+                RfxMessage::obtainRequest(message->getSlotId(), message->getId(), message);
 
-        //request to MCL
+        // request to MCL
         string provisionStr = ImsConfigDataHelper::getConfigProvisionStr(configId);
 
         char* data = strdup(provisionStr.c_str());
@@ -1019,16 +982,15 @@ void RtcImsConfigController::getProvisionValue(const sp <RfxMessage> &message) {
         if (data != NULL) {
             logD(RFX_LOG_TAG, "get provision from MD, provisionStr: %s", data);
             sp<RfxMessage> message = RfxMessage::obtainRequest(
-                    slot_id,
-                    RFX_MSG_REQUEST_IMS_CONFIG_GET_MD_PROVISION,
-                    RfxStringData(data));
+                    slot_id, RFX_MSG_REQUEST_IMS_CONFIG_GET_MD_PROVISION, RfxStringData(data));
             requestToMcl(message);
             free(data);
         } else {
             logE(RFX_LOG_TAG, "getProvisionValue(), data is NULL!");
 
-            sp<RfxMessage> response = RfxMessage::obtainResponse(message->getSlotId(),
-                    message->getId(), RIL_E_INVALID_ARGUMENTS, RfxVoidData(), message);
+            sp<RfxMessage> response =
+                    RfxMessage::obtainResponse(message->getSlotId(), message->getId(),
+                                               RIL_E_INVALID_ARGUMENTS, RfxVoidData(), message);
 
             responseToRilj(response);
         }
@@ -1037,13 +999,13 @@ void RtcImsConfigController::getProvisionValue(const sp <RfxMessage> &message) {
         char* data = strdup(mProvisionValue[configId].c_str());
 
         if (data != NULL) {
-            response = RfxMessage::obtainResponse(message->getSlotId(),
-                    message->getId(), RIL_E_SUCCESS, RfxStringData(data), message);
+            response = RfxMessage::obtainResponse(message->getSlotId(), message->getId(),
+                                                  RIL_E_SUCCESS, RfxStringData(data), message);
         } else {
             logE(RFX_LOG_TAG, "getProvisionValue(), data is NULL!");
 
-            response = RfxMessage::obtainResponse(message->getSlotId(),
-                    message->getId(), RIL_E_INVALID_ARGUMENTS, RfxVoidData(), message);
+            response = RfxMessage::obtainResponse(message->getSlotId(), message->getId(),
+                                                  RIL_E_INVALID_ARGUMENTS, RfxVoidData(), message);
         }
 
         responseToRilj(response);
@@ -1054,7 +1016,7 @@ void RtcImsConfigController::getProvisionValue(const sp <RfxMessage> &message) {
     }
 }
 
-void RtcImsConfigController::handleGetProvisionResponse(const sp <RfxMessage> &message) {
+void RtcImsConfigController::handleGetProvisionResponse(const sp<RfxMessage>& message) {
     // RIL_E_OEM_ERROR_24 means no MD default value, need to get from AP
     if (message->getError() == RIL_E_OEM_ERROR_24) {
         sp<RfxMessage> response;
@@ -1063,16 +1025,15 @@ void RtcImsConfigController::handleGetProvisionResponse(const sp <RfxMessage> &m
 
         if (data != NULL) {
             response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                    mGetProvisionMessage->getId(), RIL_E_SUCCESS, RfxStringData(data),
-                    mGetProvisionMessage);
+                                                  mGetProvisionMessage->getId(), RIL_E_SUCCESS,
+                                                  RfxStringData(data), mGetProvisionMessage);
         } else {
             logE(RFX_LOG_TAG, "handleGetProvisionResponse(), data is NULL!");
 
-            response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                    mGetProvisionMessage->getId(), RIL_E_INVALID_ARGUMENTS, RfxVoidData(),
-                    mGetProvisionMessage);
+            response = RfxMessage::obtainResponse(
+                    mGetProvisionMessage->getSlotId(), mGetProvisionMessage->getId(),
+                    RIL_E_INVALID_ARGUMENTS, RfxVoidData(), mGetProvisionMessage);
         }
-
 
         responseToRilj(response);
 
@@ -1080,20 +1041,19 @@ void RtcImsConfigController::handleGetProvisionResponse(const sp <RfxMessage> &m
             free(data);
         }
     } else if (message->getError() != RIL_E_SUCCESS) {
-        sp<RfxMessage> response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                mGetProvisionMessage->getId(), message->getError(), RfxVoidData(),
-                mGetProvisionMessage);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(
+                mGetProvisionMessage->getSlotId(), mGetProvisionMessage->getId(),
+                message->getError(), RfxVoidData(), mGetProvisionMessage);
         responseToRilj(response);
     } else {
-        if (DEBUG)
-            logD(RFX_LOG_TAG, "handleGetProvisionResponse, wait for URC to response.");
+        if (DEBUG) logD(RFX_LOG_TAG, "handleGetProvisionResponse, wait for URC to response.");
     }
 }
 
-void RtcImsConfigController::handleGetProvisionUrc(const sp <RfxMessage> &message) {
-    char **params = (char **) message->getData()->getData();
-    char *config_item = params[0];
-    char *value = params[1];
+void RtcImsConfigController::handleGetProvisionUrc(const sp<RfxMessage>& message) {
+    char** params = (char**)message->getData()->getData();
+    char* config_item = params[0];
+    char* value = params[1];
 
     logD(RFX_LOG_TAG, "handleGetProvisionUrc(), config_item:%s value: %s", config_item, value);
 
@@ -1105,14 +1065,14 @@ void RtcImsConfigController::handleGetProvisionUrc(const sp <RfxMessage> &messag
 
         if (data != NULL) {
             response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                    mGetProvisionMessage->getId(), RIL_E_SUCCESS, RfxStringData(data),
-                    mGetProvisionMessage);
+                                                  mGetProvisionMessage->getId(), RIL_E_SUCCESS,
+                                                  RfxStringData(data), mGetProvisionMessage);
         } else {
             logE(RFX_LOG_TAG, "handleGetProvisionUrc(), data is NULL!");
 
-            response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                    mGetProvisionMessage->getId(), RIL_E_INVALID_ARGUMENTS, RfxVoidData(),
-                    mGetProvisionMessage);
+            response = RfxMessage::obtainResponse(
+                    mGetProvisionMessage->getSlotId(), mGetProvisionMessage->getId(),
+                    RIL_E_INVALID_ARGUMENTS, RfxVoidData(), mGetProvisionMessage);
         }
 
         responseToRilj(response);
@@ -1121,9 +1081,9 @@ void RtcImsConfigController::handleGetProvisionUrc(const sp <RfxMessage> &messag
             free(data);
         }
     } else {
-        sp<RfxMessage> response = RfxMessage::obtainResponse(mGetProvisionMessage->getSlotId(),
-                mGetProvisionMessage->getId(), message->getError(), RfxStringData(value),
-                mGetProvisionMessage);
+        sp<RfxMessage> response = RfxMessage::obtainResponse(
+                mGetProvisionMessage->getSlotId(), mGetProvisionMessage->getId(),
+                message->getError(), RfxStringData(value), mGetProvisionMessage);
         responseToRilj(response);
     }
 }
@@ -1134,33 +1094,41 @@ void RtcImsConfigController::triggerImsCfgCommand(int slot_id) {
             logI(RFX_LOG_TAG, "Do not send EIMS feature values for phone = %d", slot_id);
         }
         return;
-     }
+    }
 
     int params[6];
     int vonr, vinr;
     int isAllowTurnOff = 1;
-    char value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char value[RFX_PROPERTY_VALUE_MAX] = {0};
     char feature[] = "IMS over 3gpp";
 
     isAllowTurnOff =
             getStatusManager()->getString8Value(RFX_STATUS_KEY_CARRIER_ALLOW_TURN_OFF_IMS) == "1";
 
-    if (DEBUG) logI(RFX_LOG_TAG, "isAllowTurnOff = %d",isAllowTurnOff);
-        // Get latest feature value from sys props
-    params[0] = RfxRilUtils::isVolteSupport() ? ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VOLTE_ENALBE, slot_id) : 0;  // volte
-    params[1] = RfxRilUtils::isVilteSupport() ? ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VILTE_ENALBE, slot_id) : 0;  // vilte
+    if (DEBUG) logI(RFX_LOG_TAG, "isAllowTurnOff = %d", isAllowTurnOff);
+    // Get latest feature value from sys props
+    params[0] = RfxRilUtils::isVolteSupport()
+                        ? ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VOLTE_ENALBE,
+                                                              slot_id)
+                        : 0;  // volte
+    params[1] = RfxRilUtils::isVilteSupport()
+                        ? ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VILTE_ENALBE,
+                                                              slot_id)
+                        : 0;  // vilte
     params[2] = RfxRilUtils::isWfcSupport() ? ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id) : 0;    // vowifi
-    params[3] = RfxRilUtils::isViwifiSupport() ? ImsConfigUtils::getFeaturePropValue(
-            ImsConfigUtils::PROPERTY_VIWIFI_ENALBE, slot_id) : 0; // viwifi
-    params[4] = RfxRilUtils::isSmsSupport() ? ImsConfigUtils::getSystemPropValue(
-            ImsConfigUtils::PROPERTY_IMS_SUPPORT) : 0;   // sms
+                                                      ImsConfigUtils::PROPERTY_WFC_ENALBE, slot_id)
+                                            : 0;  // vowifi
+    params[3] = RfxRilUtils::isViwifiSupport()
+                        ? ImsConfigUtils::getFeaturePropValue(
+                                  ImsConfigUtils::PROPERTY_VIWIFI_ENALBE, slot_id)
+                        : 0;  // viwifi
+    params[4] = RfxRilUtils::isSmsSupport()
+                        ? ImsConfigUtils::getSystemPropValue(ImsConfigUtils::PROPERTY_IMS_SUPPORT)
+                        : 0;  // sms
 
     if (DEBUG)
-        logI(RFX_LOG_TAG,
-             "triggerImsCfg feature version:%d, phoneId:%d", getFeatureVersion(feature), slot_id);
+        logI(RFX_LOG_TAG, "triggerImsCfg feature version:%d, phoneId:%d",
+             getFeatureVersion(feature), slot_id);
 
     if (getFeatureVersion(feature) > 1) {
         // IMS NR
@@ -1168,8 +1136,7 @@ void RtcImsConfigController::triggerImsCfgCommand(int slot_id) {
         vinr = ImsConfigUtils::getFeaturePropValue(ImsConfigUtils::PROPERTY_VINR_ENALBE, slot_id);
 
         if (DEBUG)
-            logI(RFX_LOG_TAG,
-                 "triggerImsCfg volte:%d, vilte:%d, vonr:%d, vinr:%d, phoneId:%d",
+            logI(RFX_LOG_TAG, "triggerImsCfg volte:%d, vilte:%d, vonr:%d, vinr:%d, phoneId:%d",
                  params[0], params[1], vonr, vinr, slot_id);
 
         params[0] = (params[0] | (vonr << 1));
@@ -1177,7 +1144,7 @@ void RtcImsConfigController::triggerImsCfgCommand(int slot_id) {
     }
 
     // logic to decide eims with (volte|vilte|vowifi|viwifi|(isAllowTurnOff^1))
-    params[5] = (params[0] | params[1] | params[2] | params[3] | params[4] | (isAllowTurnOff^1));
+    params[5] = (params[0] | params[1] | params[2] | params[3] | params[4] | (isAllowTurnOff ^ 1));
 
     if (DEBUG)
         logI(RFX_LOG_TAG,
@@ -1189,13 +1156,11 @@ void RtcImsConfigController::triggerImsCfgCommand(int slot_id) {
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "triggerImsCfg, mSendCfgMccmnc: %d, mSendCfgIccid: %s", mSendCfgMccmnc,
-                RfxRilUtils::pii(RFX_LOG_TAG, mSendCfgIccid.string()));
+             RfxRilUtils::pii(RFX_LOG_TAG, mSendCfgIccid.string()));
 
     // Allow to send with AT+EIMSCFG
-    sp<RfxMessage> message =  RfxMessage::obtainRequest(
-                                            getSlotId(),
-                                            RFX_MSG_REQUEST_SET_IMSCFG,
-                                            RfxIntsData(params, 6));
+    sp<RfxMessage> message = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_IMSCFG,
+                                                       RfxIntsData(params, 6));
     // send to RtcImsController
     // TODO: for long term should handle RFX_MSG_REQUEST_SET_IMSCFG here
     RfxMainThread::enqueueMessage(message);
@@ -1204,12 +1169,12 @@ void RtcImsConfigController::triggerImsCfgCommand(int slot_id) {
 int RtcImsConfigController::getCurrentMccMnc() {
     int mccmnc = 0;
     String8 defaultValue = String8("0");
-    String8 mccmncStr = getStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC,
-                                                 defaultValue);
+    String8 mccmncStr =
+            getStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_GSM_NUMERIC, defaultValue);
 
     if ((mccmncStr.string() == NULL) || (mccmncStr == "0") || (mccmncStr == "")) {
-        mccmncStr = getStatusManager()->getString8Value(
-                RFX_STATUS_KEY_UICC_CDMA_NUMERIC, defaultValue);
+        mccmncStr =
+                getStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_CDMA_NUMERIC, defaultValue);
     }
 
     if (mccmncStr.string() == NULL) {
@@ -1226,7 +1191,7 @@ void RtcImsConfigController::saveProvisionedValue() {
     int mccMnc = getCurrentMccMnc();
     int slot_id = getSlotId();
     std::map<int, std::string>::iterator iter;
-    std::stringstream ss;   // For mimeType is INTEGER only
+    std::stringstream ss;  // For mimeType is INTEGER only
     int propCount = 1;
 
     if (mccMnc == 0) {
@@ -1244,7 +1209,7 @@ void RtcImsConfigController::saveProvisionedValue() {
         if (mimeType == INTEGER) {
             // If the length property value is over maximum, save previous property value first.
             if ((ss.str().length() + std::to_string(iter->first).length() + iter->second.length() +
-                    2) >= RFX_PROPERTY_VALUE_MAX) {
+                 2) >= RFX_PROPERTY_VALUE_MAX) {
                 std::string propName = "persist.vendor.mtk.provision.int.";
                 propName.append(std::to_string(slot_id)).append(std::to_string(propCount));
                 std::string propValue = "";
@@ -1257,24 +1222,23 @@ void RtcImsConfigController::saveProvisionedValue() {
                 ss.str("");
             }
 
-            ss << iter->first,
-            ss << ",";
+            ss << iter->first, ss << ",";
             ss << iter->second;
             ss << ";";
         } else if (mimeType == STRING) {
             if ((std::to_string(iter->first).length() + iter->second.length() + 1) <
-                    RFX_PROPERTY_VALUE_MAX) {
+                RFX_PROPERTY_VALUE_MAX) {
                 std::string propName = "persist.vendor.mtk.provision.str.";
                 propName.append(std::to_string(slot_id)).append(std::to_string(iter->first));
 
                 rfx_property_set(propName.c_str(), iter->second.c_str());
             } else {
                 logE(RFX_LOG_TAG, "saveProvisionedValue, configId: %d, value: %s too long",
-                        iter->first, iter->second.c_str());
+                     iter->first, iter->second.c_str());
             }
         } else {
             logE(RFX_LOG_TAG, "saveProvisionedValue, not support configId = %d, mimeType = %d",
-                    iter->first, mimeType);
+                 iter->first, mimeType);
         }
     }
 
@@ -1307,12 +1271,12 @@ void RtcImsConfigController::loadProvisionedValue() {
     // Get previous stored mccmnc to check if load or reset.
     std::string propMccMncName = "persist.vendor.mtk.provision.mccmnc.";
     propMccMncName.append(std::to_string(slot_id));
-    char propMccMncValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char propMccMncValue[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(propMccMncName.c_str(), propMccMncValue, "");
 
     if (DEBUG)
         logD(RFX_LOG_TAG, "loadProvisionedValue, curMccMnc: %d, preMccMnc: %d", mccMnc,
-                atoi(propMccMncValue));
+             atoi(propMccMncValue));
 
     if (strlen(propMccMncValue)) {
         if (mccMnc != atoi(propMccMncValue)) {
@@ -1333,7 +1297,7 @@ void RtcImsConfigController::loadProvisionedValue() {
     while (!isEmpty) {
         std::string propName = "persist.vendor.mtk.provision.int.";
         propName.append(std::to_string(slot_id)).append(std::to_string(propCount));
-        char propValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char propValue[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get(propName.c_str(), propValue, "");
 
         if (strlen(propValue)) {
@@ -1365,13 +1329,13 @@ void RtcImsConfigController::loadProvisionedValue() {
         if (mimeType == STRING) {
             std::string propName = "persist.vendor.mtk.provision.str.";
             propName.append(std::to_string(slot_id)).append(std::to_string(i));
-            char propValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+            char propValue[RFX_PROPERTY_VALUE_MAX] = {0};
 
             rfx_property_get(propName.c_str(), propValue, "");
 
             if (DEBUG)
                 logD(RFX_LOG_TAG, "loadProvisionedValue, propName = %s, propValue=%s",
-                        propName.c_str(), propValue);
+                     propName.c_str(), propValue);
 
             if (strlen(propValue)) {
                 mProvisionedValue[i] = propValue;
@@ -1397,7 +1361,7 @@ void RtcImsConfigController::resetProvisionedValue() {
 
     std::string propIntName = "persist.vendor.mtk.provision.int.";
     propIntName.append(std::to_string(slot_id)).append(std::to_string(propCount));
-    char propPreviousIntValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char propPreviousIntValue[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(propIntName.c_str(), propPreviousIntValue, "");
 
     if (strlen(propPreviousIntValue) > 0) {
@@ -1410,7 +1374,7 @@ void RtcImsConfigController::resetProvisionedValue() {
         if (mimeType == STRING) {
             std::string propStrName = "persist.vendor.mtk.provision.str.";
             propStrName.append(std::to_string(slot_id)).append(std::to_string(i));
-            char propPreviousStrValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+            char propPreviousStrValue[RFX_PROPERTY_VALUE_MAX] = {0};
             rfx_property_get(propStrName.c_str(), propPreviousStrValue, "");
 
             if (strlen(propPreviousStrValue) > 0) {
@@ -1427,7 +1391,7 @@ void RtcImsConfigController::resetProvisionedValue() {
 
 bool RtcImsConfigController::isLogEnable() {
     std::string propName = "persist.vendor.logmuch";
-    char propValue[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char propValue[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get(propName.c_str(), propValue, "false");
 

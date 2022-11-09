@@ -23,19 +23,19 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsLocalStopSessionReqData);
 
 RfxEmbmsLocalStopSessionReqData::RfxEmbmsLocalStopSessionReqData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_LocalStopSessionReq*)data, length);
 }
 
 RfxEmbmsLocalStopSessionReqData::RfxEmbmsLocalStopSessionReqData(
-    RIL_EMBMS_LocalStopSessionReq* data, int length)
-    : RfxBaseData(data, length)  {
+        RIL_EMBMS_LocalStopSessionReq* data, int length)
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsLocalStopSessionReqData::copyData(RIL_EMBMS_LocalStopSessionReq *data, int length) {
+void RfxEmbmsLocalStopSessionReqData::copyData(RIL_EMBMS_LocalStopSessionReq* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_LocalStopSessionReq *) calloc(1, sizeof(RIL_EMBMS_LocalStopSessionReq));
+    m_data = (RIL_EMBMS_LocalStopSessionReq*)calloc(1, sizeof(RIL_EMBMS_LocalStopSessionReq));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

@@ -38,7 +38,7 @@
 #define BUF_SIZE 64
 
 static int fs_prepare_path_impl(const char* path, mode_t mode, uid_t uid, gid_t gid,
-        int allow_fixup, int prepare_as_dir) {
+                                int allow_fixup, int prepare_as_dir) {
     // Check if path needs to be created
     struct stat sb;
     int create_result = -1;
@@ -66,24 +66,25 @@ static int fs_prepare_path_impl(const char* path, mode_t mode, uid_t uid, gid_t 
         goto fixup;
     } else {
         if (!owner_match) {
-            ALOGE("Expected path %s with owner %d:%d but found %d:%d",
-                    path, uid, gid, sb.st_uid, sb.st_gid);
+            ALOGE("Expected path %s with owner %d:%d but found %d:%d", path, uid, gid, sb.st_uid,
+                  sb.st_gid);
             return -1;
         } else {
-            ALOGW("Expected path %s with mode %o but found %o",
-                    path, mode, (sb.st_mode & ALL_PERMS));
+            ALOGW("Expected path %s with mode %o but found %o", path, mode,
+                  (sb.st_mode & ALL_PERMS));
             return 0;
         }
     }
 
 create:
-    create_result = prepare_as_dir
-        ? TEMP_FAILURE_RETRY(mkdir(path, mode))
-        : TEMP_FAILURE_RETRY(open(path, O_CREAT | O_CLOEXEC | O_NOFOLLOW | O_RDONLY));
+    create_result =
+            prepare_as_dir
+                    ? TEMP_FAILURE_RETRY(mkdir(path, mode))
+                    : TEMP_FAILURE_RETRY(open(path, O_CREAT | O_CLOEXEC | O_NOFOLLOW | O_RDONLY));
     if (create_result == -1) {
         if (errno != EEXIST) {
-            ALOGE("Failed to %s(%s): %s",
-                    (prepare_as_dir ? "mkdir" : "open"), path, strerror(errno));
+            ALOGE("Failed to %s(%s): %s", (prepare_as_dir ? "mkdir" : "open"), path,
+                  strerror(errno));
             return -1;
         }
     } else if (!prepare_as_dir) {

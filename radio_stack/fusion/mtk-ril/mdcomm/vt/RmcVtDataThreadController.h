@@ -26,76 +26,71 @@
 /*****************************************************************************
  * Define
  *****************************************************************************/
-#define VT_RIL_SHARE_DATA_STATUS_RECV_NONE      (0)
-#define VT_RIL_SHARE_DATA_STATUS_RECV_DATA      (1)
+#define VT_RIL_SHARE_DATA_STATUS_RECV_NONE (0)
+#define VT_RIL_SHARE_DATA_STATUS_RECV_DATA (1)
 
 /*****************************************************************************
  * Class RmcVtReqHandlerSharedMemory
  *****************************************************************************/
-class RmcVtSharedMemory: virtual public RefBase {
+class RmcVtSharedMemory : virtual public RefBase {
+  public:
+    RmcVtSharedMemory(void);
+    virtual ~RmcVtSharedMemory();
 
-    public:
-        RmcVtSharedMemory(void);
-        virtual ~RmcVtSharedMemory();
+    void setState(int state);
+    int getState(void);
+    bool checkState(int want_state);
+    void setSlotId(int id);
+    void setSize(int size);
+    void setData(char* data, int len);
+    int getSlotId(void);
+    int getSize(void);
+    void getData(char** data);
+    void clearData();
+    void lock(const char* user);
+    void unlock(const char* user);
+    void wait(const char* user, int stay_state);
+    void signal(const char* user);
 
-        void setState(int state);
-        int getState(void);
-        bool checkState(int want_state);
-        void setSlotId(int id);
-        void setSize(int size);
-        void setData(char* data, int len);
-        int getSlotId(void);
-        int getSize(void);
-        void getData(char** data);
-        void clearData();
-        void lock(const char* user);
-        void unlock(const char* user);
-        void wait(const char* user, int stay_state);
-        void signal(const char* user);
-
-    private:
-        pthread_mutex_t      mLock;
-        pthread_mutex_t     *mPLock;
-        pthread_cond_t       mCond;
-        int                  mDataReadyCount;
-        RIL_VT_SERVICE_MSG   mSharedMsg;
-
+  private:
+    pthread_mutex_t mLock;
+    pthread_mutex_t* mPLock;
+    pthread_cond_t mCond;
+    int mDataReadyCount;
+    RIL_VT_SERVICE_MSG mSharedMsg;
 };
 
 /*****************************************************************************
  * Class RmcVtDataThreadController
  *****************************************************************************/
-class RmcVtDataThreadController: virtual public RefBase {
+class RmcVtDataThreadController : virtual public RefBase {
+  public:
+    RmcVtDataThreadController(void);
+    virtual ~RmcVtDataThreadController();
 
-    public:
-        RmcVtDataThreadController(void);
-        virtual ~RmcVtDataThreadController();
+    void start();
 
-        void start();
+    static void* RIL_IMCB_THREAD(void* arg);
+    static void* VT_RIL_THREAD(void* arg);
+    static sp<RmcVtSharedMemory> getSharedMem(void);
 
-        static void *RIL_IMCB_THREAD(void *arg);
-        static void *VT_RIL_THREAD(void *arg);
-        static sp<RmcVtSharedMemory> getSharedMem(void);
+  private:
+    static int ril_vt_looper();
+    static int ril_vt_recv(int fd, void* buffer, int size);
 
-    private:
-        static int ril_vt_looper();
-        static int ril_vt_recv(int fd, void* buffer, int size);
+    static bool isImsMessage(int msgId);
+    static void handleMessage(int msgId, int length, void* data, int slotId);
+    static void handleImsMessage(int size, char* outBuffer, int slotId);
 
-        static bool isImsMessage(int msgId);
-        static void handleMessage(int msgId, int length, void* data, int slotId);
-        static void handleImsMessage(int size, char* outBuffer, int slotId);
+    static sp<RmcVtSharedMemory> sShareMemmory;
 
-        static sp<RmcVtSharedMemory> sShareMemmory;
+    static pthread_t sVtRilThd;
+    static pthread_t sImcbRilThd;
 
-        static pthread_t  sVtRilThd;
-        static pthread_t  sImcbRilThd;
+    static int sVtRilFd;
+    static int sVtsFd;
 
-        static int sVtRilFd;
-        static int sVtsFd;
-
-        static int sIsVtConnected;
-
-
+    static int sIsVtConnected;
 };
 
 #endif

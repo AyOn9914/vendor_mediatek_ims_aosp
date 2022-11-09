@@ -21,11 +21,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxEiregData);
 
-RfxEiregData::RfxEiregData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxEiregData::RfxEiregData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_EiregData *pIn = (RIL_EiregData*)_data;
-        RIL_EiregData *pOut = (RIL_EiregData *)calloc(1,
-                sizeof(RIL_EiregData));
+        RIL_EiregData* pIn = (RIL_EiregData*)_data;
+        RIL_EiregData* pOut = (RIL_EiregData*)calloc(1, sizeof(RIL_EiregData));
 
         pOut->reg_type = pIn->reg_type;
         pOut->reg_state = pIn->reg_state;

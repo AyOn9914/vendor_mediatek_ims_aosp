@@ -27,16 +27,15 @@
 RFX_IMPLEMENT_HANDLER_CLASS(RmcAtciRequestHandler, RIL_CMD_PROXY_6);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxStringData, RFX_MSG_EVENT_RAW_URC);
 
-const char *RmcAtciRequestHandler::ERROR_RESPONSE = "\r\nERROR\r\n";
-const char *RmcAtciRequestHandler::ENABLE_URC_PROP = "persist.vendor.service.atci_urc.enable";
-const char *RmcAtciRequestHandler::LOG_TAG_ATCI = "RmcAtciRequestHandler";
+const char* RmcAtciRequestHandler::ERROR_RESPONSE = "\r\nERROR\r\n";
+const char* RmcAtciRequestHandler::ENABLE_URC_PROP = "persist.vendor.service.atci_urc.enable";
+const char* RmcAtciRequestHandler::LOG_TAG_ATCI = "RmcAtciRequestHandler";
 
-RmcAtciRequestHandler::RmcAtciRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-}
+RmcAtciRequestHandler::RmcAtciRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {}
 
 void RmcAtciRequestHandler::handleOemHookAtciInternalRequest(const sp<RfxMclMessage>& msg) {
-    const char *data = (const char *)msg->getData()->getData();
+    const char* data = (const char*)msg->getData()->getData();
     logD(LOG_TAG_ATCI, "[%s] enter", __FUNCTION__);
 
     if (strncasecmp(data, "ATV0", 4) == 0) {
@@ -50,8 +49,8 @@ void RmcAtciRequestHandler::handleOemHookAtciInternalRequest(const sp<RfxMclMess
     sp<RfxAtResponse> atResponse = atSendCommandRaw(data);
     if (atResponse->getError() < 0) {
         logE(LOG_TAG_ATCI, "[%s] atSendCommandRaw fail: %d", __FUNCTION__, atResponse->getError());
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(RIL_E_GENERIC_FAILURE,
-                RfxStringData((char *)ERROR_RESPONSE), msg);
+        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+                RIL_E_GENERIC_FAILURE, RfxStringData((char*)ERROR_RESPONSE), msg);
         responseToTelCore(response);
         return;
     }
@@ -62,18 +61,19 @@ void RmcAtciRequestHandler::handleOemHookAtciInternalRequest(const sp<RfxMclMess
     }
     ret.appendFormat("%s\r\n", atResponse->getFinalResponse()->getLine());
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(RIL_E_SUCCESS,
-            RfxStringData((char *)ret.string()), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(RIL_E_SUCCESS, RfxStringData((char*)ret.string()), msg);
     responseToTelCore(response);
 }
 
 void RmcAtciRequestHandler::handleMsgEventRawUrc(const sp<RfxMclMessage>& msg) {
     char enabled[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(ENABLE_URC_PROP, enabled, "0");
-    const char *data = (const char *)msg->getData()->getData();
+    const char* data = (const char*)msg->getData()->getData();
     if (NULL != data && atoi(enabled) == 1) {
-        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ATCI_RESPONSE, m_slot_id,
-                RfxStringData((char *)String8::format("\r\n%s\r\n", data).string()));
+        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+                RFX_MSG_UNSOL_ATCI_RESPONSE, m_slot_id,
+                RfxStringData((char*)String8::format("\r\n%s\r\n", data).string()));
         responseToTelCore(urc);
     }
 }

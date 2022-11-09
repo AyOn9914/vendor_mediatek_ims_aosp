@@ -23,37 +23,34 @@
 #include <mtkconfigutils.h>
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxIntsData, RFX_MSG_REQUEST_QUERY_CALL_WAITING);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoData, RfxCallForwardInfosData, RFX_MSG_REQUEST_QUERY_CALL_FORWARD_STATUS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoExData, RfxCallForwardInfosExData, RFX_MSG_REQUEST_QUERY_CALL_FORWARD_IN_TIME_SLOT);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData,    RfxIntsData, RFX_MSG_REQUEST_GET_CLIR);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoData, RfxCallForwardInfosData,
+                                RFX_MSG_REQUEST_QUERY_CALL_FORWARD_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxCallForwardInfoExData, RfxCallForwardInfosExData,
+                                RFX_MSG_REQUEST_QUERY_CALL_FORWARD_IN_TIME_SLOT);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, RFX_MSG_REQUEST_GET_CLIR);
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData, RFX_MSG_REQUEST_QUERY_CALL_BARRING);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxIntsData, RFX_MSG_REQUEST_SET_CALL_BARRING);
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_QUERY_CALL_FORWARD_STATUS,
-    RFX_MSG_REQUEST_QUERY_CALL_FORWARD_IN_TIME_SLOT,
-    RFX_MSG_REQUEST_QUERY_CALL_WAITING,
-    RFX_MSG_REQUEST_GET_CLIR,
-    RFX_MSG_REQUEST_QUERY_CALL_BARRING,
-    RFX_MSG_REQUEST_SET_CALL_BARRING
-};
+        RFX_MSG_REQUEST_QUERY_CALL_FORWARD_STATUS, RFX_MSG_REQUEST_QUERY_CALL_FORWARD_IN_TIME_SLOT,
+        RFX_MSG_REQUEST_QUERY_CALL_WAITING,        RFX_MSG_REQUEST_GET_CLIR,
+        RFX_MSG_REQUEST_QUERY_CALL_BARRING,        RFX_MSG_REQUEST_SET_CALL_BARRING};
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcSuppServRequestSpecialHandler, RIL_CMD_PROXY_6);
 
-RmcSuppServRequestSpecialHandler::RmcSuppServRequestSpecialHandler(int slot_id,
-        int channel_id):RmcSuppServRequestBaseHandler(slot_id, channel_id){
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+RmcSuppServRequestSpecialHandler::RmcSuppServRequestSpecialHandler(int slot_id, int channel_id)
+    : RmcSuppServRequestBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcSuppServRequestSpecialHandler::~RmcSuppServRequestSpecialHandler() {
-}
+RmcSuppServRequestSpecialHandler::~RmcSuppServRequestSpecialHandler() {}
 
 void RmcSuppServRequestSpecialHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_QUERY_CALL_FORWARD_STATUS:
             requestQueryCallForwardStatus(msg);
             break;
@@ -86,7 +83,8 @@ void RmcSuppServRequestSpecialHandler::requestQueryCallForwardStatus(const sp<Rf
     requestCallForwardOperation(msg, CCFC_E_QUERY);
 }
 
-void RmcSuppServRequestSpecialHandler::requestQueryCallForwardInTimeSlotStatus(const sp<RfxMclMessage>& msg) {
+void RmcSuppServRequestSpecialHandler::requestQueryCallForwardInTimeSlotStatus(
+        const sp<RfxMclMessage>& msg) {
     requestCallForwardExOperation(msg, CCFC_E_QUERY);
 }
 

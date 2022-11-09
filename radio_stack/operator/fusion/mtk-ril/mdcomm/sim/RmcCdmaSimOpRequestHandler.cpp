@@ -28,11 +28,10 @@
  *****************************************************************************/
 using ::android::String8;
 
-
 /*****************************************************************************
  * Class RmcCdmaSimOpRequestHandler
  *****************************************************************************/
-RmcCdmaSimOpRequestHandler::RmcCdmaSimOpRequestHandler(int slot_id, int channel_id) :
-        RmcCdmaSimRequestHandler(slot_id, channel_id) {
+RmcCdmaSimOpRequestHandler::RmcCdmaSimOpRequestHandler(int slot_id, int channel_id)
+    : RmcCdmaSimRequestHandler(slot_id, channel_id) {
     setTag(String8("RmcCdmaSimOpRequestHandler"));
 }

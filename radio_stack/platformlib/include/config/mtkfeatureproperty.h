@@ -17,12 +17,8 @@
 #ifndef MTKFEATUREPROPERTY_H
 #define MTKFEATUREPROPERTY_H
 
-//Black list for preventing misuse the api: rfx_property_get or mtk_property_get
-"persist.radio.multisim.config",
-"persist.vendor.volte_support",
-"persist.vendor.vilte_support",
-"persist.vendor.mtk_wfc_support",
-"persist.vendor.viwifi_support",
+// Black list for preventing misuse the api: rfx_property_get or mtk_property_get
+"persist.radio.multisim.config", "persist.vendor.volte_support", "persist.vendor.vilte_support",
+        "persist.vendor.mtk_wfc_support", "persist.vendor.viwifi_support",
 
-
-#endif // MTKFEATUREPROPERTY_H
+#endif  // MTKFEATUREPROPERTY_H

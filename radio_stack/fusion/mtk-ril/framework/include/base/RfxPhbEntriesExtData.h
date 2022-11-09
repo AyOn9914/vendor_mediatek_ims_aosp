@@ -23,10 +23,11 @@
 class RfxPhbEntriesExtData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxPhbEntriesExtData);
 
-    public:
-        RfxPhbEntriesExtData();
-        RfxPhbEntriesExtData(RIL_PHB_ENTRY **data, int countEntries);
-    private:
-        void copyPhbEntries(RIL_PHB_ENTRY **data, int countEntries);
+  public:
+    RfxPhbEntriesExtData();
+    RfxPhbEntriesExtData(RIL_PHB_ENTRY** data, int countEntries);
+
+  private:
+    void copyPhbEntries(RIL_PHB_ENTRY** data, int countEntries);
 };
 #endif

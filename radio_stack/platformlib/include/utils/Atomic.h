@@ -19,4 +19,4 @@
 
 #include <cutils/atomic.h>
 
-#endif // ANDROID_UTILS_ATOMIC_H
+#endif  // ANDROID_UTILS_ATOMIC_H

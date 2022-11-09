@@ -22,13 +22,13 @@
 /*****************************************************************************
  * Class RmcBaseHandler
  *****************************************************************************/
-void RmcBaseHandler::destroyMessageHandler(RmcMessageHandler *h) {
+void RmcBaseHandler::destroyMessageHandler(RmcMessageHandler* h) {
     if (h != NULL) {
         delete h;
     }
 }
 
-void RmcBaseHandler::handleMessage(RmcMessageHandler *h, const sp<RfxMclMessage>& msg) {
+void RmcBaseHandler::handleMessage(RmcMessageHandler* h, const sp<RfxMclMessage>& msg) {
     if (h == NULL) {
         return;
     }

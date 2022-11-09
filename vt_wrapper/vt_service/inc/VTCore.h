@@ -31,109 +31,91 @@
 using namespace android;
 
 // for HiDL
-using ::android::hidl::base::V1_0::DebugInfo;
-using ::android::hidl::base::V1_0::IBase;
-using ::vendor::mediatek::hardware::videotelephony::V1_0::IVideoTelephony;
+using ::android::sp;
 using ::android::hardware::hidl_array;
 using ::android::hardware::hidl_memory;
 using ::android::hardware::hidl_string;
 using ::android::hardware::hidl_vec;
 using ::android::hardware::Return;
 using ::android::hardware::Void;
-using ::android::sp;
+using ::android::hidl::base::V1_0::DebugInfo;
+using ::android::hidl::base::V1_0::IBase;
+using ::vendor::mediatek::hardware::videotelephony::V1_0::IVideoTelephony;
 
 namespace VTService {
 
-void vt_callback(int type, void *data, int len);
-void vt_rtp_codec_2_ua(int mode, VT_IMCB_CAP * ua, int ssid, int opid);
-void vt_ua_2_rtp(int mode, VT_IMCB_CONFIG * ua, rtp_rtcp_config_t * rtp);
-void vt_ua_2_codec(int mode, VT_IMCB_CONFIG * ua, video_codec_fmtp_t * codec);
-void vt_ut_ua_2_rtp(int mode, VT_IMCB_CAP * ua, rtp_rtcp_config_t * rtp);
-void vt_ut_ua_2_codec(int mode, VT_IMCB_CAP * ua, video_codec_fmtp_t * codec);
+void vt_callback(int type, void* data, int len);
+void vt_rtp_codec_2_ua(int mode, VT_IMCB_CAP* ua, int ssid, int opid);
+void vt_ua_2_rtp(int mode, VT_IMCB_CONFIG* ua, rtp_rtcp_config_t* rtp);
+void vt_ua_2_codec(int mode, VT_IMCB_CONFIG* ua, video_codec_fmtp_t* codec);
+void vt_ut_ua_2_rtp(int mode, VT_IMCB_CAP* ua, rtp_rtcp_config_t* rtp);
+void vt_ut_ua_2_codec(int mode, VT_IMCB_CAP* ua, video_codec_fmtp_t* codec);
 
-class IVTServiceCallBack:virtual public RefBase{
- public:
-  virtual sp<IVTClient> getClient()=0;
-  virtual void notifyCallback(
-          int32_t id,
-          int32_t msgType,
-          int32_t arg1,
-          int32_t arg2,
-          int32_t arg3,
-          const String8 & obj1,
-          const String8 & obj2,
-          const sp<IGraphicBufferProducer> & obj3)=0;
+class IVTServiceCallBack : virtual public RefBase {
+  public:
+    virtual sp<IVTClient> getClient() = 0;
+    virtual void notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
+                                int32_t arg3, const String8& obj1, const String8& obj2,
+                                const sp<IGraphicBufferProducer>& obj3) = 0;
 };
 
-class VTCore: public IVTInterface, virtual public RefBase{
- public:
-  explicit VTCore(const sp<IVTServiceCallBack> & user);
-  VTCore();
-  virtual ~VTCore();
+class VTCore : public IVTInterface, virtual public RefBase {
+  public:
+    explicit VTCore(const sp<IVTServiceCallBack>& user);
+    VTCore();
+    virtual ~VTCore();
 
-  DECLARE_IVTINTERFACE
+    DECLARE_IVTINTERFACE
 
-  status_t open(VT_SRV_CALL_MODE mode, const int id, const int sim_id);
-  status_t init(const int id);
-  status_t init_internal(const int id);
-  status_t update(const int id);
-  status_t updateCallMode(const int id);
-  status_t updateTxRxMode(const int id, int new_mode, vt_srv_call_update_info_struct *info);
-  status_t deinit(const int id);
-  status_t close(const int id, int close_mode);
-  status_t close_internal(const int id, int close_mode);
-  status_t clearAll(void);
-  status_t setHandoverState(bool state);
-  status_t setHandoverStateBySimId(int sim_id, bool state);
-  status_t setHandoverStateByNetworkId(int network_id, bool state);
-  status_t requestCancelSessionModify(const int id, sp<VideoProfile> Vp);
+    status_t open(VT_SRV_CALL_MODE mode, const int id, const int sim_id);
+    status_t init(const int id);
+    status_t init_internal(const int id);
+    status_t update(const int id);
+    status_t updateCallMode(const int id);
+    status_t updateTxRxMode(const int id, int new_mode, vt_srv_call_update_info_struct* info);
+    status_t deinit(const int id);
+    status_t close(const int id, int close_mode);
+    status_t close_internal(const int id, int close_mode);
+    status_t clearAll(void);
+    status_t setHandoverState(bool state);
+    status_t setHandoverStateBySimId(int sim_id, bool state);
+    status_t setHandoverStateByNetworkId(int network_id, bool state);
+    status_t requestCancelSessionModify(const int id, sp<VideoProfile> Vp);
 
-  void notifyError(int id, const char* action);
+    void notifyError(int id, const char* action);
 
-  virtual void notifyCallback(
-          int32_t id,
-          int32_t msgType,
-          int32_t arg1,
-          int32_t arg2,
-          int32_t arg3,
-          const String8 & obj1,
-          const String8 & obj2,
-          const sp<IGraphicBufferProducer> & obj3);
+    virtual void notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
+                                int32_t arg3, const String8& obj1, const String8& obj2,
+                                const sp<IGraphicBufferProducer>& obj3);
 
-  virtual void notifyCallback(
-          int32_t id,
-          int32_t msgType,
-          int32_t arg1,
-          int32_t arg2);
+    virtual void notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2);
 
-  void notifyCallback(
-          int32_t id,
-          int32_t msgType);
+    void notifyCallback(int32_t id, int32_t msgType);
 
-  void getUpdateInfo(int id, VT_IMCB_UPD* pre_config, VT_IMCB_UPD* new_config);
-  void resetUpdateInfo(int id);
+    void getUpdateInfo(int id, VT_IMCB_UPD* pre_config, VT_IMCB_UPD* new_config);
+    void resetUpdateInfo(int id);
 
-  sp<IVTServiceCallBack>                  mUser;
-  static sp<VTCoreHelper>                 mHelper;
+    sp<IVTServiceCallBack> mUser;
+    static sp<VTCoreHelper> mHelper;
 
-  unsigned int                            mUserID;
+    unsigned int mUserID;
 
- private:
-  int                                     mLastRet      = VT_SRV_RET_ERR;
-  int                                     mLastNotify   = VT_SRV_ERROR_SERVICE;
+  private:
+    int mLastRet = VT_SRV_RET_ERR;
+    int mLastNotify = VT_SRV_ERROR_SERVICE;
 
-  // The map hold the locks for open/init/start/stop/close VTService, App may call them at the same time
-  // The different call has the dedicated different lock
-  Mutex*                                  mCallFlowLocks[VT_SRV_MA_NR];
-  // Lock for Notifycallback(), multiple MA may pass notify to VTcore at the same time
-  mutable Mutex                           mNotifyLock;
-  // Lock for Notifycallback(), only for error notify event
-  mutable Mutex                           mNotifyErrorLock;
-  // Lock for MA operation which need to sync each others bwtween MAs
-  mutable Mutex                           mMAOperationLock;
+    // The map hold the locks for open/init/start/stop/close VTService, App may call them at the
+    // same time The different call has the dedicated different lock
+    Mutex* mCallFlowLocks[VT_SRV_MA_NR];
+    // Lock for Notifycallback(), multiple MA may pass notify to VTcore at the same time
+    mutable Mutex mNotifyLock;
+    // Lock for Notifycallback(), only for error notify event
+    mutable Mutex mNotifyErrorLock;
+    // Lock for MA operation which need to sync each others bwtween MAs
+    mutable Mutex mMAOperationLock;
 
-  Mutex* getCallFlowLock(int id);
-  status_t retriggerUpdate(int id);
+    Mutex* getCallFlowLock(int id);
+    status_t retriggerUpdate(int id);
 };
 
 }  // namespace VTService

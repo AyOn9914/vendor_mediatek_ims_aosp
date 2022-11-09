@@ -22,7 +22,6 @@
 #include "ares_data.h"
 #include "ares_private.h"
 
-
 /*
 ** ares_free_data() - c-ares external API function.
 **
@@ -37,67 +36,55 @@
 **   ares_parse_txt_reply()
 */
 
-void ares_free_data(void *dataptr)
-{
-  struct ares_data *ptr;
+void ares_free_data(void* dataptr) {
+    struct ares_data* ptr;
 
-  if (!dataptr)
-    return;
+    if (!dataptr) return;
 
 #ifdef __INTEL_COMPILER
-#  pragma warning(push)
-#  pragma warning(disable:1684)
-   /* 1684: conversion from pointer to same-sized integral type */
+#pragma warning(push)
+#pragma warning(disable : 1684)
+        /* 1684: conversion from pointer to same-sized integral type */
 #endif
 
-  ptr = (void *)((char *)dataptr - offsetof(struct ares_data, data));
+    ptr = (void*)((char*)dataptr - offsetof(struct ares_data, data));
 
 #ifdef __INTEL_COMPILER
-#  pragma warning(pop)
+#pragma warning(pop)
 #endif
 
-  if (ptr->mark != ARES_DATATYPE_MARK)
-    return;
+    if (ptr->mark != ARES_DATATYPE_MARK) return;
 
-  switch (ptr->type)
-    {
-      case ARES_DATATYPE_MX_REPLY:
+    switch (ptr->type) {
+        case ARES_DATATYPE_MX_REPLY:
 
-        if (ptr->data.mx_reply.next)
-          ares_free_data(ptr->data.mx_reply.next);
-        if (ptr->data.mx_reply.host)
-          free(ptr->data.mx_reply.host);
-        break;
+            if (ptr->data.mx_reply.next) ares_free_data(ptr->data.mx_reply.next);
+            if (ptr->data.mx_reply.host) free(ptr->data.mx_reply.host);
+            break;
 
-      case ARES_DATATYPE_SRV_REPLY:
+        case ARES_DATATYPE_SRV_REPLY:
 
-        if (ptr->data.srv_reply.next)
-          ares_free_data(ptr->data.srv_reply.next);
-        if (ptr->data.srv_reply.host)
-          free(ptr->data.srv_reply.host);
-        break;
+            if (ptr->data.srv_reply.next) ares_free_data(ptr->data.srv_reply.next);
+            if (ptr->data.srv_reply.host) free(ptr->data.srv_reply.host);
+            break;
 
-      case ARES_DATATYPE_TXT_REPLY:
+        case ARES_DATATYPE_TXT_REPLY:
 
-        if (ptr->data.txt_reply.next)
-          ares_free_data(ptr->data.txt_reply.next);
-        if (ptr->data.txt_reply.txt)
-          free(ptr->data.txt_reply.txt);
-        break;
+            if (ptr->data.txt_reply.next) ares_free_data(ptr->data.txt_reply.next);
+            if (ptr->data.txt_reply.txt) free(ptr->data.txt_reply.txt);
+            break;
 
-      case ARES_DATATYPE_ADDR_NODE:
+        case ARES_DATATYPE_ADDR_NODE:
 
-        if (ptr->data.addr_node.next)
-          ares_free_data(ptr->data.addr_node.next);
-        break;
+            if (ptr->data.addr_node.next) ares_free_data(ptr->data.addr_node.next);
+            break;
 
-      default:
-        return;
+        default:
+            return;
     }
 
-  free(ptr);
+    free(ptr);
 }
-
 
 /*
 ** ares_malloc_data() - c-ares internal helper function.
@@ -110,54 +97,49 @@ void ares_free_data(void *dataptr)
 ** c-ares external API function ares_free_data().
 */
 
-void *ares_malloc_data(ares_datatype type)
-{
-  struct ares_data *ptr;
+void* ares_malloc_data(ares_datatype type) {
+    struct ares_data* ptr;
 
-  ptr = malloc(sizeof(struct ares_data));
-  if (!ptr)
-    return NULL;
+    ptr = malloc(sizeof(struct ares_data));
+    if (!ptr) return NULL;
 
-  switch (type)
-    {
-      case ARES_DATATYPE_MX_REPLY:
-        ptr->data.mx_reply.next = NULL;
-        ptr->data.mx_reply.host = NULL;
-        ptr->data.mx_reply.priority = 0;
-        break;
+    switch (type) {
+        case ARES_DATATYPE_MX_REPLY:
+            ptr->data.mx_reply.next = NULL;
+            ptr->data.mx_reply.host = NULL;
+            ptr->data.mx_reply.priority = 0;
+            break;
 
-      case ARES_DATATYPE_SRV_REPLY:
-        ptr->data.srv_reply.next = NULL;
-        ptr->data.srv_reply.host = NULL;
-        ptr->data.srv_reply.priority = 0;
-        ptr->data.srv_reply.weight = 0;
-        ptr->data.srv_reply.port = 0;
-        break;
+        case ARES_DATATYPE_SRV_REPLY:
+            ptr->data.srv_reply.next = NULL;
+            ptr->data.srv_reply.host = NULL;
+            ptr->data.srv_reply.priority = 0;
+            ptr->data.srv_reply.weight = 0;
+            ptr->data.srv_reply.port = 0;
+            break;
 
-      case ARES_DATATYPE_TXT_REPLY:
-        ptr->data.txt_reply.next = NULL;
-        ptr->data.txt_reply.txt = NULL;
-        ptr->data.txt_reply.length  = 0;
-        break;
+        case ARES_DATATYPE_TXT_REPLY:
+            ptr->data.txt_reply.next = NULL;
+            ptr->data.txt_reply.txt = NULL;
+            ptr->data.txt_reply.length = 0;
+            break;
 
-      case ARES_DATATYPE_ADDR_NODE:
-        ptr->data.addr_node.next = NULL;
-        ptr->data.addr_node.family = 0;
-        memset(&ptr->data.addr_node.addrV6, 0,
-               sizeof(ptr->data.addr_node.addrV6));
-        break;
+        case ARES_DATATYPE_ADDR_NODE:
+            ptr->data.addr_node.next = NULL;
+            ptr->data.addr_node.family = 0;
+            memset(&ptr->data.addr_node.addrV6, 0, sizeof(ptr->data.addr_node.addrV6));
+            break;
 
-      default:
-        free(ptr);
-        return NULL;
+        default:
+            free(ptr);
+            return NULL;
     }
 
-  ptr->mark = ARES_DATATYPE_MARK;
-  ptr->type = type;
+    ptr->mark = ARES_DATATYPE_MARK;
+    ptr->type = type;
 
-  return &ptr->data;
+    return &ptr->data;
 }
-
 
 /*
 ** ares_get_datatype() - c-ares internal helper function.
@@ -166,24 +148,22 @@ void *ares_malloc_data(ares_datatype type)
 ** private ares_data struct when given the public API pointer.
 */
 
-ares_datatype ares_get_datatype(void * dataptr)
-{
-  struct ares_data *ptr;
+ares_datatype ares_get_datatype(void* dataptr) {
+    struct ares_data* ptr;
 
 #ifdef __INTEL_COMPILER
-#  pragma warning(push)
-#  pragma warning(disable:1684)
-   /* 1684: conversion from pointer to same-sized integral type */
+#pragma warning(push)
+#pragma warning(disable : 1684)
+    /* 1684: conversion from pointer to same-sized integral type */
 #endif
 
-  ptr = (void *)((char *)dataptr - offsetof(struct ares_data, data));
+    ptr = (void*)((char*)dataptr - offsetof(struct ares_data, data));
 
 #ifdef __INTEL_COMPILER
-#  pragma warning(pop)
+#pragma warning(pop)
 #endif
 
-  if (ptr->mark == ARES_DATATYPE_MARK)
-    return ptr->type;
+    if (ptr->mark == ARES_DATATYPE_MARK) return ptr->type;
 
-  return ARES_DATATYPE_UNKNOWN;
+    return ARES_DATATYPE_UNKNOWN;
 }

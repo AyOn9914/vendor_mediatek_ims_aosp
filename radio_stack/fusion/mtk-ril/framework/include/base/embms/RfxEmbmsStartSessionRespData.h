@@ -23,9 +23,10 @@
 class RfxEmbmsStartSessionRespData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsStartSessionRespData);
 
-    public:
-        RfxEmbmsStartSessionRespData(RIL_EMBMS_StartSessionResp* data, int length);
-    private:
-        void copyData(RIL_EMBMS_StartSessionResp *data, int length);
+  public:
+    RfxEmbmsStartSessionRespData(RIL_EMBMS_StartSessionResp* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_StartSessionResp* data, int length);
 };
 #endif /*RFX_EMBMS_STARTSESSION_RESP_DATA__H*/

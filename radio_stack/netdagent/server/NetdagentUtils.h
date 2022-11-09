@@ -31,44 +31,42 @@ namespace netdagent {
 #define CMD_ARG_SIZE 1024
 #define CMD_ARG_COUNT 26
 
-extern const char * const IPTABLES_PATH;
-extern const char * const IP6TABLES_PATH;
-extern const char * const IPTABLES_RESTORE_PATH;
-extern const char * const IP6TABLES_RESTORE_PATH;
-extern const char * const TC_PATH;
-extern const char * const IP_PATH;
-extern const char * const NDC_PATH;
+extern const char* const IPTABLES_PATH;
+extern const char* const IP6TABLES_PATH;
+extern const char* const IPTABLES_RESTORE_PATH;
+extern const char* const IP6TABLES_RESTORE_PATH;
+extern const char* const TC_PATH;
+extern const char* const IP_PATH;
+extern const char* const NDC_PATH;
 
-bool isIfaceName(const char *name);
+bool isIfaceName(const char* name);
 
-//interface ioctl
-int ifc_is_up(const char *name, unsigned *isup);
+// interface ioctl
+int ifc_is_up(const char* name, unsigned* isup);
 int ifc_init(void);
 void ifc_close(void);
-int ifc_up(const char *name);
-int ifc_down(const char *name);
+int ifc_up(const char* name);
+int ifc_down(const char* name);
 
-//file handling
+// file handling
 #if !defined(_WIN32) && !defined(O_BINARY)
 #define O_BINARY 0
 #endif
 bool ReadFdToString(int fd, std::string* content);
 bool ReadFileToString(const std::string& path, std::string* content);
 bool WriteStringToFd(const std::string& content, int fd);
-bool WriteStringToFile(const std::string& content, const std::string& path,
-                       mode_t mode, uid_t owner, gid_t group);
+bool WriteStringToFile(const std::string& content, const std::string& path, mode_t mode,
+                       uid_t owner, gid_t group);
 bool WriteStringToFile(const std::string& content, const std::string& path);
 
-//time handling
+// time handling
 class Stopwatch {
-public:
+  public:
     Stopwatch() : mStart(clock::now()) {}
 
-    virtual ~Stopwatch() {};
+    virtual ~Stopwatch(){};
 
-    float timeTaken() const {
-        return getElapsed(clock::now());
-    }
+    float timeTaken() const { return getElapsed(clock::now()); }
 
     float getTimeAndReset() {
         const auto& now = clock::now();
@@ -77,7 +75,7 @@ public:
         return elapsed;
     }
 
-private:
+  private:
     typedef std::chrono::steady_clock clock;
     typedef std::chrono::time_point<clock> time_point;
     time_point mStart;
@@ -89,26 +87,23 @@ private:
 };
 
 class MutexLock {
-public:
+  public:
     MutexLock() { pthread_mutex_init(&mMutex, NULL); }
     ~MutexLock() { pthread_mutex_destroy(&mMutex); }
     void lock() { pthread_mutex_lock(&mMutex); }
     void unlock() { pthread_mutex_unlock(&mMutex); }
-private:
+
+  private:
     pthread_mutex_t mMutex;
 };
 
 class AutoMutexLock {
-public:
-    AutoMutexLock(MutexLock& mutex) : mAutolock(mutex) {
-        mAutolock.lock();
-    }
+  public:
+    AutoMutexLock(MutexLock& mutex) : mAutolock(mutex) { mAutolock.lock(); }
 
-    ~AutoMutexLock() {
-        mAutolock.unlock();
-    }
+    ~AutoMutexLock() { mAutolock.unlock(); }
 
-private:
+  private:
     MutexLock& mAutolock;
 };
 

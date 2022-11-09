@@ -36,26 +36,29 @@ typedef enum {
 } C2K_SIGNAL;
 
 class ViaBaseHandler {
-    public:
-        ViaBaseHandler() {}
-        virtual ~ViaBaseHandler() {}
+  public:
+    ViaBaseHandler() {}
+    virtual ~ViaBaseHandler() {}
 
-        virtual void sendCommandDemo(RfxBaseHandler* handler, char* str) = 0;
-        virtual void handleCdmaSubscription(RfxBaseHandler* handler, char **p_response, RIL_Errno *result) = 0;
-        virtual void requestSetPreferredVoicePrivacyMode(RfxBaseHandler* handler, int value, RIL_Errno *result) = 0;
-        virtual void requestQueryPreferredVoicePrivacyMode(RfxBaseHandler* handler, int *value, RIL_Errno *result) = 0;
-        virtual void handleCdmaPrlChanged(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler,
-                int slotId);
-        virtual void registerForViaUrc(RfxBaseHandler* handler);
-        virtual void handleViaUrc(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler, int slotId);
-        virtual const char** getViaAllowedUrcForNw() = 0;
-        virtual int convertCdmaEvdoSig(int sig, int tag);
-        virtual int getCdmaLocationInfo(RfxBaseHandler* handler,
-                RIL_VOICE_REG_STATE_CACHE *voice_reg_state_cache);
-        virtual const char **getAgpsUrc() = 0;
-        virtual void requestAgpsConnind(RfxBaseHandler* handler, int connected, RIL_Errno *result) = 0;
-        virtual int getCdmaLocationInfo(RfxBaseHandler* handler,
-                CDMA_CELL_LOCATION_INFO *cdma_cell_location);
+    virtual void sendCommandDemo(RfxBaseHandler* handler, char* str) = 0;
+    virtual void handleCdmaSubscription(RfxBaseHandler* handler, char** p_response,
+                                        RIL_Errno* result) = 0;
+    virtual void requestSetPreferredVoicePrivacyMode(RfxBaseHandler* handler, int value,
+                                                     RIL_Errno* result) = 0;
+    virtual void requestQueryPreferredVoicePrivacyMode(RfxBaseHandler* handler, int* value,
+                                                       RIL_Errno* result) = 0;
+    virtual void handleCdmaPrlChanged(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler,
+                                      int slotId);
+    virtual void registerForViaUrc(RfxBaseHandler* handler);
+    virtual void handleViaUrc(const sp<RfxMclMessage>& msg, RfxBaseHandler* handler, int slotId);
+    virtual const char** getViaAllowedUrcForNw() = 0;
+    virtual int convertCdmaEvdoSig(int sig, int tag);
+    virtual int getCdmaLocationInfo(RfxBaseHandler* handler,
+                                    RIL_VOICE_REG_STATE_CACHE* voice_reg_state_cache);
+    virtual const char** getAgpsUrc() = 0;
+    virtual void requestAgpsConnind(RfxBaseHandler* handler, int connected, RIL_Errno* result) = 0;
+    virtual int getCdmaLocationInfo(RfxBaseHandler* handler,
+                                    CDMA_CELL_LOCATION_INFO* cdma_cell_location);
 };
 
 typedef ViaBaseHandler* create_t();

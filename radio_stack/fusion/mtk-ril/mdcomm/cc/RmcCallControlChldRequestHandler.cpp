@@ -22,32 +22,31 @@
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCallControlChldRequestHandler, RIL_CMD_PROXY_7);
 
-RmcCallControlChldRequestHandler::RmcCallControlChldRequestHandler(int slot_id,
-        int channel_id) : RmcCallControlBaseHandler(slot_id, channel_id) {
+RmcCallControlChldRequestHandler::RmcCallControlChldRequestHandler(int slot_id, int channel_id)
+    : RmcCallControlBaseHandler(slot_id, channel_id) {
     const int requests[] = {
-        RFX_MSG_REQUEST_HANGUP_ALL,                           //AT+CHLD=6
-        RFX_MSG_REQUEST_HANGUP,                               //AT+CHLD=1X
-        RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND,         //AT+CHLD=0
-        RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND,  //AT+CHLD=1
-        RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE, //AT+CHLD=2
-        RFX_MSG_REQUEST_CONFERENCE,                           //AT+CHLD=3
-        RFX_MSG_REQUEST_EXPLICIT_CALL_TRANSFER,               //AT+CHLD=4
-        RFX_MSG_REQUEST_SEPARATE_CONNECTION,                  //AT+CHLD=2X
-        RFX_MSG_REQUEST_HANGUP_WITH_REASON,                   //AT+ECHLD=1X, reason
+            RFX_MSG_REQUEST_HANGUP_ALL,                            // AT+CHLD=6
+            RFX_MSG_REQUEST_HANGUP,                                // AT+CHLD=1X
+            RFX_MSG_REQUEST_HANGUP_WAITING_OR_BACKGROUND,          // AT+CHLD=0
+            RFX_MSG_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND,   // AT+CHLD=1
+            RFX_MSG_REQUEST_SWITCH_WAITING_OR_HOLDING_AND_ACTIVE,  // AT+CHLD=2
+            RFX_MSG_REQUEST_CONFERENCE,                            // AT+CHLD=3
+            RFX_MSG_REQUEST_EXPLICIT_CALL_TRANSFER,                // AT+CHLD=4
+            RFX_MSG_REQUEST_SEPARATE_CONNECTION,                   // AT+CHLD=2X
+            RFX_MSG_REQUEST_HANGUP_WITH_REASON,                    // AT+ECHLD=1X, reason
     };
 
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcCallControlChldRequestHandler::~RmcCallControlChldRequestHandler() {
-}
+RmcCallControlChldRequestHandler::~RmcCallControlChldRequestHandler() {}
 
 void RmcCallControlChldRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     if (RfxRilUtils::isUserLoad() != 1) {
         logD(RFX_LOG_TAG, "onHandleRequest: %d", msg->getId());
     }
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_HANGUP_ALL:
             requestHangupAll(msg);
             break;
@@ -109,13 +108,13 @@ void RmcCallControlChldRequestHandler::onHandleTimer() {
 void RmcCallControlChldRequestHandler::requestHangupAll(const sp<RfxMclMessage>& msg) {
     atSendCommand(String8::format("AT+CHLD=6"));
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
 void RmcCallControlChldRequestHandler::requestHangup(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int*)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -132,12 +131,13 @@ void RmcCallControlChldRequestHandler::requestHangup(const sp<RfxMclMessage>& ms
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxIntsData(pInt, 1), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxIntsData(pInt, 1), msg);
     responseToTelCore(response);
 }
 
-void RmcCallControlChldRequestHandler::requestHangupWaitingOrBackground(const sp<RfxMclMessage>& msg) {
+void RmcCallControlChldRequestHandler::requestHangupWaitingOrBackground(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -151,19 +151,20 @@ void RmcCallControlChldRequestHandler::requestHangupWaitingOrBackground(const sp
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
-void RmcCallControlChldRequestHandler::requestHangupForegroundResumeBackground(const sp<RfxMclMessage>& msg) {
+void RmcCallControlChldRequestHandler::requestHangupForegroundResumeBackground(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
-     // 3GPP 22.030 6.5.5
+    // 3GPP 22.030 6.5.5
     // "Releases all active calls (if any exist) and accepts
     // the other (held or waiting) call."
-    //atSendCommand(String8::format("AT+CHLD=1"));
+    // atSendCommand(String8::format("AT+CHLD=1"));
     p_response = atSendCommandMultiline(String8::format("AT+CHLD=1"), "NO CARRIER");
 
     // set result
@@ -171,12 +172,13 @@ void RmcCallControlChldRequestHandler::requestHangupForegroundResumeBackground(c
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
-void RmcCallControlChldRequestHandler::requestSwitchWaitingOrHoldingAndActive(const sp<RfxMclMessage>& msg) {
+void RmcCallControlChldRequestHandler::requestSwitchWaitingOrHoldingAndActive(
+        const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -187,8 +189,8 @@ void RmcCallControlChldRequestHandler::requestSwitchWaitingOrHoldingAndActive(co
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
@@ -203,8 +205,8 @@ void RmcCallControlChldRequestHandler::requestConference(const sp<RfxMclMessage>
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
@@ -219,13 +221,13 @@ void RmcCallControlChldRequestHandler::requestExplicitCallTransfer(const sp<RfxM
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
 void RmcCallControlChldRequestHandler::requestSeparateConnection(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int*)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -236,15 +238,15 @@ void RmcCallControlChldRequestHandler::requestSeparateConnection(const sp<RfxMcl
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxVoidData(), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxVoidData(), msg);
     responseToTelCore(response);
 }
 
 void RmcCallControlChldRequestHandler::requestHangupWithReason(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int*)msg->getData()->getData();
-    int hangupCallId = ((int *)msg->getData()->getData())[0];
-    int hangupReason = ((int *)msg->getData()->getData())[1];
+    int* pInt = (int*)msg->getData()->getData();
+    int hangupCallId = ((int*)msg->getData()->getData())[0];
+    int hangupReason = ((int*)msg->getData()->getData())[1];
     sp<RfxAtResponse> p_response;
     RIL_Errno rilErrNo = RIL_E_SUCCESS;
 
@@ -266,7 +268,7 @@ void RmcCallControlChldRequestHandler::requestHangupWithReason(const sp<RfxMclMe
         rilErrNo = RIL_E_INTERNAL_ERR;
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), rilErrNo,
-            RfxIntsData(pInt, 2), msg);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), rilErrNo, RfxIntsData(pInt, 2), msg);
     responseToTelCore(response);
 }

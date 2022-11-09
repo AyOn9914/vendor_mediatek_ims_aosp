@@ -35,14 +35,14 @@
  */
 typedef enum android_LogPriority {
     ANDROID_LOG_UNKNOWN = 0,
-    ANDROID_LOG_DEFAULT,    /* only for SetMinPriority() */
+    ANDROID_LOG_DEFAULT, /* only for SetMinPriority() */
     ANDROID_LOG_VERBOSE,
     ANDROID_LOG_DEBUG,
     ANDROID_LOG_INFO,
     ANDROID_LOG_WARN,
     ANDROID_LOG_ERROR,
     ANDROID_LOG_FATAL,
-    ANDROID_LOG_SILENT,     /* only for SetMinPriority(); must be last */
+    ANDROID_LOG_SILENT, /* only for SetMinPriority(); must be last */
 } android_LogPriority;
 
 #ifdef __cplusplus
@@ -53,12 +53,12 @@ namespace android {
  * A very simple utility that yells in the log when an operation takes too long.
  */
 class LogIfSlow {
-public:
-    LogIfSlow(const char* tag, android_LogPriority priority,
-            int timeoutMillis, const char* message);
+  public:
+    LogIfSlow(const char* tag, android_LogPriority priority, int timeoutMillis,
+              const char* message);
     ~LogIfSlow();
 
-private:
+  private:
     const char* const mTag;
     const android_LogPriority mPriority;
     const int mTimeoutMillis;
@@ -66,8 +66,8 @@ private:
     const int64_t mStart;
 };
 
-} // namespace android
+}  // namespace android
 
-#endif // __cplusplus
+#endif  // __cplusplus
 
-#endif // _LIBS_UTILS_LOG_H
+#endif  // _LIBS_UTILS_LOG_H

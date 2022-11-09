@@ -26,26 +26,26 @@
 class RmcVtReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcVtReqHandler);
 
-    public:
-        RmcVtReqHandler(int slot_id, int channel_id);
-        virtual ~RmcVtReqHandler();
-        static bool isImsVideoCallon(void);
-        static bool isVTLogEnable(void);
+  public:
+    RmcVtReqHandler(int slot_id, int channel_id);
+    virtual ~RmcVtReqHandler();
+    static bool isImsVideoCallon(void);
+    static bool isVTLogEnable(void);
 
-    private:
-        void handleRequestGetInfo(const sp<RfxMclMessage>& msg);
-        void handleRequestUpdateOpid(const sp<RfxMclMessage>& msg);
-        void handleEventCallStatusUpdate(const sp<RfxMclMessage>& msg);
-        void handleEventVtSendMsg(const sp<RfxMclMessage>& msg);
-        void handleEventVtReceiveMsg(const sp<RfxMclMessage>& msg);
-        void sendMsgToVTS(char* outBuffer, int length, const char* user);
+  private:
+    void handleRequestGetInfo(const sp<RfxMclMessage>& msg);
+    void handleRequestUpdateOpid(const sp<RfxMclMessage>& msg);
+    void handleEventCallStatusUpdate(const sp<RfxMclMessage>& msg);
+    void handleEventVtSendMsg(const sp<RfxMclMessage>& msg);
+    void handleEventVtReceiveMsg(const sp<RfxMclMessage>& msg);
+    void sendMsgToVTS(char* outBuffer, int length, const char* user);
 
-        sp<RmcVtDataThreadController>           mThdController;
-        int                                     mPendingCapReqBySim[MAX_SIM_COUNT] = {0};
+    sp<RmcVtDataThreadController> mThdController;
+    int mPendingCapReqBySim[MAX_SIM_COUNT] = {0};
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 };
 
 #endif /* __RMC_VT_REQ_HANDLER_H__ */

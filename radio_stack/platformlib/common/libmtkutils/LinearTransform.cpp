@@ -32,19 +32,16 @@
 namespace android {
 
 // sanitize failure with T = int32_t and x = 0x80000000
-template<class T>
-ATTRIBUTE_NO_SANITIZE_INTEGER
-static inline T ABS(T x) { return (x < 0) ? -x : x; }
+template <class T>
+ATTRIBUTE_NO_SANITIZE_INTEGER static inline T ABS(T x) {
+    return (x < 0) ? -x : x;
+}
 
 // Static math methods involving linear transformations
 // remote sanitize failure on overflow case.
 ATTRIBUTE_NO_SANITIZE_INTEGER
-static bool scale_u64_to_u64(
-        uint64_t val,
-        uint32_t N,
-        uint32_t D,
-        uint64_t* res,
-        bool round_up_not_down) {
+static bool scale_u64_to_u64(uint64_t val, uint32_t N, uint32_t D, uint64_t* res,
+                             bool round_up_not_down) {
     uint64_t tmp1, tmp2;
     uint32_t r;
 
@@ -124,20 +121,13 @@ static bool scale_u64_to_u64(
 
 // at least one known sanitize failure (see comment below)
 ATTRIBUTE_NO_SANITIZE_INTEGER
-static bool linear_transform_s64_to_s64(
-        int64_t  val,
-        int64_t  basis1,
-        int32_t  N,
-        uint32_t D,
-        bool     invert_frac,
-        int64_t  basis2,
-        int64_t* out) {
+static bool linear_transform_s64_to_s64(int64_t val, int64_t basis1, int32_t N, uint32_t D,
+                                        bool invert_frac, int64_t basis2, int64_t* out) {
     uint64_t scaled, res;
     uint64_t abs_val;
     bool is_neg;
 
-    if (!out)
-        return false;
+    if (!out) return false;
 
     // Compute abs(val - basis_64). Keep track of whether or not this delta
     // will be negative after the scale opertaion.
@@ -149,28 +139,21 @@ static bool linear_transform_s64_to_s64(
         abs_val = val - basis1;
     }
 
-    if (N < 0)
-        is_neg = !is_neg;
+    if (N < 0) is_neg = !is_neg;
 
-    if (!scale_u64_to_u64(abs_val,
-                          invert_frac ? D : ABS(N),
-                          invert_frac ? ABS(N) : D,
-                          &scaled,
+    if (!scale_u64_to_u64(abs_val, invert_frac ? D : ABS(N), invert_frac ? ABS(N) : D, &scaled,
                           is_neg))
-        return false; // overflow/undeflow
+        return false;  // overflow/undeflow
 
     // if scaled is >= 0x8000<etc>, then we are going to overflow or
     // underflow unless ABS(basis2) is large enough to pull us back into the
     // non-overflow/underflow region.
     if (scaled & INT64_MIN) {
-        if (is_neg && (basis2 < 0))
-            return false; // certain underflow
+        if (is_neg && (basis2 < 0)) return false;  // certain underflow
 
-        if (!is_neg && (basis2 >= 0))
-            return false; // certain overflow
+        if (!is_neg && (basis2 >= 0)) return false;  // certain overflow
 
-        if (ABS(basis2) <= static_cast<int64_t>(scaled & INT64_MAX))
-            return false; // not enough
+        if (ABS(basis2) <= static_cast<int64_t>(scaled & INT64_MAX)) return false;  // not enough
 
         // Looks like we are OK
         *out = (is_neg ? (-scaled) : scaled) + basis2;
@@ -186,12 +169,10 @@ static bool linear_transform_s64_to_s64(
         // (scaled_signbit XOR basis_signbit XOR 1) &&
         // (scaled_signbit XOR res_signbit)
 
-        if (is_neg)
-            scaled = -scaled; // known sanitize failure
+        if (is_neg) scaled = -scaled;  // known sanitize failure
         res = scaled + basis2;
 
-        if ((scaled ^ basis2 ^ INT64_MIN) & (scaled ^ res) & INT64_MIN)
-            return false;
+        if ((scaled ^ basis2 ^ INT64_MIN) & (scaled ^ res) & INT64_MIN) return false;
 
         *out = res;
     }
@@ -200,32 +181,21 @@ static bool linear_transform_s64_to_s64(
 }
 
 bool LinearTransform::doForwardTransform(int64_t a_in, int64_t* b_out) const {
-    if (0 == a_to_b_denom)
-        return false;
+    if (0 == a_to_b_denom) return false;
 
-    return linear_transform_s64_to_s64(a_in,
-                                       a_zero,
-                                       a_to_b_numer,
-                                       a_to_b_denom,
-                                       false,
-                                       b_zero,
+    return linear_transform_s64_to_s64(a_in, a_zero, a_to_b_numer, a_to_b_denom, false, b_zero,
                                        b_out);
 }
 
 bool LinearTransform::doReverseTransform(int64_t b_in, int64_t* a_out) const {
-    if (0 == a_to_b_numer)
-        return false;
+    if (0 == a_to_b_numer) return false;
 
-    return linear_transform_s64_to_s64(b_in,
-                                       b_zero,
-                                       a_to_b_numer,
-                                       a_to_b_denom,
-                                       true,
-                                       a_zero,
+    return linear_transform_s64_to_s64(b_in, b_zero, a_to_b_numer, a_to_b_denom, true, a_zero,
                                        a_out);
 }
 
-template <class T> void LinearTransform::reduce(T* N, T* D) {
+template <class T>
+void LinearTransform::reduce(T* N, T* D) {
     T a, b;
     if (!N || !D || !(*D)) {
         assert(false);

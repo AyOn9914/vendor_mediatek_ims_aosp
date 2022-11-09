@@ -15,13 +15,8 @@
  */
 
 // {AT command, timeout} // mins
-{(char *)"CGACT", 15},
-{(char *)"CGATT", 15},
-{(char *)"COPS", 15},
-{(char *)"CMGS", 10}, // SMS can over CS or IMS and will re-try on different domain. The worst case will be around 8 mins
-{(char *)"EFUN", 15},
-{(char *)"EGACT", 15},
-{(char *)"EAPNACT", 15},
-{(char *)"EPDN", 15},
-{(char *)"EOPS", 15},
-{(char *)"EDALLOW", 15},
+{(char*)"CGACT", 15}, {(char*)"CGATT", 15}, {(char*)"COPS", 15},
+        {(char*)"CMGS", 10},  // SMS can over CS or IMS and will re-try on different domain. The
+                              // worst case will be around 8 mins
+        {(char*)"EFUN", 15}, {(char*)"EGACT", 15}, {(char*)"EAPNACT", 15}, {(char*)"EPDN", 15},
+        {(char*)"EOPS", 15}, {(char*)"EDALLOW", 15},

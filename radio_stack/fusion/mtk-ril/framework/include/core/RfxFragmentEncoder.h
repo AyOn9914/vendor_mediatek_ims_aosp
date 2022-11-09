@@ -26,72 +26,50 @@
 using ::android::String8;
 
 class RfxFragmentData {
-    public:
-        RfxFragmentData() :
-                mVersion(1),
-                mClientId(-1),
-                mConfig(0),
-                mLength(0) {
-        }
+  public:
+    RfxFragmentData() : mVersion(1), mClientId(-1), mConfig(0), mLength(0) {}
 
-        RfxFragmentData(int version, int clientId,
-                int config, size_t length) :
-                mVersion(version),
-                mClientId(clientId),
-                mConfig(config),
-                mLength(length) {
-        }
+    RfxFragmentData(int version, int clientId, int config, size_t length)
+        : mVersion(version), mClientId(clientId), mConfig(config), mLength(length) {}
 
-        int getClientId() const {
-            return mClientId;
-        }
+    int getClientId() const { return mClientId; }
 
-        int getVersion() const {
-            return mVersion;
-        }
+    int getVersion() const { return mVersion; }
 
-        int getConfig() const {
-            return mConfig;
-        }
+    int getConfig() const { return mConfig; }
 
-        size_t getDataLength() {
-            return mLength;
-        }
+    size_t getDataLength() { return mLength; }
 
-        String8 toString() const;
+    String8 toString() const;
 
-    private:
-        int mVersion;
-        int mClientId;
-        int mConfig;
-        size_t mLength;
+  private:
+    int mVersion;
+    int mClientId;
+    int mConfig;
+    size_t mLength;
 };
 
 class RfxFragmentEncoder {
+  public:
+    static const unsigned char VERSION = 1;
+    static const size_t HEADER_SIZE = 8;
+    static const size_t MAX_FRAME_SIZE = 2048;
 
-    public:
-        static const unsigned char VERSION= 1;
-        static const size_t HEADER_SIZE = 8;
-        static const size_t MAX_FRAME_SIZE = 2048;
+  private:
+    static const unsigned char FRAME_START_FLAG = 0x7F;
+    static const unsigned char FRAME_END_FLAG = 0x7F;
+    static const size_t FRAME_START_FLAG_SIZE = 2;
+    static const size_t FRAME_CLIENT_ID_SIZE = 5;
 
-    private:
+  private:
+    RfxFragmentEncoder();
 
-        static const unsigned char FRAME_START_FLAG = 0x7F;
-        static const unsigned char FRAME_END_FLAG = 0x7F;
-        static const size_t FRAME_START_FLAG_SIZE = 2;
-        static const size_t FRAME_CLIENT_ID_SIZE = 5;
+  public:
+    static void init();
+    static RfxFragmentData decodeHeader(unsigned char* header);
+    static unsigned char* encodeHeader(RfxFragmentData data);
 
-    private:
-
-        RfxFragmentEncoder();
-
-    public:
-
-        static void init();
-        static RfxFragmentData decodeHeader(unsigned char *header);
-        static unsigned char* encodeHeader(RfxFragmentData data);
-
-    private:
-        static RfxFragmentEncoder *sSelf;
+  private:
+    static RfxFragmentEncoder* sSelf;
 };
 #endif

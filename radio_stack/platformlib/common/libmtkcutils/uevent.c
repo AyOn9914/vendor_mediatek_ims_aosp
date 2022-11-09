@@ -29,8 +29,7 @@
 /**
  * Like recv(), but checks that messages actually originate from the kernel.
  */
-ssize_t uevent_kernel_multicast_recv(int socket, void *buffer, size_t length)
-{
+ssize_t uevent_kernel_multicast_recv(int socket, void* buffer, size_t length) {
     uid_t uid = -1;
     return uevent_kernel_multicast_uid_recv(socket, buffer, length, &uid);
 }
@@ -44,24 +43,17 @@ ssize_t uevent_kernel_multicast_recv(int socket, void *buffer, size_t length)
  * returns -1, sets errno to EIO, and sets "user" to the UID associated with the
  * message. If the peer UID cannot be determined, "user" is set to -1."
  */
-ssize_t uevent_kernel_multicast_uid_recv(int socket, void *buffer, size_t length, uid_t *uid)
-{
+ssize_t uevent_kernel_multicast_uid_recv(int socket, void* buffer, size_t length, uid_t* uid) {
     return uevent_kernel_recv(socket, buffer, length, true, uid);
 }
 
-ssize_t uevent_kernel_recv(int socket, void *buffer, size_t length, bool require_group, uid_t *uid)
-{
-    struct iovec iov = { buffer, length };
+ssize_t uevent_kernel_recv(int socket, void* buffer, size_t length, bool require_group,
+                           uid_t* uid) {
+    struct iovec iov = {buffer, length};
     struct sockaddr_nl addr;
     char control[CMSG_SPACE(sizeof(struct ucred))];
     struct msghdr hdr = {
-        &addr,
-        sizeof(addr),
-        &iov,
-        1,
-        control,
-        sizeof(control),
-        0,
+            &addr, sizeof(addr), &iov, 1, control, sizeof(control), 0,
     };
 
     *uid = -1;
@@ -70,13 +62,13 @@ ssize_t uevent_kernel_recv(int socket, void *buffer, size_t length, bool require
         return n;
     }
 
-    struct cmsghdr *cmsg = CMSG_FIRSTHDR(&hdr);
+    struct cmsghdr* cmsg = CMSG_FIRSTHDR(&hdr);
     if (cmsg == NULL || cmsg->cmsg_type != SCM_CREDENTIALS) {
         /* ignoring netlink message with no sender credentials */
         goto out;
     }
 
-    struct ucred *cred = (struct ucred *)CMSG_DATA(cmsg);
+    struct ucred* cred = (struct ucred*)CMSG_DATA(cmsg);
     *uid = cred->uid;
     if (cred->uid != 0) {
         /* ignoring netlink message from non-root user */
@@ -101,8 +93,7 @@ out:
     return -1;
 }
 
-int uevent_open_socket(int buf_sz, bool passcred)
-{
+int uevent_open_socket(int buf_sz, bool passcred) {
     struct sockaddr_nl addr;
     int on = passcred;
     int s;
@@ -113,13 +104,12 @@ int uevent_open_socket(int buf_sz, bool passcred)
     addr.nl_groups = 0xffffffff;
 
     s = socket(PF_NETLINK, SOCK_DGRAM | SOCK_CLOEXEC, NETLINK_KOBJECT_UEVENT);
-    if(s < 0)
-        return -1;
+    if (s < 0) return -1;
 
     setsockopt(s, SOL_SOCKET, SO_RCVBUFFORCE, &buf_sz, sizeof(buf_sz));
     setsockopt(s, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on));
 
-    if(bind(s, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+    if (bind(s, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
         close(s);
         return -1;
     }

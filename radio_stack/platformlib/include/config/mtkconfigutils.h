@@ -24,8 +24,8 @@
 extern "C" {
 #endif
 
-int mtkGetFeature(ConfigDef msg, FeatureValue *fv);
-int mtkSetFeature(ConfigDef msg, FeatureValue *fv);
+int mtkGetFeature(ConfigDef msg, FeatureValue* fv);
+int mtkSetFeature(ConfigDef msg, FeatureValue* fv);
 
 #ifdef __cplusplus
 }

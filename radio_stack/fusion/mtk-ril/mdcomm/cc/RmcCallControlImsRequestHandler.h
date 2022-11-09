@@ -22,30 +22,30 @@
 class RmcCallControlImsRequestHandler : public RmcCallControlBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCallControlCommonRequestHandler);
 
-    public:
-        RmcCallControlImsRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcCallControlImsRequestHandler();
+  public:
+    RmcCallControlImsRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcCallControlImsRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-    private:
-        void modifyImsConf(const sp<RfxMclMessage>& msg, int request);
-        void controlCall(const sp<RfxMclMessage>& msg, int request);
-        void dialWithSipUri(const sp<RfxMclMessage>& msg, bool isVt = false);
-        void confDial(const sp<RfxMclMessage>& msg);
-        void acceptVideoCall(const sp<RfxMclMessage>& msg);
-        void approveEccRedial(const sp<RfxMclMessage>& msg);
-        void pullCall(const sp<RfxMclMessage>& msg);
-        void explicitCallTransfer(const sp<RfxMclMessage>& msg);
-        void controlCallAsync(const sp<RfxMclMessage>& msg, int request);
-        void setRttMode(const sp<RfxMclMessage>& msg);
-        void setSipHeader(const sp<RfxMclMessage>& msg);
-        void enableSipHeaderReport(const sp<RfxMclMessage>& msg);
-        void setImsCallMode(const sp<RfxMclMessage>& msg);
-        void setImsCallAdditionalInfo(const sp<RfxMclMessage>& msg);
+  private:
+    void modifyImsConf(const sp<RfxMclMessage>& msg, int request);
+    void controlCall(const sp<RfxMclMessage>& msg, int request);
+    void dialWithSipUri(const sp<RfxMclMessage>& msg, bool isVt = false);
+    void confDial(const sp<RfxMclMessage>& msg);
+    void acceptVideoCall(const sp<RfxMclMessage>& msg);
+    void approveEccRedial(const sp<RfxMclMessage>& msg);
+    void pullCall(const sp<RfxMclMessage>& msg);
+    void explicitCallTransfer(const sp<RfxMclMessage>& msg);
+    void controlCallAsync(const sp<RfxMclMessage>& msg, int request);
+    void setRttMode(const sp<RfxMclMessage>& msg);
+    void setSipHeader(const sp<RfxMclMessage>& msg);
+    void enableSipHeaderReport(const sp<RfxMclMessage>& msg);
+    void setImsCallMode(const sp<RfxMclMessage>& msg);
+    void setImsCallAdditionalInfo(const sp<RfxMclMessage>& msg);
 };
 
 #endif

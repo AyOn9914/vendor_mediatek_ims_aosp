@@ -41,28 +41,25 @@
 #define RFX_LOG_TAG "RfxOpContFac"
 
 #define RFX_CONTROLLER_CREATION_ENTRY(_className) \
-        {_className::createInstance, _className::getClassInfoInstance, false}
+    { _className::createInstance, _className::getClassInfoInstance, false }
 
 /*****************************************************************************
  * Class RfxOpControllerFactory
  *****************************************************************************/
-const rfx_ctrler_factory_init RfxOpControllerFactory::s_pre_non_slot_controllers[] = {
-};
-
+const rfx_ctrler_factory_init RfxOpControllerFactory::s_pre_non_slot_controllers[] = {};
 
 const rfx_ctrler_factory_init RfxOpControllerFactory::s_slot_controllers[] = {
-    // RFX_CONTROLLER_CREATION_ENTRY(RtcOpOemController) // Example for reference
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpDataController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpImsController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpCallController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimOpController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpSuppServController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpRatSwitchController)
-};
+        // RFX_CONTROLLER_CREATION_ENTRY(RtcOpOemController) // Example for reference
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpDataController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpImsController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpCallController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimOpController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpSuppServController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpRatSwitchController)};
 
 const rfx_ctrler_factory_init RfxOpControllerFactory::s_non_slot_controllers[] = {
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpRilClientController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcOpCapabilitySwitchChecker),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpRilClientController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOpCapabilitySwitchChecker),
 };
 
 extern "C" const rfx_ctrler_factory_init* getPreNonSlotOpCtlerList() {
@@ -81,21 +78,21 @@ extern "C" const rfx_ctrler_factory_init* getNonSlotOpCtlerList() {
 }
 
 extern "C" int getNumOfPreNonSlotOpCtler() {
-    int num = sizeof(
-            RfxOpControllerFactory::s_pre_non_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int num = sizeof(RfxOpControllerFactory::s_pre_non_slot_controllers) /
+              sizeof(rfx_ctrler_factory_init);
     RFX_LOG_D(RFX_LOG_TAG, "getNumOfPreNonSlotOpCtler num:%d", num);
     return num;
 }
 
 extern "C" int getNumOfSlotOpCtler() {
-    int num = sizeof(RfxOpControllerFactory::s_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int num = sizeof(RfxOpControllerFactory::s_slot_controllers) / sizeof(rfx_ctrler_factory_init);
     RFX_LOG_D(RFX_LOG_TAG, "getNumOfSlotOpCtler num:%d", num);
     return num;
 }
 
 extern "C" int getNumOfNonSlotOpCtler() {
-    int num =
-            sizeof(RfxOpControllerFactory::s_non_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int num = sizeof(RfxOpControllerFactory::s_non_slot_controllers) /
+              sizeof(rfx_ctrler_factory_init);
     RFX_LOG_D(RFX_LOG_TAG, "getNumOfNonSlotOpCtler num:%d", num);
     return num;
 }

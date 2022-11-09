@@ -22,25 +22,24 @@
 /*****************************************************************************
  * Register Data Class
  *****************************************************************************/
-RFX_REGISTER_DATA_TO_REQUEST_ID(
-        RmcCdmaBcActivationReq, RmcVoidRsp, RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RmcCdmaBcActivationReq, RmcVoidRsp,
+                                RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION);
 
 /*****************************************************************************
  * Class RmcCdmaBcActivationReq
  *****************************************************************************/
 RFX_IMPLEMENT_DATA_CLASS(RmcCdmaBcActivationReq);
-RmcCdmaBcActivationReq::RmcCdmaBcActivationReq(void *data, int length) :
-        RmcSingleAtReq(data, length){
+RmcCdmaBcActivationReq::RmcCdmaBcActivationReq(void* data, int length)
+    : RmcSingleAtReq(data, length) {
     RFX_ASSERT(length == sizeof(int));
-    m_activate = *((int *)data);
+    m_activate = *((int*)data);
     m_data = &m_activate;
     m_length = length;
 }
 
-RmcCdmaBcActivationReq::~RmcCdmaBcActivationReq() {
-}
+RmcCdmaBcActivationReq::~RmcCdmaBcActivationReq() {}
 
-RmcAtSendInfo* RmcCdmaBcActivationReq::onGetAtInfo(RfxBaseHandler *h) {
+RmcAtSendInfo* RmcCdmaBcActivationReq::onGetAtInfo(RfxBaseHandler* h) {
     RFX_UNUSED(h);
     String8 cmd = String8::format("AT+ECSCB=%d", (m_activate == 0) ? 1 : 0);
     return new RmcNoLineAtSendInfo(cmd);

@@ -32,13 +32,11 @@
 #define RFX_LOG_TAG "RilAtciClient"
 #define ATCI_SIM_PROP "persist.vendor.service.atci.sim"
 
-RilAtciClient::RilAtciClient(int identity, char* socketName) : RilClient(identity, socketName) {
-}
+RilAtciClient::RilAtciClient(int identity, char* socketName) : RilClient(identity, socketName) {}
 
-RilAtciClient::~RilAtciClient() {
-}
+RilAtciClient::~RilAtciClient() {}
 
-void RilAtciClient::processCommands(void *buffer, size_t buflen, int clientId) {
+void RilAtciClient::processCommands(void* buffer, size_t buflen, int clientId) {
     RFX_UNUSED(clientId);
     int request = RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL;
     int token = 0xFFFFFFFF;
@@ -48,16 +46,16 @@ void RilAtciClient::processCommands(void *buffer, size_t buflen, int clientId) {
     int slotId = atoi(prop);
     RFX_LOG_I(RFX_LOG_TAG, "slotId %d", slotId);
     if (slotId >= 0 && slotId < RIL_SOCKET_NUM) {
-        RfxRequestInfo *pRI = (RfxRequestInfo *)calloc(1, sizeof(RfxRequestInfo));
+        RfxRequestInfo* pRI = (RfxRequestInfo*)calloc(1, sizeof(RfxRequestInfo));
         if (pRI == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
         }
-        pRI->socket_id = (RIL_SOCKET_ID) slotId;
+        pRI->socket_id = (RIL_SOCKET_ID)slotId;
         pRI->token = token;
-        pRI->clientId = (ClientId) CLIENT_ID_ATCI;
+        pRI->clientId = (ClientId)CLIENT_ID_ATCI;
         pRI->request = request;
-        char *atBuffer = (char*)calloc(1, buflen + 1);
+        char* atBuffer = (char*)calloc(1, buflen + 1);
         if (atBuffer == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "fail to calloc buffer");
             free(pRI);
@@ -65,30 +63,30 @@ void RilAtciClient::processCommands(void *buffer, size_t buflen, int clientId) {
         }
         memcpy(atBuffer, buffer, buflen);
         RFX_LOG_I(RFX_LOG_TAG, "buffer %s, length %d", atBuffer, (int)buflen);
-        rfx_enqueue_request_message_client(request, atBuffer, buflen, pRI, (RIL_SOCKET_ID) slotId);
+        rfx_enqueue_request_message_client(request, atBuffer, buflen, pRI, (RIL_SOCKET_ID)slotId);
         free(atBuffer);
     } else {
         RFX_LOG_E(RFX_LOG_TAG, "unsupported slot number");
     }
 }
 
-void RilAtciClient::requestComplete(RIL_Token token, RIL_Errno e, void *response,
-        size_t responselen) {
+void RilAtciClient::requestComplete(RIL_Token token, RIL_Errno e, void* response,
+                                    size_t responselen) {
     RFX_UNUSED(e);
-    RfxRequestInfo *info = (RfxRequestInfo *) token;
+    RfxRequestInfo* info = (RfxRequestInfo*)token;
     if (info != NULL && RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL == info->request) {
         String8 strResult;
         if (response != NULL && responselen > 0) {
-            strResult = String8((char*) response);
+            strResult = String8((char*)response);
         } else {
-            strResult = String8((char*) "\r\nERROR\r\n");
+            strResult = String8((char*)"\r\nERROR\r\n");
         }
 
         if (commandFd >= 0) {
             RFX_LOG_I(RFX_LOG_TAG, "commandFd is valid, strResult is %s", strResult.string());
             size_t len = strResult.size();
             ssize_t ret = send(commandFd, strResult, len, 0);
-            if (ret != (ssize_t) len) {
+            if (ret != (ssize_t)len) {
                 RFX_LOG_E(RFX_LOG_TAG, "lose data when send response.");
             }
         } else {
@@ -98,19 +96,19 @@ void RilAtciClient::requestComplete(RIL_Token token, RIL_Errno e, void *response
     }
 }
 
-void RilAtciClient::handleUnsolicited(int slotId, int unsolResponse, void *data,
-        size_t datalen, UrcDispatchRule rule) {
+void RilAtciClient::handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                      UrcDispatchRule rule) {
     RFX_UNUSED(slotId);
     RFX_UNUSED(rule);
     if (RIL_UNSOL_ATCI_RESPONSE == unsolResponse) {
         if (data != NULL && datalen > 0) {
-            String8 str = String8((char*) data);
+            String8 str = String8((char*)data);
 
             if (commandFd >= 0) {
                 RFX_LOG_I(RFX_LOG_TAG, "commandFd is valid, str is %s", str.string());
                 size_t len = str.size();
                 ssize_t ret = send(commandFd, str, len, 0);
-                if (ret != (ssize_t) len) {
+                if (ret != (ssize_t)len) {
                     RFX_LOG_E(RFX_LOG_TAG, "lose data when send response.");
                 }
             } else {

@@ -24,11 +24,11 @@
 class RfxNeighboringCellData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxNeighboringCellData);
 
-    public:
-        RfxNeighboringCellData();
-        RfxNeighboringCellData(RIL_NeighboringCell **data, int countStrings);
+  public:
+    RfxNeighboringCellData();
+    RfxNeighboringCellData(RIL_NeighboringCell** data, int countStrings);
 
-    private:
-    void copyCells(RIL_NeighboringCell **data, int countCell);
+  private:
+    void copyCells(RIL_NeighboringCell** data, int countCell);
 };
 #endif

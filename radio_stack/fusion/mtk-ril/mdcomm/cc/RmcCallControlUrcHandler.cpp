@@ -34,60 +34,40 @@
 
 #define RFX_LOG_TAG "RmcCCUrcHandler"
 
-#define DISPLAY_TAG_BLANK            0x80
-#define DISPLAY_TAG_SKIP             0x81
+#define DISPLAY_TAG_BLANK 0x80
+#define DISPLAY_TAG_SKIP 0x81
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcCallControlUrcHandler, RIL_CMD_PROXY_URC);
 
 int RmcCallControlUrcHandler::mSpeechCodec = 0;
 
-RmcCallControlUrcHandler::RmcCallControlUrcHandler(int slot_id, int channel_id) :
-        RmcCallControlBaseHandler(slot_id, channel_id) {
-     if (RfxGwsdUtils::getCallControlHandler() != NULL) {
-         RfxGwsdUtils::getCallControlHandler()->registerForGwsdUrc(this);
-     }
+RmcCallControlUrcHandler::RmcCallControlUrcHandler(int slot_id, int channel_id)
+    : RmcCallControlBaseHandler(slot_id, channel_id) {
+    if (RfxGwsdUtils::getCallControlHandler() != NULL) {
+        RfxGwsdUtils::getCallControlHandler()->registerForGwsdUrc(this);
+    }
 
-     const char* urc[] = {
-        "+ECPI",
-        "+CRING",
-        "RING",
-        "+ESPEECH",
-        "+EAIC",
-        "+ECIPH",
-        "+CCWA",
-        "+CLIP",
-        "+CDIP",
-        "+COLP",
-        "+CNAP",
-        "+EVOCD",
-        "+CSSI",
-        "+CSSU",
+    const char* urc[] = {
+            "+ECPI", "+CRING", "RING", "+ESPEECH", "+EAIC", "+ECIPH", "+CCWA", "+CLIP", "+CDIP",
+            "+COLP", "+CNAP", "+EVOCD", "+CSSI", "+CSSU",
 
-        /// C2K specific start
-        "NO CARRIER",
-        "+REDIRNUM",
-        "+LINECON",
-        "+CEXTD",
-        "+CFNM",
-        "+CIEV: 102",
-        "+CIEV: 13",
-        /// C2K specific end
+            /// C2K specific start
+            "NO CARRIER", "+REDIRNUM", "+LINECON", "+CEXTD", "+CFNM", "+CIEV: 102", "+CIEV: 13",
+            /// C2K specific end
     };
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcCallControlUrcHandler::~RmcCallControlUrcHandler() {
-}
+RmcCallControlUrcHandler::~RmcCallControlUrcHandler() {}
 
 void RmcCallControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
-    char *urc = msg->getRawUrc()->getLine();
-    //logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
+    char* urc = msg->getRawUrc()->getLine();
+    // logD(RFX_LOG_TAG, "[onHandleUrc]%s", urc);
     if (strstr(urc, "+ECPI") != NULL) {
         handleCallProgressIndicationMessage(msg);
-    } else if ((strstr(urc, "+CRING") != NULL) ||
-               (strstr(urc, "RING") != NULL)) {
+    } else if ((strstr(urc, "+CRING") != NULL) || (strstr(urc, "RING") != NULL)) {
         handleRingMessage(msg);
     } else if (strstr(urc, "+ESPEECH") != NULL) {
         // AP can only look up ibt flag in +ECPI message to know if play in-band tone,
@@ -122,27 +102,28 @@ void RmcCallControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     } else if (strstr(urc, "+CSSU")) {
         handleSuppSvcNotification(msg, SUPP_SVC_CSSU);
     } else
-    /// C2K specific start
-    if (strstr(urc, "NO CARRIER") != NULL) {
-        handleNoCarrierMessage();
-    } else if (strstr(urc, "+REDIRNUM") != NULL) {
-        handleRedirectingNumberInfoMessage(msg);
-    } else if (strstr(urc, "+LINECON") != NULL) {
-        handleLineControlInfoMessage(msg);
-    } else if (strstr(urc, "+CEXTD") != NULL) {
-        handleExtendedDisplayInfoMessage(msg);
-    } else if (strstr(urc, "+CFNM") != NULL) {
-        handleDisplayAndSignalsInfoMessage(msg);
-    } else if (strstr(urc, "+CIEV: 102") != NULL || strstr(urc, "+CIEV: 13") != NULL) {
-        handleCallControlStatusMessage(msg);
-    /// C2K specific end
-    } else if (RfxGwsdUtils::getCallControlHandler() != NULL) {
-        RfxGwsdUtils::getCallControlHandler()->handleGwsdUrc(this, msg, m_slot_id);
-    }
+        /// C2K specific start
+        if (strstr(urc, "NO CARRIER") != NULL) {
+            handleNoCarrierMessage();
+        } else if (strstr(urc, "+REDIRNUM") != NULL) {
+            handleRedirectingNumberInfoMessage(msg);
+        } else if (strstr(urc, "+LINECON") != NULL) {
+            handleLineControlInfoMessage(msg);
+        } else if (strstr(urc, "+CEXTD") != NULL) {
+            handleExtendedDisplayInfoMessage(msg);
+        } else if (strstr(urc, "+CFNM") != NULL) {
+            handleDisplayAndSignalsInfoMessage(msg);
+        } else if (strstr(urc, "+CIEV: 102") != NULL || strstr(urc, "+CIEV: 13") != NULL) {
+            handleCallControlStatusMessage(msg);
+            /// C2K specific end
+        } else if (RfxGwsdUtils::getCallControlHandler() != NULL) {
+            RfxGwsdUtils::getCallControlHandler()->handleGwsdUrc(this, msg, m_slot_id);
+        }
 }
 
 void RmcCallControlUrcHandler::handleCallProgressIndicationMessage(const sp<RfxMclMessage>& msg) {
-    /* +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>, <number>, <type>, "<pau>", [<cause>]
+    /* +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>, <number>, <type>,
+     * "<pau>", [<cause>]
      *
      * if msg_type = DISCONNECT_MSG or ALL_CALLS_DISC_MSG,
      * +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>,,,"",,"",<cause>
@@ -151,13 +132,15 @@ void RmcCallControlUrcHandler::handleCallProgressIndicationMessage(const sp<RfxM
      * +ECPI:<call_id>, <msg_type>, <is_ibt>, <is_tch>, <dir>, <call_mode>[, <number>, <toa>], ""
      */
     int maxLen = 10;
-    int minLen = 9; // 1 optional data
+    int minLen = 9;  // 1 optional data
     int ret;
-    char *data[maxLen];
+    char* data[maxLen];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +ECPI: ", 11);
@@ -170,7 +153,7 @@ void RmcCallControlUrcHandler::handleCallProgressIndicationMessage(const sp<RfxM
         }
 
         if (i == 6 || i == 8) {
-            const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[i]);
+            const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[i]);
             strncat(atLog, numberToPrint, strlen(numberToPrint));
         } else {
             strncat(atLog, data[i], strlen(data[i]));
@@ -184,14 +167,14 @@ void RmcCallControlUrcHandler::handleCallProgressIndicationMessage(const sp<RfxM
 
     // notify CALL_INFO_INDICATION to TCL both for IMS or CS call, will be dispatched by TCL
     if (shoudNotifyCallInfo(msgType)) {
-        //logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_CALL_INFO_INDICATION for ECPI");
+        // logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_CALL_INFO_INDICATION for ECPI");
         sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CALL_INFO_INDICATION,
-                    m_slot_id, RfxStringsData(data, maxLen));
+                                                         m_slot_id, RfxStringsData(data, maxLen));
         responseToTelCore(urc);
     }
 
-    //Move to TCL
-    // notify CALL_STATE_CHANGE just for CS call
+    // Move to TCL
+    //  notify CALL_STATE_CHANGE just for CS call
     /*
     if (shouldNotifyCallStateChanged(msgType)) {
         logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED for ECPI");
@@ -203,27 +186,27 @@ void RmcCallControlUrcHandler::handleCallProgressIndicationMessage(const sp<RfxM
 }
 
 void RmcCallControlUrcHandler::sendRingbackToneNotification(int isStart) {
-    int response[1] = { 0 };
+    int response[1] = {0};
 
-    //logD(RFX_LOG_TAG, "Stop ringback tone.");
+    // logD(RFX_LOG_TAG, "Stop ringback tone.");
     mIsRingBackTonePlaying = isStart;
     response[0] = mIsRingBackTonePlaying;
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RINGBACK_TONE,
-            m_slot_id, RfxIntsData(response, 1));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RINGBACK_TONE, m_slot_id,
+                                                     RfxIntsData(response, 1));
     responseToTelCore(urc);
 }
 
 void RmcCallControlUrcHandler::handleRingMessage(const sp<RfxMclMessage>& msg) {
     RFX_UNUSED(msg);
     // Both ViLTE, VoLTE call need CRING, so do not skip CRING: VIDEO here
-    sp < RfxMclMessage > urc_state = RfxMclMessage::obtainUrc(
+    sp<RfxMclMessage> urc_state = RfxMclMessage::obtainUrc(
             RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED, m_slot_id, RfxVoidData());
-    responseToTelCore (urc_state);
+    responseToTelCore(urc_state);
 
-    sp < RfxMclMessage > urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CALL_RING, m_slot_id,
-            RfxVoidData());
-    responseToTelCore (urc);
-    //logD(RFX_LOG_TAG, "[handleRingMessage]Send RFX_MSG_UNSOL_CALL_RING");
+    sp<RfxMclMessage> urc =
+            RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CALL_RING, m_slot_id, RfxVoidData());
+    responseToTelCore(urc);
+    // logD(RFX_LOG_TAG, "[handleRingMessage]Send RFX_MSG_UNSOL_CALL_RING");
 
     // To notify SS module that CRING is received
     sendEvent(RFX_MSG_EVENT_URC_CRING_NOTIFY, RfxVoidData(), RIL_CMD_PROXY_1, m_slot_id);
@@ -240,49 +223,56 @@ void RmcCallControlUrcHandler::handleEspeechMessage(const sp<RfxMclMessage>& msg
      */
 
     int ret;
-    int response[1] = { 0 };
+    int response[1] = {0};
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    response[0] = line->atTokNextint(&ret);  //on_off
-    if (ret < 0) { return; }
+    response[0] = line->atTokNextint(&ret);  // on_off
+    if (ret < 0) {
+        return;
+    }
 
     sp<RfxMclMessage> urc =
-        RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ESPEECH, m_slot_id, RfxIntsData(response, 1));
+            RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_ESPEECH, m_slot_id, RfxIntsData(response, 1));
     responseToTelCore(urc);
 }
 
 void RmcCallControlUrcHandler::handleIncomingCallIndicationMessage(const sp<RfxMclMessage>& msg) {
-
     /*
      * +EAIC: <call_id>,<number>,<type>,<call_mode>,<seq_no>
      *       ,[<redirect_num>],[<digit_to_line_num>],<evoltesi_flow>
      *
      * evoltesi_flow attribute exist only after MD 95
-    */
+     */
 
     int i, ret;
-    char *data[8];
+    char* data[8];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +EAIC: ", 11);
 
     for (i = 0; i < 8; i++) {
-        data[i] = (char *)"";
+        data[i] = (char*)"";
     }
 
     for (i = 0; i < 5; i++) {
         data[i] = line->atTokNextstr(&ret);
-        if (ret < 0) { return; }
+        if (ret < 0) {
+            return;
+        }
 
         if (i == 1) {
-            const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[i]);
+            const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[i]);
             strncat(atLog, numberToPrint, strlen(numberToPrint));
         } else {
             strncat(atLog, data[i], strlen(data[i]));
@@ -295,7 +285,7 @@ void RmcCallControlUrcHandler::handleIncomingCallIndicationMessage(const sp<RfxM
         data[5] = line->atTokNextstr(&ret);
         strncat(atLog, data[5], strlen(data[5]));
         strncat(atLog, ", ", 2);
-        //logD(RFX_LOG_TAG, "contains forwarding address");
+        // logD(RFX_LOG_TAG, "contains forwarding address");
     }
 
     /* Check if contains virtual line number */
@@ -303,7 +293,7 @@ void RmcCallControlUrcHandler::handleIncomingCallIndicationMessage(const sp<RfxM
         data[6] = line->atTokNextstr(&ret);
         strncat(atLog, data[6], strlen(data[6]));
         strncat(atLog, ", ", 2);
-        //logD(RFX_LOG_TAG, "data[6] = %s", data[6]);
+        // logD(RFX_LOG_TAG, "data[6] = %s", data[6]);
     }
 
     /* Check if contains forwarding address */
@@ -317,15 +307,15 @@ void RmcCallControlUrcHandler::handleIncomingCallIndicationMessage(const sp<RfxM
     logD(RFX_LOG_TAG, "%s", atLog);
 
     sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
-            m_slot_id, RfxStringsData(data, 8));
+                                                     m_slot_id, RfxStringsData(data, 8));
     responseToTelCore(urc);
-    //logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_INCOMING_CALL_INDICATION");
+    // logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_INCOMING_CALL_INDICATION");
 }
 
 void RmcCallControlUrcHandler::handleCipherIndicationMessage(const sp<RfxMclMessage>& msg) {
     int ret, i;
     int urcParamNum = 4;
-    char *data[urcParamNum];
+    char* data[urcParamNum];
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
@@ -339,40 +329,40 @@ void RmcCallControlUrcHandler::handleCipherIndicationMessage(const sp<RfxMclMess
         }
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CIPHER_INDICATION,
-            m_slot_id, RfxStringsData(data, 4));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CIPHER_INDICATION, m_slot_id,
+                                                     RfxStringsData(data, 4));
     responseToTelCore(urc);
-    //logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_CIPHER_INDICATION");
+    // logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_CIPHER_INDICATION");
 }
 
 char* RmcCallControlUrcHandler::convertUcs2String(char* ucs2str) {
     char* ret = NULL;
 
-    bytes_t  utf8String = NULL;
-    bytes_t  hexData = NULL;
-    int      len = 0;
+    bytes_t utf8String = NULL;
+    bytes_t hexData = NULL;
+    int len = 0;
 
-    hexData = (bytes_t) calloc(strlen(ucs2str), sizeof(char));
-    if(hexData == NULL) {
+    hexData = (bytes_t)calloc(strlen(ucs2str), sizeof(char));
+    if (hexData == NULL) {
         logE(RFX_LOG_TAG, "convertUcs2String, hexData calloc fail");
         goto error;
     }
 
-    len = gsm_hex_to_bytes((cbytes_t) ucs2str, strlen(ucs2str), hexData);
+    len = gsm_hex_to_bytes((cbytes_t)ucs2str, strlen(ucs2str), hexData);
     // Some character can't display when receive the ussd notification
     zero4_to_space(hexData, len);
 
-    utf8String = (bytes_t) calloc(2 * len + 1, sizeof(char));
+    utf8String = (bytes_t)calloc(2 * len + 1, sizeof(char));
     if (utf8String == NULL) {
         logE(RFX_LOG_TAG, "convertUcs2String, utf8String calloc fail");
         goto error;
     }
 
-    ucs2_to_utf8((cbytes_t) hexData, len/2, utf8String);
+    ucs2_to_utf8((cbytes_t)hexData, len / 2, utf8String);
     free(hexData);   // Coverity
     hexData = NULL;  // Coverity
 
-    ret = (char *) utf8String;
+    ret = (char*)utf8String;
     return ret;
 error:
     free(hexData);   // Coverity
@@ -383,7 +373,7 @@ error:
 void RmcCallControlUrcHandler::handleCnapMessage(const sp<RfxMclMessage>& msg) {
     int urcParamNum = 2;
     int ret;
-    char *data[urcParamNum];
+    char* data[urcParamNum];
     char* cnapName = NULL;
     RfxAtLine* line = msg->getRawUrc();
 
@@ -400,7 +390,9 @@ void RmcCallControlUrcHandler::handleCnapMessage(const sp<RfxMclMessage>& msg) {
      */
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +CNAP: ", 11);
@@ -413,7 +405,7 @@ void RmcCallControlUrcHandler::handleCnapMessage(const sp<RfxMclMessage>& msg) {
         }
     }
 
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[0]);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, data[0]);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
     strncat(atLog, data[1], strlen(data[1]));
@@ -424,15 +416,15 @@ void RmcCallControlUrcHandler::handleCnapMessage(const sp<RfxMclMessage>& msg) {
 
     if (cnapName != NULL) {
         sendEvent(RFX_MSG_EVENT_CNAP_UPDATE, RfxStringData(cnapName, strlen(cnapName)),
-            RIL_CMD_PROXY_2, m_slot_id);
-        //logD(RFX_LOG_TAG, "Send RFX_MSG_EVENT_CNAP_UPDATE");
+                  RIL_CMD_PROXY_2, m_slot_id);
+        // logD(RFX_LOG_TAG, "Send RFX_MSG_EVENT_CNAP_UPDATE");
 
         free(cnapName);
         cnapName = NULL;
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-            RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED, m_slot_id, RfxVoidData());
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
+                                                     m_slot_id, RfxVoidData());
     responseToTelCore(urc);
 
     return;
@@ -440,30 +432,34 @@ void RmcCallControlUrcHandler::handleCnapMessage(const sp<RfxMclMessage>& msg) {
 
 void RmcCallControlUrcHandler::handleSpeechCodecInfo(const sp<RfxMclMessage>& msg) {
     int ret;
-    int response[1] = { 0 };
+    int response[1] = {0};
     RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     response[0] = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     if (mSpeechCodec != response[0]) {
-        logD(RFX_LOG_TAG, "handleSpeechCodecInfo set mSpeechCodec: %d->%d",
-                mSpeechCodec, response[0]);
+        logD(RFX_LOG_TAG, "handleSpeechCodecInfo set mSpeechCodec: %d->%d", mSpeechCodec,
+             response[0]);
         mSpeechCodec = response[0];
     }
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SPEECH_CODEC_INFO,
-            m_slot_id, RfxIntsData(response, 1));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_SPEECH_CODEC_INFO, m_slot_id,
+                                                     RfxIntsData(response, 1));
     responseToTelCore(urc);
-    //logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_SPEECH_CODEC_INFO type=%d", response[0]);
+    // logD(RFX_LOG_TAG, "Send RFX_MSG_UNSOL_SPEECH_CODEC_INFO type=%d", response[0]);
 }
 
 void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& msg, int code) {
     int ret;
-    char *data = NULL;
+    char* data = NULL;
     RfxAtLine* line = msg->getRawUrc();
     RIL_CrssNotification crssNotify;
     int toa = 0;
@@ -473,7 +469,9 @@ void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& m
     crssNotify.code = code;
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     if (code == CRSS_CALL_WAITING) {
@@ -492,7 +490,7 @@ void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& m
         logD(RFX_LOG_TAG, "CRSS: number fail!");
         return;
     }
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, crssNotify.number);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, crssNotify.number);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
 
@@ -503,7 +501,7 @@ void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& m
         return;
     }
 
-    sprintf(intdata, "%d", crssNotify.type); // put the int into a string
+    sprintf(intdata, "%d", crssNotify.type);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
@@ -536,7 +534,7 @@ void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& m
             if (ret < 0) {
                 logD(RFX_LOG_TAG, "CRSS: cli validity fail!");
             }
-            sprintf(intdata, "%d", crssNotify.cli_validity); // put the int into a string
+            sprintf(intdata, "%d", crssNotify.cli_validity);  // put the int into a string
             strncat(atLog, intdata, strlen(intdata));
             strncat(atLog, ", ", 2);
 
@@ -552,13 +550,14 @@ void RmcCallControlUrcHandler::handleCrssNotification(const sp<RfxMclMessage>& m
 
     logD(RFX_LOG_TAG, "%s", atLog);
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CRSS_NOTIFICATION, m_slot_id,
-            RfxCrssNotificationData((void *)&crssNotify, sizeof(RIL_CrssNotification)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CRSS_NOTIFICATION, m_slot_id,
+            RfxCrssNotificationData((void*)&crssNotify, sizeof(RIL_CrssNotification)));
     responseToTelCore(urc);
 }
 
 void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>& msg,
-        int notiType) {
+                                                         int notiType) {
     RIL_SuppSvcNotification svcNotify;
     int ret;
     RfxAtLine* line = msg->getRawUrc();
@@ -588,42 +587,41 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
      * 8   call has been deflected
      * <index>: refer "Closed user group +CCUG"
      */
-     /**
-      * When <m>=1 and a supplementary service notification is received
-      * during a mobile terminated call setup or during a call, or when
-      * a forward check supplementary service notification is received,
-      * unsolicited result code +CSSU: <code2>[,<index>[,<number>,<type>[,<subaddr>,<satype>]]]
-      * is sent to TE. In case of MT call setup, result code is sent after every +CLIP result code
-      * (refer command "Calling line identification presentation +CLIP")
-      * and when several different <code2>s are received from the network,
-      * each of them shall have its own +CSSU result code.
-      * <code2> (it is manufacturer specific, which of these codes are supported):
-      * 0   this is a forwarded call (MT call setup)
-      * 1   this is a CUG call (also <index> present) (MT call setup)
-      * 2   call has been put on hold (during a voice call)
-      * 3   call has been retrieved (during a voice call)
-      * 4   multiparty call entered (during a voice call)
-      * 5   call on hold has been released (this is not a SS notification) (during a voice call)
-      * 6   forward check SS message received (can be received whenever)
-      * 7   call is being connected (alerting) with the remote party in alerting state in explicit call transfer operation (during a voice call)
-      * 8   call has been connected with the other remote party in explicit call transfer operation (also number and subaddress parameters may be present) (during a voice call or MT call setup)
-      * 9   this is a deflected call (MT call setup)
-      * 10  additional incoming call forwarded
-      * 11  MT is a forwarded call (CF)
-      * 12  MT is a forwarded call (CFU)
-      * 13  MT is a forwarded call (CFC)
-      * 14  MT is a forwarded call (CFB)
-      * 15  MT is a forwarded call (CFNRy)
-      * 16  MT is a forwarded call (CFNRc)
-      * <number>: string type phone number of format specified by <type>
-      * <type>: type of address octet in integer format (refer GSM 04.08 [8] subclause 10.5.4.7)
-      */
+    /**
+     * When <m>=1 and a supplementary service notification is received
+     * during a mobile terminated call setup or during a call, or when
+     * a forward check supplementary service notification is received,
+     * unsolicited result code +CSSU: <code2>[,<index>[,<number>,<type>[,<subaddr>,<satype>]]]
+     * is sent to TE. In case of MT call setup, result code is sent after every +CLIP result code
+     * (refer command "Calling line identification presentation +CLIP")
+     * and when several different <code2>s are received from the network,
+     * each of them shall have its own +CSSU result code.
+     * <code2> (it is manufacturer specific, which of these codes are supported):
+     * 0   this is a forwarded call (MT call setup)
+     * 1   this is a CUG call (also <index> present) (MT call setup)
+     * 2   call has been put on hold (during a voice call)
+     * 3   call has been retrieved (during a voice call)
+     * 4   multiparty call entered (during a voice call)
+     * 5   call on hold has been released (this is not a SS notification) (during a voice call)
+     * 6   forward check SS message received (can be received whenever)
+     * 7   call is being connected (alerting) with the remote party in alerting state in explicit
+     * call transfer operation (during a voice call) 8   call has been connected with the other
+     * remote party in explicit call transfer operation (also number and subaddress parameters may
+     * be present) (during a voice call or MT call setup) 9   this is a deflected call (MT call
+     * setup) 10  additional incoming call forwarded 11  MT is a forwarded call (CF) 12  MT is a
+     * forwarded call (CFU) 13  MT is a forwarded call (CFC) 14  MT is a forwarded call (CFB) 15  MT
+     * is a forwarded call (CFNRy) 16  MT is a forwarded call (CFNRc) <number>: string type phone
+     * number of format specified by <type> <type>: type of address octet in integer format (refer
+     * GSM 04.08 [8] subclause 10.5.4.7)
+     */
 
     memset(&svcNotify, 0, sizeof(RIL_SuppSvcNotification));
     svcNotify.notificationType = notiType;
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     if (notiType == SUPP_SVC_CSSI) {
@@ -638,7 +636,7 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
         logD(RFX_LOG_TAG, "SUPP notification: Incorrect code.");
         return;
     }
-    sprintf(intdata, "%d", svcNotify.code); // put the int into a string
+    sprintf(intdata, "%d", svcNotify.code);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
@@ -657,11 +655,10 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
         if (ret < 0) {
             logD(RFX_LOG_TAG, "SUPP notification: Incorrect index.");
         }
-        sprintf(intdata, "%d", svcNotify.index); // put the int into a string
+        sprintf(intdata, "%d", svcNotify.index);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
     }
-
 
     if (notiType == SUPP_SVC_CSSU) {
         if (line->atTokHasmore()) {
@@ -670,7 +667,7 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
             if (ret < 0) {
                 logD(RFX_LOG_TAG, "SUPP notification: Incorrect number.");
             }
-            const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, svcNotify.number);
+            const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, svcNotify.number);
             strncat(atLog, numberToPrint, strlen(numberToPrint));
             strncat(atLog, ", ", 2);
         }
@@ -680,7 +677,7 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
             if (ret < 0) {
                 logD(RFX_LOG_TAG, "SUPP notification: Incorrect type.");
             }
-            sprintf(intdata, "%d", svcNotify.type); // put the int into a string
+            sprintf(intdata, "%d", svcNotify.type);  // put the int into a string
             strncat(atLog, intdata, strlen(intdata));
             strncat(atLog, ", ", 2);
         }
@@ -690,18 +687,18 @@ void RmcCallControlUrcHandler::handleSuppSvcNotification(const sp<RfxMclMessage>
 
     // M: CC: to adapt to AOSP framework
     if (notiType == SUPP_SVC_CSSU &&
-            (svcNotify.code == 0 || (svcNotify.code >= 11 && svcNotify.code <= 16))) {
+        (svcNotify.code == 0 || (svcNotify.code >= 11 && svcNotify.code <= 16))) {
         logD(RFX_LOG_TAG, "convert proprietary CSSU <code2> for MT forwarded call to 0");
         sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
                 RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION_EX, m_slot_id,
-                RfxSuppServNotificationData((void *)&svcNotify, sizeof(RIL_SuppSvcNotification)));
+                RfxSuppServNotificationData((void*)&svcNotify, sizeof(RIL_SuppSvcNotification)));
         responseToTelCore(urc);
         svcNotify.code = 0;
     }
 
     sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
             RFX_MSG_UNSOL_SUPP_SVC_NOTIFICATION, m_slot_id,
-            RfxSuppServNotificationData((void *)&svcNotify, sizeof(RIL_SuppSvcNotification)));
+            RfxSuppServNotificationData((void*)&svcNotify, sizeof(RIL_SuppSvcNotification)));
     responseToTelCore(urc);
 }
 
@@ -714,41 +711,48 @@ void RmcCallControlUrcHandler::handleNoCarrierMessage() {
     // No need to handle it when no call exists, to avoid unnecessary call polling.
     if (getMclStatusManager()->getBoolValue(RFX_STATUS_KEY_IN_CALL)) {
         sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RESPONSE_CALL_STATE_CHANGED,
-                m_slot_id, RfxVoidData());
+                                                         m_slot_id, RfxVoidData());
         responseToTelCore(urc);
     }
 }
 
 // +CLIP:<number>,<type>,,,,<cli_validity>
-void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(const sp<RfxMclMessage>& msg) {
+void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(
+        const sp<RfxMclMessage>& msg) {
     int ret;
     int numOfRecs = 0;
     int numberType, cliValidity;
     int dummy;
-    char *number = NULL;
-    RIL_CDMA_InformationRecords *cdmaInfo = (RIL_CDMA_InformationRecords *) alloca(
-            sizeof(RIL_CDMA_InformationRecords));
+    char* number = NULL;
+    RIL_CDMA_InformationRecords* cdmaInfo =
+            (RIL_CDMA_InformationRecords*)alloca(sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(cdmaInfo != NULL);
 
     char intdata[10];
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +CLIP: ", 11);
 
     number = line->atTokNextstr(&ret);
-    if (ret < 0) { return; }
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
+    if (ret < 0) {
+        return;
+    }
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
 
     numberType = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
-    sprintf(intdata, "%d", numberType); // put the int into a string
+    if (ret < 0) {
+        return;
+    }
+    sprintf(intdata, "%d", numberType);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
@@ -756,7 +760,7 @@ void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(const sp<
     if (ret < 0) {
         strncat(atLog, ", ", 2);
     } else {
-        sprintf(intdata, "%d", dummy); // put the int into a string
+        sprintf(intdata, "%d", dummy);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
     }
@@ -765,7 +769,7 @@ void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(const sp<
     if (ret < 0) {
         strncat(atLog, ", ", 2);
     } else {
-        sprintf(intdata, "%d", dummy); // put the int into a string
+        sprintf(intdata, "%d", dummy);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
     }
@@ -774,14 +778,16 @@ void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(const sp<
     if (ret < 0) {
         strncat(atLog, ", ", 2);
     } else {
-        sprintf(intdata, "%d", dummy); // put the int into a string
+        sprintf(intdata, "%d", dummy);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
     }
 
     cliValidity = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
-    sprintf(intdata, "%d", cliValidity); // put the int into a string
+    if (ret < 0) {
+        return;
+    }
+    sprintf(intdata, "%d", cliValidity);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
@@ -812,19 +818,20 @@ void RmcCallControlUrcHandler::handleCdmaCallingPartyNumberInfoMessage(const sp<
     }
     cdmaInfo->infoRec[numOfRecs].rec.number.si = 0;  // User provided, not screened
 
-    logD(RFX_LOG_TAG, "RIL_CDMA_CALLING_PARTY_NUMBER_INFO_REC: len:%d, \
+    logD(RFX_LOG_TAG,
+         "RIL_CDMA_CALLING_PARTY_NUMBER_INFO_REC: len:%d, \
             number_type:%d, number_plan:%d, pi:%d, si:%d",
-            cdmaInfo->infoRec[numOfRecs].rec.number.len,
-            cdmaInfo->infoRec[numOfRecs].rec.number.number_type,
-            cdmaInfo->infoRec[numOfRecs].rec.number.number_plan,
-            cdmaInfo->infoRec[numOfRecs].rec.number.pi,
-            cdmaInfo->infoRec[numOfRecs].rec.number.si);
+         cdmaInfo->infoRec[numOfRecs].rec.number.len,
+         cdmaInfo->infoRec[numOfRecs].rec.number.number_type,
+         cdmaInfo->infoRec[numOfRecs].rec.number.number_plan,
+         cdmaInfo->infoRec[numOfRecs].rec.number.pi, cdmaInfo->infoRec[numOfRecs].rec.number.si);
 
     numOfRecs++;
     cdmaInfo->numberOfInfoRecs = numOfRecs;
     logD(RFX_LOG_TAG, "RIL_UNSOL_CDMA_INFO_REC: numOfRecs:%d", numOfRecs);
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
-            RfxCdmaInfoRecData((void *)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
+            RfxCdmaInfoRecData((void*)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
     responseToTelCore(urc);
 }
 
@@ -834,80 +841,100 @@ void RmcCallControlUrcHandler::handleRedirectingNumberInfoMessage(const sp<RfxMc
     int ret;
     int numOfRecs = 0;
     int ext1, numberType, numberPlan, ext2, pi, si, ext3, redirReason;
-    char *number = NULL;
-    RIL_CDMA_InformationRecords *cdmaInfo = (RIL_CDMA_InformationRecords *) alloca(
-            sizeof(RIL_CDMA_InformationRecords));
+    char* number = NULL;
+    RIL_CDMA_InformationRecords* cdmaInfo =
+            (RIL_CDMA_InformationRecords*)alloca(sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(cdmaInfo != NULL);
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char intdata[10];
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +REDIRNUM: ", 15);
 
     ext1 = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", ext1); // put the int into a string
+    sprintf(intdata, "%d", ext1);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     numberType = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", numberType); // put the int into a string
+    sprintf(intdata, "%d", numberType);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     numberPlan = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", numberPlan); // put the int into a string
+    sprintf(intdata, "%d", numberPlan);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     ext2 = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", ext2); // put the int into a string
+    sprintf(intdata, "%d", ext2);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     pi = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", pi); // put the int into a string
+    sprintf(intdata, "%d", pi);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     si = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", si); // put the int into a string
+    sprintf(intdata, "%d", si);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     ext3 = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", ext3); // put the int into a string
+    sprintf(intdata, "%d", ext3);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     redirReason = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", redirReason); // put the int into a string
+    sprintf(intdata, "%d", redirReason);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
     number = line->atTokNextstr(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
 
@@ -929,20 +956,22 @@ void RmcCallControlUrcHandler::handleRedirectingNumberInfoMessage(const sp<RfxMc
     cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingReason =
             (RIL_CDMA_RedirectingReason)redirReason;
 
-    logD(RFX_LOG_TAG, "RIL_CDMA_REDIRECTING_NUMBER_INFO_REC: len:%d, number_type:%d, \
+    logD(RFX_LOG_TAG,
+         "RIL_CDMA_REDIRECTING_NUMBER_INFO_REC: len:%d, number_type:%d, \
             number_plan:%d, pi:%d, si:%d, redirectingReason:%d",
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.len,
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.number_type,
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.number_plan,
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.pi,
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.si,
-            cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingReason);
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.len,
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.number_type,
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.number_plan,
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.pi,
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingNumber.si,
+         cdmaInfo->infoRec[numOfRecs].rec.redir.redirectingReason);
 
     numOfRecs++;
     cdmaInfo->numberOfInfoRecs = numOfRecs;
     logD(RFX_LOG_TAG, "RIL_UNSOL_CDMA_INFO_REC: numOfRecs:%d", numOfRecs);
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
-            RfxCdmaInfoRecData((void *)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
+            RfxCdmaInfoRecData((void*)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
     responseToTelCore(urc);
 }
 
@@ -951,26 +980,36 @@ void RmcCallControlUrcHandler::handleLineControlInfoMessage(const sp<RfxMclMessa
     int ret;
     int numOfRecs = 0;
     int polarityIncluded, toggleMode, reversePolarity, powerDenialTime;
-    RIL_CDMA_InformationRecords *cdmaInfo = (RIL_CDMA_InformationRecords *) alloca(
-            sizeof(RIL_CDMA_InformationRecords));
+    RIL_CDMA_InformationRecords* cdmaInfo =
+            (RIL_CDMA_InformationRecords*)alloca(sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(cdmaInfo != NULL);
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     polarityIncluded = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     toggleMode = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     reversePolarity = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     powerDenialTime = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     cdmaInfo->infoRec[numOfRecs].name = RIL_CDMA_LINE_CONTROL_INFO_REC;
     cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPolarityIncluded = (char)polarityIncluded;
@@ -978,18 +1017,20 @@ void RmcCallControlUrcHandler::handleLineControlInfoMessage(const sp<RfxMclMessa
     cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlReverse = (char)reversePolarity;
     cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPowerDenial = (char)powerDenialTime;
 
-    logD(RFX_LOG_TAG, "RIL_CDMA_LINE_CONTROL_INFO_REC: lineCtrlPolarityIncluded:%d, \
+    logD(RFX_LOG_TAG,
+         "RIL_CDMA_LINE_CONTROL_INFO_REC: lineCtrlPolarityIncluded:%d, \
             lineCtrlToggle:%d, lineCtrlReverse:%d, lineCtrlPowerDenial:%d",
-            cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPolarityIncluded,
-            cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlToggle,
-            cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlReverse,
-            cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPowerDenial);
+         cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPolarityIncluded,
+         cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlToggle,
+         cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlReverse,
+         cdmaInfo->infoRec[numOfRecs].rec.lineCtrl.lineCtrlPowerDenial);
 
     numOfRecs++;
     cdmaInfo->numberOfInfoRecs = numOfRecs;
     logD(RFX_LOG_TAG, "RIL_UNSOL_CDMA_INFO_REC: numOfRecs:%d", numOfRecs);
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
-            RfxCdmaInfoRecData((void *)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
+            RfxCdmaInfoRecData((void*)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
     responseToTelCore(urc);
 }
 
@@ -998,24 +1039,28 @@ void RmcCallControlUrcHandler::handleExtendedDisplayInfoMessage(const sp<RfxMclM
     int ret;
     int numOfRecs = 0;
     int displayTag;
-    char *info = NULL;
-    RIL_CDMA_InformationRecords *cdmaInfo = (RIL_CDMA_InformationRecords *) alloca(
-            sizeof(RIL_CDMA_InformationRecords));
+    char* info = NULL;
+    RIL_CDMA_InformationRecords* cdmaInfo =
+            (RIL_CDMA_InformationRecords*)alloca(sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(cdmaInfo != NULL);
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char intdata[10];
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +CEXTD: ", 12);
 
     displayTag = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    sprintf(intdata, "%d", displayTag); // put the int into a string
+    sprintf(intdata, "%d", displayTag);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
 
@@ -1025,20 +1070,22 @@ void RmcCallControlUrcHandler::handleExtendedDisplayInfoMessage(const sp<RfxMclM
     }
 
     info = line->atTokNextstr(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, info);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, info);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
     logD(RFX_LOG_TAG, "%s", atLog);
 
-    if (info != NULL && strlen(info) > 0 && strlen(info) < CDMA_ALPHA_INFO_BUFFER_LENGTH
-            && strcmp(info, "N/A") != 0) {
+    if (info != NULL && strlen(info) > 0 && strlen(info) < CDMA_ALPHA_INFO_BUFFER_LENGTH &&
+        strcmp(info, "N/A") != 0) {
         logD(RFX_LOG_TAG, "callState=%d, displaytag=%d", mCallState, displayTag);
-        if (displayTag == DISPLAY_TAG_CALLING_PARTY_NAME
-                || displayTag == DISPLAY_TAG_ORIG_CALLED_NAME) {
-            sendEvent(RFX_MSG_EVENT_CNAP_UPDATE, RfxStringData(info, strlen(info)),
-                    RIL_CMD_PROXY_2, m_slot_id);
+        if (displayTag == DISPLAY_TAG_CALLING_PARTY_NAME ||
+            displayTag == DISPLAY_TAG_ORIG_CALLED_NAME) {
+            sendEvent(RFX_MSG_EVENT_CNAP_UPDATE, RfxStringData(info, strlen(info)), RIL_CMD_PROXY_2,
+                      m_slot_id);
 
             // RING -> +CFNM/+CEXTD
             // +CFNM/+CEXTD -> +CCWA
@@ -1058,13 +1105,14 @@ void RmcCallControlUrcHandler::handleExtendedDisplayInfoMessage(const sp<RfxMclM
                 cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len + 1);
 
         logD(RFX_LOG_TAG, "RIL_CDMA_EXTENDED_DISPLAY_INFO_REC: alpha_len:%d",
-                cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len);
+             cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len);
 
         numOfRecs++;
         cdmaInfo->numberOfInfoRecs = numOfRecs;
         logD(RFX_LOG_TAG, "RIL_UNSOL_CDMA_INFO_REC: numOfRecs:%d", numOfRecs);
-        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
-                RfxCdmaInfoRecData((void *)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
+        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+                RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
+                RfxCdmaInfoRecData((void*)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
         responseToTelCore(urc);
     }
 }
@@ -1074,32 +1122,35 @@ void RmcCallControlUrcHandler::handleDisplayAndSignalsInfoMessage(const sp<RfxMc
     int ret;
     int numOfRecs = 0;
     int signalType, alertPitch, signal;
-    char *display = NULL;
-    RIL_CDMA_InformationRecords *cdmaInfo = (RIL_CDMA_InformationRecords *) alloca(
-            sizeof(RIL_CDMA_InformationRecords));
+    char* display = NULL;
+    RIL_CDMA_InformationRecords* cdmaInfo =
+            (RIL_CDMA_InformationRecords*)alloca(sizeof(RIL_CDMA_InformationRecords));
     RFX_ASSERT(cdmaInfo != NULL);
 
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
     char intdata[10];
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +CFNM: ", 11);
 
     display = line->atTokNextstr(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, display);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, display);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
 
-    if (display != NULL && strlen(display) > 0 && strlen(display) < CDMA_ALPHA_INFO_BUFFER_LENGTH
-            && strcmp(display, "N/A") != 0) {
-
+    if (display != NULL && strlen(display) > 0 && strlen(display) < CDMA_ALPHA_INFO_BUFFER_LENGTH &&
+        strcmp(display, "N/A") != 0) {
         sendEvent(RFX_MSG_EVENT_CNAP_UPDATE, RfxStringData(display, strlen(display)),
-                RIL_CMD_PROXY_2, m_slot_id);
+                  RIL_CMD_PROXY_2, m_slot_id);
 
         // RING -> +CFNM/+CEXTD
         // +CFNM/+CEXTD -> +CCWA
@@ -1118,7 +1169,7 @@ void RmcCallControlUrcHandler::handleDisplayAndSignalsInfoMessage(const sp<RfxMc
                 cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len + 1);
 
         logD(RFX_LOG_TAG, "RIL_CDMA_DISPLAY_INFO_REC: alpha_len:%d",
-                cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len);
+             cdmaInfo->infoRec[numOfRecs].rec.display.alpha_len);
 
         numOfRecs++;
     } else {
@@ -1127,23 +1178,29 @@ void RmcCallControlUrcHandler::handleDisplayAndSignalsInfoMessage(const sp<RfxMc
 
     if (mCallState == DIALING || mCallState == IDLE || mCallState == CONNECTED) {
         signalType = line->atTokNextint(&ret);
-        if (ret < 0) { goto update; }
+        if (ret < 0) {
+            goto update;
+        }
 
-        sprintf(intdata, "%d", signalType); // put the int into a string
+        sprintf(intdata, "%d", signalType);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
 
         alertPitch = line->atTokNextint(&ret);
-        if (ret < 0) { goto update; }
+        if (ret < 0) {
+            goto update;
+        }
 
-        sprintf(intdata, "%d", alertPitch); // put the int into a string
+        sprintf(intdata, "%d", alertPitch);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
 
         signal = line->atTokNextint(&ret);
-        if (ret < 0) { goto update; }
+        if (ret < 0) {
+            goto update;
+        }
 
-        sprintf(intdata, "%d", signal); // put the int into a string
+        sprintf(intdata, "%d", signal);  // put the int into a string
         strncat(atLog, intdata, strlen(intdata));
         strncat(atLog, ", ", 2);
 
@@ -1154,9 +1211,9 @@ void RmcCallControlUrcHandler::handleDisplayAndSignalsInfoMessage(const sp<RfxMc
         cdmaInfo->infoRec[numOfRecs].rec.signal.signal = (char)signal;
 
         logD(RFX_LOG_TAG, "RIL_CDMA_SIGNAL_INFO_REC: signalType:%d, alertPitch:%d, signal:%d",
-                cdmaInfo->infoRec[numOfRecs].rec.signal.signalType,
-                cdmaInfo->infoRec[numOfRecs].rec.signal.alertPitch,
-                cdmaInfo->infoRec[numOfRecs].rec.signal.signal);
+             cdmaInfo->infoRec[numOfRecs].rec.signal.signalType,
+             cdmaInfo->infoRec[numOfRecs].rec.signal.alertPitch,
+             cdmaInfo->infoRec[numOfRecs].rec.signal.signal);
 
         numOfRecs++;
     } else {
@@ -1168,24 +1225,31 @@ void RmcCallControlUrcHandler::handleDisplayAndSignalsInfoMessage(const sp<RfxMc
 update:
     cdmaInfo->numberOfInfoRecs = numOfRecs;
     logD(RFX_LOG_TAG, "RIL_UNSOL_CDMA_INFO_REC: numOfRecs:%d", numOfRecs);
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
-            RfxCdmaInfoRecData((void *)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CDMA_INFO_REC, m_slot_id,
+            RfxCdmaInfoRecData((void*)cdmaInfo, sizeof(RIL_CDMA_InformationRecords)));
     responseToTelCore(urc);
 }
 
 // +CIEV: <type>,<value>
 void RmcCallControlUrcHandler::handleCallControlStatusMessage(const sp<RfxMclMessage>& msg) {
     int type = 0, value = 0, ret = 0, urcType = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     type = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     value = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     /**
      * 102: E911 Mode Indicator
@@ -1198,8 +1262,8 @@ void RmcCallControlUrcHandler::handleCallControlStatusMessage(const sp<RfxMclMes
         } else if (value == 0) {
             urcType = RFX_MSG_UNSOL_EXIT_EMERGENCY_CALLBACK_MODE;
             // Notify NW module
-            sendEvent(RFX_MSG_EVENT_EXIT_EMERGENCY_CALLBACK_MODE, RfxVoidData(),
-                    RIL_CMD_PROXY_3, m_slot_id);
+            sendEvent(RFX_MSG_EVENT_EXIT_EMERGENCY_CALLBACK_MODE, RfxVoidData(), RIL_CMD_PROXY_3,
+                      m_slot_id);
         } else if (value == 2) {
             urcType = RFX_MSG_UNSOL_NO_EMERGENCY_CALLBACK_MODE;
         }
@@ -1212,32 +1276,38 @@ void RmcCallControlUrcHandler::handleCallControlStatusMessage(const sp<RfxMclMes
 
 // +CCWA: <number>, <callType>
 void RmcCallControlUrcHandler::handleCdmaCallWaitingMessage(const sp<RfxMclMessage>& msg) {
-    char *number = NULL;
+    char* number = NULL;
     int ret = 0;
     int callType = 0;
-    RIL_CDMA_CallWaiting_v6 *callWaiting =
-            (RIL_CDMA_CallWaiting_v6 *) alloca(sizeof(RIL_CDMA_CallWaiting_v6));
+    RIL_CDMA_CallWaiting_v6* callWaiting =
+            (RIL_CDMA_CallWaiting_v6*)alloca(sizeof(RIL_CDMA_CallWaiting_v6));
     RFX_ASSERT(callWaiting != NULL);
 
     memset(callWaiting, 0, sizeof(RIL_CDMA_CallWaiting_v6));
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     char intdata[10];
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     memset(atLog, 0, MAX_AT_RESPONSE);
     strncpy(atLog, "AT< +CCWA: ", 11);
 
     number = line->atTokNextstr(&ret);
-    if (ret < 0) { return; }
-    callWaiting->number = (char *) alloca(strlen(number) + 1);
+    if (ret < 0) {
+        return;
+    }
+    callWaiting->number = (char*)alloca(strlen(number) + 1);
     RFX_ASSERT(callWaiting->number != NULL);
     strncpy(callWaiting->number, number, strlen(number) + 1);
 
     callType = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
     if (145 == callType) {
         callWaiting->number_type = 1;
     } else if (129 == callType) {
@@ -1246,11 +1316,10 @@ void RmcCallControlUrcHandler::handleCdmaCallWaitingMessage(const sp<RfxMclMessa
 
     if (!strcmp(callWaiting->number, "Restricted")) {
         callWaiting->numberPresentation = 1;
-    } else if (!strcmp(callWaiting->number, "UNKNOWN")
-            || !strcmp(callWaiting->number, "Unknown")
-            || !strcmp(callWaiting->number, "Unavailable")
-            || !strcmp(callWaiting->number, "NotAvailable")
-            || !strcmp(callWaiting->number, "LOOPBACK CALL")) {
+    } else if (!strcmp(callWaiting->number, "UNKNOWN") || !strcmp(callWaiting->number, "Unknown") ||
+               !strcmp(callWaiting->number, "Unavailable") ||
+               !strcmp(callWaiting->number, "NotAvailable") ||
+               !strcmp(callWaiting->number, "LOOPBACK CALL")) {
         callWaiting->numberPresentation = 2;
     }
     if (callWaiting->numberPresentation != 0) {
@@ -1259,16 +1328,17 @@ void RmcCallControlUrcHandler::handleCdmaCallWaitingMessage(const sp<RfxMclMessa
 
     mCallState = WAITING;
 
-    const char *numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
+    const char* numberToPrint = RfxRilUtils::pii(RFX_LOG_TAG, number);
     strncat(atLog, numberToPrint, strlen(numberToPrint));
     strncat(atLog, ", ", 2);
-    sprintf(intdata, "%d", callType); // put the int into a string
+    sprintf(intdata, "%d", callType);  // put the int into a string
     strncat(atLog, intdata, strlen(intdata));
     strncat(atLog, ", ", 2);
     logD(RFX_LOG_TAG, "%s", atLog);
 
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_CDMA_CALL_WAITING, m_slot_id,
-            RfxCdmaWaitingCallData((void *)callWaiting, sizeof(RIL_CDMA_CallWaiting_v6)));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
+            RFX_MSG_UNSOL_CDMA_CALL_WAITING, m_slot_id,
+            RfxCdmaWaitingCallData((void*)callWaiting, sizeof(RIL_CDMA_CallWaiting_v6)));
     responseToTelCore(urc);
 }
 /// C2K specific end
@@ -1277,7 +1347,7 @@ void RmcCallControlUrcHandler::handleECPI(char** data) {
     int callId = atoi(data[0]);
     int msgType = atoi(data[1]);
     int isIbt = atoi(data[2]);
-    int callMode = atoi(data[5]); // 0:cs, 10:vt, 20:volte, 21:vilte, 22:volte conf
+    int callMode = atoi(data[5]);  // 0:cs, 10:vt, 20:volte, 21:vilte, 22:volte conf
 
     // +ESPEECH is not used for RINGBACK_TONE notification in Gen93 RIL
     // RINGBACK_TONE is set to outband (played by APP) if +ECPI: <msgType=2>, <isIbt=0>
@@ -1317,12 +1387,12 @@ void RmcCallControlUrcHandler::handleECPI(char** data) {
         case 133:
             if ((callId >= 1) && (callId <= MAX_GSMCALL_CONNECTIONS)) {
                 sendEvent(RFX_MSG_EVENT_CLEAR_CLCCNAME, RfxIntsData((void*)&callId, sizeof(callId)),
-                    RIL_CMD_PROXY_2, m_slot_id);
-                //logD(RFX_LOG_TAG, "Send RFX_MSG_EVENT_CLEAR_CLCCNAME");
+                          RIL_CMD_PROXY_2, m_slot_id);
+                // logD(RFX_LOG_TAG, "Send RFX_MSG_EVENT_CLEAR_CLCCNAME");
 
                 // To notify SS module that ECPI133 is received
                 sendEvent(RFX_MSG_EVENT_URC_ECPI133_NOTIFY,
-                        RfxIntsData((void*) &callId, sizeof(callId)), RIL_CMD_PROXY_1, m_slot_id);
+                          RfxIntsData((void*)&callId, sizeof(callId)), RIL_CMD_PROXY_1, m_slot_id);
             }
 
             if (mIsRingBackTonePlaying) {
@@ -1356,10 +1426,6 @@ bool RmcCallControlUrcHandler::shouldNotifyCallStateChanged(int msgType) {
     return false;
 }
 
-int RmcCallControlUrcHandler::getSpeechCodec() {
-    return mSpeechCodec;
-}
+int RmcCallControlUrcHandler::getSpeechCodec() { return mSpeechCodec; }
 
-void RmcCallControlUrcHandler::resetSpeechCodec() {
-    mSpeechCodec = 0;
-}
+void RmcCallControlUrcHandler::resetSpeechCodec() { mSpeechCodec = 0; }

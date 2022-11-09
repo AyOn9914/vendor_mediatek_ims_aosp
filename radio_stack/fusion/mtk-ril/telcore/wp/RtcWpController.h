@@ -36,32 +36,33 @@ class RtcWpController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcWpController);
 
-public:
+  public:
     RtcWpController();
     virtual ~RtcWpController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-public:
+  public:
     // other module check if world mode is switching
     bool isWorldModeSwitching();
 
-private:
+  private:
     void processWorldModeResumingResponse(const sp<RfxMessage>& message);
     void resumeWorldModeChange();
     int getCallingSlotId();
     void handleWorldModePendedByCall(int slotId);
-    void onCallCountChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onCallCountChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
+                            RfxVariant value);
     void resumeWorldModeChangeWithRadioOff();
     void requestRadioOn();
     void requestRadioOff();
@@ -71,14 +72,15 @@ private:
     void handleWorldModeChangeStart(bool flag, int cause);
     bool canhandleMessage(bool log_flag);
     void onRetryResumeTimeOut();
-    void onTelephonyAssistantStatusChanged(int slotId, RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
+    void onTelephonyAssistantStatusChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
+                                           RfxVariant value);
     void createNewMessageToRmc(int messageId, int slotId, int value);
     // other module needs to block world mode switch
     int blockWorldModeChanged();
     // other module agrees with world mode switch
     int resumeBlockedWorldModeChanged();
-private:
+
+  private:
     // record the number other module blocks world mode switch
     static int worldModeBlockedNum;
     // record the slot start urc coming

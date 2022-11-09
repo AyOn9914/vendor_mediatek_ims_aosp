@@ -33,9 +33,8 @@ typedef struct {
     int opId;
 } ConfigOperatorTable;
 
-class ImsConfigUtils{
-
-public:
+class ImsConfigUtils {
+  public:
     static int getSystemPropValue(const char* propName);
     static std::string getSystemPropStringValue(const char* propName);
     static int getFeaturePropValue(const char* propName, int slot_id);
@@ -52,10 +51,10 @@ public:
     static bool isAllowForceNotify(int slot_id, int value);
     static void setAllowForceNotify(int slot_id, bool allow, int value);
 
-private:
+  private:
     static void printLog(int level, String8 log, int slot_id);
 
-public:
+  public:
     static const char* PROPERTY_IMS_SUPPORT;
     static const char* PROPERTY_VOLTE_ENALBE;
     static const char* PROPERTY_WFC_ENALBE;
@@ -71,7 +70,7 @@ public:
     static const char PROPERTY_ICCID_SIM[4][25];
     static const char PROPERTY_TEST_SIM[4][30];
 
-private :
+  private:
     static const bool DEBUG_ENABLED;
     static bool mForceNotify[4];
     static int mForceValue[4];

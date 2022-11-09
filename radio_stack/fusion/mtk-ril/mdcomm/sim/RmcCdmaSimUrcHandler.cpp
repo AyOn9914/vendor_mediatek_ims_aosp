@@ -31,13 +31,7 @@
 using ::android::String8;
 
 static const char* cdmaUrcList[] = {
-    "+EUSIM:",
-    "+ECT3G:",
-    "+ECSIMP:",
-    "+ESIMS:",
-    "+ESIMAPP:",
-    "+ESCG:",
-    "+ESIMIND:",
+        "+EUSIM:", "+ECT3G:", "+ECSIMP:", "+ESIMS:", "+ESIMAPP:", "+ESCG:", "+ESIMIND:",
 };
 
 // Register unsolicited message
@@ -46,17 +40,16 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_UICC_SUBSCRIPTION_STATUS_CH
 /*****************************************************************************
  * Class RmcCdmaSimUrcHandler
  *****************************************************************************/
-RmcCdmaSimUrcHandler::RmcCdmaSimUrcHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id) {
+RmcCdmaSimUrcHandler::RmcCdmaSimUrcHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcCdmaSimUrc"));
 }
 
-RmcCdmaSimUrcHandler::~RmcCdmaSimUrcHandler() {
-}
+RmcCdmaSimUrcHandler::~RmcCdmaSimUrcHandler() {}
 
-const char** RmcCdmaSimUrcHandler::queryUrcTable(int *record_num) {
+const char** RmcCdmaSimUrcHandler::queryUrcTable(int* record_num) {
     const char** p = cdmaUrcList;
-    *record_num = sizeof(cdmaUrcList)/sizeof(char*);
+    *record_num = sizeof(cdmaUrcList) / sizeof(char*);
     return p;
 }
 
@@ -64,9 +57,9 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCdmaSimUrcHandler::needHandle(
         const sp<RfxMclMessage>& msg) {
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
     String8 ss(msg->getRawUrc()->getLine());
-    RfxAtLine *urc = NULL;
+    RfxAtLine* urc = NULL;
 
-    for (unsigned int i = 0; i < (sizeof(cdmaUrcList)/sizeof(char *)); i++) {
+    for (unsigned int i = 0; i < (sizeof(cdmaUrcList) / sizeof(char*)); i++) {
         if (ss.find(cdmaUrcList[i]) == 0) {
             if (strcmp(cdmaUrcList[i], "+ESIMAPP:") == 0) {
                 urc = new RfxAtLine(ss, NULL);
@@ -120,14 +113,14 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCdmaSimUrcHandler::needHandle(
     }
 
     if (urc != NULL) {
-        delete(urc);
+        delete (urc);
     }
     return result;
 }
 
-void RmcCdmaSimUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     String8 ss(urc->getLine());
-    RfxAtLine *cdmaUrc = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
+    RfxAtLine* cdmaUrc = new RfxAtLine(msg->getRawUrc()->getLine(), NULL);
 
     if (ss.find("+EUSIM:") == 0) {
         handleCardType(msg, urc);
@@ -152,11 +145,11 @@ void RmcCdmaSimUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *ur
     }
 
     if (cdmaUrc != NULL) {
-        delete(cdmaUrc);
+        delete (cdmaUrc);
     }
 }
 
-void RmcCdmaSimUrcHandler::handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     RFX_UNUSED(msg);
     RFX_UNUSED(urc);
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE);
@@ -165,12 +158,12 @@ void RmcCdmaSimUrcHandler::handleCardType(const sp<RfxMclMessage>& msg, RfxAtLin
     }
 }
 
-void RmcCdmaSimUrcHandler::handleCdma3gDualmodeValue(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
-    RfxAtLine *atLine = urc;
+void RmcCdmaSimUrcHandler::handleCdma3gDualmodeValue(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
+    RfxAtLine* atLine = urc;
     int err = 0, value = -1;
     bool result = false;
     String8 cdma3GDualMode("vendor.gsm.ril.ct3g");
-    cdma3GDualMode.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
+    cdma3GDualMode.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
 
     do {
         atLine->atTokStart(&err);
@@ -199,8 +192,9 @@ void RmcCdmaSimUrcHandler::handleCdma3gDualmodeValue(const sp<RfxMclMessage>& ms
     }
 }
 
-void RmcCdmaSimUrcHandler::handleUiccSubscriptionStatus(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
-    RfxAtLine *atLine = urc;
+void RmcCdmaSimUrcHandler::handleUiccSubscriptionStatus(const sp<RfxMclMessage>& msg,
+                                                        RfxAtLine* urc) {
+    RfxAtLine* atLine = urc;
     int err = 0, activate = -1;
     bool result = false;
 
@@ -217,8 +211,9 @@ void RmcCdmaSimUrcHandler::handleUiccSubscriptionStatus(const sp<RfxMclMessage>&
 
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_UICC_SUB_CHANGED_STATUS, activate);
 
-        sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_UICC_SUBSCRIPTION_STATUS_CHANGED,
-                m_slot_id, RfxIntsData((void*)&activate, sizeof(int)));
+        sp<RfxMclMessage> unsol =
+                RfxMclMessage::obtainUrc(RFX_MSG_URC_UICC_SUBSCRIPTION_STATUS_CHANGED, m_slot_id,
+                                         RfxIntsData((void*)&activate, sizeof(int)));
         responseToTelCore(unsol);
 
         result = true;
@@ -229,14 +224,14 @@ void RmcCdmaSimUrcHandler::handleUiccSubscriptionStatus(const sp<RfxMclMessage>&
     }
 }
 
-void RmcCdmaSimUrcHandler::handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     int appTypeId = -1, channelId = -1, err = 0;
     char *pMcc = NULL, *pMnc = NULL;
-    RfxAtLine *atLine = urc;
+    RfxAtLine* atLine = urc;
     String8 numeric("");
     bool result = false;
     String8 cdmaMccMnc("vendor.cdma.ril.uicc.mccmnc");
-    cdmaMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+    cdmaMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
 
     do {
         atLine->atTokStart(&err);
@@ -280,11 +275,10 @@ void RmcCdmaSimUrcHandler::handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLin
     int cardType = -1;
     int eusim = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE);
     if (((eusim & RFX_CARD_TYPE_CSIM) != 0) && ((eusim & RFX_CARD_TYPE_USIM) != 0)) {
-
         if (!numeric.isEmpty()) {
-            if ((0 == strcmp(numeric.string(), "46003"))
-                    || (0 == strcmp(numeric.string(), "45502"))
-                    || (0 == strcmp(numeric.string(), "46012"))) {
+            if ((0 == strcmp(numeric.string(), "46003")) ||
+                (0 == strcmp(numeric.string(), "45502")) ||
+                (0 == strcmp(numeric.string(), "46012"))) {
                 cardType = CT_4G_UICC_CARD;
             } else {
                 cardType = NOT_CT_UICC_CARD;
@@ -327,7 +321,7 @@ void RmcCdmaSimUrcHandler::handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLin
     }
 }
 
-void RmcCdmaSimUrcHandler::handCdma3GSwitchCard(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handCdma3GSwitchCard(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     RFX_UNUSED(msg);
     String8 ss(urc->getLine());
     int switchcard = -1;
@@ -347,7 +341,7 @@ void RmcCdmaSimUrcHandler::handCdma3GSwitchCard(const sp<RfxMclMessage>& msg, Rf
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA3G_SWITCH_CARD, switchcard);
 }
 
-void RmcCdmaSimUrcHandler::handleSimStateChanged(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handleSimStateChanged(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     RFX_UNUSED(msg);
     // +ESIMS: 0,0: SIM Missing
     // +ESIMS: 0,13: Recovery start
@@ -361,7 +355,7 @@ void RmcCdmaSimUrcHandler::handleSimStateChanged(const sp<RfxMclMessage>& msg, R
     String8 cdma3GDualMode("vendor.gsm.ril.ct3g");
     String8 cdmaCardType("vendor.ril.cdma.card.type");
 
-    cdma3GDualMode.append((m_slot_id == 0)? "" : String8::format(".%d", (m_slot_id + 1)));
+    cdma3GDualMode.append((m_slot_id == 0) ? "" : String8::format(".%d", (m_slot_id + 1)));
     cdmaCardType.append(String8::format(".%d", (m_slot_id + 1)));
 
     if ((ss.find("+ESIMS: 0,11") == 0) || (ss.find("+ESIMS: 0,13") == 0)) {
@@ -376,9 +370,9 @@ void RmcCdmaSimUrcHandler::handleSimStateChanged(const sp<RfxMclMessage>& msg, R
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_CDMA3G_SWITCH_CARD, -1);
         getMclStatusManager()->setBoolValue(RFX_STATUS_KEY_CDMA_LOCKED_CARD, false);
         if (isOP09AProject() && (m_slot_id == 1) &&
-                (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_ESIMIND_APPLIST) >= 0)) {
+            (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_ESIMIND_APPLIST) >= 0)) {
             getMclStatusManager()->setIntValue(RFX_STATUS_KEY_ESIMIND_APPLIST,
-                    RFX_UICC_APPLIST_NONE);
+                                               RFX_UICC_APPLIST_NONE);
         }
     }
 }
@@ -389,7 +383,7 @@ void RmcCdmaSimUrcHandler::resetCDMASimState() {
     String8 cdmaSubscriberId("vendor.ril.uim.subscriberid");
     String8 tempString8Value;
 
-    cdmaMccMnc.append((m_slot_id == 0)? "" : String8::format(".%d", m_slot_id));
+    cdmaMccMnc.append((m_slot_id == 0) ? "" : String8::format(".%d", m_slot_id));
     cdmaSubscriberId.append(String8::format(".%d", (m_slot_id + 1)));
 
     tempString8Value = getMclStatusManager()->getString8Value(RFX_STATUS_KEY_UICC_CDMA_NUMERIC);
@@ -409,12 +403,12 @@ void RmcCdmaSimUrcHandler::resetCDMASimState() {
     }
 }
 
-void RmcCdmaSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCdmaSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     RFX_UNUSED(msg);
-    RfxAtLine *atLine = urc;
+    RfxAtLine* atLine = urc;
     int err = 0, indEvent = -1;
     int appId = 0;
-    char *rawData = NULL;
+    char* rawData = NULL;
 
     String8 cdmaSubscriberId("vendor.ril.uim.subscriberid");
     cdmaSubscriberId.append(String8::format(".%d", (m_slot_id + 1)));
@@ -444,7 +438,7 @@ void RmcCdmaSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, Rfx
             }
 
             getMclStatusManager()->setString8Value(RFX_STATUS_KEY_CDMA_SPN,
-                    String8::format("%s", rawData));
+                                                   String8::format("%s", rawData));
 
             rawData = NULL;
             rawData = atLine->atTokNextstr(&err);
@@ -453,7 +447,7 @@ void RmcCdmaSimUrcHandler::handleSimIndication(const sp<RfxMclMessage>& msg, Rfx
             }
             rfx_property_set(cdmaSubscriberId, rawData);
             getMclStatusManager()->setString8Value(RFX_STATUS_KEY_C2K_IMSI,
-                    String8::format("%s", rawData));
+                                                   String8::format("%s", rawData));
 
             return;
         }

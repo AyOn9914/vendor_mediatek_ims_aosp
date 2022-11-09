@@ -41,61 +41,62 @@ const char* const NetworkController::OIF_NONE = NULL;
 const bool NetworkController::ACTION_ADD = true;
 const bool NetworkController::ACTION_DEL = false;
 
-const uint32_t NetworkController::ROUTE_TABLE_LOCAL_NETWORK  = 97;
+const uint32_t NetworkController::ROUTE_TABLE_LOCAL_NETWORK = 97;
 const uint32_t NetworkController::ROUTE_TABLE_LEGACY_NETWORK = 98;
-const uint32_t NetworkController::ROUTE_TABLE_LEGACY_SYSTEM  = 99;
+const uint32_t NetworkController::ROUTE_TABLE_LEGACY_SYSTEM = 99;
 
-const char* const NetworkController::ROUTE_TABLE_NAME_LOCAL_NETWORK  = "local_network";
+const char* const NetworkController::ROUTE_TABLE_NAME_LOCAL_NETWORK = "local_network";
 const char* const NetworkController::ROUTE_TABLE_NAME_LEGACY_NETWORK = "legacy_network";
-const char* const NetworkController::ROUTE_TABLE_NAME_LEGACY_SYSTEM  = "legacy_system";
+const char* const NetworkController::ROUTE_TABLE_NAME_LEGACY_SYSTEM = "legacy_system";
 
 const char* const NetworkController::ROUTE_TABLE_NAME_LOCAL = "local";
-const char* const NetworkController::ROUTE_TABLE_NAME_MAIN  = "main";
+const char* const NetworkController::ROUTE_TABLE_NAME_MAIN = "main";
 
 const int NetworkController::ROUTE_TABLE_OFFSET_FROM_INDEX = 1000;
 
-const char* NetworkController::LOCAL_FILTER_FORWARD = "oem_fwd";  //AOSP chain
-const char* NetworkController::LOCAL_MANGLE_PREROUTING = "oem_mangle_pre";  //mtk new chain
-const char* NetworkController::LOCAL_FILTER_OUT = "oem_out";  //AOSP chain
-const char* NetworkController::LOCAL_FILTER_INPUT = "oem_input";  //mtk new chain
+const char* NetworkController::LOCAL_FILTER_FORWARD = "oem_fwd";            // AOSP chain
+const char* NetworkController::LOCAL_MANGLE_PREROUTING = "oem_mangle_pre";  // mtk new chain
+const char* NetworkController::LOCAL_FILTER_OUT = "oem_out";                // AOSP chain
+const char* NetworkController::LOCAL_FILTER_INPUT = "oem_input";            // mtk new chain
 
 // Avoids "non-constant-expression cannot be narrowed from type 'unsigned int' to 'unsigned short'"
 // warnings when using RTA_LENGTH(x) inside static initializers (even when x is already uint16_t).
-constexpr uint16_t U16_RTA_LENGTH(uint16_t x) {
-    return RTA_LENGTH(x);
-}
+constexpr uint16_t U16_RTA_LENGTH(uint16_t x) { return RTA_LENGTH(x); }
 
-rtattr RTATTR_TABLE     = { U16_RTA_LENGTH(sizeof(uint32_t)),           RTA_TABLE };
-rtattr RTATTR_OIF       = { U16_RTA_LENGTH(sizeof(uint32_t)),           RTA_OIF };
+rtattr RTATTR_TABLE = {U16_RTA_LENGTH(sizeof(uint32_t)), RTA_TABLE};
+rtattr RTATTR_OIF = {U16_RTA_LENGTH(sizeof(uint32_t)), RTA_OIF};
 
 uint8_t PADDING_BUFFER[RTA_ALIGNTO] = {0, 0, 0, 0};
 
-const char *actionName(uint16_t action) {
-    static const char *ops[4] = {"adding", "deleting", "getting", "???"};
+const char* actionName(uint16_t action) {
+    static const char* ops[4] = {"adding", "deleting", "getting", "???"};
     return ops[action % 4];
 }
 
-const char *familyName(uint8_t family) {
+const char* familyName(uint8_t family) {
     switch (family) {
-        case AF_INET: return "IPv4";
-        case AF_INET6: return "IPv6";
-        default: return "???";
+        case AF_INET:
+            return "IPv4";
+        case AF_INET6:
+            return "IPv6";
+        default:
+            return "???";
     }
 }
 
-static int parsePrefix(const char *prefix, uint8_t *family, void *address, int size, uint8_t *prefixlen) {
+static int parsePrefix(const char* prefix, uint8_t* family, void* address, int size,
+                       uint8_t* prefixlen) {
     if (!prefix || !family || !address || !prefixlen) {
         return -EFAULT;
     }
 
     // Find the '/' separating address from prefix length.
-    const char *slash = strchr(prefix, '/');
-    const char *prefixlenString = slash + 1;
-    if (!slash || !*prefixlenString)
-        return -EINVAL;
+    const char* slash = strchr(prefix, '/');
+    const char* prefixlenString = slash + 1;
+    if (!slash || !*prefixlenString) return -EINVAL;
 
     // Convert the prefix length to a uint8_t.
-    char *endptr;
+    char* endptr;
     unsigned templen;
     templen = strtoul(prefixlenString, &endptr, 10);
     if (*endptr || templen > 255) {
@@ -109,9 +110,9 @@ static int parsePrefix(const char *prefix, uint8_t *family, void *address, int s
     std::string addressString(prefix, slash - prefix);
 
     // Parse the address.
-    addrinfo *res;
+    addrinfo* res;
     addrinfo hints = {
-        .ai_flags = AI_NUMERICHOST,
+            .ai_flags = AI_NUMERICHOST,
     };
     int ret = getaddrinfo(addressString.c_str(), NULL, &hints, &res);
     if (ret || !res) {
@@ -119,14 +120,14 @@ static int parsePrefix(const char *prefix, uint8_t *family, void *address, int s
     }
 
     // Convert the address string to raw address bytes.
-    void *rawAddress;
+    void* rawAddress;
     int rawLength;
     switch (res[0].ai_family) {
         case AF_INET: {
             if (*prefixlen > 32) {
                 return -EINVAL;
             }
-            sockaddr_in *sin = (sockaddr_in *) res[0].ai_addr;
+            sockaddr_in* sin = (sockaddr_in*)res[0].ai_addr;
             rawAddress = &sin->sin_addr;
             rawLength = 4;
             break;
@@ -135,7 +136,7 @@ static int parsePrefix(const char *prefix, uint8_t *family, void *address, int s
             if (*prefixlen > 128) {
                 return -EINVAL;
             }
-            sockaddr_in6 *sin6 = (sockaddr_in6 *) res[0].ai_addr;
+            sockaddr_in6* sin6 = (sockaddr_in6*)res[0].ai_addr;
             rawAddress = &sin6->sin6_addr;
             rawLength = 16;
             break;
@@ -157,7 +158,6 @@ static int parsePrefix(const char *prefix, uint8_t *family, void *address, int s
 
     return rawLength;
 }
-
 
 std::map<std::string, uint32_t> interfaceToTable;
 uint32_t NetworkController::getRouteTableForInterface(const char* interface) {
@@ -191,8 +191,8 @@ int NetworkController::modifyIpRoute(uint16_t action, uint32_t table, const char
     uint8_t rawAddress[sizeof(in6_addr)];
     uint8_t family;
     uint8_t prefixLength;
-    int rawLength = parsePrefix(destination, &family, rawAddress, sizeof(rawAddress),
-                                &prefixLength);
+    int rawLength =
+            parsePrefix(destination, &family, rawAddress, sizeof(rawAddress), &prefixLength);
     if (rawLength < 0) {
         ALOGE("parsePrefix failed for destination %s (%s)", destination, strerror(-rawLength));
         return rawLength;
@@ -237,40 +237,38 @@ int NetworkController::modifyIpRoute(uint16_t action, uint32_t table, const char
 
     // Assemble a rtmsg and put it in an array of iovec structures.
     rtmsg route = {
-        .rtm_protocol = RTPROT_STATIC,
-        .rtm_type = type,
-        .rtm_family = family,
-        .rtm_dst_len = prefixLength,
-        .rtm_scope = static_cast<uint8_t>(nexthop ? RT_SCOPE_UNIVERSE : RT_SCOPE_LINK),
+            .rtm_protocol = RTPROT_STATIC,
+            .rtm_type = type,
+            .rtm_family = family,
+            .rtm_dst_len = prefixLength,
+            .rtm_scope = static_cast<uint8_t>(nexthop ? RT_SCOPE_UNIVERSE : RT_SCOPE_LINK),
     };
 
-    rtattr rtaDst     = { U16_RTA_LENGTH(rawLength), RTA_DST };
-    rtattr rtaGateway = { U16_RTA_LENGTH(rawLength), RTA_GATEWAY };
+    rtattr rtaDst = {U16_RTA_LENGTH(rawLength), RTA_DST};
+    rtattr rtaGateway = {U16_RTA_LENGTH(rawLength), RTA_GATEWAY};
 
     iovec iov[] = {
-        { NULL,          0 },
-        { &route,        sizeof(route) },
-        { &RTATTR_TABLE, sizeof(RTATTR_TABLE) },
-        { &table,        sizeof(table) },
-        { &rtaDst,       sizeof(rtaDst) },
-        { rawAddress,    static_cast<size_t>(rawLength) },
-        { &RTATTR_OIF,   interface != OIF_NONE ? sizeof(RTATTR_OIF) : 0 },
-        { &ifindex,      interface != OIF_NONE ? sizeof(ifindex) : 0 },
-        { &rtaGateway,   nexthop ? sizeof(rtaGateway) : 0 },
-        { rawNexthop,    nexthop ? static_cast<size_t>(rawLength) : 0 },
+            {NULL, 0},
+            {&route, sizeof(route)},
+            {&RTATTR_TABLE, sizeof(RTATTR_TABLE)},
+            {&table, sizeof(table)},
+            {&rtaDst, sizeof(rtaDst)},
+            {rawAddress, static_cast<size_t>(rawLength)},
+            {&RTATTR_OIF, interface != OIF_NONE ? sizeof(RTATTR_OIF) : 0},
+            {&ifindex, interface != OIF_NONE ? sizeof(ifindex) : 0},
+            {&rtaGateway, nexthop ? sizeof(rtaGateway) : 0},
+            {rawNexthop, nexthop ? static_cast<size_t>(rawLength) : 0},
     };
 
-    uint16_t flags = (action == RTM_NEWROUTE) ? NETLINK_CREATE_REQUEST_FLAGS :
-                                                NETLINK_REQUEST_FLAGS;
+    uint16_t flags =
+            (action == RTM_NEWROUTE) ? NETLINK_CREATE_REQUEST_FLAGS : NETLINK_REQUEST_FLAGS;
     int ret = sendNetlinkRequest(action, flags, iov, ARRAY_SIZE(iov), nullptr);
     if (ret) {
-        ALOGE("Error %s route %s -> %s %s to table %u: %s",
-              actionName(action), destination, nexthop, interface, table, strerror(-ret));
+        ALOGE("Error %s route %s -> %s %s to table %u: %s", actionName(action), destination,
+              nexthop, interface, table, strerror(-ret));
     }
     return ret;
 }
-
-
 
 // Adds or removes an IPv4 or IPv6 route to the specified table and, if it's a directly-connected
 // route, to the main table as well.
@@ -310,26 +308,23 @@ int NetworkController::modifyRoute(uint16_t action, const char* interface, const
 }
 
 int NetworkController::addRoute(const char* interface, const char* destination, const char* nexthop,
-                              TableType tableType) {
+                                TableType tableType) {
     return modifyRoute(RTM_NEWROUTE, interface, destination, nexthop, tableType);
 }
 
 int NetworkController::removeRoute(const char* interface, const char* destination,
-                                 const char* nexthop, TableType tableType) {
+                                   const char* nexthop, TableType tableType) {
     return modifyRoute(RTM_DELROUTE, interface, destination, nexthop, tableType);
 }
 
-
-static uint32_t getRulePriority(const nlmsghdr *nlh) {
+static uint32_t getRulePriority(const nlmsghdr* nlh) {
     return getRtmU32Attribute(nlh, FRA_PRIORITY);
 }
 
-static uint32_t getRouteTable(const nlmsghdr *nlh) {
-    return getRtmU32Attribute(nlh, RTA_TABLE);
-}
+static uint32_t getRouteTable(const nlmsghdr* nlh) { return getRtmU32Attribute(nlh, RTA_TABLE); }
 
 int NetworkController::flushRules() {
-    NetlinkDumpFilter shouldDelete = [] (nlmsghdr *nlh) {
+    NetlinkDumpFilter shouldDelete = [](nlmsghdr* nlh) {
         // Don't touch rules at priority 0 because by default they are used for local input.
         return getRulePriority(nlh) != 0;
     };
@@ -337,9 +332,7 @@ int NetworkController::flushRules() {
 }
 
 int NetworkController::flushRoutes(uint32_t table) {
-    NetlinkDumpFilter shouldDelete = [table] (nlmsghdr *nlh) {
-        return getRouteTable(nlh) == table;
-    };
+    NetlinkDumpFilter shouldDelete = [table](nlmsghdr* nlh) { return getRouteTable(nlh) == table; };
 
     return rtNetlinkFlush(RTM_GETROUTE, RTM_DELROUTE, "routes", shouldDelete);
 }
@@ -362,40 +355,48 @@ int NetworkController::flushRoutes(const char* interface) {
     return ret;
 }
 
-//mtk for ipsec MTU issue
-int NetworkController::forwardIpsec(char *inIface, char *outIface, char *nxthop, char *tableId, int family, int enable)
-{
+// mtk for ipsec MTU issue
+int NetworkController::forwardIpsec(char* inIface, char* outIface, char* nxthop, char* tableId,
+                                    int family, int enable) {
     int res = 0;
-    const char *FORWARD_MARK = "0x10000";
+    const char* FORWARD_MARK = "0x10000";
     if (!isIfaceName(inIface) || !isIfaceName(outIface)) {
         return -1;
     }
     ALOGI("Setting IP forward enable = %d from %s to %s\n", enable, inIface, outIface);
-    if(enable) {
-        //enable forwarding
+    if (enable) {
+        // enable forwarding
         res |= execNdcCmd("ipfwd", "enable", "ipsec", NULL);
-        //add rorward mark
-        res |= execIptables(V4V6, "-t", "mangle", "-I", LOCAL_MANGLE_PREROUTING, "-i", inIface, "-j", "MARK", "--set-mark", FORWARD_MARK, NULL);
-        //add forward exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_FORWARD, "-i", inIface, "-o", outIface, "-j", "ACCEPT", NULL);
-        //add powersave or dozable output exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_OUT, "-o", outIface, "-m", "mark", "--mark", FORWARD_MARK, "-j", "ACCEPT", NULL);
-        //add powersave or dozable input exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_INPUT, "-i", outIface, "-j", "ACCEPT", NULL);
-        //add forward route
+        // add rorward mark
+        res |= execIptables(V4V6, "-t", "mangle", "-I", LOCAL_MANGLE_PREROUTING, "-i", inIface,
+                            "-j", "MARK", "--set-mark", FORWARD_MARK, NULL);
+        // add forward exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_FORWARD, "-i", inIface, "-o",
+                            outIface, "-j", "ACCEPT", NULL);
+        // add powersave or dozable output exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_OUT, "-o", outIface, "-m",
+                            "mark", "--mark", FORWARD_MARK, "-j", "ACCEPT", NULL);
+        // add powersave or dozable input exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-I", LOCAL_FILTER_INPUT, "-i", outIface, "-j",
+                            "ACCEPT", NULL);
+        // add forward route
         res |= execIpCmd(family, "route", "add", nxthop, "dev", outIface, "table", tableId, NULL);
     } else {
-        //disable forwarding
+        // disable forwarding
         res |= execNdcCmd("ipfwd", "disable", "ipsec", NULL);
-        //del forward mark
-        res |= execIptables(V4V6, "-t", "mangle", "-D", LOCAL_MANGLE_PREROUTING, "-i", inIface, "-j", "MARK", "--set-mark", FORWARD_MARK, NULL);
-        //del forward exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_FORWARD, "-i", inIface, "-o", outIface, "-j", "ACCEPT", NULL);
-        //del powersave or dozable output exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_OUT, "-o", outIface, "-m", "mark", "--mark", FORWARD_MARK, "-j", "ACCEPT", NULL);
-        //del powersave or dozable input exception iptables
-        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_INPUT, "-i", outIface, "-j", "ACCEPT", NULL);
-        //del forward route
+        // del forward mark
+        res |= execIptables(V4V6, "-t", "mangle", "-D", LOCAL_MANGLE_PREROUTING, "-i", inIface,
+                            "-j", "MARK", "--set-mark", FORWARD_MARK, NULL);
+        // del forward exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_FORWARD, "-i", inIface, "-o",
+                            outIface, "-j", "ACCEPT", NULL);
+        // del powersave or dozable output exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_OUT, "-o", outIface, "-m",
+                            "mark", "--mark", FORWARD_MARK, "-j", "ACCEPT", NULL);
+        // del powersave or dozable input exception iptables
+        res |= execIptables(V4V6, "-t", "filter", "-D", LOCAL_FILTER_INPUT, "-i", outIface, "-j",
+                            "ACCEPT", NULL);
+        // del forward route
         res |= execIpCmd(family, "route", "del", nxthop, "dev", outIface, "table", tableId, NULL);
     }
     return res;

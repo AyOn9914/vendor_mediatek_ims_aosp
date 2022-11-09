@@ -21,19 +21,17 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxHardwareConfigData);
 
-RfxHardwareConfigData::RfxHardwareConfigData(void *data, int length) : RfxBaseData(data, length)  {
+RfxHardwareConfigData::RfxHardwareConfigData(void* data, int length) : RfxBaseData(data, length) {
     m_length = length;
 
-    int num = length/sizeof(RIL_HardwareConfig);
+    int num = length / sizeof(RIL_HardwareConfig);
 
-    m_data = (RIL_HardwareConfig *)calloc(num, sizeof(RIL_HardwareConfig));
+    m_data = (RIL_HardwareConfig*)calloc(num, sizeof(RIL_HardwareConfig));
     if (m_data == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
-    memcpy(m_data, (RIL_HardwareConfig *)data, m_length);
+    memcpy(m_data, (RIL_HardwareConfig*)data, m_length);
 }
 
-RfxHardwareConfigData::~RfxHardwareConfigData() {
-    free(m_data);
-}
+RfxHardwareConfigData::~RfxHardwareConfigData() { free(m_data); }

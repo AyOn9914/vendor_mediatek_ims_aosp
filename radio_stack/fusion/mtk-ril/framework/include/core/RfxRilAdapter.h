@@ -25,21 +25,17 @@
 #include "RfxLog.h"
 
 class RfxRilAdapter : public RfxObject {
-
     RFX_DECLARE_CLASS(RfxRilAdapter);
     RFX_OBJ_DECLARE_SINGLETON_CLASS(RfxRilAdapter);
 
-private:
-
+  private:
     RfxRilAdapter();
 
     virtual ~RfxRilAdapter();
 
-public:
-
+  public:
     void requestToMcl(const sp<RfxMessage>& message);
-    void requestToMclWithDelay(const sp<RfxMessage>& message,
-            nsecs_t nsec);
+    void requestToMclWithDelay(const sp<RfxMessage>& message, nsecs_t nsec);
     void requestAckToRilj(const sp<RfxMessage>& message);
     bool responseToRilj(const sp<RfxMessage>& message);
     bool responseToBT(const sp<RfxMessage>& message);

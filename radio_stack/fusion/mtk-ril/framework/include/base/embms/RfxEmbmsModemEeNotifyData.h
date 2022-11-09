@@ -23,9 +23,10 @@
 class RfxEmbmsModemEeNotifyData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsModemEeNotifyData);
 
-    public:
-        RfxEmbmsModemEeNotifyData(RIL_EMBMS_ModemEeNotify* data, int length);
-    private:
-        void copyData(RIL_EMBMS_ModemEeNotify *data, int length);
+  public:
+    RfxEmbmsModemEeNotifyData(RIL_EMBMS_ModemEeNotify* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_ModemEeNotify* data, int length);
 };
 #endif /*RFX_EMBMS_MODEMEE_NOTIFY_DATA__H*/

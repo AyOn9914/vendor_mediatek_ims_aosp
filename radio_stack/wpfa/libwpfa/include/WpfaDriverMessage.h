@@ -33,9 +33,9 @@
 #include "WpfaDriverULIpPkt.h"
 #include "WpfaCcciDataHeaderEncoder.h"
 
-using ::android::String8;
 using ::android::RefBase;
 using ::android::sp;
+using ::android::String8;
 
 /*
  * =============================================================================
@@ -56,7 +56,6 @@ using ::android::sp;
  * =============================================================================
  */
 
-
 /*
  * =============================================================================
  *                     class
@@ -64,42 +63,30 @@ using ::android::sp;
  */
 
 class WpfaDriverMessage : public virtual RefBase {
-public:
-    uint16_t getMsgId() const {
-        return mMsgId;
-    }
+  public:
+    uint16_t getMsgId() const { return mMsgId; }
 
-    uint16_t getTid() const {
-        return mTid;
-    }
+    uint16_t getTid() const { return mTid; }
 
-    uint16_t getType() const {
-        return mType;
-    }
+    uint16_t getType() const { return mType; }
 
-    uint16_t getParams() const {
-        return mParams;
-    }
+    uint16_t getParams() const { return mParams; }
 
-    WpfaDriverBaseData *getData() const {
-        return mData;
-    }
+    WpfaDriverBaseData* getData() const { return mData; }
 
     static sp<WpfaDriverMessage> obtainMessage(uint16_t msgId, uint16_t tId, uint16_t type,
-            uint16_t params, const WpfaDriverBaseData &data);
+                                               uint16_t params, const WpfaDriverBaseData& data);
 
     static sp<WpfaDriverMessage> obtainMessage(uint16_t msgId, uint16_t tId, uint16_t type,
-            uint16_t params);
+                                               uint16_t params);
 
     static int getCcciMsgBodySize(uint16_t msgId);
-    static WpfaDriverBaseData* copyData(uint16_t msgId, const WpfaDriverBaseData *data);
-
+    static WpfaDriverBaseData* copyData(uint16_t msgId, const WpfaDriverBaseData* data);
 
     String8 toString() const;
 
-protected:
-
-private:
+  protected:
+  private:
     WpfaDriverMessage();
     virtual ~WpfaDriverMessage();
 
@@ -107,8 +94,7 @@ private:
     uint16_t mTid;
     uint16_t mType;
     uint16_t mParams;
-    WpfaDriverBaseData *mData;
-
+    WpfaDriverBaseData* mData;
 };
 
 #endif /* end of WPFA_DRIVER_MESSAGE_H */

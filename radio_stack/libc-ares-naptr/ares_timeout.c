@@ -30,51 +30,41 @@
  * once per second, rather than calling ares_timeout() to figure out
  * when to next call ares_process().
  */
-struct timeval *ares_timeout(ares_channel channel, struct timeval *maxtv,
-                             struct timeval *tvbuf)
-{
-  struct query *query;
-  struct list_node* list_head;
-  struct list_node* list_node;
-  struct timeval now;
-  struct timeval nextstop;
-  long offset, min_offset;
+struct timeval* ares_timeout(ares_channel channel, struct timeval* maxtv, struct timeval* tvbuf) {
+    struct query* query;
+    struct list_node* list_head;
+    struct list_node* list_node;
+    struct timeval now;
+    struct timeval nextstop;
+    long offset, min_offset;
 
-  /* No queries, no timeout (and no fetch of the current time). */
-  if (ares__is_list_empty(&(channel->all_queries)))
-    return maxtv;
+    /* No queries, no timeout (and no fetch of the current time). */
+    if (ares__is_list_empty(&(channel->all_queries))) return maxtv;
 
-  /* Find the minimum timeout for the current set of queries. */
-  now = ares__tvnow();
-  min_offset = -1;
+    /* Find the minimum timeout for the current set of queries. */
+    now = ares__tvnow();
+    min_offset = -1;
 
-  list_head = &(channel->all_queries);
-  for (list_node = list_head->next; list_node != list_head;
-       list_node = list_node->next)
-    {
-      query = list_node->data;
-      if (query->timeout.tv_sec == 0)
-        continue;
-      offset = ares__timeoffset(&now, &query->timeout);
-      if (offset < 0)
-        offset = 0;
-      if (min_offset == -1 || offset < min_offset)
-        min_offset = offset;
+    list_head = &(channel->all_queries);
+    for (list_node = list_head->next; list_node != list_head; list_node = list_node->next) {
+        query = list_node->data;
+        if (query->timeout.tv_sec == 0) continue;
+        offset = ares__timeoffset(&now, &query->timeout);
+        if (offset < 0) offset = 0;
+        if (min_offset == -1 || offset < min_offset) min_offset = offset;
     }
 
-  if(min_offset != -1) {
-    nextstop.tv_sec = min_offset/1000;
-    nextstop.tv_usec = (min_offset%1000)*1000;
-  }
-
-  /* If we found a minimum timeout and it's sooner than the one specified in
-   * maxtv (if any), return it.  Otherwise go with maxtv.
-   */
-  if (min_offset != -1 && (!maxtv || ares__timedout(maxtv, &nextstop)))
-    {
-      *tvbuf = nextstop;
-      return tvbuf;
+    if (min_offset != -1) {
+        nextstop.tv_sec = min_offset / 1000;
+        nextstop.tv_usec = (min_offset % 1000) * 1000;
     }
-  else
-    return maxtv;
+
+    /* If we found a minimum timeout and it's sooner than the one specified in
+     * maxtv (if any), return it.  Otherwise go with maxtv.
+     */
+    if (min_offset != -1 && (!maxtv || ares__timedout(maxtv, &nextstop))) {
+        *tvbuf = nextstop;
+        return tvbuf;
+    } else
+        return maxtv;
 }

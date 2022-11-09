@@ -28,7 +28,6 @@
 #include "RfxDispatchThread.h"
 #include "hardware/ccci_intf.h"
 
-
 #define RFX_LOG_TAG "RmcRadioReq"
 #define PROPERTY_AIRPLANE_MODE "persist.vendor.radio.airplane.mode.on"
 #define PROPERTY_SIM_MODE "persist.vendor.radio.sim.mode"
@@ -45,39 +44,35 @@ typedef enum {
 
 // modem status reader
 static int sMdStatusFd = -1;
-static void *mdStatusReaderLoop(void *param);
+static void* mdStatusReaderLoop(void* param);
 
 /*
-  * struct md_status_event {
-  *     struct timeval time_stamp;
-  *     int md_id;
-  *     int event_type;
-  *     char reason[32];
-  * };
-  * define at ccci_inft.h
-  */
+ * struct md_status_event {
+ *     struct timeval time_stamp;
+ *     int md_id;
+ *     int event_type;
+ *     char reason[32];
+ * };
+ * define at ccci_inft.h
+ */
 typedef struct md_status_event MdStatusEvent;
 
 // register handler to channel
 RFX_IMPLEMENT_OP_PARENT_HANDLER_CLASS(RmcRadioRequestHandler, RIL_CMD_PROXY_9);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_RADIO_POWER);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-        RFX_MSG_REQUEST_RADIO_POWER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-        RFX_MSG_REQUEST_COMMAND_BEFORE_RADIO_POWER);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-        RFX_MSG_REQUEST_BOOT_TURN_ON_RADIO);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
-        RFX_MSG_REQUEST_ENABLE_MODEM);
+                                RFX_MSG_REQUEST_COMMAND_BEFORE_RADIO_POWER);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_BOOT_TURN_ON_RADIO);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_ENABLE_MODEM);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringData, RFX_MSG_UNSOL_MODEM_RESTART);
 
-
-RmcRadioRequestHandler::RmcRadioRequestHandler(int slotId, int channelId) :
-        RfxBaseHandler (slotId, channelId) {
+RmcRadioRequestHandler::RmcRadioRequestHandler(int slotId, int channelId)
+    : RfxBaseHandler(slotId, channelId) {
     logD(RFX_LOG_TAG, "RmcRadioRequestHandler constructor");
     const int request[] = {
-        RFX_MSG_REQUEST_RADIO_POWER,
-        RFX_MSG_REQUEST_BOOT_TURN_ON_RADIO,
-        RFX_MSG_REQUEST_ENABLE_MODEM,
+            RFX_MSG_REQUEST_RADIO_POWER,
+            RFX_MSG_REQUEST_BOOT_TURN_ON_RADIO,
+            RFX_MSG_REQUEST_ENABLE_MODEM,
     };
     memset(&mMdStatsuReaderThread, 0, sizeof(pthread_t));
 
@@ -85,22 +80,22 @@ RmcRadioRequestHandler::RmcRadioRequestHandler(int slotId, int channelId) :
     int old_major_sim = RfxRilUtils::getMajorSim();
     int main_sim = queryMainProtocol();
     int main_channel_sim = RfxChannelManager::getMainChannelSim();
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int muxreport_case = 0;
     logI(RFX_LOG_TAG, "slot_id = %d, main_sim = %d, %d, %d", slotId, main_channel_sim,
-            old_major_sim, main_sim);
+         old_major_sim, main_sim);
     if ((old_major_sim != main_sim) || (main_channel_sim != main_sim)) {
-        getNonSlotMclStatusManager()->setBoolValue(
-                RFX_STATUS_KEY_CAPABILITY_SWITCH_KEEP_EBOOT, true, false, false);
+        getNonSlotMclStatusManager()->setBoolValue(RFX_STATUS_KEY_CAPABILITY_SWITCH_KEEP_EBOOT,
+                                                   true, false, false);
         if (slotId + 1 == main_channel_sim) {
             logI(RFX_LOG_TAG, "SIM switch will reset modem and rild.");
             rfx_property_set("persist.vendor.radio.simswitch",
-                    String8::format("%d", main_sim).string());
+                             String8::format("%d", main_sim).string());
             rfx_property_get("vendor.ril.mux.report.case", property_value, "0");
             muxreport_case = atoi(property_value);
             logD(RFX_LOG_TAG, "getprop vendor.ril.mux.report.case %d", muxreport_case);
-            if (muxreport_case == 1 || muxreport_case == 2 ||
-                    muxreport_case == 5 || muxreport_case == 6) {
+            if (muxreport_case == 1 || muxreport_case == 2 || muxreport_case == 5 ||
+                muxreport_case == 6) {
                 atSendCommand("AT+EBOOT=1");
             }
             resetRadio();
@@ -108,17 +103,17 @@ RmcRadioRequestHandler::RmcRadioRequestHandler(int slotId, int channelId) :
         return;
     } else {
         rfx_property_set("persist.vendor.radio.simswitch",
-                String8::format("%d", main_sim).string());
+                         String8::format("%d", main_sim).string());
     }
 
-    if (getNonSlotMclStatusManager()->getBoolValue(
-            RFX_STATUS_KEY_CAPABILITY_SWITCH_KEEP_EBOOT, false)) {
+    if (getNonSlotMclStatusManager()->getBoolValue(RFX_STATUS_KEY_CAPABILITY_SWITCH_KEEP_EBOOT,
+                                                   false)) {
         // SIM switch will reset modem and rild silently and set this key if major sim is unsync
         // with modem when booting up, so we do nothing here.
         logI(RFX_LOG_TAG, "SIM switch will reset modem and rild.");
         return;
     }
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     sp<RfxAtResponse> response;
     response = atSendCommand("ATE0Q0V1");
     response = atSendCommand("AT+CMEE=1");
@@ -199,13 +194,12 @@ RmcRadioRequestHandler::RmcRadioRequestHandler(int slotId, int channelId) :
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF);
 }
 
-RmcRadioRequestHandler::~RmcRadioRequestHandler() {
-}
+RmcRadioRequestHandler::~RmcRadioRequestHandler() {}
 
 void RmcRadioRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
     logD(RFX_LOG_TAG, "onHandleRequest: %s(%d)", idToString(id), id);
-    switch(id) {
+    switch (id) {
         case RFX_MSG_REQUEST_RADIO_POWER:
         case RFX_MSG_REQUEST_ENABLE_MODEM:
             requestRadioPower(msg);
@@ -226,17 +220,17 @@ void RmcRadioRequestHandler::onHandleTimer() {
 void RmcRadioRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int id = msg->getId();
     logD(RFX_LOG_TAG, "onHandleEvent: %d", id);
-    switch(id) {
+    switch (id) {
         default:
             logE(RFX_LOG_TAG, "should not be here");
             break;
     }
 }
 
-void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
+void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage>& msg) {
     sp<RfxAtResponse> response;
-    RIL_RadioState curState = (RIL_RadioState) getMclStatusManager()->getIntValue(
-            RFX_STATUS_KEY_RADIO_STATE, 0);
+    RIL_RadioState curState =
+            (RIL_RadioState)getMclStatusManager()->getIntValue(RFX_STATUS_KEY_RADIO_STATE, 0);
     RIL_RadioState newState;
     bool notSent = false;
     AT_CME_Error cause;
@@ -244,16 +238,18 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
     int isRadioOn;
     sp<RfxMclMessage> resMsg;
 
-    int onOff = ((int *)msg->getData()->getData())[0];
-    int caller =  msg->getData()->getDataLength()/sizeof(int) > 1
-            ? ((int *)msg->getData()->getData())[1] : -1;
+    int onOff = ((int*)msg->getData()->getData())[0];
+    int caller = msg->getData()->getDataLength() / sizeof(int) > 1
+                         ? ((int*)msg->getData()->getData())[1]
+                         : -1;
     int slotId = msg->getSlotId();
 
     int originMode = 0;
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         if (i != slotId) {
-            originMode |=getMclStatusManager(i)->getIntValue(
-                    RFX_STATUS_KEY_RADIO_POWER_MSIM_MODE, 0) << i;
+            originMode |=
+                    getMclStatusManager(i)->getIntValue(RFX_STATUS_KEY_RADIO_POWER_MSIM_MODE, 0)
+                    << i;
         } else {
             originMode |= onOff << i;
         }
@@ -265,7 +261,7 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
     int slotMode = 0;
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         slotMode = (originMode & (1 << i)) >> i;
-        switch(mainSlotId) {
+        switch (mainSlotId) {
             case RFX_SLOT_ID_0:
                 slotMode = slotMode << i;
                 break;
@@ -303,15 +299,15 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
         slotMode = 0;
     }
 
-    logI(RFX_LOG_TAG, "requestRadioPower, desired power = %d, target mode = %d, caller: %d",
-            onOff, targetMode, caller);
+    logI(RFX_LOG_TAG, "requestRadioPower, desired power = %d, target mode = %d, caller: %d", onOff,
+         targetMode, caller);
 
     /*
-    * RFOFF_CAUSE_UNSPECIFIED = 0,
-    * RFOFF_CAUSE_DUPLEX_MODE = 1,
-    * RFOFF_CAUSE_POWER_OFF = 2,
-    * RFOFF_CAUSE_SIM_SWITCH = 3,
-    */
+     * RFOFF_CAUSE_UNSPECIFIED = 0,
+     * RFOFF_CAUSE_DUPLEX_MODE = 1,
+     * RFOFF_CAUSE_POWER_OFF = 2,
+     * RFOFF_CAUSE_SIM_SWITCH = 3,
+     */
     if (targetMode == 0 /*&& !s_md_off*/) {
         if (caller >= 0) {
             response = atSendCommand(String8::format("AT+EFUN=0,%d", caller));
@@ -325,7 +321,7 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
         } else {
             response = atSendCommand(String8().format(("AT+EFUN=%d"), targetMode));
         }
-        newState = (onOff==1)? RADIO_STATE_ON: RADIO_STATE_OFF;
+        newState = (onOff == 1) ? RADIO_STATE_ON : RADIO_STATE_OFF;
     } else {
         newState = curState;
         notSent = true;
@@ -336,7 +332,7 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
         cause = response->atGetCmeError();
         errNo = RIL_E_GENERIC_FAILURE;
         newState = curState;
-        logD(RFX_LOG_TAG, "Get error cause: %d",cause);
+        logD(RFX_LOG_TAG, "Get error cause: %d", cause);
 
         // always do EFUN retry when get response error
         errNo = RIL_E_OEM_ERROR_1;
@@ -347,8 +343,7 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_RADIO_POWER_MSIM_MODE, onOff);
         getMclStatusManager(slotId)->setIntValue(RFX_STATUS_KEY_RADIO_STATE, newState);
     }
-    resMsg = RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(), msg,
-            false);
+    resMsg = RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(), msg, false);
     responseToTelCore(resMsg);
     return;
 }
@@ -356,7 +351,7 @@ void RmcRadioRequestHandler::requestRadioPower(const sp<RfxMclMessage> &msg) {
 /** returns 1 if on, 0 if off, and -1 on error */
 int RmcRadioRequestHandler::isModemRadioOn() {
     sp<RfxAtResponse> response;
-    RfxAtLine *atLine = NULL;
+    RfxAtLine* atLine = NULL;
     int err, ret;
 
     response = atSendCommandSingleline("AT+CFUN?", "+CFUN:");
@@ -372,9 +367,10 @@ int RmcRadioRequestHandler::isModemRadioOn() {
     ret = atLine->atTokNextint(&err);
     if (err < 0) goto error;
 
-    ret = (ret == 4 || ret == 0) ? 0 :    // phone off
-          (ret == 1) ? 1 :              // phone on
-          -1;                           // invalid value
+    ret = (ret == 4 || ret == 0) ? 0 :  // phone off
+                  (ret == 1) ? 1
+                             :  // phone on
+                  -1;           // invalid value
 
     return ret;
 
@@ -404,7 +400,7 @@ void RmcRadioRequestHandler::enableMdProtocol() {
 void RmcRadioRequestHandler::enableSilentReboot() {
     sp<RfxAtResponse> response;
     int muxreport_case = 0;
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int auto_unlock_pin = -1;
     int isSilentReboot = -1;
     int isDisableEboot = 0;
@@ -469,12 +465,12 @@ void RmcRadioRequestHandler::enableSilentReboot() {
 }
 
 void RmcRadioRequestHandler::resetIpoProperty() {
-    rfx_property_set((char *) "vendor.ril.ipo.radiooff", "0");
+    rfx_property_set((char*)"vendor.ril.ipo.radiooff", "0");
 }
 
 void RmcRadioRequestHandler::updateSupportDSBP() {
     char prop[RFX_PROPERTY_VALUE_MAX] = {0};
-    rfx_property_get((char *) "persist.vendor.radio.mtk_dsbp_support", prop, "0");
+    rfx_property_get((char*)"persist.vendor.radio.mtk_dsbp_support", prop, "0");
     atSendCommand(String8::format("AT+EDSBP=%s", prop));
 }
 
@@ -482,7 +478,7 @@ void RmcRadioRequestHandler::updateDataCallPrefer() {
     // set data/call prefer
     // 0 : call prefer
     // 1 : data prefer
-    char gprsPrefer[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char gprsPrefer[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.radio.gprs.prefer", gprsPrefer, "0");
     if ((atoi(gprsPrefer) == 0)) {
         // call prefer
@@ -496,13 +492,12 @@ void RmcRadioRequestHandler::updateDataCallPrefer() {
 }
 
 // External SIM [Start]
-int RmcRadioRequestHandler::queryModemVsimCapability()
-{
+int RmcRadioRequestHandler::queryModemVsimCapability() {
     sp<RfxAtResponse> p_response;
     int err, temp_cap = 0;
     String8 cmd("");
-    RfxAtLine *line = NULL;
-    char *capability = NULL;
+    RfxAtLine* line = NULL;
+    char* capability = NULL;
 
     /**
      * Query if the VSIM has been enabled
@@ -521,7 +516,7 @@ int RmcRadioRequestHandler::queryModemVsimCapability()
 
     if (p_response == NULL || p_response->getError() < 0) {
         logE(RFX_LOG_TAG, "queryModemVsimCapability fail");
-         goto done;
+        goto done;
     }
 
     switch (p_response->atGetCmeError()) {
@@ -533,10 +528,10 @@ int RmcRadioRequestHandler::queryModemVsimCapability()
                 line = p_response->getIntermediates();
 
                 line->atTokStart(&err);
-                if(err < 0) goto done;
+                if (err < 0) goto done;
 
                 temp_cap = line->atTokNextint(&err);
-                if(err < 0) goto done;
+                if (err < 0) goto done;
             }
             break;
         case CME_UNKNOWN:
@@ -569,8 +564,8 @@ void RmcRadioRequestHandler::requestSetAkaSim() {
     rfx_property_get("vendor.gsm.prefered.aka.sim.slot", akasim_prop, "-1");
 
     if (atoi(rsim_prop) == -1 || atoi(akasim_prop) != m_slot_id) {
-        logE(RFX_LOG_TAG, "[VSIM] requestSetAkaSim rsim=%d, aka-sim=%d",
-                atoi(rsim_prop), atoi(akasim_prop));
+        logE(RFX_LOG_TAG, "[VSIM] requestSetAkaSim rsim=%d, aka-sim=%d", atoi(rsim_prop),
+             atoi(akasim_prop));
         return;
     }
 
@@ -587,7 +582,8 @@ void RmcRadioRequestHandler::requestSetAkaSim() {
         }
 
         if (0 == p_response->getSuccess()) {
-            logE(RFX_LOG_TAG, "[VSIM] requestSetAkaSim p_response = %d /n", p_response->atGetCmeError());
+            logE(RFX_LOG_TAG, "[VSIM] requestSetAkaSim p_response = %d /n",
+                 p_response->atGetCmeError());
             switch (p_response->atGetCmeError()) {
                 default:
                     ret = RIL_E_GENERIC_FAILURE;
@@ -614,7 +610,7 @@ void RmcRadioRequestHandler::requestSwitchExternalSim() {
         rfx_property_set("persist.vendor.radio.external.sim", "");
     } else {
         getMSimProperty(m_slot_id, (char*)"persist.vendor.radio.external.sim",
-                persist_vsim_inserted_prop);
+                        persist_vsim_inserted_prop);
     }
 
     if (atoi(persist_vsim_inserted_prop) > 0) {
@@ -636,19 +632,21 @@ void RmcRadioRequestHandler::requestSwitchExternalSim() {
         // Might reboot or VSIM did't be enabled
         if (atoi(persist_vsim_inserted_prop) > 0 && !(RfxRilUtils::isNonDsdaRemoteSupport())) {
             // Case 1. Device reboot and VSIM enabled before reboot. Keep slot to VSIM only.
-            //cmd.append(String8::format("AT+EAPVSIM=1,0"));
+            // cmd.append(String8::format("AT+EAPVSIM=1,0"));
             // Modem didn't support AT+EAPVSIM=1,0 with VSIM hot swap. We sent AT+EAPVSIM=1,1 to
             // trigger modem send +ERSAIND: 1 and sent AT+ERSA=3 to plug out VSIM to achieve the
             // same goal.
             cmd.append(String8::format("AT+EAPVSIM=1,1"));
             logD(RFX_LOG_TAG,
-                    "[VSIM] Case 1. Device reboot and VSIM enabled before reboot. Keep slot to VSIM only.");
-        } else if (RfxRilUtils::isExternalSimOnlySlot(m_slot_id) > 0
-                && !(RfxRilUtils::isNonDsdaRemoteSupport())) {
+                 "[VSIM] Case 1. Device reboot and VSIM enabled before reboot. Keep slot to VSIM "
+                 "only.");
+        } else if (RfxRilUtils::isExternalSimOnlySlot(m_slot_id) > 0 &&
+                   !(RfxRilUtils::isNonDsdaRemoteSupport())) {
             // Case 2. Device reboot and the slot has been set to VSIM only in configuration.
             cmd.append(String8::format("AT+EAPVSIM=1,0"));
             logD(RFX_LOG_TAG,
-                    "[VSIM] Case 2. Device reboot and the slot has been set to VSIM only in configuration.");
+                 "[VSIM] Case 2. Device reboot and the slot has been set to VSIM only in "
+                 "configuration.");
         } else {
             // Case 3. Others. VSIM disabled and it is not VSIM only protocol.
             cmd.append(String8::format("AT+EAPVSIM=0"));
@@ -665,7 +663,8 @@ void RmcRadioRequestHandler::requestSwitchExternalSim() {
 
     if (0 == p_response->getSuccess()) {
         switch (p_response->atGetCmeError()) {
-            logD(RFX_LOG_TAG, "[VSIM] requestSwitchExternalSim p_response = %d /n", p_response->atGetCmeError());
+            logD(RFX_LOG_TAG, "[VSIM] requestSwitchExternalSim p_response = %d /n",
+                 p_response->atGetCmeError());
             default:
                 ret = RIL_E_GENERIC_FAILURE;
                 goto done;
@@ -677,42 +676,42 @@ done:
 }
 #define VSIM_NO_RESPONSE_TIMEOUT_DURATION "13"
 void RmcRadioRequestHandler::initVsimConfiguration() {
-    char persist[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char persist[RFX_PROPERTY_VALUE_MAX] = {0};
     getMSimProperty(m_slot_id, (char*)"persist.vendor.radio.external.sim", persist);
 
     if (strcmp("1", persist) == 0) {
         setExternalSimProperty(m_slot_id, (char*)"vendor.gsm.external.sim.enabled", (char*)"1");
     }
     setExternalSimProperty(m_slot_id, (char*)"vendor.gsm.external.sim.timeout",
-                    (char*)VSIM_NO_RESPONSE_TIMEOUT_DURATION);
+                           (char*)VSIM_NO_RESPONSE_TIMEOUT_DURATION);
 }
 
 // External SIM [End]
 
-void RmcRadioRequestHandler::bootupSetRadioPower(const sp<RfxMclMessage> &msg) {
+void RmcRadioRequestHandler::bootupSetRadioPower(const sp<RfxMclMessage>& msg) {
     logD(RFX_LOG_TAG, "bootupSetRadioPower");
     RIL_RadioState newState;
     RIL_Errno errNo = RIL_E_GENERIC_FAILURE;
 
-    char filghtMode[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char filghtMode[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_AIRPLANE_MODE, filghtMode, "false");
     if (strcmp("false", filghtMode) || isUnderCryptKeeper()) {
         logE(RFX_LOG_TAG, "under airplane mode or in cryptKeeper, return");
-        for(int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
+        for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
             getMclStatusManager(i)->setIntValue(RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF);
         }
         errNo = RIL_E_SUCCESS;
-        sp<RfxMclMessage> resMsg = RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(),
-                msg, false);
+        sp<RfxMclMessage> resMsg =
+                RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(), msg, false);
         responseToTelCore(resMsg);
         return;
     }
 
-    char simMode_prop[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char simMode_prop[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_SIM_MODE, simMode_prop,
-            (String8::format("%d", getSimCount())).string());
+                     (String8::format("%d", getSimCount())).string());
     int simMode = atoi(simMode_prop);
-    int originMode = simMode & ((int *)msg->getData()->getData())[0];
+    int originMode = simMode & ((int*)msg->getData()->getData())[0];
 
     // EFUN affected by SIM switch
     int mainSlotId = RfxRilUtils::getMajorSim() - 1;
@@ -721,7 +720,7 @@ void RmcRadioRequestHandler::bootupSetRadioPower(const sp<RfxMclMessage> &msg) {
     logI(RFX_LOG_TAG, "bootupSetRadioPower, origin mode = %d", originMode);
     for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
         slotMode = (originMode & (1 << i)) >> i;
-        switch(mainSlotId) {
+        switch (mainSlotId) {
             case RFX_SLOT_ID_0:
                 slotMode = slotMode << i;
                 break;
@@ -761,7 +760,7 @@ void RmcRadioRequestHandler::bootupSetRadioPower(const sp<RfxMclMessage> &msg) {
     logI(RFX_LOG_TAG, "bootupSetRadioPower, target mode = %d", targetMode);
 
     if (targetMode == 0) {
-        for(int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
+        for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
             getMclStatusManager(i)->setIntValue(RFX_STATUS_KEY_RADIO_STATE, RADIO_STATE_OFF);
         }
         errNo = RIL_E_SUCCESS;
@@ -772,24 +771,26 @@ void RmcRadioRequestHandler::bootupSetRadioPower(const sp<RfxMclMessage> &msg) {
         while (response->getSuccess() == 0 && retryCount < MAX_RETRY_COUNT) {
             response = atSendCommand(String8().format(("AT+EFUN=%d"), targetMode));
             retryCount++;
-            usleep(500*1000);
+            usleep(500 * 1000);
         }
         if (response->getSuccess() == 1) {
             errNo = RIL_E_SUCCESS;
-            for(int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
+            for (int i = 0; i < RfxRilUtils::rfxGetSimCount(); i++) {
                 if (originMode & (RADIO_MODE_SIM1_ONLY << i)) {
                     getMclStatusManager(i)->setBoolValue(RFX_STATUS_KEY_REQUEST_RADIO_POWER, true);
                 }
                 getMclStatusManager(i)->setIntValue(RFX_STATUS_KEY_RADIO_STATE,
-                        (originMode & (RADIO_MODE_SIM1_ONLY << i)) ? RADIO_STATE_ON :
-                         RADIO_STATE_OFF);
-                getMclStatusManager(i)->setIntValue(RFX_STATUS_KEY_RADIO_POWER_MSIM_MODE,
+                                                    (originMode & (RADIO_MODE_SIM1_ONLY << i))
+                                                            ? RADIO_STATE_ON
+                                                            : RADIO_STATE_OFF);
+                getMclStatusManager(i)->setIntValue(
+                        RFX_STATUS_KEY_RADIO_POWER_MSIM_MODE,
                         (originMode & (RADIO_MODE_SIM1_ONLY << i)) ? 1 : 0);
             }
         }
     }
-    sp<RfxMclMessage> resMsg = RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(),
-            msg, false);
+    sp<RfxMclMessage> resMsg =
+            RfxMclMessage::obtainResponse(msg->getId(), errNo, RfxVoidData(), msg, false);
     responseToTelCore(resMsg);
 }
 
@@ -821,48 +822,52 @@ void RmcRadioRequestHandler::initMdStatusReader() {
     }
 }
 
-void *RmcRadioRequestHandler::mdStatusReaderLoop(void* params __unused) {
+void* RmcRadioRequestHandler::mdStatusReaderLoop(void* params __unused) {
     int count = -1;
 
     RfxRilUtils::printLog(INFO, String8::format("%s", RFX_LOG_TAG),
-            String8::format("mdStatusReaderLoop - md status working thread"), RFX_SLOT_ID_0);
+                          String8::format("mdStatusReaderLoop - md status working thread"),
+                          RFX_SLOT_ID_0);
 
     /* /dev/ccci_mdx_sta: contains all modem status
-    *  /dev/ccci_md1_sta: contains gsm modem status
-    *  /dev/ccci_md3_sta: contains c2k modem status
-    */
+     *  /dev/ccci_md1_sta: contains gsm modem status
+     *  /dev/ccci_md3_sta: contains c2k modem status
+     */
     sMdStatusFd = open("/dev/ccci_mdx_sta", O_RDWR);
-    RfxRilUtils::printLog(INFO, String8::format("%s", RFX_LOG_TAG),
-            String8::format(
-            "[RmcRadioRequestHandler] mdStatusReaderLoop: fd = %d", sMdStatusFd),
+    RfxRilUtils::printLog(
+            INFO, String8::format("%s", RFX_LOG_TAG),
+            String8::format("[RmcRadioRequestHandler] mdStatusReaderLoop: fd = %d", sMdStatusFd),
             RFX_SLOT_ID_0);
 
     if (sMdStatusFd < 0) {
         RfxRilUtils::printLog(ERROR, String8::format("%s", RFX_LOG_TAG),
-                String8::format("ccci_mdx_sta port is not available"), RFX_SLOT_ID_0);
+                              String8::format("ccci_mdx_sta port is not available"), RFX_SLOT_ID_0);
         return NULL;
     }
 
     getResetLock();
-    MdStatusEvent *buffer = (MdStatusEvent *) calloc(1, sizeof(MdStatusEvent));
+    MdStatusEvent* buffer = (MdStatusEvent*)calloc(1, sizeof(MdStatusEvent));
     if (buffer == NULL) {
-        RfxRilUtils::printLog(ERROR, String8::format("%s", RFX_LOG_TAG),
-                String8::format("OOM"), RFX_SLOT_ID_0);
+        RfxRilUtils::printLog(ERROR, String8::format("%s", RFX_LOG_TAG), String8::format("OOM"),
+                              RFX_SLOT_ID_0);
         releaseResetLock();
         return NULL;
     }
 
     do {
         count = read(sMdStatusFd, buffer, sizeof(MdStatusEvent));
-        RfxRilUtils::printLog(INFO, String8::format("%s", RFX_LOG_TAG),
+        RfxRilUtils::printLog(
+                INFO, String8::format("%s", RFX_LOG_TAG),
                 String8::format(
-                "mdStatusReaderLoop: count: %d modem id: %d, event type: %d, reason: %s",
-                count, buffer->md_id, buffer->event_type, buffer->reason), RFX_SLOT_ID_0);
+                        "mdStatusReaderLoop: count: %d modem id: %d, event type: %d, reason: %s",
+                        count, buffer->md_id, buffer->event_type, buffer->reason),
+                RFX_SLOT_ID_0);
 
-        if (MD_STA_EV_RESET_REQUEST == buffer->event_type
-                || MD_STA_EV_LEAVE_FLIGHT_REQUEST == buffer->event_type
-                || MD_STA_EV_LEAVE_FLIGHT_E_REQUEST == buffer->event_type) {
-            RfxRilUtils::printLog(ERROR, String8::format("%s", RFX_LOG_TAG),
+        if (MD_STA_EV_RESET_REQUEST == buffer->event_type ||
+            MD_STA_EV_LEAVE_FLIGHT_REQUEST == buffer->event_type ||
+            MD_STA_EV_LEAVE_FLIGHT_E_REQUEST == buffer->event_type) {
+            RfxRilUtils::printLog(
+                    ERROR, String8::format("%s", RFX_LOG_TAG),
                     String8::format("mdStatusReaderLoop: RESET/STOP/ENTER_FLIGHT, break"),
                     RFX_SLOT_ID_0);
             break;
@@ -872,8 +877,8 @@ void *RmcRadioRequestHandler::mdStatusReaderLoop(void* params __unused) {
     // send to slot1
     if (MD_STA_EV_RESET_REQUEST == buffer->event_type) {
         RfxRilUtils::printLog(INFO, String8::format("%s", RFX_LOG_TAG),
-                String8::format(
-                "mdStatusReaderLoop: update status to framework"), RFX_SLOT_ID_0);
+                              String8::format("mdStatusReaderLoop: update status to framework"),
+                              RFX_SLOT_ID_0);
         RfxMclStatusManager::getMclStatusManager(RFX_SLOT_ID_UNKNOWN)
                 ->setBoolValue(RFX_STATUS_KEY_MODEM_RESET, true);
         sendUrcToTelCor(buffer->reason);
@@ -889,7 +894,7 @@ void *RmcRadioRequestHandler::mdStatusReaderLoop(void* params __unused) {
 // get reset lock at bootup
 void RmcRadioRequestHandler::getResetLock() {
     RfxRilUtils::printLog(DEBUG, String8::format("%s", RFX_LOG_TAG),
-            String8::format("getResetLock"), RFX_SLOT_ID_0);
+                          String8::format("getResetLock"), RFX_SLOT_ID_0);
     int ret = ioctl(sMdStatusFd, CCCI_IOC_HOLD_RST_LOCK, -1);
 }
 
@@ -899,7 +904,7 @@ void RmcRadioRequestHandler::getResetLock() {
 // 3. Receive MD_STA_EV_STOP_REQUEST
 void RmcRadioRequestHandler::releaseResetLock() {
     RfxRilUtils::printLog(DEBUG, String8::format("%s", RFX_LOG_TAG),
-            String8::format("releaseResetLock"), RFX_SLOT_ID_0);
+                          String8::format("releaseResetLock"), RFX_SLOT_ID_0);
 
     int ret = ioctl(sMdStatusFd, CCCI_IOC_FREE_RST_LOCK, -1);
 }
@@ -908,7 +913,7 @@ int RmcRadioRequestHandler::isNormalBootUp() {
     int ret = 1;
     int len = 0, reason = 0, fip = 0, exp_type = 0;
     char line[RFX_PROPERTY_VALUE_MAX] = {0};
-    FILE *fp = fopen(BOOTUP_REASON_FILE, "r");
+    FILE* fp = fopen(BOOTUP_REASON_FILE, "r");
 
     if (fp == NULL) {
         logE(RFX_LOG_TAG, "isNormalBootUp(): file not existed.");
@@ -916,10 +921,9 @@ int RmcRadioRequestHandler::isNormalBootUp() {
     }
 
     if (fgets(line, sizeof(line), fp) != NULL) {
-        sscanf(line, "WDT status: %d fiq step: %d  exception type: %d",
-                &reason, &fip, &exp_type);
-        logD(RFX_LOG_TAG, "isNormalBootUp(): line: %s reason: %d, fip: %d, exp_type: %d",
-                line, reason, fip, exp_type);
+        sscanf(line, "WDT status: %d fiq step: %d  exception type: %d", &reason, &fip, &exp_type);
+        logD(RFX_LOG_TAG, "isNormalBootUp(): line: %s reason: %d, fip: %d, exp_type: %d", line,
+             reason, fip, exp_type);
     }
 
     if (reason == 0 || (reason == 2 && fip == 0 && exp_type == 0)) {
@@ -937,13 +941,11 @@ int RmcRadioRequestHandler::isNormalBootUp() {
 
 void RmcRadioRequestHandler::sendUrcToTelCor(char* buffer) {
     sp<RfxMclMessage> urc;
-    for (int i=0; i<getSimCount(); i++) {
+    for (int i = 0; i < getSimCount(); i++) {
         RfxRilUtils::printLog(DEBUG, String8::format("%s", RFX_LOG_TAG),
-                String8::format(
-                "[RmcRadioRequestHandler] send modem reset urc"), i);
-        urc = RfxMclMessage::obtainUrc(
-                RFX_MSG_UNSOL_MODEM_RESTART, i,
-                RfxStringData((void*)buffer, strlen(buffer)));
+                              String8::format("[RmcRadioRequestHandler] send modem reset urc"), i);
+        urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_MODEM_RESTART, i,
+                                       RfxStringData((void*)buffer, strlen(buffer)));
 
         RfxDispatchThread::enqueueUrcMessage(urc);
     }
@@ -953,7 +955,7 @@ void RmcRadioRequestHandler::sendUrcToTelCor(char* buffer) {
  *A special paragraph, not to trun off modem power under cryptkeeper
  */
 bool RmcRadioRequestHandler::isUnderCryptKeeper() {
-    char vold_decrypt[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char vold_decrypt[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_DECRYPT, vold_decrypt, "false");
 
     if (!strcmp("trigger_restart_min_framework", vold_decrypt)) {
@@ -969,7 +971,7 @@ bool RmcRadioRequestHandler::isUnderCryptKeeper() {
 int RmcRadioRequestHandler::queryMainProtocol() {
     sp<RfxAtResponse> p_response = NULL;
     int err;
-    RfxAtLine *line;
+    RfxAtLine* line;
     int ret = 0;
     int main_sim = 1;
 
@@ -1016,6 +1018,6 @@ void RmcRadioRequestHandler::resetRadio() {
     atSendCommand("AT+EMDT=0");
     atSendCommand("AT+EPOF");
     RfxRilUtils::triggerCCCIIoctl(CCCI_IOC_ENTER_DEEP_FLIGHT_ENHANCED);
-    //power on modem
+    // power on modem
     RfxRilUtils::triggerCCCIIoctl(CCCI_IOC_LEAVE_DEEP_FLIGHT_ENHANCED);
 }

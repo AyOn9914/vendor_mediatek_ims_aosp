@@ -24,23 +24,22 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcRadioUrcHandler, RIL_CMD_PROXY_URC);
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_DSBP_CHANGED_INDICATION);
 
-RmcRadioUrcHandler::RmcRadioUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcRadioUrcHandler::RmcRadioUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     const char* urc[] = {
-        (char *) "+EDSBP",
+            (char*)"+EDSBP",
     };
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char*));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
     mPreRadioState = RADIO_STATE_OFF;
 }
 
-RmcRadioUrcHandler::~RmcRadioUrcHandler() {
-}
+RmcRadioUrcHandler::~RmcRadioUrcHandler() {}
 
 void RmcRadioUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     int err = 0;
-    RfxAtLine *line = msg->getRawUrc();
-    char *data = line->getLine();
+    RfxAtLine* line = msg->getRawUrc();
+    char* data = line->getLine();
     if (strStartsWith(data, "+EDSBP")) {
         handleDSBPEnhancement(line);
     } else {
@@ -48,7 +47,7 @@ void RmcRadioUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcRadioUrcHandler::handleDSBPEnhancement(RfxAtLine *line) {
+void RmcRadioUrcHandler::handleDSBPEnhancement(RfxAtLine* line) {
     int err = 0;
     int sbp, state;
     line->atTokStart(&err);
@@ -69,12 +68,12 @@ void RmcRadioUrcHandler::handleDSBPEnhancement(RfxAtLine *line) {
 
     if (DSBP_ENHANCEMENT_START == state) {
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_DSBP_ENHANCEMENT_STATE,
-                DSBP_ENHANCEMENT_START);
+                                           DSBP_ENHANCEMENT_START);
     } else {
         getMclStatusManager()->setIntValue(RFX_STATUS_KEY_DSBP_ENHANCEMENT_STATE,
-                DSBP_ENHANCEMENT_END);
+                                           DSBP_ENHANCEMENT_END);
     }
-    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-        RFX_MSG_UNSOL_DSBP_CHANGED_INDICATION, m_slot_id, RfxIntsData(&state, 1));
+    sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_DSBP_CHANGED_INDICATION,
+                                                     m_slot_id, RfxIntsData(&state, 1));
     responseToTelCore(urc);
 }

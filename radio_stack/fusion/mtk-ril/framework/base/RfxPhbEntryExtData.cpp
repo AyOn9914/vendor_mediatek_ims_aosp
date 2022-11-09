@@ -20,10 +20,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxPhbEntryExtData);
 
-RfxPhbEntryExtData::RfxPhbEntryExtData(void *data, int length) : RfxBaseData(data, length)  {
+RfxPhbEntryExtData::RfxPhbEntryExtData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_PHB_ENTRY *pInput = (RIL_PHB_ENTRY*)data;
-        RIL_PHB_ENTRY *pData = (RIL_PHB_ENTRY*)calloc(1, sizeof(RIL_PHB_ENTRY));
+        RIL_PHB_ENTRY* pInput = (RIL_PHB_ENTRY*)data;
+        RIL_PHB_ENTRY* pData = (RIL_PHB_ENTRY*)calloc(1, sizeof(RIL_PHB_ENTRY));
         RFX_ASSERT(pData != NULL);
         pData->index = pInput->index;
         if (pInput->number != NULL) {
@@ -56,7 +56,7 @@ RfxPhbEntryExtData::RfxPhbEntryExtData(void *data, int length) : RfxBaseData(dat
 RfxPhbEntryExtData::~RfxPhbEntryExtData() {
     // free
     if (m_data != NULL) {
-        RIL_PHB_ENTRY *pTmp = (RIL_PHB_ENTRY *) m_data;
+        RIL_PHB_ENTRY* pTmp = (RIL_PHB_ENTRY*)m_data;
         if (pTmp != NULL) {
             if (pTmp->number != NULL) {
                 free(pTmp->number);

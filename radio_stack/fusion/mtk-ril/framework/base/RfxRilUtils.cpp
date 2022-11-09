@@ -43,7 +43,7 @@ int RfxRilUtils::mIsC2kSupport = -1;
 int RfxRilUtils::mIsLteSupport = -1;
 int RfxRilUtils::mIsImsSupport = -1;
 int RfxRilUtils::mIsMultiIms = -1;
-int RfxRilUtils::mIsRsimAuthOngoing[MAX_SIM_COUNT] = {-1,-1,-1,-1};
+int RfxRilUtils::mIsRsimAuthOngoing[MAX_SIM_COUNT] = {-1, -1, -1, -1};
 
 /// M: add for op09 volte setting @{
 int RfxRilUtils::mIsOp09 = -1;
@@ -55,20 +55,14 @@ RilRunMode RfxRilUtils::m_rilRunMode = RilRunMode::RIL_RUN_MODE_NORMORL;
 STATUSCALLBACK RfxRilUtils::s_statusCallback = NULL;
 
 static const RfxStatusKeyEnum mHideStatusKeyLog[] = {
-    RFX_STATUS_KEY_SIM_ICCID,
-    RFX_STATUS_KEY_GSM_IMSI,
-    RFX_STATUS_KEY_C2K_IMSI,
-    RFX_STATUS_KEY_XUI_INFO,
-    RFX_STATUS_KEY_IMS_REG_IND_URI
-};
+        RFX_STATUS_KEY_SIM_ICCID, RFX_STATUS_KEY_GSM_IMSI, RFX_STATUS_KEY_C2K_IMSI,
+        RFX_STATUS_KEY_XUI_INFO, RFX_STATUS_KEY_IMS_REG_IND_URI};
 
-int RfxRilUtils::rfxGetSimCount() {
-    return getSimCount();
-}
+int RfxRilUtils::rfxGetSimCount() { return getSimCount(); }
 
 int RfxRilUtils::isEngLoad() {
     if (RfxRilUtils::m_isEngLoad == -1) {
-        char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("ro.build.type", property_value, "");
         RfxRilUtils::m_isEngLoad = (strcmp("eng", property_value) == 0);
     }
@@ -77,10 +71,10 @@ int RfxRilUtils::isEngLoad() {
 
 int RfxRilUtils::isUserLoad() {
     if (RfxRilUtils::m_isUserLoad == -1) {
-        char property_value_emulation[RFX_PROPERTY_VALUE_MAX] = { 0 };
-        char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char property_value_emulation[RFX_PROPERTY_VALUE_MAX] = {0};
+        char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("vendor.ril.emulation.userload", property_value_emulation, "0");
-        if(strcmp("1", property_value_emulation) == 0) {
+        if (strcmp("1", property_value_emulation) == 0) {
             return 1;
         }
         rfx_property_get("ro.build.type", property_value, "");
@@ -111,30 +105,30 @@ int RfxRilUtils::isImsSupport() {
 
 int RfxRilUtils::isMultipleImsSupport() {
     if (RfxRilUtils::mIsMultiIms == -1) {
-        char tempstr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char tempstr[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("persist.vendor.mims_support", tempstr, "0");
         RfxRilUtils::mIsMultiIms = atoi(tempstr);
     }
     return (RfxRilUtils::mIsMultiIms > 1) ? 1 : 0;
 }
 
-int RfxRilUtils::triggerCCCIIoctlEx(int request, int *param) {
+int RfxRilUtils::triggerCCCIIoctlEx(int request, int* param) {
     int ret_ioctl_val = -1;
     int ccci_sys_fd = -1;
     char dev_node[32] = {0};
     int enableMd1 = 0;
-    char prop_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char prop_value[RFX_PROPERTY_VALUE_MAX] = {0};
     int retryCount = 0;
 
     rfx_property_get("ro.vendor.mtk_md1_support", prop_value, "0");
     enableMd1 = atoi(prop_value);
 
 #if defined(PURE_AP_USE_EXTERNAL_MODEM)
-    RFX_LOG_D(RFX_LOG_TAG, "Open CCCI MD1 ioctl port[%s]",CCCI_MD1_POWER_IOCTL_PORT);
+    RFX_LOG_D(RFX_LOG_TAG, "Open CCCI MD1 ioctl port[%s]", CCCI_MD1_POWER_IOCTL_PORT);
     ccci_sys_fd = open(CCCI_MD1_POWER_IOCTL_PORT, O_RDWR);
     while (ccci_sys_fd < 0 && retryCount < MAX_RETRY_COUNT) {
         RFX_LOG_E(RFX_LOG_TAG, "Open CCCI ioctl port failed [%d], retrying...", ccci_sys_fd);
-        usleep(100*1000);
+        usleep(100 * 1000);
         retryCount++;
         ccci_sys_fd = open(CCCI_MD1_POWER_IOCTL_PORT, O_RDWR);
     }
@@ -148,7 +142,7 @@ int RfxRilUtils::triggerCCCIIoctlEx(int request, int *param) {
     ccci_sys_fd = open(dev_node, O_RDWR | O_NONBLOCK);
     while (ccci_sys_fd < 0 && retryCount < MAX_RETRY_COUNT) {
         RFX_LOG_E(RFX_LOG_TAG, "Open CCCI ioctl port failed [%d], retrying...", ccci_sys_fd);
-        usleep(100*1000);
+        usleep(100 * 1000);
         retryCount++;
         ccci_sys_fd = open(dev_node, O_RDWR | O_NONBLOCK);
     }
@@ -159,22 +153,22 @@ int RfxRilUtils::triggerCCCIIoctlEx(int request, int *param) {
 #endif
 
 #if defined(PURE_AP_USE_EXTERNAL_MODEM)
-    if(request == CCCI_IOC_ENTER_DEEP_FLIGHT) {
+    if (request == CCCI_IOC_ENTER_DEEP_FLIGHT) {
         int pid = findPid("vendor.gsm0710muxd");
-        RFX_LOG_D(RFX_LOG_TAG, "MUXD pid=%d",pid);
-        if(pid != -1) kill(pid,SIGUSR2);
+        RFX_LOG_D(RFX_LOG_TAG, "MUXD pid=%d", pid);
+        if (pid != -1) kill(pid, SIGUSR2);
         RFX_LOG_D(RFX_LOG_TAG, "send SIGUSR2 to MUXD done");
-        sleepMsec(100);    // make sure MUXD have enough time to close channel and FD
+        sleepMsec(100);  // make sure MUXD have enough time to close channel and FD
     }
 #endif
 
     ret_ioctl_val = ioctl(ccci_sys_fd, request, param);
     if (ret_ioctl_val < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "CCCI ioctl result: ret_val=%d, request=%d, param=%d",
-                ret_ioctl_val, request, *param);
+        RFX_LOG_E(RFX_LOG_TAG, "CCCI ioctl result: ret_val=%d, request=%d, param=%d", ret_ioctl_val,
+                  request, *param);
     } else {
-        RFX_LOG_D(RFX_LOG_TAG, "CCCI ioctl result: ret_val=%d, request=%d, param=%d",
-                ret_ioctl_val, request, *param);
+        RFX_LOG_D(RFX_LOG_TAG, "CCCI ioctl result: ret_val=%d, request=%d, param=%d", ret_ioctl_val,
+                  request, *param);
     }
 
     int ret = close(ccci_sys_fd);
@@ -193,15 +187,13 @@ int RfxRilUtils::triggerCCCIIoctl(int request) {
     return ret_ioctl_val;
 }
 
-char RfxRilUtils::convertCharToHex(char ch)
-{
+char RfxRilUtils::convertCharToHex(char ch) {
     char returnType;
-    switch(ch)
-    {
+    switch (ch) {
         case '0':
             returnType = 0;
             break;
-        case '1' :
+        case '1':
             returnType = 1;
             break;
         case '2':
@@ -210,7 +202,7 @@ char RfxRilUtils::convertCharToHex(char ch)
         case '3':
             returnType = 3;
             break;
-        case '4' :
+        case '4':
             returnType = 4;
             break;
         case '5':
@@ -264,15 +256,15 @@ int RfxRilUtils::triggerPhantomPacket(String8 s) {
     uint32_t ret = 0;
     int local_errno = 0;
 
-    char mode4_msg[MNGMT_PACKET_LENGTH+1];
+    char mode4_msg[MNGMT_PACKET_LENGTH + 1];
 
-    if (s.size() %2 != 0 || s.size() > MNGMT_PACKET_LENGTH) return -1;
+    if (s.size() % 2 != 0 || s.size() > MNGMT_PACKET_LENGTH) return -1;
 
-    for (std::size_t i = 0; i != s.size()/2; ++i) {
-        mode4_msg[i] = 16 * convertCharToHex(s[2*i]) + convertCharToHex(s[2*i+1]);
+    for (std::size_t i = 0; i != s.size() / 2; ++i) {
+        mode4_msg[i] = 16 * convertCharToHex(s[2 * i]) + convertCharToHex(s[2 * i + 1]);
     }
 
-    RFX_LOG_D(RFX_LOG_TAG, "Phantom pkt content(%zu): %s", s.size()/2, mode4_msg);
+    RFX_LOG_D(RFX_LOG_TAG, "Phantom pkt content(%zu): %s", s.size() / 2, mode4_msg);
 
     fd = open("/dev/ttyC6", O_RDWR);
     if (fd < 0) {
@@ -282,11 +274,11 @@ int RfxRilUtils::triggerPhantomPacket(String8 s) {
         RFX_LOG_D(RFX_LOG_TAG, "/dev/ttyC6 is opened.");
     }
 
-    ret = write(fd, mode4_msg, s.size()/2);
-    if (ret != s.size()/2) {
+    ret = write(fd, mode4_msg, s.size() / 2);
+    if (ret != s.size() / 2) {
         local_errno = errno;
-        RFX_LOG_E(RFX_LOG_TAG, "Failed to write phantom pkt(%zu)!! (%d/%d)",
-                s.size()/2, ret, local_errno);
+        RFX_LOG_E(RFX_LOG_TAG, "Failed to write phantom pkt(%zu)!! (%d/%d)", s.size() / 2, ret,
+                  local_errno);
         close(fd);
         return -1;
     }
@@ -295,23 +287,23 @@ int RfxRilUtils::triggerPhantomPacket(String8 s) {
     return 0;
 }
 
-RilRunMode RfxRilUtils::getRilRunMode() {
-    return m_rilRunMode;
-}
+RilRunMode RfxRilUtils::getRilRunMode() { return m_rilRunMode; }
 
-void RfxRilUtils::setRilRunMode(RilRunMode mode) {
-    m_rilRunMode = mode;
-}
+void RfxRilUtils::setRilRunMode(RilRunMode mode) { m_rilRunMode = mode; }
 
-void RfxRilUtils::setStatusValueForGT(int slotId, const RfxStatusKeyEnum key, const RfxVariant &value) {
-    RFX_LOG_D(RFX_LOG_TAG, "setStatusValueForGT, updateValueMdComm, slot_id = %d, key = %s, value = %s", slotId,
-            RfxStatusManager::getKeyString(key), value.toString().string());
+void RfxRilUtils::setStatusValueForGT(int slotId, const RfxStatusKeyEnum key,
+                                      const RfxVariant& value) {
+    RFX_LOG_D(RFX_LOG_TAG,
+              "setStatusValueForGT, updateValueMdComm, slot_id = %d, key = %s, value = %s", slotId,
+              RfxStatusManager::getKeyString(key), value.toString().string());
     sp<RfxMessage> msg = RfxMessage::obtainStatusSync(slotId, key, value, false, false, true);
     RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->requestToMcl(msg);
 
-    RFX_LOG_D(RFX_LOG_TAG, "setStatusValueForGT, updateValueToTelCore, slot_id = %d, key = %s, value = %s", slotId,
-            RfxStatusManager::getKeyString(key), value.toString().string());
-    sp<RfxMclMessage> msgToTcl = RfxMclMessage::obtainStatusSync(slotId, key, value, false, false, true);
+    RFX_LOG_D(RFX_LOG_TAG,
+              "setStatusValueForGT, updateValueToTelCore, slot_id = %d, key = %s, value = %s",
+              slotId, RfxStatusManager::getKeyString(key), value.toString().string());
+    sp<RfxMclMessage> msgToTcl =
+            RfxMclMessage::obtainStatusSync(slotId, key, value, false, false, true);
     RfxDispatchThread::enqueueStatusSyncMessage(msgToTcl);
 }
 
@@ -319,7 +311,8 @@ void RfxRilUtils::setStatusCallbackForGT(STATUSCALLBACK statusCallback) {
     s_statusCallback = statusCallback;
 }
 
-void RfxRilUtils::updateStatusToGT(int slotId, const RfxStatusKeyEnum key, const RfxVariant &value) {
+void RfxRilUtils::updateStatusToGT(int slotId, const RfxStatusKeyEnum key,
+                                   const RfxVariant& value) {
     if (s_statusCallback != NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "updateStatusToGT is not null");
         s_statusCallback(slotId, key, value);
@@ -331,7 +324,7 @@ void RfxRilUtils::updateStatusToGT(int slotId, const RfxStatusKeyEnum key, const
 /// M: add for op09 volte setting @{
 bool RfxRilUtils::isOp09() {
     if (mIsOp09 == -1) {
-        char optrStr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char optrStr[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("persist.vendor.operator.optr", optrStr, "");
         if (strncmp(optrStr, "OP09", 4) == 0) {
             mIsOp09 = 1;
@@ -344,7 +337,7 @@ bool RfxRilUtils::isOp09() {
 
 bool RfxRilUtils::isCtVolteSupport() {
     if (mIsCtVolteSupport == -1) {
-        char ctStr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char ctStr[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("persist.vendor.mtk_ct_volte_support", ctStr, "");
         if (strcmp(ctStr, "1") == 0) {
             mIsCtVolteSupport = 1;
@@ -357,7 +350,7 @@ bool RfxRilUtils::isCtVolteSupport() {
 
 bool RfxRilUtils::isCtMixVolteSupport() {
     if (mIsCtMixVolteSupport == -1) {
-        char ctStr[RFX_PROPERTY_VALUE_MAX] = { 0 };
+        char ctStr[RFX_PROPERTY_VALUE_MAX] = {0};
         rfx_property_get("persist.vendor.mtk_ct_volte_support", ctStr, "");
         if (strcmp(ctStr, "2") == 0 || strcmp(ctStr, "3") == 0) {
             mIsCtMixVolteSupport = 1;
@@ -370,7 +363,7 @@ bool RfxRilUtils::isCtMixVolteSupport() {
 /// @}
 
 int RfxRilUtils::getMajorSim() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     int simId = 0;
 
     rfx_property_get("persist.vendor.radio.simswitch", tmp, "1");
@@ -403,33 +396,33 @@ void RfxRilUtils::printLog(int level, String8 tag, String8 log, int slot) {
 
 bool RfxRilUtils::isInLogReductionList(int reqId) {
     const int logReductionRequest[] = {
-        RFX_MSG_REQUEST_SIM_IO,
-        RFX_MSG_REQUEST_READ_EMAIL_ENTRY,
-        RFX_MSG_REQUEST_READ_SNE_ENTRY,
-        RFX_MSG_REQUEST_READ_ANR_ENTRY,
-        RFX_MSG_REQUEST_READ_UPB_GRP,
-        RFX_MSG_REQUEST_QUERY_PHB_STORAGE_INFO,
-        RFX_MSG_REQUEST_WRITE_PHB_ENTRY,
-        RFX_MSG_REQUEST_READ_PHB_ENTRY,
-        RFX_MSG_REQUEST_QUERY_UPB_CAPABILITY,
-        RFX_MSG_REQUEST_EDIT_UPB_ENTRY,
-        RFX_MSG_REQUEST_DELETE_UPB_ENTRY,
-        RFX_MSG_REQUEST_READ_UPB_GAS_LIST,
-        RFX_MSG_REQUEST_WRITE_UPB_GRP,
-        RFX_MSG_REQUEST_QUERY_UPB_AVAILABLE,
-        RFX_MSG_REQUEST_READ_UPB_AAS_LIST,
-        RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
-        RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
-        RFX_MSG_REQUEST_DEACTIVATE_DATA_CALL,
-        RFX_MSG_REQUEST_SYNC_DATA_SETTINGS_TO_MD,
-        RFX_MSG_REQUEST_ALLOW_DATA,
-        RFX_MSG_REQUEST_SETUP_DATA_CALL,
-        RFX_MSG_REQUEST_RESET_MD_DATA_RETRY_COUNT,
-        RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
-        RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
+            RFX_MSG_REQUEST_SIM_IO,
+            RFX_MSG_REQUEST_READ_EMAIL_ENTRY,
+            RFX_MSG_REQUEST_READ_SNE_ENTRY,
+            RFX_MSG_REQUEST_READ_ANR_ENTRY,
+            RFX_MSG_REQUEST_READ_UPB_GRP,
+            RFX_MSG_REQUEST_QUERY_PHB_STORAGE_INFO,
+            RFX_MSG_REQUEST_WRITE_PHB_ENTRY,
+            RFX_MSG_REQUEST_READ_PHB_ENTRY,
+            RFX_MSG_REQUEST_QUERY_UPB_CAPABILITY,
+            RFX_MSG_REQUEST_EDIT_UPB_ENTRY,
+            RFX_MSG_REQUEST_DELETE_UPB_ENTRY,
+            RFX_MSG_REQUEST_READ_UPB_GAS_LIST,
+            RFX_MSG_REQUEST_WRITE_UPB_GRP,
+            RFX_MSG_REQUEST_QUERY_UPB_AVAILABLE,
+            RFX_MSG_REQUEST_READ_UPB_AAS_LIST,
+            RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
+            RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
+            RFX_MSG_REQUEST_DEACTIVATE_DATA_CALL,
+            RFX_MSG_REQUEST_SYNC_DATA_SETTINGS_TO_MD,
+            RFX_MSG_REQUEST_ALLOW_DATA,
+            RFX_MSG_REQUEST_SETUP_DATA_CALL,
+            RFX_MSG_REQUEST_RESET_MD_DATA_RETRY_COUNT,
+            RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
+            RFX_MSG_REQUEST_CDMA_SMS_BROADCAST_ACTIVATION,
     };
 
-    size_t count = sizeof(logReductionRequest)/sizeof(int);
+    size_t count = sizeof(logReductionRequest) / sizeof(int);
     for (size_t i = 0; i < count; i++) {
         if (reqId == logReductionRequest[i]) {
             return true;
@@ -438,7 +431,7 @@ bool RfxRilUtils::isInLogReductionList(int reqId) {
     return false;
 }
 
-int RfxRilUtils::handleAee(const char *modem_warning, const char *modem_version) {
+int RfxRilUtils::handleAee(const char* modem_warning, const char* modem_version) {
     RFX_UNUSED(modem_warning);
     RFX_UNUSED(modem_version);
     RFX_LOG_D(RFX_LOG_TAG, "[handleOemUnsolicited]HAVE_AEE_FEATURE is not defined");
@@ -452,37 +445,36 @@ int RfxRilUtils::handleAee(const char *modem_warning, const char *modem_version)
 
 void RfxRilUtils::setRsimAuthOngoing(int slot, int ongoing) {
     RfxRilUtils::mIsRsimAuthOngoing[slot] = ongoing;
-    RFX_LOG_D(RFX_LOG_TAG, "[VSIM] setRsimAuthOngoing rid:%d is %d.", slot, mIsRsimAuthOngoing[slot]);
+    RFX_LOG_D(RFX_LOG_TAG, "[VSIM] setRsimAuthOngoing rid:%d is %d.", slot,
+              mIsRsimAuthOngoing[slot]);
 }
 
-int RfxRilUtils::getRsimAuthOngoing(int slot) {
-    return RfxRilUtils::mIsRsimAuthOngoing[slot];
-}
+int RfxRilUtils::getRsimAuthOngoing(int slot) { return RfxRilUtils::mIsRsimAuthOngoing[slot]; }
 
 int RfxRilUtils::isExternalSimSupport() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_external_sim_support", property_value, "0");
     return atoi(property_value);
 }
 
 int RfxRilUtils::isExternalSimOnlySlot(int slot) {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_external_sim_only_slots", property_value, "0");
     int supported = atoi(property_value) & (1 << slot);
 
     RFX_LOG_D(RFX_LOG_TAG, "[isExternalSimOnlySlot] vsimOnlySlots:%d, supported:%d",
-            atoi(property_value), supported);
+              atoi(property_value), supported);
     return ((supported > 0) ? 1 : 0);
 }
 
 int RfxRilUtils::isPersistExternalSimDisabled() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_persist_vsim_disabled", property_value, "0");
     return atoi(property_value);
 }
 
 int RfxRilUtils::isNonDsdaRemoteSupport() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_non_dsda_rsim_support", property_value, "0");
     return atoi(property_value);
 }
@@ -512,7 +504,8 @@ int RfxRilUtils::isVsimEnabledBySlot(int slot) {
     getMSimProperty(slot, (char*)"vendor.gsm.external.sim.enabled", vsim_enabled_prop);
     getMSimProperty(slot, (char*)"vendor.gsm.external.sim.inserted", vsim_inserted_prop);
 
-    if ((atoi(vsim_enabled_prop) > 0 && atoi(vsim_inserted_prop) > 0) || isExternalSimOnlySlot(slot)) {
+    if ((atoi(vsim_enabled_prop) > 0 && atoi(vsim_inserted_prop) > 0) ||
+        isExternalSimOnlySlot(slot)) {
         enabled = 1;
     }
 
@@ -550,50 +543,50 @@ bool RfxRilUtils::isVsimEnabled() {
 }
 
 bool RfxRilUtils::isVsimClientConnected() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.gsm.external.sim.connected", property_value, "0");
     return (atoi(property_value) != 0);
 }
 
 bool RfxRilUtils::isExternalSimManagerExisted() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.gsm.external.sim.connected", property_value, "-1");
     // "-1" indicates no such property because we assure no place set it to "-1"
     return (atoi(property_value) != -1);
 }
 
 int RfxRilUtils::getRemoteSimSlot() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.gsm.prefered.rsim.slot", property_value, "-1");
     return atoi(property_value);
 }
 // External SIM [End]
 
 bool RfxRilUtils::isTplusWSupport() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.simswitch.tpluswsupport", tmp, "0");
     return (atoi(tmp) != 0);
 }
 
 int RfxRilUtils::getKeep3GMode() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.nw.worldmode.keep_3g_mode", tmp, "0");
     return (atoi(tmp));
 }
 
 bool RfxRilUtils::isEmciSupport() {
-    char tmp[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char tmp[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("vendor.ril.call.emci_support", tmp, "0");
     return (atoi(tmp) != 0);
 }
 
 bool RfxRilUtils::isWfcEnable(int slotId) {
-    char wfcEnable[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char wfcEnable[MTK_PROPERTY_VALUE_MAX] = {0};
 
     bool wfcSupport = isWfcSupport();
     rfx_property_get("persist.vendor.mtk.wfc.enable", wfcEnable, "0");
-    RFX_LOG_D(RFX_LOG_TAG, "isWfcEnable(), slotId: %d, wfcSupport: %d, wfcEnable %s",
-            slotId, wfcSupport, wfcEnable);
+    RFX_LOG_D(RFX_LOG_TAG, "isWfcEnable(), slotId: %d, wfcSupport: %d, wfcEnable %s", slotId,
+              wfcSupport, wfcEnable);
 
     if (wfcSupport) {
         /* wfcEnable is a bitmask for VoLTE/ViLTE/WFC. Maximun sim is 4.
@@ -615,12 +608,12 @@ bool RfxRilUtils::isWfcEnable(int slotId) {
 }
 
 bool RfxRilUtils::isVilteEnable(int slotId) {
-    char vilteEnable[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char vilteEnable[MTK_PROPERTY_VALUE_MAX] = {0};
 
     bool vilteSupport = isVilteSupport();
     rfx_property_get("persist.mtk.vilte.enable", vilteEnable, "0");
-    RFX_LOG_D(RFX_LOG_TAG, "isVilteEnable(), slotId: %d, vilteSupport: %d, vilteEnable %s",
-            slotId, vilteSupport, vilteEnable);
+    RFX_LOG_D(RFX_LOG_TAG, "isVilteEnable(), slotId: %d, vilteSupport: %d, vilteEnable %s", slotId,
+              vilteSupport, vilteEnable);
 
     if (vilteSupport) {
         /* vilteEnable is a bitmask for VoLTE/ViLTE/WFC. Maximun sim is 4.
@@ -642,7 +635,7 @@ bool RfxRilUtils::isVilteEnable(int slotId) {
 }
 
 bool RfxRilUtils::isDigitsSupport() {
-    char digitsSupport[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char digitsSupport[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("persist.vendor.mtk_digits_support", digitsSupport, "0");
     return (atoi(digitsSupport) == 1);
 }
@@ -650,32 +643,30 @@ bool RfxRilUtils::isDigitsSupport() {
 /*****************************************************************************
  * Utility function
  *****************************************************************************/
-const char* RfxRilUtils::boolToString(bool value) {
-    return value ? "true" : "false";
-}
+const char* RfxRilUtils::boolToString(bool value) { return value ? "true" : "false"; }
 
-bool RfxRilUtils::isSmsSupport () {
+bool RfxRilUtils::isSmsSupport() {
     FeatureValue feature;
     memset(&feature, 0, sizeof(feature));
     mtkGetFeature(CONFIG_SMS, &feature);
-    bool support_sms = (strcmp(feature.value, "1") == 0)? true : false;
+    bool support_sms = (strcmp(feature.value, "1") == 0) ? true : false;
     return support_sms;
 }
 
 /// M: GSMA TS.27 13.3.7 @{
 bool RfxRilUtils::isUiccCLFSupport() {
-    char uiccCLF[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char uiccCLF[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_uicc_clf", uiccCLF, "0");
     return (atoi(uiccCLF) == 1);
 }
 /// M: GSMA TS.27 13.3.7 @}
 
-bool RfxRilUtils::isSimSwitchUrc(const char *line) {
+bool RfxRilUtils::isSimSwitchUrc(const char* line) {
     return (strStartsWith(line, "+ESIMMAP:") || strStartsWith(line, "+EPSMAP:"));
 }
 
 bool RfxRilUtils::hideStatusLog(const RfxStatusKeyEnum key) {
-    for (int i = 0; i < (int) (sizeof(mHideStatusKeyLog) / sizeof(mHideStatusKeyLog[0])); i++) {
+    for (int i = 0; i < (int)(sizeof(mHideStatusKeyLog) / sizeof(mHideStatusKeyLog[0])); i++) {
         if (key == mHideStatusKeyLog[i]) {
             return true;
         }
@@ -695,7 +686,7 @@ int RfxRilUtils::getProtocolStackId(int slotId) {
     }
 }
 
-void RfxRilUtils::getLogicalModemId(char *modemId, int size, int slotId) {
+void RfxRilUtils::getLogicalModemId(char* modemId, int size, int slotId) {
     memset(modemId, 0, size);
     sprintf(modemId, "modem_sys%d_ps%d", 1, (getProtocolStackId(slotId) - 1));
 }
@@ -729,12 +720,12 @@ bool RfxRilUtils::isViwifiSupport() {
 }
 
 bool RfxRilUtils::isGwsdSupport() {
-    char gwsd[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char gwsd[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get("ro.vendor.mtk_gwsd_support", gwsd, "0");
     return (atoi(gwsd) == 1);
 }
 
-const char * RfxRilUtils::pii(const char * tag, const char * hiddenData) {
+const char* RfxRilUtils::pii(const char* tag, const char* hiddenData) {
     static char truncatedData[255] = {0};
 
     if (hiddenData == NULL) return NULL;
@@ -747,12 +738,12 @@ const char * RfxRilUtils::pii(const char * tag, const char * hiddenData) {
         return truncatedData;
     }
 
-    char * tagProp = NULL;
-    char tagLevel[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char* tagProp = NULL;
+    char tagLevel[MTK_PROPERTY_VALUE_MAX] = {0};
     asprintf(&tagProp, "persist.log.tag.%s", tag);
     rfx_property_get(tagProp, tagLevel, "I");
     free(tagProp);
-    if(strcmp("V", tagLevel) == 0) {  // equal to V
+    if (strcmp("V", tagLevel) == 0) {  // equal to V
         return hiddenData;
     }
 
@@ -773,8 +764,8 @@ const char * RfxRilUtils::pii(const char * tag, const char * hiddenData) {
         for (i = 3; i < strlen(hiddenData); i++) {
             truncatedData[i] = hiddenData[i];
         }
-        truncatedData[i]='\0';
-    } else if (strlen(hiddenData) > 6 && strlen(hiddenData) <= 9){
+        truncatedData[i] = '\0';
+    } else if (strlen(hiddenData) > 6 && strlen(hiddenData) <= 9) {
         for (i = 0; i < 3; i++) {
             truncatedData[i] = hiddenData[i];
         }
@@ -784,8 +775,8 @@ const char * RfxRilUtils::pii(const char * tag, const char * hiddenData) {
         for (i = 6; i < strlen(hiddenData); i++) {
             truncatedData[i] = hiddenData[i];
         }
-        truncatedData[i]='\0';
-    } else if (strlen(hiddenData) > 9){
+        truncatedData[i] = '\0';
+    } else if (strlen(hiddenData) > 9) {
         for (i = 0; i < 3; i++) {
             truncatedData[i] = hiddenData[i];
         }
@@ -797,7 +788,7 @@ const char * RfxRilUtils::pii(const char * tag, const char * hiddenData) {
         for (i = 8; i < strlen(hiddenData); i++) {
             truncatedData[i] = hiddenData[i];
         }
-        truncatedData[i]='\0';
+        truncatedData[i] = '\0';
     }
     return truncatedData;
 }

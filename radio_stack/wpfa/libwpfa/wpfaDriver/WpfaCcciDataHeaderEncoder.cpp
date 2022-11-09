@@ -19,20 +19,17 @@
 #define WPFA_D_LOG_TAG "WpfaCcciDataHeaderEncoder"
 
 String8 WpfaCcciDataHeader::toString() const {
-    return String8::format("mMsgId: %d, mTid: %d, mMsgType: %d, mParam16bit: %d",
-            mMsgId, mTid, mMsgType, mParam16bit);
+    return String8::format("mMsgId: %d, mTid: %d, mMsgType: %d, mParam16bit: %d", mMsgId, mTid,
+                           mMsgType, mParam16bit);
 }
 
-WpfaCcciDataHeaderEncoder *WpfaCcciDataHeaderEncoder::sSelf = NULL;
+WpfaCcciDataHeaderEncoder* WpfaCcciDataHeaderEncoder::sSelf = NULL;
 
-WpfaCcciDataHeaderEncoder::WpfaCcciDataHeaderEncoder() {
-}
+WpfaCcciDataHeaderEncoder::WpfaCcciDataHeaderEncoder() {}
 
-void WpfaCcciDataHeaderEncoder::init() {
-    sSelf = new WpfaCcciDataHeaderEncoder();
-}
+void WpfaCcciDataHeaderEncoder::init() { sSelf = new WpfaCcciDataHeaderEncoder(); }
 
-void WpfaCcciDataHeaderEncoder::encodeHeader(WpfaCcciDataHeader data, ccci_msg_hdr_t *header) {
+void WpfaCcciDataHeaderEncoder::encodeHeader(WpfaCcciDataHeader data, ccci_msg_hdr_t* header) {
     header->msg_id = data.getMsgId();
     header->t_id = data.getTid();
     header->msg_type = data.getMsgType();
@@ -41,15 +38,14 @@ void WpfaCcciDataHeaderEncoder::encodeHeader(WpfaCcciDataHeader data, ccci_msg_h
             header->msg_id, header->t_id, header->msg_type, header->param_16bit);
 }
 
-WpfaCcciDataHeader WpfaCcciDataHeaderEncoder::decodeHeader(ccci_msg_hdr_t *header)
-{
+WpfaCcciDataHeader WpfaCcciDataHeaderEncoder::decodeHeader(ccci_msg_hdr_t* header) {
     uint16_t msgId = header->msg_id;
     uint16_t mTid = header->t_id;
     uint16_t mMsgType = header->msg_type;
     uint16_t mPara = header->param_16bit;
 
-    mtkLogD(WPFA_D_LOG_TAG, " decodeHeader msg_id: %d, t_id:%d, msg_type:%d, mPara: %d",
-            msgId, mTid, mMsgType, mPara);
+    mtkLogD(WPFA_D_LOG_TAG, " decodeHeader msg_id: %d, t_id:%d, msg_type:%d, mPara: %d", msgId,
+            mTid, mMsgType, mPara);
     WpfaCcciDataHeader data(msgId, mTid, mMsgType, mPara);
     return data;
 }

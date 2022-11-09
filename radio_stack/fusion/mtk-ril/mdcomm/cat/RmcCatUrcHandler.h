@@ -19,7 +19,7 @@
 
 #define LOG_TAG "RmcCatUrcHandler"
 #define NUM_STK_CALL_CTRL 3
-#define EVENT_NOTIFY_BUFFER_LEN    10
+#define EVENT_NOTIFY_BUFFER_LEN 10
 
 #include "RfxBaseHandler.h"
 #include "RfxCdmaInfoRecData.h"
@@ -30,7 +30,6 @@
 #include "RfxSimRefreshData.h"
 #include "RfxMessageId.h"
 #include "telephony/ril.h"
-
 
 typedef enum {
     CMD_REFRESH = 0x01,
@@ -83,26 +82,26 @@ typedef struct {
 class RmcCatUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCatUrcHandler);
 
-    public:
-        RmcCatUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcCatUrcHandler();
+  public:
+    RmcCatUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcCatUrcHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg) {RFX_UNUSED(msg);}
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg) { RFX_UNUSED(msg); }
 
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleBipEventNotify(const sp<RfxMclMessage>& msg);
-        void handleReportCpinState(const sp<RfxMclMessage>& msg);
-        void handleStkProactiveCommand(const sp<RfxMclMessage>& msg);
-        void handleStkEventNotify(const sp<RfxMclMessage>& msg);
-        void handleStkSessionEnd(const sp<RfxMclMessage>& msg);
-        void handleStkCallControl(const sp<RfxMclMessage>& msg);
-        bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState);
+  private:
+    void handleBipEventNotify(const sp<RfxMclMessage>& msg);
+    void handleReportCpinState(const sp<RfxMclMessage>& msg);
+    void handleStkProactiveCommand(const sp<RfxMclMessage>& msg);
+    void handleStkEventNotify(const sp<RfxMclMessage>& msg);
+    void handleStkSessionEnd(const sp<RfxMclMessage>& msg);
+    void handleStkCallControl(const sp<RfxMclMessage>& msg);
+    bool onCheckIfRejectMessage(const sp<RfxMclMessage>& msg, RIL_RadioState radioState);
 };
 
 #endif

@@ -23,7 +23,6 @@
 
 #define LOG_TAG "Ipv6Rs"
 
-
 #include <cutils/sockets.h>
 #include <sys/types.h>
 #include <ifaddrs.h>
@@ -36,7 +35,7 @@
 #include <arpa/inet.h>
 #include <mtk_log.h>
 
-static const char *IN6ADDR_ALL_ROUTERS = "FF02::2"; // v6 addr not built in
+static const char* IN6ADDR_ALL_ROUTERS = "FF02::2";  // v6 addr not built in
 
 #ifdef byte
 #undef byte
@@ -106,15 +105,15 @@ int setupRaSocket(int fd, int ifIndex) {
     };
     len = sizeof(sin6);
 
-    if (bind(fd, (struct sockaddr*) &sin6, len) != 0) {
+    if (bind(fd, (struct sockaddr*)&sin6, len) != 0) {
         mtkLogE(LOG_TAG, "bind(IN6ADDR_ANY):%s", strerror(errno));
         return ERROR;
     }
 
     // Join the all-routers multicast group, ff02::2%index.
     struct ipv6_mreq all_rtrs = {
-        .ipv6mr_multiaddr = {{{0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2}}},
-        .ipv6mr_interface = ifIndex,
+            .ipv6mr_multiaddr = {{{0xff, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}}},
+            .ipv6mr_interface = ifIndex,
     };
     len = sizeof(all_rtrs);
     if (setsockopt(fd, IPPROTO_IPV6, IPV6_JOIN_GROUP, &all_rtrs, len) != 0) {
@@ -165,7 +164,7 @@ void getHwAddr(const char* iface, byte* mac) {
         return;
     }
     memset(&ifr_mac, 0, sizeof(ifr_mac));
-    strncpy(ifr_mac.ifr_name, iface, sizeof(ifr_mac.ifr_name)-1);
+    strncpy(ifr_mac.ifr_name, iface, sizeof(ifr_mac.ifr_name) - 1);
     if ((ioctl(sockId, SIOCGIFHWADDR, &ifr_mac)) < 0) {
         close(sockId);
         mtkLogE(LOG_TAG, "SIOCGIFHWADDR error:%s", strerror(errno));
@@ -174,13 +173,9 @@ void getHwAddr(const char* iface, byte* mac) {
 
     memcpy(mac, ifr_mac.ifr_hwaddr.sa_data, MAX_MAC_ADDR_LEN);
 
-    sprintf(mac_addr, "%02x:%02x:%02x:%02x:%02x:%02x",
-            (unsigned char) mac[0],
-            (unsigned char) mac[1],
-            (unsigned char) mac[2],
-            (unsigned char) mac[3],
-            (unsigned char) mac[4],
-            (unsigned char) mac[5]);
+    sprintf(mac_addr, "%02x:%02x:%02x:%02x:%02x:%02x", (unsigned char)mac[0], (unsigned char)mac[1],
+            (unsigned char)mac[2], (unsigned char)mac[3], (unsigned char)mac[4],
+            (unsigned char)mac[5]);
 
     close(sockId);
     mtkLogD(LOG_TAG, "getHwAddr:%s %s", iface, mac_addr);
@@ -203,8 +198,8 @@ int assebleRaMessage(byte* data, char* iface) {
     memset(mac, 0, sizeof(mac));
 
     data[0] = ICMPV6_ND_ROUTER_SOLICIT;
-    data[8] = 0x01; // Source Link Address
-    data[9] = 0x01; // Length
+    data[8] = 0x01;  // Source Link Address
+    data[9] = 0x01;  // Length
 
     getHwAddr(iface, mac);
     memcpy(&data[10], mac, MAX_MAC_ADDR_LEN);
@@ -238,8 +233,7 @@ int sendRs(int socketFd, char* iface) {
     }
     addrSize = sizeof(destAddr6);
 
-    numBytes = sendto(socketFd, raData, dataSize, 0,
-                                (const struct sockaddr*) &destAddr6, addrSize);
+    numBytes = sendto(socketFd, raData, dataSize, 0, (const struct sockaddr*)&destAddr6, addrSize);
     if (numBytes < 0) {
         mtkLogE(LOG_TAG, "Send failure with %s", strerror(errno));
         return ERROR;

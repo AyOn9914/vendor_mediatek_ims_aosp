@@ -20,7 +20,6 @@
 #include "RfxBaseData.h"
 #include <telephony/mtk_ril.h>
 
-
 class RfxSuppServNotificationData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxSuppServNotificationData);
 };

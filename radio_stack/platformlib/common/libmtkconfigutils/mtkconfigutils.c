@@ -18,10 +18,6 @@
 #include <string.h>
 #include "mtkconfigutils.h"
 
-int mtkGetFeature(ConfigDef msg, FeatureValue *fv){
-    return mtkGetFeaturePorting(msg, fv);
-}
+int mtkGetFeature(ConfigDef msg, FeatureValue* fv) { return mtkGetFeaturePorting(msg, fv); }
 
-int mtkSetFeature(ConfigDef msg, FeatureValue *fv){
-    return mtkSetFeaturePorting(msg, fv);
-}
+int mtkSetFeature(ConfigDef msg, FeatureValue* fv) { return mtkSetFeaturePorting(msg, fv); }

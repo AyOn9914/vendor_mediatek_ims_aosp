@@ -26,21 +26,19 @@
  *****************************************************************************/
 RFX_IMPLEMENT_HANDLER_CLASS(RmcAtciCommonRequestHandler, RIL_CMD_PROXY_6);
 
-RmcAtciCommonRequestHandler::RmcAtciCommonRequestHandler(int slot_id, int channel_id) :
-        RmcAtciRequestHandler(slot_id, channel_id) {
-    const int request[] = {
-        RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL
-    };
+RmcAtciCommonRequestHandler::RmcAtciCommonRequestHandler(int slot_id, int channel_id)
+    : RmcAtciRequestHandler(slot_id, channel_id) {
+    const int request[] = {RFX_MSG_REQUEST_OEM_HOOK_ATCI_INTERNAL};
     const int event[] = {
-        RFX_MSG_EVENT_RAW_URC,
+            RFX_MSG_EVENT_RAW_URC,
     };
     const char* urc[] = {
-        (char *) "+ERXRSSI",
-        (char *) "+ERSSI",
+            (char*)"+ERXRSSI",
+            (char*)"+ERSSI",
     };
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
-    registerToHandleEvent(event, sizeof(event)/sizeof(int));
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char*));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
+    registerToHandleEvent(event, sizeof(event) / sizeof(int));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
 void RmcAtciCommonRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {

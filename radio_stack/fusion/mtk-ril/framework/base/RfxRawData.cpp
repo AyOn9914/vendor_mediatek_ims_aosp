@@ -23,21 +23,20 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxRawData);
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxRawData, RFX_MSG_EVENT_IMS_DATA);
 
-RfxRawData::RfxRawData() : RfxBaseData(NULL, 0)  {
-}
+RfxRawData::RfxRawData() : RfxBaseData(NULL, 0) {}
 
-RfxRawData::RfxRawData(void *data, int length) : RfxBaseData(data, length) {
-    copyRaw((char *)data, length);
+RfxRawData::RfxRawData(void* data, int length) : RfxBaseData(data, length) {
+    copyRaw((char*)data, length);
 }
 
 RfxRawData::RfxRawData(char data[], int length) : RfxBaseData(data, length) {
     copyRaw(data, length);
 }
 
-void RfxRawData::copyRaw(char *data, int length) {
+void RfxRawData::copyRaw(char* data, int length) {
     if (data != NULL) {
         m_length = length;
-        char *pTmp = (char *)calloc(1, length+1);
+        char* pTmp = (char*)calloc(1, length + 1);
         if (pTmp == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;

@@ -1,7 +1,6 @@
 #ifndef WPFACPPUTILS_H
 #define WPFACPPUTILS_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,17 +18,14 @@ void deinitialRuleContainer();
 void initialA2MRingBuffer();
 void initialA2MRingBuffer();
 void readRingBuffer();
-void writeRingBuffer(unsigned char *data ,int len);
+void writeRingBuffer(unsigned char* data, int len);
 void wpfaDriverInit();
 void wpfaDriverCbRegister();
 int a2mWpfaInitNotify();
 int a2mWpfaVersionNotify();
 
-
 #ifdef __cplusplus
 }
 #endif
-
-
 
 #endif /* end of WPFACPPUTILS_H */

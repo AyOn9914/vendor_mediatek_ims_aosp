@@ -34,7 +34,7 @@ using ::android::Printer;
  * Interface IRfxDebugLogger
  *****************************************************************************/
 class IRfxDebugLogger {
-public:
+  public:
     virtual void dump(int level = 0) const = 0;
 
     virtual ~IRfxDebugLogger() {}
@@ -45,29 +45,19 @@ public:
  *****************************************************************************/
 
 class RfxDebugInfo : public IRfxDebugLogger, public Printer {
-public:
+  public:
+    RfxDebugInfo() : m_logger(NULL), m_user_data(NULL) { m_stack.update(); }
 
-    RfxDebugInfo() :
-        m_logger(NULL),
-        m_user_data(NULL) {
-        m_stack.update();
-    }
-
-    RfxDebugInfo(IRfxDebugLogger *logger, void *user_data) :
-        m_logger(logger),
-        m_user_data(user_data) {
+    RfxDebugInfo(IRfxDebugLogger* logger, void* user_data)
+        : m_logger(logger), m_user_data(user_data) {
         m_stack.update();
     }
 
     virtual void dump(int level = 0) const;
 
-    IRfxDebugLogger *getLogger() const {
-        return m_logger;
-    }
+    IRfxDebugLogger* getLogger() const { return m_logger; }
 
-    void *getUserData() const {
-        return m_user_data;
-    }
+    void* getUserData() const { return m_user_data; }
 
     virtual void printLine(const char* string = "");
 
@@ -79,16 +69,12 @@ public:
     static void dumpIfNeed();
 #endif
 
-private:
-
-    IRfxDebugLogger *m_logger;
-    void *m_user_data;
+  private:
+    IRfxDebugLogger* m_logger;
+    void* m_user_data;
     CallStack m_stack;
 
     static bool s_rfx_debug_info_enabled;
 };
 
-
-
-
-#endif // __RFX_DEBUG_INFO_H__
+#endif  // __RFX_DEBUG_INFO_H__

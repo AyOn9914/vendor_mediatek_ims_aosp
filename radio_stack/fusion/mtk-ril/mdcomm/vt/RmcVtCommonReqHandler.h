@@ -22,21 +22,20 @@
  *****************************************************************************/
 #include "RfxBaseHandler.h"
 
-
 class RmcVtCommonReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcVtCommonReqHandler);
 
-    public:
-        RmcVtCommonReqHandler(int slot_id, int channel_id);
-        virtual ~RmcVtCommonReqHandler();
+  public:
+    RmcVtCommonReqHandler(int slot_id, int channel_id);
+    virtual ~RmcVtCommonReqHandler();
 
-    private:
-        void handleReportANBR(const sp<RfxMclMessage>& msg);
-        void handleEnableANBR(const sp<RfxMclMessage>& msg);
+  private:
+    void handleReportANBR(const sp<RfxMclMessage>& msg);
+    void handleEnableANBR(const sp<RfxMclMessage>& msg);
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 };
 
 #endif /* __RMC_VT_COMMON_REQ_HANDLER_H__ */

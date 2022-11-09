@@ -43,32 +43,28 @@
 /*
  * M: Performance tracer to reduce Systrace overhead
  */
-#define ATRACE_CALL_PERF() android::ScopedTrace ___tracer(ATRACE_TAG|ATRACE_TAG_PERF, __FUNCTION__)
+#define ATRACE_CALL_PERF() \
+    android::ScopedTrace ___tracer(ATRACE_TAG | ATRACE_TAG_PERF, __FUNCTION__)
 
 namespace android {
 
 class ScopedTrace {
-public:
-inline ScopedTrace(uint64_t tag, const char* name)
-    : mTag(tag) {
-    atrace_begin(mTag,name);
-}
+  public:
+    inline ScopedTrace(uint64_t tag, const char* name) : mTag(tag) { atrace_begin(mTag, name); }
 
-inline ~ScopedTrace() {
-    atrace_end(mTag);
-}
+    inline ~ScopedTrace() { atrace_end(mTag); }
 
-private:
+  private:
     uint64_t mTag;
 };
 
-}; // namespace android
+};  // namespace android
 
-#else // !__ANDROID__
+#else  // !__ANDROID__
 
 #define ATRACE_NAME(...)
 #define ATRACE_CALL()
 
-#endif // __ANDROID__
+#endif  // __ANDROID__
 
-#endif // ANDROID_TRACE_H
+#endif  // ANDROID_TRACE_H

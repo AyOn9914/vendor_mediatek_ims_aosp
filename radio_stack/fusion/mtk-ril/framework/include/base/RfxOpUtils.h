@@ -29,21 +29,21 @@
  *****************************************************************************/
 
 class RfxOpUtils {
-
-public:
+  public:
     static void initOpLibrary();
     static void* getOpHandler();
-    static const rfx_ctrler_factory_init *getPreNonSlotOpCtlerList();
-    static const rfx_ctrler_factory_init *getSlotOpCtlerList();
-    static const rfx_ctrler_factory_init *getNonSlotOpCtlerList();
+    static const rfx_ctrler_factory_init* getPreNonSlotOpCtlerList();
+    static const rfx_ctrler_factory_init* getSlotOpCtlerList();
+    static const rfx_ctrler_factory_init* getNonSlotOpCtlerList();
     static int getNumOfPreNonSlotOpCtler();
     static int getNumOfSlotOpCtler();
     static int getNumOfNonSlotOpCtler();
     static int getOpMsgIdFromRequestId(int requestId);
     static int getOpRequestIdFromMsgId(int msgId);
     static void* getSimOpHandler(int type, int slotId, int channelId);
-    static void* getDcImsOpHandler(int slotId, int channelId, void *pRmcDcPdnManager);
-private:
+    static void* getDcImsOpHandler(int slotId, int channelId, void* pRmcDcPdnManager);
+
+  private:
     static void* sDlOpHandler;
 };
 

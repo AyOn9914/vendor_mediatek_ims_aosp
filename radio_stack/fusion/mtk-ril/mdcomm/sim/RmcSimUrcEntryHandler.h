@@ -29,7 +29,8 @@
 
 class RmcVsimUrcHandler : public RmcSimBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcVsimUrcHandler);
-public:
+
+  public:
     RmcVsimUrcHandler(int slot_id, int channel_id);
     virtual ~RmcVsimUrcHandler();
 };
@@ -39,25 +40,23 @@ public:
  *****************************************************************************/
 
 class RmcSimUrcEntryHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcSimUrcEntryHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcSimUrcEntryHandler);
 
-public:
+  public:
     RmcSimUrcEntryHandler(int slot_id, int channel_id);
     virtual ~RmcSimUrcEntryHandler();
 
-// Override
-protected:
+    // Override
+  protected:
     // Process URC here
     virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-
-
-private:
-    RmcGsmSimUrcHandler *mGsmUrcHandler;
-    RmcCdmaSimUrcHandler *mCdmaUrcHandler;
-    RmcCommSimUrcHandler *mCommUrcHandler;
+  private:
+    RmcGsmSimUrcHandler* mGsmUrcHandler;
+    RmcCdmaSimUrcHandler* mCdmaUrcHandler;
+    RmcCommSimUrcHandler* mCommUrcHandler;
     // External SIM [Start]
-    RmcVsimUrcHandler *mVsimUrcHandler;
+    RmcVsimUrcHandler* mVsimUrcHandler;
     // External SIM [End]
 };
 #endif /* __RMC_SIM_URC_ENTRY_HANDLER_H__ */

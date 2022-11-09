@@ -29,29 +29,29 @@ static const bool DBG = true;
 class RmcSuppServUssdBaseHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcSuppServUssdBaseHandler);
 
-    public:
-        RmcSuppServUssdBaseHandler(int slot_id, int channel_id);
-        virtual ~RmcSuppServUssdBaseHandler();
+  public:
+    RmcSuppServUssdBaseHandler(int slot_id, int channel_id);
+    virtual ~RmcSuppServUssdBaseHandler();
 
-        // Child must implement those USSD operations
-        virtual void requestSendUssdDomainSelect(const sp<RfxMclMessage>& msg) = 0;
-        virtual void requestCancelUssdDomainSelect(const sp<RfxMclMessage>& msg) = 0;
-        virtual void handleOnUssd(const sp<RfxMclMessage>& msg) = 0;
-        virtual void handleOnUssi(const sp<RfxMclMessage>& msg) = 0;
+    // Child must implement those USSD operations
+    virtual void requestSendUssdDomainSelect(const sp<RfxMclMessage>& msg) = 0;
+    virtual void requestCancelUssdDomainSelect(const sp<RfxMclMessage>& msg) = 0;
+    virtual void handleOnUssd(const sp<RfxMclMessage>& msg) = 0;
+    virtual void handleOnUssi(const sp<RfxMclMessage>& msg) = 0;
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-        void sendFailureReport(const sp<RfxMclMessage>& msg, RIL_Errno ret);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    void sendFailureReport(const sp<RfxMclMessage>& msg, RIL_Errno ret);
 
-        // USSI preconditions
-        bool isFdnAllowed(const char* ussi);
-        bool isVopsOn();
-        bool isImsRegOn();
-        bool isInImsCall();
+    // USSI preconditions
+    bool isFdnAllowed(const char* ussi);
+    bool isVopsOn();
+    bool isImsRegOn();
+    bool isInImsCall();
 
-    private:
-        void handleUssdDomainInfoReq(const sp<RfxMclMessage>& msg);
+  private:
+    void handleUssdDomainInfoReq(const sp<RfxMclMessage>& msg);
 };
 
 #endif

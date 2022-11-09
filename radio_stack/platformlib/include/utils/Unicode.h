@@ -23,13 +23,13 @@
 extern "C" {
 
 // Standard string functions on char16_t strings.
-int strcmp16(const char16_t *, const char16_t *);
-int strncmp16(const char16_t *s1, const char16_t *s2, size_t n);
-size_t strlen16(const char16_t *);
-size_t strnlen16(const char16_t *, size_t);
-char16_t *strcpy16(char16_t *, const char16_t *);
-char16_t *strncpy16(char16_t *, const char16_t *, size_t);
-char16_t *strstr16(const char16_t*, const char16_t*);
+int strcmp16(const char16_t*, const char16_t*);
+int strncmp16(const char16_t* s1, const char16_t* s2, size_t n);
+size_t strlen16(const char16_t*);
+size_t strnlen16(const char16_t*, size_t);
+char16_t* strcpy16(char16_t*, const char16_t*);
+char16_t* strncpy16(char16_t*, const char16_t*, size_t);
+char16_t* strstr16(const char16_t*, const char16_t*);
 
 // Version of comparison that supports embedded nulls.
 // This is different than strncmp() because we don't stop
@@ -38,20 +38,20 @@ char16_t *strstr16(const char16_t*, const char16_t*);
 // lengths of both strings).  This can also be used when
 // your string is not nul-terminated as it will have the
 // equivalent result as strcmp16 (unlike strncmp16).
-int strzcmp16(const char16_t *s1, size_t n1, const char16_t *s2, size_t n2);
+int strzcmp16(const char16_t* s1, size_t n1, const char16_t* s2, size_t n2);
 
 // Version of strzcmp16 for comparing strings in different endianness.
-int strzcmp16_h_n(const char16_t *s1H, size_t n1, const char16_t *s2N, size_t n2);
+int strzcmp16_h_n(const char16_t* s1H, size_t n1, const char16_t* s2N, size_t n2);
 
 // Standard string functions on char32_t strings.
-size_t strlen32(const char32_t *);
-size_t strnlen32(const char32_t *, size_t);
+size_t strlen32(const char32_t*);
+size_t strnlen32(const char32_t*, size_t);
 
 /**
  * Measure the length of a UTF-32 string in UTF-8. If the string is invalid
  * such as containing a surrogate character, -1 will be returned.
  */
-ssize_t utf32_to_utf8_length(const char32_t *src, size_t src_len);
+ssize_t utf32_to_utf8_length(const char32_t* src, size_t src_len);
 
 /**
  * Stores a UTF-8 string converted from "src" in "dst", if "dst_length" is not
@@ -97,13 +97,12 @@ void utf32_to_utf8(const char32_t* src, size_t src_len, char* dst, size_t dst_le
  * is unsigned. Then, if "next_index" is not NULL, the next index to be used is
  * stored in "next_index". "next_index" can be NULL.
  */
-int32_t utf32_from_utf8_at(const char *src, size_t src_len, size_t index, size_t *next_index);
-
+int32_t utf32_from_utf8_at(const char* src, size_t src_len, size_t index, size_t* next_index);
 
 /**
  * Returns the UTF-8 length of UTF-16 string "src".
  */
-ssize_t utf16_to_utf8_length(const char16_t *src, size_t src_len);
+ssize_t utf16_to_utf8_length(const char16_t* src, size_t src_len);
 
 /**
  * Converts a UTF-16 string to UTF-8. The destination buffer must be large
@@ -128,12 +127,12 @@ void utf16_to_utf8(const char16_t* src, size_t src_len, char* dst, size_t dst_le
  * If you do not care whether "src" is valid UTF-8 or not, you should use
  * strlen() as usual, which should be much faster.
  */
-ssize_t utf8_length(const char *src);
+ssize_t utf8_length(const char* src);
 
 /**
  * Measure the length of a UTF-32 string.
  */
-size_t utf8_to_utf32_length(const char *src, size_t src_len);
+size_t utf8_to_utf32_length(const char* src, size_t src_len);
 
 /**
  * Stores a UTF-32 string converted from "src" in "dst". "dst" must be large
@@ -167,7 +166,6 @@ void utf8_to_utf16(const uint8_t* src, size_t srcLen, char16_t* dst);
  * the returned pointer will be to the character after dstLen.
  */
 char16_t* utf8_to_utf16_n(const uint8_t* src, size_t srcLen, char16_t* dst, size_t dstLen);
-
 }
 
 #endif

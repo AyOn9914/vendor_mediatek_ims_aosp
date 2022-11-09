@@ -23,51 +23,53 @@
 namespace android {
 namespace netdagent {
 
-//mLock guards all accesses to mCommandDispatchList
+// mLock guards all accesses to mCommandDispatchList
 extern pthread_mutex_t gLock;
 
 class CommandDispatch {
+  public:
+    CommandDispatch(const char* cmdName) : mCmdName(cmdName){};
+    virtual ~CommandDispatch() {}
+    virtual int runCommand(CommandRespondor* cr, int argc, char** argv) = 0;
+    virtual int runCommand(int argc, char** argv) = 0;
+    const char* getCommand() { return mCmdName; }
 
-public:
-    CommandDispatch(const char *cmdName) : mCmdName(cmdName) { };
-    virtual ~CommandDispatch() { }
-    virtual int runCommand(CommandRespondor *cr, int argc, char **argv) = 0;
-    virtual int runCommand(int argc, char **argv) = 0;
-    const char *getCommand() { return mCmdName; }
-
-private:
-    const char *mCmdName;
+  private:
+    const char* mCmdName;
 };
 
-class FirewallCmd: public CommandDispatch {
-public:
+class FirewallCmd : public CommandDispatch {
+  public:
     FirewallCmd();
     virtual ~FirewallCmd() {}
-    int runCommand(CommandRespondor *cr, int argc, char **argv);
-    int runCommand(int argc, char **argv);
-private:
-    int sendGenericOkFail(CommandRespondor *cli, int cond);
+    int runCommand(CommandRespondor* cr, int argc, char** argv);
+    int runCommand(int argc, char** argv);
+
+  private:
+    int sendGenericOkFail(CommandRespondor* cli, int cond);
     static FirewallRule parseRule(const char* arg);
     static ChildChain parseChildChain(const char* arg);
     static FirewallChinaRule parseChain(const char* arg);
 };
 
 class ThrottleCmd : public CommandDispatch {
-public:
+  public:
     ThrottleCmd();
     virtual ~ThrottleCmd() {}
-    int runCommand(CommandRespondor *cr, int argc, char **argv);
-    int runCommand(int argc, char **argv);
-private:
+    int runCommand(CommandRespondor* cr, int argc, char** argv);
+    int runCommand(int argc, char** argv);
+
+  private:
 };
 
 class NetworkCmd : public CommandDispatch {
-public:
+  public:
     NetworkCmd();
     virtual ~NetworkCmd() {}
-    int runCommand(CommandRespondor *cr, int argc, char **argv);
-    int runCommand(int argc, char **argv);
-private:
+    int runCommand(CommandRespondor* cr, int argc, char** argv);
+    int runCommand(int argc, char** argv);
+
+  private:
 };
 
 #if 0

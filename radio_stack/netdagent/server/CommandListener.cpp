@@ -35,7 +35,7 @@
 namespace android {
 namespace netdagent {
 
-CommandListener::CommandListener(const char *socketName) {
+CommandListener::CommandListener(const char* socketName) {
     init(socketName, -1);
     registerCmd(new FirewallCmd());
     registerCmd(new ThrottleCmd());
@@ -47,7 +47,7 @@ CommandListener::CommandListener(const char *socketName) {
 #endif
 }
 
-void CommandListener::init(const char *socketName, int socket) {
+void CommandListener::init(const char* socketName, int socket) {
     mListenSocketName = socketName;
     mListenSocket = socket;
     mThread = 0;
@@ -58,8 +58,7 @@ void CommandListener::init(const char *socketName, int socket) {
 CommandListener::~CommandListener() {
     tCommandRespondorList::iterator it_cr;
     tCommandDispatchList::iterator it_cd;
-    if (mListenSocketName && (mListenSocket > -1))
-        close(mListenSocket);
+    if (mListenSocketName && (mListenSocket > -1)) close(mListenSocket);
     for (it_cr = mCommandRespondorList->begin(); it_cr != mCommandRespondorList->end();) {
         delete (*it_cr);
         it_cr = mCommandRespondorList->erase(it_cr);
@@ -74,7 +73,6 @@ CommandListener::~CommandListener() {
 }
 
 int CommandListener::startListener() {
-
     if (!mListenSocketName && mListenSocket == -1) {
         ALOGE("failed to start unbound listener\n");
         errno = EINVAL;
@@ -82,8 +80,9 @@ int CommandListener::startListener() {
     }
 
     if (mListenSocketName) {
-        if ((mListenSocket = socket_local_server(mListenSocketName,
-                       ANDROID_SOCKET_NAMESPACE_ABSTRACT, SOCK_STREAM | SOCK_CLOEXEC)) == -1) {
+        if ((mListenSocket =
+                     socket_local_server(mListenSocketName, ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                         SOCK_STREAM | SOCK_CLOEXEC)) == -1) {
             ALOGE("failed to create local socket for %s\n", mListenSocketName);
             return -1;
         }
@@ -94,11 +93,11 @@ int CommandListener::startListener() {
         ALOGE("pthread_create (%s)", strerror(errno));
         return -1;
     }
-	return 0;
+    return 0;
 }
 
-void *CommandListener::threadStart(void *obj) {
-    CommandListener *me = reinterpret_cast<CommandListener *>(obj);
+void* CommandListener::threadStart(void* obj) {
+    CommandListener* me = reinterpret_cast<CommandListener*>(obj);
 
     me->runListener();
     pthread_exit(NULL);
@@ -116,28 +115,25 @@ void CommandListener::runListener() {
 
         FD_ZERO(&read_fds);
         FD_SET(mListenSocket, &read_fds);
-        if (mListenSocket > max_fd)
-            max_fd = mListenSocket;
+        if (mListenSocket > max_fd) max_fd = mListenSocket;
         for (it = mCommandRespondorList->begin(); it != mCommandRespondorList->end(); ++it) {
             int connectSocket = (*it)->getConnectSocket();
             FD_SET(connectSocket, &read_fds);
-            if (connectSocket > max_fd)
-                max_fd = connectSocket;
+            if (connectSocket > max_fd) max_fd = connectSocket;
         }
 
         if ((rc = select(max_fd + 1, &read_fds, NULL, NULL, NULL)) < 0) {
-            if (errno == EINTR)
-                continue;
+            if (errno == EINTR) continue;
             ALOGE("select failed (%s)\n", strerror(errno));
             sleep(1);
             continue;
         } else if (!rc)
             continue;
 
-        //handle listen socket
+        // handle listen socket
         if (FD_ISSET(mListenSocket, &read_fds)) {
             sockaddr_storage peerAddrStorage;
-            sockaddr *peerAddr = reinterpret_cast<sockaddr*>(&peerAddrStorage);
+            sockaddr* peerAddr = reinterpret_cast<sockaddr*>(&peerAddrStorage);
             socklen_t peerAddrLen;
             int connectSocket;
             do {
@@ -153,45 +149,43 @@ void CommandListener::runListener() {
             mCommandRespondorList->push_back(new CommandRespondor(connectSocket));
         }
 
-        //handle connect socket
+        // handle connect socket
         pendingList.clear();
         for (it = mCommandRespondorList->begin(); it != mCommandRespondorList->end(); ++it) {
             int connectSocket = (*it)->getConnectSocket();
-            if (FD_ISSET(connectSocket, &read_fds))
-                pendingList.push_back(*it);
+            if (FD_ISSET(connectSocket, &read_fds)) pendingList.push_back(*it);
         }
         while (!pendingList.empty()) {
             it = pendingList.begin();
-            CommandRespondor *cr = *it;
+            CommandRespondor* cr = *it;
             pendingList.erase(it);
-            if (!handleEvents(cr))
-                releaseSockets(cr);
-            }
-        }//end while(1)
+            if (!handleEvents(cr)) releaseSockets(cr);
+        }
+    }  // end while(1)
 }
 
-bool CommandListener::handleEvents(CommandRespondor *cr) {
+bool CommandListener::handleEvents(CommandRespondor* cr) {
     /* store command */
     int readCmdLen;
     char cmdBuffer[CMD_ARG_SIZE];
     /* parse command */
-    const char *delim = " ";
-    char *token = nullptr;
-    char *argv[CMD_ARG_COUNT];
+    const char* delim = " ";
+    char* token = nullptr;
+    char* argv[CMD_ARG_COUNT];
     int argc = 0;
     /* caculate command sequence */
-    char *endPtr = NULL;
+    char* endPtr = NULL;
     unsigned int cmdSeq;
     tCommandDispatchList::iterator it;
 
-    //read command
+    // read command
     readCmdLen = TEMP_FAILURE_RETRY(read(cr->getConnectSocket(), cmdBuffer, sizeof(cmdBuffer)));
     if (readCmdLen < 0) {
         ALOGE("read() failed (%s)", strerror(errno));
         return false;
     } else if (!readCmdLen) {
         return false;
-    } else if (cmdBuffer[readCmdLen-1] != '\0') {
+    } else if (cmdBuffer[readCmdLen - 1] != '\0') {
         ALOGE("String is not zero-terminated");
         cr->sendMsg(500, "Command too large for buffer", false);
         return false;
@@ -199,7 +193,7 @@ bool CommandListener::handleEvents(CommandRespondor *cr) {
 #ifdef MTK_DEBUG
     ALOGI("Netdagent command %s from socket %d\n", cmdBuffer, cr->getConnectSocket());
 #endif
-    //parse command
+    // parse command
     token = strtok(cmdBuffer, delim);
     while (token != NULL) {
         if (argc >= CMD_ARG_COUNT) {
@@ -210,7 +204,7 @@ bool CommandListener::handleEvents(CommandRespondor *cr) {
         argv[argc++] = strdup(token);
         token = strtok(NULL, delim);
     }
-    //get command sequence
+    // get command sequence
     cmdSeq = strtoul(argv[0], &endPtr, 0);
     if (endPtr == NULL || *endPtr != '\0') {
         ALOGE("Command contains invalid sequence number\n");
@@ -218,27 +212,25 @@ bool CommandListener::handleEvents(CommandRespondor *cr) {
         goto _release;
     }
     cr->setCmdSeq(cmdSeq);
-    //dispatch command
-    //pthread_mutex_lock(&android::netdagent::gLock);
+    // dispatch command
+    // pthread_mutex_lock(&android::netdagent::gLock);
     for (it = mCommandDispatchList->begin(); it != mCommandDispatchList->end(); ++it) {
         if (!strcmp(argv[1], (*it)->getCommand())) {
-            if ((*it)->runCommand(cr, argc-1, &argv[1]))
+            if ((*it)->runCommand(cr, argc - 1, &argv[1]))
                 ALOGE("run command %s failed (%s)\n", (*it)->getCommand(), strerror(errno));
             goto _release;
         }
     }
-    //pthread_mutex_unlock(&android::netdagent::gLock);
+    // pthread_mutex_unlock(&android::netdagent::gLock);
     cr->sendMsg(500, "Command not recognized", false);
 
 _release:
     int i;
-    for (i = 0; i < argc; i++)
-        free(argv[i]);
+    for (i = 0; i < argc; i++) free(argv[i]);
     return true;
 }
 
-void CommandListener::releaseSockets(CommandRespondor *cr)
-{
+void CommandListener::releaseSockets(CommandRespondor* cr) {
     tCommandRespondorList::iterator it;
     for (it = mCommandRespondorList->begin(); it != mCommandRespondorList->end(); ++it) {
         if (*it == cr) {

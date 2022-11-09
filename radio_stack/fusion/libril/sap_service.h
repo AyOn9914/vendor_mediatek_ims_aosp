@@ -24,10 +24,10 @@
 
 namespace sap {
 
-void registerService(const RIL_RadioFunctions *callbacks);
-void processResponse(MsgHeader *rsp, RilSapSocket *sapSocket);
-void processUnsolResponse(MsgHeader *rsp, RilSapSocket *sapSocket);
+void registerService(const RIL_RadioFunctions* callbacks);
+void processResponse(MsgHeader* rsp, RilSapSocket* sapSocket);
+void processUnsolResponse(MsgHeader* rsp, RilSapSocket* sapSocket);
 
-}   // namespace android
+}  // namespace sap
 
 #endif  // RIL_SERVICE_H

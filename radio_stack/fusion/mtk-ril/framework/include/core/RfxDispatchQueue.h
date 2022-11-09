@@ -36,66 +36,64 @@ using ::android::sp;
 
 template <typename T>
 class Dispatch_queue {
-
-   /**
+    /**
      * Mutex attribute used in queue mutex initialization.
      */
     pthread_mutexattr_t attr;
 
-   /**
+    /**
      * Queue mutex variable for synchronized queue access.
      */
     pthread_mutex_t mutex_instance;
 
-   /**
+    /**
      * Condition to be waited on for dequeuing.
      */
     pthread_cond_t cond;
 
-   /**
+    /**
      * Front of the queue.
      */
-    T *front;
+    T* front;
 
-    public:
+  public:
+    /**
+     * Remove the first element of the queue.
+     *
+     * @return first element of the queue.
+     */
+    T* dequeue(void);
 
-       /**
-         * Remove the first element of the queue.
-         *
-         * @return first element of the queue.
-         */
-        T* dequeue(void);
+    /**
+     * Add a request to the front of the queue.
+     *
+     * @param Request to be added.
+     */
+    void enqueue(T* request);
 
-       /**
-         * Add a request to the front of the queue.
-         *
-         * @param Request to be added.
-         */
-        void enqueue(T* request);
+    /**
+     * Check if the queue is empty.
+     */
+    int empty(void);
 
-       /**
-         * Check if the queue is empty.
-         */
-        int empty(void);
+    /**
+     * Check and remove an element with a particular message id and token.
+     *
+     * @param Request token.
+     */
+    T* checkAndDequeue(int token);
 
-       /**
-         * Check and remove an element with a particular message id and token.
-         *
-         * @param Request token.
-         */
-        T* checkAndDequeue(int token);
+    /**
+     * Fine the element with a particular message token.
+     *
+     * @param Request token.
+     */
+    T* getClonedObj(int token);
 
-        /**
-          * Fine the element with a particular message token.
-          *
-          * @param Request token.
-          */
-        T* getClonedObj(int token);
-
-       /**
-         * Queue constructor.
-         */
-        Dispatch_queue(void);
+    /**
+     * Queue constructor.
+     */
+    Dispatch_queue(void);
 };
 
 template <typename T>
@@ -111,11 +109,11 @@ T* Dispatch_queue<T>::dequeue(void) {
     T* temp = NULL;
 
     pthread_mutex_lock(&mutex_instance);
-    while(empty()) {
+    while (empty()) {
         pthread_cond_wait(&cond, &mutex_instance);
     }
     temp = this->front;
-    if(NULL != this->front->p_next) {
+    if (NULL != this->front->p_next) {
         this->front = this->front->p_next;
     } else {
         this->front = NULL;
@@ -127,16 +125,15 @@ T* Dispatch_queue<T>::dequeue(void) {
 
 template <typename T>
 void Dispatch_queue<T>::enqueue(T* request) {
-
     pthread_mutex_lock(&mutex_instance);
 
     T* tmp;
-    if(NULL == this->front) {
+    if (NULL == this->front) {
         this->front = request;
         request->p_next = NULL;
     } else {
         tmp = this->front;
-        while(tmp->p_next != NULL) {
+        while (tmp->p_next != NULL) {
             tmp = tmp->p_next;
         }
         tmp->p_next = request;
@@ -152,7 +149,7 @@ T* Dispatch_queue<T>::checkAndDequeue(int token) {
 
     pthread_mutex_lock(&mutex_instance);
 
-    for(T **ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
+    for (T** ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
         if (token == (*ppCur)->msg->getToken()) {
             ret = 1;
             temp = *ppCur;
@@ -173,7 +170,7 @@ T* Dispatch_queue<T>::getClonedObj(int token) {
 
     pthread_mutex_lock(&mutex_instance);
 
-    for(T **ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
+    for (T** ppCur = &(this->front); *ppCur != NULL; ppCur = &((*ppCur)->p_next)) {
         if (token == (*ppCur)->msg->getToken()) {
             ret = 1;
             temp = createMessageObj((*ppCur)->msg);
@@ -188,8 +185,7 @@ T* Dispatch_queue<T>::getClonedObj(int token) {
 
 template <typename T>
 int Dispatch_queue<T>::empty(void) {
-
-    if(this->front == NULL) {
+    if (this->front == NULL) {
         return 1;
     } else {
         return 0;

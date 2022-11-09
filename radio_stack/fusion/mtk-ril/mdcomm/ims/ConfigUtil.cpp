@@ -23,15 +23,13 @@
 
 #define RFX_LOG_TAG "CONFIG-UTIL"
 
-void skipWhiteSpace(char **p_cur)
-{
+void skipWhiteSpace(char** p_cur) {
     if (*p_cur == NULL) return;
     while (**p_cur != '\0' && isspace(**p_cur)) {
         (*p_cur)++;
     }
 }
-void skipNextComma(char **p_cur)
-{
+void skipNextComma(char** p_cur) {
     if (*p_cur == NULL) return;
     while (**p_cur != '\0' && **p_cur != ',') {
         (*p_cur)++;
@@ -41,9 +39,8 @@ void skipNextComma(char **p_cur)
     }
 }
 
-char* nextTok(char **p_cur)
-{
-    char *ret = NULL;
+char* nextTok(char** p_cur) {
+    char* ret = NULL;
     skipWhiteSpace(p_cur);
     if (*p_cur == NULL) {
         ret = NULL;

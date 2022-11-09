@@ -41,7 +41,7 @@ vector<string> RtcSuppServUtil::split(string input, string pattern) {
     return result;
 }
 
-string& RtcSuppServUtil::trim(string &input) {
+string& RtcSuppServUtil::trim(string& input) {
     if (input.empty()) {
         return input;
     }
@@ -60,7 +60,7 @@ string RtcSuppServUtil::sha256(const string str) {
     SHA256_Final(hash, &sha256);
 
     string tmp = "";
-    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
         snprintf(buf, sizeof(buf), "%02x", hash[i]);
         tmp = tmp + buf;
     }

@@ -25,29 +25,29 @@
 #define RFX_LOG_TAG "RmcImsCCReqHandler"
 
 static const int requests[] = {
-    RFX_MSG_REQUEST_CONFERENCE_DIAL,                     // AT+EDCONF
-    RFX_MSG_REQUEST_DIAL_WITH_SIP_URI,                   // AT+CDU
-    RFX_MSG_REQUEST_VT_DIAL_WITH_SIP_URI,
-    RFX_MSG_REQUEST_HOLD_CALL,                           // AT+ECCTRL
-    RFX_MSG_REQUEST_RESUME_CALL,
-    RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,      // AT+ECONF
-    RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
-    RFX_MSG_REQUEST_SET_SRVCC_CALL_CONTEXT_TRANSFER,
-    RFX_MSG_REQUEST_PULL_CALL,
-    RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT,
-    RFX_MSG_REQUEST_ECC_REDIAL_APPROVE,
-    RFX_MSG_REQUEST_IMS_ECT,
-    RFX_MSG_REQUEST_ASYNC_HOLD_CALL,
-    RFX_MSG_REQUEST_ASYNC_RESUME_CALL,
-    RFX_MSG_REQUEST_SET_RTT_MODE,
-    RFX_MSG_REQUEST_SET_SIP_HEADER,
-    RFX_MSG_REQUEST_SIP_HEADER_REPORT,
-    RFX_MSG_REQUEST_SET_IMS_CALL_MODE,
-    RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO,
+        RFX_MSG_REQUEST_CONFERENCE_DIAL,    // AT+EDCONF
+        RFX_MSG_REQUEST_DIAL_WITH_SIP_URI,  // AT+CDU
+        RFX_MSG_REQUEST_VT_DIAL_WITH_SIP_URI,
+        RFX_MSG_REQUEST_HOLD_CALL,  // AT+ECCTRL
+        RFX_MSG_REQUEST_RESUME_CALL,
+        RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER,  // AT+ECONF
+        RFX_MSG_REQUEST_REMOVE_IMS_CONFERENCE_CALL_MEMBER,
+        RFX_MSG_REQUEST_SET_SRVCC_CALL_CONTEXT_TRANSFER,
+        RFX_MSG_REQUEST_PULL_CALL,
+        RFX_MSG_REQUEST_VIDEO_CALL_ACCEPT,
+        RFX_MSG_REQUEST_ECC_REDIAL_APPROVE,
+        RFX_MSG_REQUEST_IMS_ECT,
+        RFX_MSG_REQUEST_ASYNC_HOLD_CALL,
+        RFX_MSG_REQUEST_ASYNC_RESUME_CALL,
+        RFX_MSG_REQUEST_SET_RTT_MODE,
+        RFX_MSG_REQUEST_SET_SIP_HEADER,
+        RFX_MSG_REQUEST_SIP_HEADER_REPORT,
+        RFX_MSG_REQUEST_SET_IMS_CALL_MODE,
+        RFX_MSG_REQUEST_SET_CALL_ADDITIONAL_INFO,
 };
 
-RmcCallControlImsRequestHandler::RmcCallControlImsRequestHandler(
-    int slot_id, int channel_id) : RmcCallControlBaseHandler(slot_id, channel_id) {
+RmcCallControlImsRequestHandler::RmcCallControlImsRequestHandler(int slot_id, int channel_id)
+    : RmcCallControlBaseHandler(slot_id, channel_id) {
     // register to handle request
     registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 
@@ -59,17 +59,14 @@ RmcCallControlImsRequestHandler::RmcCallControlImsRequestHandler(
     atSendCommand("AT+EGMC=1,\"ecc_redial_notify\",1");
 }
 
-RmcCallControlImsRequestHandler::~RmcCallControlImsRequestHandler() {
-}
+RmcCallControlImsRequestHandler::~RmcCallControlImsRequestHandler() {}
 
-void RmcCallControlImsRequestHandler::onHandleTimer() {
-
-}
+void RmcCallControlImsRequestHandler::onHandleTimer() {}
 
 void RmcCallControlImsRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int requestId = msg->getId();
     logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(requestId));
-    switch(requestId) {
+    switch (requestId) {
         case RFX_MSG_REQUEST_CONFERENCE_DIAL:
             confDial(msg);
             break;
@@ -131,7 +128,7 @@ void RmcCallControlImsRequestHandler::confDial(const sp<RfxMclMessage>& msg) {
      * <dial_str_1>...: invited members number
      * <clir>: clir mode
      */
-    char** params = (char **)msg->getData()->getData();
+    char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_CONF_DIAL;
     int type = atoi(params[0]);
     int numOfMembers = atoi(params[1]);
@@ -148,8 +145,7 @@ void RmcCallControlImsRequestHandler::confDial(const sp<RfxMclMessage>& msg) {
         char* addr = params[i + offSet];
         String8 memberNum = String8::format(",\"%s%s\"", clirPrefix, addr);
         cmd += memberNum;
-        logD(RFX_LOG_TAG, "%s=%d,%d,\"%s\"", atCmd, type, i,
-                RfxRilUtils::pii(RFX_LOG_TAG, addr));
+        logD(RFX_LOG_TAG, "%s=%d,%d,\"%s\"", atCmd, type, i, RfxRilUtils::pii(RFX_LOG_TAG, addr));
     }
     handleCmdWithVoidResponse(msg, cmd);
 }
@@ -160,7 +156,7 @@ void RmcCallControlImsRequestHandler::dialWithSipUri(const sp<RfxMclMessage>& ms
      * <uri>: optional, dialed URI
      */
     int action = 1;
-    char* sipUri = (char *)msg->getData()->getData();
+    char* sipUri = (char*)msg->getData()->getData();
 
     char* atCmd = AT_SIP_URI_DIAL;
     String8 cmd;
@@ -184,13 +180,13 @@ void RmcCallControlImsRequestHandler::modifyImsConf(const sp<RfxMclMessage>& msg
      * <num>: modified call number
      * [<joined_call_id>]: optional, modified call id
      */
-    char **params = (char **)msg->getData()->getData();
+    char** params = (char**)msg->getData()->getData();
 
-    char *atCmd = AT_CONF_MODIFY;
+    char* atCmd = AT_CONF_MODIFY;
     int hostId = atoi(params[0]);
-    char *callNum = params[1];
+    char* callNum = params[1];
     int callId = atoi(params[2]);
-    char *callNumRetry;
+    char* callNumRetry;
     sp<RfxAtResponse> p_response;
 
     int operation = (request == RFX_MSG_REQUEST_ADD_IMS_CONFERENCE_CALL_MEMBER) ? 0 : 1;
@@ -198,7 +194,7 @@ void RmcCallControlImsRequestHandler::modifyImsConf(const sp<RfxMclMessage>& msg
         callNumRetry = params[3];
     }
     logD(RFX_LOG_TAG, "AT> %s=%d,%d,\"%s\",%d", atCmd, hostId, operation,
-            RfxRilUtils::pii(RFX_LOG_TAG, callNum), callId);
+         RfxRilUtils::pii(RFX_LOG_TAG, callNum), callId);
     String8 cmd = String8::format("%s=%d,%d,\"%s\"", atCmd, hostId, operation, callNum);
     if (callId > 0) {
         cmd = String8::format("%s,%d", cmd.string(), callId);
@@ -212,7 +208,7 @@ void RmcCallControlImsRequestHandler::modifyImsConf(const sp<RfxMclMessage>& msg
         if (p_response->getError() != 0 || p_response->getSuccess() != 1) {
             cmd.clear();
             logD(RFX_LOG_TAG, "AT> %s=%d,%d,\"%s\",%d", atCmd, hostId, operation,
-                    RfxRilUtils::pii(RFX_LOG_TAG, callNumRetry), callId);
+                 RfxRilUtils::pii(RFX_LOG_TAG, callNumRetry), callId);
             cmd = String8::format("%s=%d,%d,\"%s\"", atCmd, hostId, operation, callNumRetry);
             if (callId > 0) {
                 cmd = String8::format("%s,%d", cmd.string(), callId);
@@ -220,8 +216,8 @@ void RmcCallControlImsRequestHandler::modifyImsConf(const sp<RfxMclMessage>& msg
             handleCmdWithVoidResponse(msg, cmd);
             return;
         } else {  // remove success
-            sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg);
+            sp<RfxMclMessage> response =
+                    RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg);
             responseToTelCore(response);
         }
     }
@@ -232,12 +228,12 @@ void RmcCallControlImsRequestHandler::controlCall(const sp<RfxMclMessage>& msg, 
      * <call_id>: controled call id
      * <call_state>: 131 = hold; 132 = resume
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
     char* atCmd = AT_IMS_CALL_CTRL;
     int callId = params[0];
 
-    int modifier = (request == RFX_MSG_REQUEST_HOLD_CALL)? 131: 132;
+    int modifier = (request == RFX_MSG_REQUEST_HOLD_CALL) ? 131 : 132;
 
     String8 cmd = String8::format("%s=%d,%d", atCmd, callId, modifier);
     sp<RfxAtResponse> atResponse = atSendCommand(cmd);
@@ -318,18 +314,17 @@ void RmcCallControlImsRequestHandler::explicitCallTransfer(const sp<RfxMclMessag
     handleCmdWithVoidResponse(msg, cmd);
 }
 
-void RmcCallControlImsRequestHandler::controlCallAsync(
-        const sp<RfxMclMessage>& msg, int request) {
+void RmcCallControlImsRequestHandler::controlCallAsync(const sp<RfxMclMessage>& msg, int request) {
     /* +ECCTRL=<call_id>,<call_state>, 1 (unsynchronize)
      * <call_id>: controled call id
      * <call_state>: 131 = hold; 132 = resume
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
     char* atCmd = AT_IMS_CALL_CTRL;
     int callId = params[0];
 
-    int modifier = (request == RFX_MSG_REQUEST_ASYNC_HOLD_CALL)? 131: 132;
+    int modifier = (request == RFX_MSG_REQUEST_ASYNC_HOLD_CALL) ? 131 : 132;
 
     String8 cmd = String8::format("%s=%d,%d,1", atCmd, callId, modifier);
     sp<RfxAtResponse> atResponse = atSendCommand(cmd);
@@ -354,7 +349,7 @@ void RmcCallControlImsRequestHandler::setRttMode(const sp<RfxMclMessage>& msg) {
     /* AT+EIMSRTT=<op>
      * <op>: 0 = Not a RTT call; 1 = RTT Call; 2 = Enable IMS RTT Capability
      */
-    int *params = (int *)msg->getData()->getData();
+    int* params = (int*)msg->getData()->getData();
 
     char* atCmd = AT_SET_RTT_MODE;
     int op = params[0];
@@ -365,13 +360,13 @@ void RmcCallControlImsRequestHandler::setRttMode(const sp<RfxMclMessage>& msg) {
 
 void RmcCallControlImsRequestHandler::setSipHeader(const sp<RfxMclMessage>& msg) {
     /* AT+ESIPHEADER=<total>,<index>,<header count>, "<header_value_pair>"
-    * <total>:number of total headers_value pairs string
-    * <index>: index of current  headers_value pair
-    *       - to concatenate header_values pairs string
-    * <header count >: number of total extra headers
-    * <header_value_pair>: header, value, header, value, header, value, header, value, ¡K
-    *       - string to HEX format
-    */
+     * <total>:number of total headers_value pairs string
+     * <index>: index of current  headers_value pair
+     *       - to concatenate header_values pairs string
+     * <header count >: number of total extra headers
+     * <header_value_pair>: header, value, header, value, header, value, header, value, ¡K
+     *       - string to HEX format
+     */
     char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_SET_SIP_HEADER;
     char* total = params[0];
@@ -379,17 +374,17 @@ void RmcCallControlImsRequestHandler::setSipHeader(const sp<RfxMclMessage>& msg)
     char* headerCount = params[2];
     char* headerValuePair = params[3];
 
-    String8 cmd = String8::format("%s=%s,%s,%s,\"%s\"",
-            atCmd, total, index, headerCount, headerValuePair);
+    String8 cmd = String8::format("%s=%s,%s,%s,\"%s\"", atCmd, total, index, headerCount,
+                                  headerValuePair);
     handleCmdWithVoidResponse(msg, cmd);
 }
 
 void RmcCallControlImsRequestHandler::enableSipHeaderReport(const sp<RfxMclMessage>& msg) {
     /* AT+EIMSHEADER= <call_id>,<header_type>
-    * <call_id>: call id
-    * <header_type>: wanted type of header
-    *       - 13: CALL-ID header
-    */
+     * <call_id>: call id
+     * <header_type>: wanted type of header
+     *       - 13: CALL-ID header
+     */
     char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_SIP_HEADER_REPORT;
     char* callId = params[0];
@@ -401,10 +396,10 @@ void RmcCallControlImsRequestHandler::enableSipHeaderReport(const sp<RfxMclMessa
 
 void RmcCallControlImsRequestHandler::setImsCallMode(const sp<RfxMclMessage>& msg) {
     /* AT+EIMSCALLMODE=<op>
-    * <op> : Call related Client API mode or AOSP IMS mode
-    * 1: AOSP IMS call mode
-    * 2: Client API call mode
-    */
+     * <op> : Call related Client API mode or AOSP IMS mode
+     * 1: AOSP IMS call mode
+     * 2: Client API call mode
+     */
     int* params = (int*)msg->getData()->getData();
     char* atCmd = AT_SET_IMS_CALL_MODE;
     int mode = params[0];
@@ -412,15 +407,14 @@ void RmcCallControlImsRequestHandler::setImsCallMode(const sp<RfxMclMessage>& ms
     handleCmdWithVoidResponse(msg, cmd);
 }
 
-void RmcCallControlImsRequestHandler::setImsCallAdditionalInfo(
-        const sp<RfxMclMessage>& msg) {
+void RmcCallControlImsRequestHandler::setImsCallAdditionalInfo(const sp<RfxMclMessage>& msg) {
     /* AT+EIMSCAI: <mode>, <type>, <total>, <index>, <count>, [additional_Info]
-    * <mode> 3: Enriched Calling
-    * <type> 1: header
-    * [additional Info] = "<key>,<value>,<key>,<value>, ....."
-    * <type> 2: location
-    * [additional Info] = "<lat>,<lng>,<acc>"
-    */
+     * <mode> 3: Enriched Calling
+     * <type> 1: header
+     * [additional Info] = "<key>,<value>,<key>,<value>, ....."
+     * <type> 2: location
+     * [additional Info] = "<lat>,<lng>,<acc>"
+     */
     char** params = (char**)msg->getData()->getData();
     char* atCmd = AT_SET_IMS_CALL_ADDITIONAL;
     char* mode = params[0];
@@ -430,7 +424,7 @@ void RmcCallControlImsRequestHandler::setImsCallAdditionalInfo(
     char* count = params[4];
     char* additionalInfo = params[5];
 
-    String8 cmd = String8::format("%s=%s,%s,%s,%s,%s,\"%s\"",
-            atCmd, mode, type, total, index, count, additionalInfo);
+    String8 cmd = String8::format("%s=%s,%s,%s,%s,%s,\"%s\"", atCmd, mode, type, total, index,
+                                  count, additionalInfo);
     handleCmdWithVoidResponse(msg, cmd);
 }

@@ -51,19 +51,19 @@ class RtcOpCallController : public RtcCallController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcOpCallController);
 
-public:
+  public:
     RtcOpCallController();
     virtual ~RtcOpCallController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void createRedialController();
 
-private:
+  private:
     bool handleOp08DialRequest(const sp<RfxMessage>& message);
     void onGetTrnInternal(const sp<RfxMessage> origMsg);
     void onGetTrnInternalTimeout();

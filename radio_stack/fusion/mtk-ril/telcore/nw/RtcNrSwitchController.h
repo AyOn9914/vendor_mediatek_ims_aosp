@@ -29,29 +29,27 @@
  * Define
  *****************************************************************************/
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 class RtcNrSwitchController : public RfxController {
     RFX_DECLARE_CLASS(RtcNrSwitchController);
 
-public:
+  public:
     RtcNrSwitchController();
     virtual ~RtcNrSwitchController();
 
-protected:
+  protected:
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
 
     void responseNrSwitch(const sp<RfxMessage>& response);
     int getNrSlot();
-    void onPreferredDataChanged(RfxStatusKeyEnum key, RfxVariant old_value,
-            RfxVariant value);
-    void onApVoiceCallCountChanged(int slotId, RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value);
+    void onPreferredDataChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    void onApVoiceCallCountChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
+                                   RfxVariant value);
 
-protected:
+  protected:
     int mNrSlot;
     int mPreferredDataSlot;
 };

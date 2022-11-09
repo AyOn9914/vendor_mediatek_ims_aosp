@@ -19,7 +19,7 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimSlotStatusData);
 
-RfxSimSlotStatusData::RfxSimSlotStatusData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimSlotStatusData::RfxSimSlotStatusData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data == NULL) {
         m_data = NULL;
         return;
@@ -27,14 +27,14 @@ RfxSimSlotStatusData::RfxSimSlotStatusData(void *_data, int _length) : RfxBaseDa
 
     m_data = NULL;
     m_length = _length;
-    int countOfSlot = m_length / sizeof(RIL_SimSlotStatus *);
-    RIL_SimSlotStatus ** pp_slot_status = (RIL_SimSlotStatus **)calloc(countOfSlot,
-            sizeof(RIL_SimSlotStatus *));
+    int countOfSlot = m_length / sizeof(RIL_SimSlotStatus*);
+    RIL_SimSlotStatus** pp_slot_status =
+            (RIL_SimSlotStatus**)calloc(countOfSlot, sizeof(RIL_SimSlotStatus*));
     RFX_ASSERT(pp_slot_status != NULL);
     if (countOfSlot > 0) {
-        RIL_SimSlotStatus ** tmp = (RIL_SimSlotStatus **)_data;
+        RIL_SimSlotStatus** tmp = (RIL_SimSlotStatus**)_data;
         for (int i = 0; i < countOfSlot; i++) {
-            pp_slot_status[i] = (RIL_SimSlotStatus *)calloc(1, sizeof(RIL_SimSlotStatus));
+            pp_slot_status[i] = (RIL_SimSlotStatus*)calloc(1, sizeof(RIL_SimSlotStatus));
             RFX_ASSERT(pp_slot_status[i] != NULL);
             memset(pp_slot_status[i], 0, sizeof(RIL_SimSlotStatus));
             memcpy(pp_slot_status[i], tmp[i], sizeof(RIL_SimSlotStatus));
@@ -44,19 +44,19 @@ RfxSimSlotStatusData::RfxSimSlotStatusData(void *_data, int _length) : RfxBaseDa
             pp_slot_status[i]->logicalSlotId = tmp[i]->logicalSlotId;
             if (tmp[i]->atr != NULL) {
                 int len = strlen(tmp[i]->atr);
-                pp_slot_status[i]->atr = (char *)calloc(len + 1, sizeof(char));
+                pp_slot_status[i]->atr = (char*)calloc(len + 1, sizeof(char));
                 RFX_ASSERT(pp_slot_status[i]->atr != NULL);
                 strncpy(pp_slot_status[i]->atr, tmp[i]->atr, len);
             }
             if (tmp[i]->iccId != NULL) {
                 int len = strlen(tmp[i]->iccId);
-                pp_slot_status[i]->iccId = (char *)calloc(len + 1, sizeof(char));
+                pp_slot_status[i]->iccId = (char*)calloc(len + 1, sizeof(char));
                 RFX_ASSERT(pp_slot_status[i]->iccId != NULL);
                 strncpy(pp_slot_status[i]->iccId, tmp[i]->iccId, len);
             }
             if (tmp[i]->eid != NULL) {
                 int len = strlen(tmp[i]->eid);
-                pp_slot_status[i]->eid = (char *)calloc(len + 1, sizeof(char));
+                pp_slot_status[i]->eid = (char*)calloc(len + 1, sizeof(char));
                 RFX_ASSERT(pp_slot_status[i]->eid != NULL);
                 strncpy(pp_slot_status[i]->eid, tmp[i]->eid, len);
             }
@@ -67,8 +67,8 @@ RfxSimSlotStatusData::RfxSimSlotStatusData(void *_data, int _length) : RfxBaseDa
 }
 
 RfxSimSlotStatusData::~RfxSimSlotStatusData() {
-    int countOfSlot = m_length / sizeof(RIL_SimSlotStatus *);
-    RIL_SimSlotStatus ** pp_slot_status = (RIL_SimSlotStatus **)m_data;
+    int countOfSlot = m_length / sizeof(RIL_SimSlotStatus*);
+    RIL_SimSlotStatus** pp_slot_status = (RIL_SimSlotStatus**)m_data;
     if (pp_slot_status != NULL) {
         for (int i = 0; i < countOfSlot; i++) {
             if (pp_slot_status[i] != NULL) {

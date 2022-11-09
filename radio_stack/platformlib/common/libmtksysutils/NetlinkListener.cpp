@@ -30,19 +30,13 @@
 
 #define SLOGE(...) (mtkLogE(LOG_TAG, __VA_ARGS__))
 
-ssize_t uevent_kernel_recv(int socket, void *buffer, size_t length, bool require_group, uid_t *uid)
-{
-    struct iovec iov = { buffer, length };
+ssize_t uevent_kernel_recv(int socket, void* buffer, size_t length, bool require_group,
+                           uid_t* uid) {
+    struct iovec iov = {buffer, length};
     struct sockaddr_nl addr;
     char control[CMSG_SPACE(sizeof(struct ucred))];
     struct msghdr hdr = {
-        &addr,
-        sizeof(addr),
-        &iov,
-        1,
-        control,
-        sizeof(control),
-        0,
+            &addr, sizeof(addr), &iov, 1, control, sizeof(control), 0,
     };
 
     *uid = -1;
@@ -51,15 +45,15 @@ ssize_t uevent_kernel_recv(int socket, void *buffer, size_t length, bool require
         return n;
     }
 
-    struct cmsghdr *cmsg = CMSG_FIRSTHDR(&hdr);
+    struct cmsghdr* cmsg = CMSG_FIRSTHDR(&hdr);
 
-    struct ucred *cred = (struct ucred *)CMSG_DATA(cmsg);
+    struct ucred* cred = (struct ucred*)CMSG_DATA(cmsg);
     if (cmsg == NULL || cmsg->cmsg_type != SCM_CREDENTIALS) {
         /* ignoring netlink message with no sender credentials */
         goto out;
     }
 
-//    struct ucred *cred = (struct ucred *)CMSG_DATA(cmsg);
+    //    struct ucred *cred = (struct ucred *)CMSG_DATA(cmsg);
     *uid = cred->uid;
     if (cred->uid != 0) {
         /* ignoring netlink message from non-root user */
@@ -89,18 +83,15 @@ out:
  * ril.so.  Their prebuilt ril.so is using this private class
  * so changing the NetlinkListener() constructor breaks their ril.
  */
-NetlinkListener::NetlinkListener(int socket) :
-                            SocketListener(socket, false) {
+NetlinkListener::NetlinkListener(int socket) : SocketListener(socket, false) {
     mFormat = NETLINK_FORMAT_ASCII;
 }
 #endif
 
-NetlinkListener::NetlinkListener(int socket, int format) :
-                            SocketListener(socket, false), mFormat(format) {
-}
+NetlinkListener::NetlinkListener(int socket, int format)
+    : SocketListener(socket, false), mFormat(format) {}
 
-bool NetlinkListener::onDataAvailable(SocketClient *cli)
-{
+bool NetlinkListener::onDataAvailable(SocketClient* cli) {
     int socket = cli->getSocket();
     ssize_t count;
     uid_t uid = -1;
@@ -110,14 +101,14 @@ bool NetlinkListener::onDataAvailable(SocketClient *cli)
         require_group = false;
     }
 
-    count = TEMP_FAILURE_RETRY(uevent_kernel_recv(socket,
-            mBuffer, sizeof(mBuffer), require_group, &uid));
+    count = TEMP_FAILURE_RETRY(
+            uevent_kernel_recv(socket, mBuffer, sizeof(mBuffer), require_group, &uid));
     if (count < 0) {
         SLOGE("recvmsg failed (%s)", strerror(errno));
         return false;
     }
 
-    NetlinkEvent *evt = new NetlinkEvent();
+    NetlinkEvent* evt = new NetlinkEvent();
     if (evt->decode(mBuffer, count, mFormat)) {
         onEvent(evt);
     } else if (mFormat != NETLINK_FORMAT_BINARY) {

@@ -41,23 +41,23 @@ using namespace std;
 // Mapping to err cause: 4112, 4117 (multiple PS allow error)
 #define RIL_E_OEM_MULTI_ALLOW_ERR RIL_E_OEM_ERROR_1
 
-#define INVAILD_ID             (-1)
-#define ALLOW_DATA             (1)
-#define DISALLOW_DATA          (0)
+#define INVAILD_ID (-1)
+#define ALLOW_DATA (1)
+#define DISALLOW_DATA (0)
 
 // For dequeueNetworkRequest return value
-#define FINISH_ALL_REQUEST  true
-#define WAIT_NEXT_REQUEST   false
+#define FINISH_ALL_REQUEST true
+#define WAIT_NEXT_REQUEST false
 
 class RtcDataAllowController : public RfxController {
     RFX_DECLARE_CLASS(RtcDataAllowController);  // Required: declare this class
 
-struct onDemandRequest{
-    int type;
-    int slotId;
-};
+    struct onDemandRequest {
+        int type;
+        int slotId;
+    };
 
-public:
+  public:
     RtcDataAllowController();
     virtual void enqueueNetworkRequest(int r_id, int slotId);
     virtual bool dequeueNetworkRequest(int r_id, int slotId);
@@ -65,8 +65,8 @@ public:
 
     virtual ~RtcDataAllowController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
@@ -76,8 +76,8 @@ protected:
     virtual void handleSetDataAllowRequest(const sp<RfxMessage>& request);
     virtual void handleSetDataAllowResponse(const sp<RfxMessage>& response);
     virtual void handleMultiAllowError(int activePhoneId);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual void handleDataConnectionAttachRequest(const sp<RfxMessage>& message);
     virtual void handleDataConnectionDetachRequest(const sp<RfxMessage>& message);
     virtual void onAttachOrDetachDone(const sp<RfxMessage> message);
@@ -86,10 +86,10 @@ protected:
     virtual int checkTypeExistInQueue(int type);
     virtual void onPreferredChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     virtual void onHidlStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
-    virtual void onSimMeLockChanged(int slotId, RfxStatusKeyEnum key,
-            RfxVariant old_value, RfxVariant value);
+    virtual void onSimMeLockChanged(int slotId, RfxStatusKeyEnum key, RfxVariant old_value,
+                                    RfxVariant value);
 
-private:
+  private:
     // Private functions
     bool isNeedSuspendRequest(const sp<RfxMessage>& message);
     bool checkDisallowingPeer();
@@ -98,7 +98,7 @@ private:
     void setAllowDataSlot(bool allow, int slot);
     int getAllowDataSlot();
 
-private:
+  private:
     // Private members
     bool mDoingDataAllow;
     bool mReqDataAllow;

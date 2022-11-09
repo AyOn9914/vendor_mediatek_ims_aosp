@@ -23,9 +23,10 @@
 class RfxEmbmsLocalStartSessionReqData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsLocalStartSessionReqData);
 
-    public:
-        RfxEmbmsLocalStartSessionReqData(RIL_EMBMS_LocalStartSessionReq* data, int length);
-    private:
-        void copyData(RIL_EMBMS_LocalStartSessionReq *data, int length);
+  public:
+    RfxEmbmsLocalStartSessionReqData(RIL_EMBMS_LocalStartSessionReq* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_LocalStartSessionReq* data, int length);
 };
 #endif /*RFX_EMBMS_LOCAL_STARTSESSION_REQ_DATA__H*/

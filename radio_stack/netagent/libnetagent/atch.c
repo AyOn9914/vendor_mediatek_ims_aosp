@@ -14,43 +14,46 @@
 
 int unlockpt(int fd);
 int grantpt(int fd);
-char *ptsname(int fd);
+char* ptsname(int fd);
 
 #include "atch.h"
 #include <syslog.h>
 #include <mtk_log.h>
 
 #ifdef __ANDROID_SOCKET__
- #include <cutils/sockets.h>
+#include <cutils/sockets.h>
 #endif
 
 /* debug macro */
-//#define ErrMsg(f, a...)   syslog(LOG_ERR,   "[ATCH-ERR] [%s: %d]: " f "\n", &__FILE__[0], __LINE__, ## a)
-#define SysMsg(f, a...)   syslog(LOG_INFO,  "[ATCH-SYS] [%s: %d]: " f "\n", &__FILE__[0], __LINE__, ## a)
-//#define DbgMsg(f, a...)   syslog(LOG_DEBUG, "[ATCH-DBG] [%s: %d]: " f "\n", &__FILE__[0], __LINE__, ## a)
+//#define ErrMsg(f, a...)   syslog(LOG_ERR,   "[ATCH-ERR] [%s: %d]: " f "\n", &__FILE__[0],
+//__LINE__, ## a)
+#define SysMsg(f, a...) \
+    syslog(LOG_INFO, "[ATCH-SYS] [%s: %d]: " f "\n", &__FILE__[0], __LINE__, ##a)
+//#define DbgMsg(f, a...)   syslog(LOG_DEBUG, "[ATCH-DBG] [%s: %d]: " f "\n", &__FILE__[0],
+//__LINE__, ## a)
 #define NA_LOG_TAG "Atch"
 #define DbgMsg(...) ((void)mtkLogD(NA_LOG_TAG, __VA_ARGS__))
 #define ErrMsg(...) ((void)mtkLogE(NA_LOG_TAG, __VA_ARGS__))
 
-#define SYSCHECK(c) do{if((c)<0){ \
-                        DbgMsg("system-error: '%s' (code: %d)", strerror(errno), errno);\
-                        }\
-                    }while(0)
+#define SYSCHECK(c)                                                          \
+    do {                                                                     \
+        if ((c) < 0) {                                                       \
+            DbgMsg("system-error: '%s' (code: %d)", strerror(errno), errno); \
+        }                                                                    \
+    } while (0)
 
 typedef struct _ATChannel {
-    int             type;
-    int             fd;
-    FILE           *fp;
-    char           *name;
-    char           *buffer;
-    int             buffer_len;
-    int             buffer_offset;
+    int type;
+    int fd;
+    FILE* fp;
+    char* name;
+    char* buffer;
+    int buffer_len;
+    int buffer_offset;
 } ATChannel_t;
 
-
-void *
-atch_client(int type, char *name) {
-    ATChannel_t  *atch = 0;
+void* atch_client(int type, char* name) {
+    ATChannel_t* atch = 0;
     int fd = 0;
 
     if (type <= ATCH_Type_MIN || type >= ATCH_Type_MAX) {
@@ -59,7 +62,7 @@ atch_client(int type, char *name) {
     }
 
     switch (type) {
-        case ATCH_Type_RILD : {
+        case ATCH_Type_RILD: {
             fd = open(name, O_RDWR | O_NONBLOCK);
             if (fd < 0) {
                 ErrMsg("could not connect to %s: %s", name, strerror(errno));
@@ -73,9 +76,9 @@ atch_client(int type, char *name) {
             }
             break;
         }
-        case ATCH_Type_UART : {
-            unsigned int    baud = B115200;
-            struct termios  options;
+        case ATCH_Type_UART: {
+            unsigned int baud = B115200;
+            struct termios options;
 
             fd = open(name, O_RDWR | O_NOCTTY | O_NONBLOCK);
             if (fd < 0) {
@@ -95,11 +98,11 @@ atch_client(int type, char *name) {
             tcflush(fd, TCIFLUSH);
             break;
         }
-        case ATCH_Type_TCP  :
+        case ATCH_Type_TCP:
             ErrMsg("not support yet");
             return 0;
             break;
-        case ATCH_Type_UTCP : {
+        case ATCH_Type_UTCP: {
 #ifndef __ANDROID_SOCKET__
             struct sockaddr_un server;
 
@@ -113,7 +116,7 @@ atch_client(int type, char *name) {
             memset(server.sun_path, '\0', sizeof(server.sun_path));
             strncpy(server.sun_path, name, sizeof(server.sun_path) - 1);
 
-            if (connect(fd, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) < 0) {
+            if (connect(fd, (struct sockaddr*)&server, sizeof(struct sockaddr_un)) < 0) {
                 close(fd);
                 ErrMsg("Can't connect to server side");
                 return 0;
@@ -127,7 +130,7 @@ atch_client(int type, char *name) {
 #endif
             break;
         }
-        default :
+        default:
             ErrMsg("Invalid type : %d", type);
             return 0;
     }
@@ -148,8 +151,8 @@ atch_client(int type, char *name) {
 
     memset(atch, 0, sizeof(ATChannel_t));
     atch->type = type;
-    atch->fd   = fd;
-    atch->fp   = fdopen(fd, "r+");
+    atch->fd = fd;
+    atch->fp = fdopen(fd, "r+");
     atch->name = strdup(name);
     atch->buffer = 0;
     atch->buffer_len = 0;
@@ -160,21 +163,18 @@ atch_client(int type, char *name) {
     return atch;
 }
 
-
-
-void *
-atch_server(int type, char *name) {
-    ATChannel_t  *atch = 0;
+void* atch_server(int type, char* name) {
+    ATChannel_t* atch = 0;
     int fd = 0;
 
     switch (type) {
-        case ATCH_Type_UART : {
+        case ATCH_Type_UART: {
 #if 1
             struct termios options;
-            char *pts = 0;
+            char* pts = 0;
 
             fd = open("/dev/ptmx", O_RDWR | O_NONBLOCK);
-            //fd = open("/dev/ptmx", O_RDWR);
+            // fd = open("/dev/ptmx", O_RDWR);
             if (fd < 0) {
                 ErrMsg("Can't open the ptmx");
                 return 0;
@@ -187,10 +187,10 @@ atch_server(int type, char *name) {
                 return 0;
             }
 
-            tcgetattr(fd, &options); //get the parameters
+            tcgetattr(fd, &options);  // get the parameters
             memset(&options, 0, sizeof(options));
 
-            options.c_cflag = B460800 | CREAD | CLOCAL | CS8 ;
+            options.c_cflag = B460800 | CREAD | CLOCAL | CS8;
             options.c_iflag = IGNPAR;
             options.c_lflag = 0; /* disable CANON, ECHO*, etc */
             options.c_oflag = 0; /* set raw output */
@@ -216,11 +216,11 @@ atch_server(int type, char *name) {
             return 0;
 #endif
         }
-        case ATCH_Type_TCP  :
+        case ATCH_Type_TCP:
             ErrMsg("not support yet");
             return 0;
             break;
-        case ATCH_Type_UTCP : {
+        case ATCH_Type_UTCP: {
 #ifndef __ANDROID_SOCKET__
             struct sockaddr_un server;
 
@@ -235,7 +235,7 @@ atch_server(int type, char *name) {
             strncpy(server.sun_path, name, sizeof(server.sun_path) - 1);
             unlink(name);
 
-            if (bind(fd, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) < 0) {
+            if (bind(fd, (struct sockaddr*)&server, sizeof(struct sockaddr_un)) < 0) {
                 ErrMsg("Can't create the listen thread");
                 close(fd);
                 return 0;
@@ -257,7 +257,7 @@ atch_server(int type, char *name) {
                 int tmp_addrlen = sizeof(struct sockaddr);
                 int cli_fd = 0;
 
-                cli_fd = accept(fd,  (struct sockaddr *) &tmp_addr, (socklen_t *) &tmp_addrlen);
+                cli_fd = accept(fd, (struct sockaddr*)&tmp_addr, (socklen_t*)&tmp_addrlen);
                 if (cli_fd < 0) {
                     ErrMsg("accept failed");
                     close(fd);
@@ -270,7 +270,7 @@ atch_server(int type, char *name) {
 
             break;
         }
-        default :
+        default:
             ErrMsg("Invalid type : %d", type);
             return 0;
     }
@@ -291,8 +291,8 @@ atch_server(int type, char *name) {
 
     memset(atch, 0, sizeof(ATChannel_t));
     atch->type = type;
-    atch->fd   = fd;
-    atch->fp   = fdopen(fd, "r+");
+    atch->fd = fd;
+    atch->fp = fdopen(fd, "r+");
     atch->name = strdup(name);
     atch->buffer = 0;
     atch->buffer_len = 0;
@@ -303,10 +303,8 @@ atch_server(int type, char *name) {
     return atch;
 }
 
-
-void *
-atch_new(int type, int fd) {
-    ATChannel_t *atch = 0;
+void* atch_new(int type, int fd) {
+    ATChannel_t* atch = 0;
 
     if (type != ATCH_Type_USER_Client && type != ATCH_Type_USER_Server) {
         ErrMsg("Error type = %d", type);
@@ -325,16 +323,16 @@ atch_new(int type, int fd) {
 
     memset(atch, 0, sizeof(ATChannel_t));
     atch->type = type;
-    atch->fd   = fd;
+    atch->fd = fd;
     atch->name = 0;
     atch->buffer = 0;
     atch->buffer_len = 0;
     atch->buffer_offset = 0;
 
     if (type == ATCH_Type_USER_Client) {
-        atch->fp   = fdopen(fd, "w");
+        atch->fp = fdopen(fd, "w");
     } else {
-        atch->fp   = fdopen(fd, "r");
+        atch->fp = fdopen(fd, "r");
     }
 
     DbgMsg("new user atch, type = %d, fd = %d, fp = %p", atch->type, atch->fd, atch->fp);
@@ -342,10 +340,8 @@ atch_new(int type, int fd) {
     return atch;
 }
 
-
-int
-atch_close(void *channel) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_close(void* channel) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
     int ret = 0;
 
     if (!atch) {
@@ -381,11 +377,8 @@ atch_close(void *channel) {
     }
 }
 
-
-
-int
-atch_puts(void *channel, char *buf) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_puts(void* channel, char* buf) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
     int ret = 0;
 
     if (!atch) {
@@ -409,11 +402,9 @@ atch_puts(void *channel, char *buf) {
     return ret;
 }
 
-
-char *
-atch_gets(void *channel, char *buf, int len) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
-    char *ret = 0;
+char* atch_gets(void* channel, char* buf, int len) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
+    char* ret = 0;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -436,10 +427,8 @@ atch_gets(void *channel, char *buf, int len) {
     return ret;
 }
 
-
-int
-atch_send(void *channel, char *buf, int len) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_send(void* channel, char* buf, int len) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
     int ret = 0;
     int offset = 0;
 
@@ -464,7 +453,7 @@ atch_send(void *channel, char *buf, int len) {
     }
 
     while (offset < len) {
-        ret = write(atch->fd, buf+offset, len-offset);
+        ret = write(atch->fd, buf + offset, len - offset);
         if (ret > 0) {
             offset += ret;
         } else {
@@ -475,10 +464,8 @@ atch_send(void *channel, char *buf, int len) {
     return offset;
 }
 
-
-int
-atch_recv(void *channel, char *buf, int len) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_recv(void* channel, char* buf, int len) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -503,10 +490,8 @@ atch_recv(void *channel, char *buf, int len) {
     return read(atch->fd, buf, len);
 }
 
-
-int
-atch_getfd(void *channel) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_getfd(void* channel) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -516,10 +501,8 @@ atch_getfd(void *channel) {
     return atch->fd;
 }
 
-
-int
-atch_fflush(void *channel) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_fflush(void* channel) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -534,10 +517,8 @@ atch_fflush(void *channel) {
     return fflush(atch->fp);
 }
 
-
-int
-atch_set2buffer(void *channel, int size) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_set2buffer(void* channel, int size) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -556,17 +537,15 @@ atch_set2buffer(void *channel, int size) {
         return -1;
     }
 
-    memset(atch->buffer, 0, size); //add memset to clear
-    atch->buffer_len = size-1;
+    memset(atch->buffer, 0, size);  // add memset to clear
+    atch->buffer_len = size - 1;
     atch->buffer_offset = 0;
 
     return 0;
 }
 
-
-int
-atch_read2buffer(void *channel) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
+int atch_read2buffer(void* channel) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
     int ret = 0;
 
     if (!atch) {
@@ -584,7 +563,8 @@ atch_read2buffer(void *channel) {
         return -1;
     }
 
-    ret = read(atch->fd, atch->buffer+atch->buffer_offset, atch->buffer_len-atch->buffer_offset);
+    ret = read(atch->fd, atch->buffer + atch->buffer_offset,
+               atch->buffer_len - atch->buffer_offset);
     if (ret <= 0) {
         return ret;
     }
@@ -595,11 +575,10 @@ atch_read2buffer(void *channel) {
     return ret;
 }
 
-char *
-atch_getline(void *channel) {
-    ATChannel_t  *atch = (ATChannel_t *)channel;
-    char *line = 0;
-    char *str = 0;
+char* atch_getline(void* channel) {
+    ATChannel_t* atch = (ATChannel_t*)channel;
+    char* line = 0;
+    char* str = 0;
 
     if (!atch) {
         ErrMsg("channel is NULL");
@@ -614,7 +593,7 @@ atch_getline(void *channel) {
     line = atch->buffer;
     while (*line) {
         char last_char = 0;
-        char *ptr = 0;
+        char* ptr = 0;
 
         ptr = strchr(line, '\n');
         if (!ptr) {
@@ -624,18 +603,18 @@ atch_getline(void *channel) {
             }
         }
 
-        last_char = *(ptr+1);
-        *(ptr+1) = 0;
+        last_char = *(ptr + 1);
+        *(ptr + 1) = 0;
 
         str = strdup(line);
 
-        *(ptr+1) = last_char;
-        line = ptr+1;
+        *(ptr + 1) = last_char;
+        line = ptr + 1;
         break;
     }
 
     if (str) {
-        atch->buffer_offset = atch->buffer_offset - (line-atch->buffer);
+        atch->buffer_offset = atch->buffer_offset - (line - atch->buffer);
         if (atch->buffer_offset > 0 && (line != atch->buffer)) {
             memmove(atch->buffer, line, atch->buffer_offset);
         }

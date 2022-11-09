@@ -25,7 +25,6 @@
 // #include <utils/Compat.h>
 #include <Compat.h>
 
-
 #if defined(__MINGW32__)
 // Ensure that we always pull in winsock2.h before windows.h
 #if defined(_WIN32)
@@ -51,7 +50,7 @@ namespace android {
  * of a FileMap hierarchy.
  */
 class FileMap {
-public:
+  public:
     FileMap(void);
 
     FileMap(FileMap&& f);
@@ -65,8 +64,7 @@ public:
      *
      * Returns "false" on failure.
      */
-    bool create(const char* origFileName, int fd,
-                off64_t offset, size_t length, bool readOnly);
+    bool create(const char* origFileName, int fd, off64_t offset, size_t length, bool readOnly);
 
     ~FileMap(void);
 
@@ -94,9 +92,7 @@ public:
      * This maps directly to madvise() values, but allows us to avoid
      * including <sys/mman.h> everywhere.
      */
-    enum MapAdvice {
-        NORMAL, RANDOM, SEQUENTIAL, WILLNEED, DONTNEED
-    };
+    enum MapAdvice { NORMAL, RANDOM, SEQUENTIAL, WILLNEED, DONTNEED };
 
     /*
      * Apply an madvise() call to the entire file.
@@ -105,27 +101,26 @@ public:
      */
     int advise(MapAdvice advice);
 
-protected:
-
-private:
+  protected:
+  private:
     // these are not implemented
     FileMap(const FileMap& src);
     const FileMap& operator=(const FileMap& src);
 
-    char*       mFileName;      // original file name, if known
-    void*       mBasePtr;       // base of mmap area; page aligned
-    size_t      mBaseLength;    // length, measured from "mBasePtr"
-    off64_t     mDataOffset;    // offset used when map was created
-    void*       mDataPtr;       // start of requested data, offset from base
-    size_t      mDataLength;    // length, measured from "mDataPtr"
+    char* mFileName;      // original file name, if known
+    void* mBasePtr;       // base of mmap area; page aligned
+    size_t mBaseLength;   // length, measured from "mBasePtr"
+    off64_t mDataOffset;  // offset used when map was created
+    void* mDataPtr;       // start of requested data, offset from base
+    size_t mDataLength;   // length, measured from "mDataPtr"
 #if defined(__MINGW32__)
-    HANDLE      mFileHandle;    // Win32 file handle
-    HANDLE      mFileMapping;   // Win32 file mapping handle
+    HANDLE mFileHandle;   // Win32 file handle
+    HANDLE mFileMapping;  // Win32 file mapping handle
 #endif
 
     static long mPageSize;
 };
 
-}; // namespace android
+};  // namespace android
 
-#endif // __LIBS_FILE_MAP_H
+#endif  // __LIBS_FILE_MAP_H

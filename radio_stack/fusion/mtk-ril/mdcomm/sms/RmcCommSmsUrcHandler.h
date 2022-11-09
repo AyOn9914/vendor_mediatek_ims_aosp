@@ -27,23 +27,22 @@
  *****************************************************************************/
 
 class RmcCommSmsUrcHandler : public RfxBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCommSmsUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCommSmsUrcHandler);
 
-public:
+  public:
     RmcCommSmsUrcHandler(int slot_id, int channel_id);
 
-protected:
+  protected:
     // Process URC here
     virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
     // URC handler
     void handleSmsReady(const sp<RfxMclMessage>& msg);
 
-private:
+  private:
     String8 mTag;
-
 };
 #endif /* __RMC_COMM_SMS_URC_HANDLER_H__ */

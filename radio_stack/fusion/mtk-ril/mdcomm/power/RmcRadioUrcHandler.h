@@ -22,19 +22,18 @@
 class RmcRadioUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcRadioUrcHandler);
 
+  public:
+    RmcRadioUrcHandler(int slotId, int channelId);
+    virtual ~RmcRadioUrcHandler();
 
-    public:
-        RmcRadioUrcHandler(int slotId, int channelId);
-        virtual ~RmcRadioUrcHandler();
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  private:
+    void handleDSBPEnhancement(RfxAtLine* line);
 
-    private:
-        void handleDSBPEnhancement(RfxAtLine *line);
-
-    private:
-        int mPreRadioState;
+  private:
+    int mPreRadioState;
 };
 
 #endif

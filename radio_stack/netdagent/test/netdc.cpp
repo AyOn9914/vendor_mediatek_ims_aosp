@@ -35,12 +35,11 @@
 #include <vendor/mediatek/hardware/netdagent/1.0/INetdagent.h>
 #include <hidl/HidlSupport.h>
 #include <string>
-using std::string;
 using android::hardware::hidl_string;
+using std::string;
 using vendor::mediatek::hardware::netdagent::V1_0::INetdagent;
 
-
-static void usage(char *progname);
+static void usage(char* progname);
 #if 0
 static int do_monitor(int sock, int stop_after_cmd);
 static int do_cmd(int sock, int argc, char **argv);
@@ -48,15 +47,12 @@ static int do_cmd(int sock, string &cmd);
 static int do_test(int sock);
 #endif
 static int do_test();
-static int do_test(int argc, char **argv);
+static int do_test(int argc, char** argv);
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
+    if (argc < 2) usage(argv[0]);
 
-    if (argc < 2)
-        usage(argv[0]);
-
-    if (!strcmp(argv[1], "hidl"))
-        exit(do_test());
+    if (!strcmp(argv[1], "hidl")) exit(do_test());
 
     exit(do_test(argc, argv));
 
@@ -80,7 +76,7 @@ int main(int argc, char **argv) {
 #endif
 }
 
-static int do_test(int argc, char **argv) {
+static int do_test(int argc, char** argv) {
     hidl_string hidl_cmd;
     string temp_cmd;
     int i;
@@ -92,32 +88,31 @@ static int do_test(int argc, char **argv) {
     fprintf(stderr, "%s\n", temp_cmd.c_str());
 
     android::sp<INetdagent> gNetdagentService;
-    //get Netdagent HIDL service
+    // get Netdagent HIDL service
     gNetdagentService = INetdagent::getService();
     if (gNetdagentService == nullptr) {
         ALOGE("get %s service failed\n", INetdagent::descriptor);
         return 0;
     }
 
-    //test netdagent
+    // test netdagent
     hidl_cmd = temp_cmd;
     gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
     return 0;
 }
 
-
 static int do_test() {
     hidl_string hidl_cmd;
     android::sp<INetdagent> gNetdagentService;
 
-    //get Netdagent HIDL service
+    // get Netdagent HIDL service
     gNetdagentService = INetdagent::getService();
     if (gNetdagentService == nullptr) {
         ALOGE("get %s service failed\n", INetdagent::descriptor);
         return 0;
     }
 
-    //test netdagent
+    // test netdagent
     hidl_cmd = "netdagent firewall get_usb_client rndis";
     gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
@@ -169,17 +164,17 @@ static int do_test() {
     hidl_cmd = "netdagent firewall priority_clear_toup_all";
     gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
-    //hidl_cmd = "netdagent throttle cat modem rx";
-    //gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
+    // hidl_cmd = "netdagent throttle cat modem rx";
+    // gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
     hidl_cmd = "netdagent throttle set ccmni0 1024 -1";
     gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
-    //hidl_cmd = "netdagent throttle set modem 1024 -1";
-    //gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
+    // hidl_cmd = "netdagent throttle set modem 1024 -1";
+    // gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
-    //hidl_cmd = "netdagent network forward rndis0 wlan0 192.168.42.28/32 2 enable";
-    //gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
+    // hidl_cmd = "netdagent network forward rndis0 wlan0 192.168.42.28/32 2 enable";
+    // gNetdagentService->dispatchNetdagentCmd(hidl_cmd);
 
     return 0;
 }
@@ -382,7 +377,7 @@ static int do_monitor(int sock, int stop_after_cmd) {
 }
 #endif
 
-static void usage(char *progname) {
+static void usage(char* progname) {
     fprintf(stderr, "Usage: %s [monitor|test] <cmd> [arg ...]\n", progname);
     exit(1);
 }

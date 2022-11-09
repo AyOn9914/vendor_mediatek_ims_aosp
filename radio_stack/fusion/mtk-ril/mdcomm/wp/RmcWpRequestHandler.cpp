@@ -28,15 +28,16 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcWpRequestHandler, RIL_CMD_PROXY_1);
 
 int RmcWpRequestHandler::bWorldModeSwitching = 0;
 int RmcWpRequestHandler::ecsraUrcParams[5] = {0};
-RIL_RadioState RmcWpRequestHandler::radioStateBackup[MAX_SIM_COUNT] ={RADIO_STATE_OFF};
+RIL_RadioState RmcWpRequestHandler::radioStateBackup[MAX_SIM_COUNT] = {RADIO_STATE_OFF};
 
-RmcWpRequestHandler::RmcWpRequestHandler(int slot_id, int channel_id):RfxBaseHandler(slot_id, channel_id) {
+RmcWpRequestHandler::RmcWpRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     int majorSIM = RfxRilUtils::getMajorSim();
     const int request[] = {
-        RFX_MSG_REQUEST_WORLD_MODE_RESUMING,
+            RFX_MSG_REQUEST_WORLD_MODE_RESUMING,
     };
 
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     if (slot_id == (majorSIM - 1)) {
         setActiveModemType();
         queryActiveMode();
@@ -44,13 +45,12 @@ RmcWpRequestHandler::RmcWpRequestHandler(int slot_id, int channel_id):RfxBaseHan
     worldPhoneInitialize(slot_id);
 }
 
-RmcWpRequestHandler::~RmcWpRequestHandler() {
-}
+RmcWpRequestHandler::~RmcWpRequestHandler() {}
 
 void RmcWpRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(WP_LOG_TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_WORLD_MODE_RESUMING:
             requestResumingWorldMode(msg);
             break;
@@ -82,10 +82,11 @@ void RmcWpRequestHandler::handleWorldModeChanged(const sp<RfxMclMessage>& msg) {
     rfx_property_set("persist.vendor.radio.wm_state", "0");
 
     // return the latest reported +ECSRA URC
-    logD(WP_LOG_TAG, "AT+ECSRA=2,%d,%d,%d,%d,%d",
-            ecsraUrcParams[0], ecsraUrcParams[1], ecsraUrcParams[2], ecsraUrcParams[3], ecsraUrcParams[4]);
-    p_response = atSendCommand(String8::format("AT+ECSRA=2,%d,%d,%d,%d,%d",
-            ecsraUrcParams[0], ecsraUrcParams[1], ecsraUrcParams[2], ecsraUrcParams[3], ecsraUrcParams[4]));
+    logD(WP_LOG_TAG, "AT+ECSRA=2,%d,%d,%d,%d,%d", ecsraUrcParams[0], ecsraUrcParams[1],
+         ecsraUrcParams[2], ecsraUrcParams[3], ecsraUrcParams[4]);
+    p_response = atSendCommand(String8::format("AT+ECSRA=2,%d,%d,%d,%d,%d", ecsraUrcParams[0],
+                                               ecsraUrcParams[1], ecsraUrcParams[2],
+                                               ecsraUrcParams[3], ecsraUrcParams[4]));
 
     // re-read world mode after world mode switch
     setActiveModemType();
@@ -95,7 +96,8 @@ void RmcWpRequestHandler::handleWorldModeChanged(const sp<RfxMclMessage>& msg) {
 
     // check error
     err = p_response->getError();
-    logD(WP_LOG_TAG, "handleWorldModeChanged AT+ECSRA=2 err = %d, success = %d", err, p_response->getSuccess());
+    logD(WP_LOG_TAG, "handleWorldModeChanged AT+ECSRA=2 err = %d, success = %d", err,
+         p_response->getSuccess());
     if (err != 0 || p_response->getSuccess() != 1) {
         err_no = RIL_E_GENERIC_FAILURE;
         reterr[0] = err;
@@ -105,8 +107,8 @@ void RmcWpRequestHandler::handleWorldModeChanged(const sp<RfxMclMessage>& msg) {
     reterr[1] = queryActiveMode();
 
     // response request
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(),
-            err_no, RfxIntsData(reterr, 2), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), err_no, RfxIntsData(reterr, 2), msg, false);
     // response to TeleCore
     responseToTelCore(response);
     return;
@@ -114,10 +116,10 @@ void RmcWpRequestHandler::handleWorldModeChanged(const sp<RfxMclMessage>& msg) {
 
 int RmcWpRequestHandler::isWorldModeSwitching() {
     if (1 == bWorldModeSwitching) {
-        //switching
+        // switching
         return 1;
     }
-    //no switching
+    // no switching
     return 0;
 }
 
@@ -173,7 +175,8 @@ int RmcWpRequestHandler::queryActiveMode() {
             for (int i = 0; i <= 2; i++) {
                 csraaResponse[i] = line->atTokNextint(&err);
                 if (err < 0) {
-                    logD(WP_LOG_TAG, "queryActiveMode CSRA? fail %d %d %d", err, i, csraaResponse[i]);
+                    logD(WP_LOG_TAG, "queryActiveMode CSRA? fail %d %d %d", err, i,
+                         csraaResponse[i]);
                     break;
                 }
             }
@@ -187,8 +190,9 @@ int RmcWpRequestHandler::queryActiveMode() {
             mode = 2;
         }
         asprintf(&activeMode, "%d", mode);
-        logD(WP_LOG_TAG, "+CSRAA:<UTRANFDD>=%d, <UTRAN-TDD-LCR>=%d, update ril.nw.worldmode.active.mode to %s",
-                csraaResponse[1], csraaResponse[2], activeMode);
+        logD(WP_LOG_TAG,
+             "+CSRAA:<UTRANFDD>=%d, <UTRAN-TDD-LCR>=%d, update ril.nw.worldmode.active.mode to %s",
+             csraaResponse[1], csraaResponse[2], activeMode);
         rfx_property_set("vendor.ril.nw.worldmode.activemode", activeMode);
 
         if (NULL != activeMode) {
@@ -255,9 +259,9 @@ int RmcWpRequestHandler::isWorldPhoneSupport() {
 
 int RmcWpRequestHandler::isSvlteLcgSupport() {
     int isSvlteLcgSupport = 0;
-    if (RatConfig_isLteFddSupported() == 1 && RatConfig_isLteTddSupported() == 1
-            && RatConfig_isC2kSupported() == 1 && RatConfig_isGsmSupported() ==1
-            && RatConfig_isWcdmaSupported() == 0 && RatConfig_isTdscdmaSupported() == 0) {
+    if (RatConfig_isLteFddSupported() == 1 && RatConfig_isLteTddSupported() == 1 &&
+        RatConfig_isC2kSupported() == 1 && RatConfig_isGsmSupported() == 1 &&
+        RatConfig_isWcdmaSupported() == 0 && RatConfig_isTdscdmaSupported() == 0) {
         isSvlteLcgSupport = 1;
     }
     return isSvlteLcgSupport;
@@ -266,21 +270,19 @@ int RmcWpRequestHandler::isSvlteLcgSupport() {
 SVLTE_PROJ_TYPE RmcWpRequestHandler::getSvlteProjectType() {
     SVLTE_PROJ_TYPE type = SVLTE_PROJ_INVALID;
 
-    if (RatConfig_isLteFddSupported() && RatConfig_isLteTddSupported()
-            && RatConfig_isC2kSupported() && RatConfig_isWcdmaSupported()
-            && RatConfig_isTdscdmaSupported()
-            && RatConfig_isGsmSupported()) {
+    if (RatConfig_isLteFddSupported() && RatConfig_isLteTddSupported() &&
+        RatConfig_isC2kSupported() && RatConfig_isWcdmaSupported() &&
+        RatConfig_isTdscdmaSupported() && RatConfig_isGsmSupported()) {
         type = SVLTE_PROJ_DC_6M;
-    } else if (RatConfig_isLteFddSupported()
-            && RatConfig_isLteTddSupported() && RatConfig_isC2kSupported()
-            && RatConfig_isWcdmaSupported() && RatConfig_isGsmSupported()) {
+    } else if (RatConfig_isLteFddSupported() && RatConfig_isLteTddSupported() &&
+               RatConfig_isC2kSupported() && RatConfig_isWcdmaSupported() &&
+               RatConfig_isGsmSupported()) {
         type = SVLTE_PROJ_DC_5M;
-    } else if (RatConfig_isLteFddSupported()
-            && RatConfig_isLteTddSupported() && RatConfig_isC2kSupported()
-            && RatConfig_isGsmSupported()) {
+    } else if (RatConfig_isLteFddSupported() && RatConfig_isLteTddSupported() &&
+               RatConfig_isC2kSupported() && RatConfig_isGsmSupported()) {
         type = SVLTE_PROJ_DC_4M;
-    } else if (RatConfig_isC2kSupported() && RatConfig_isGsmSupported()
-            && RatConfig_isWcdmaSupported()) {
+    } else if (RatConfig_isC2kSupported() && RatConfig_isGsmSupported() &&
+               RatConfig_isWcdmaSupported()) {
         type = SVLTE_PROJ_DC_3M;
     }
 
@@ -296,7 +298,8 @@ void RmcWpRequestHandler::worldPhoneInitialize(int slot_id) {
     } else {
         // 4M & 5M setWorldPhonePolicy.
         SVLTE_PROJ_TYPE svlteProjectType = getSvlteProjectType();
-        if (isSvlteLcgSupport() || svlteProjectType == SVLTE_PROJ_DC_5M || svlteProjectType == SVLTE_PROJ_SC_5M) {
+        if (isSvlteLcgSupport() || svlteProjectType == SVLTE_PROJ_DC_5M ||
+            svlteProjectType == SVLTE_PROJ_SC_5M) {
             setWorldPhonePolicy();
         }
     }
@@ -308,8 +311,8 @@ void RmcWpRequestHandler::worldPhoneInitialize(int slot_id) {
         int status[2] = {1, -1};
         logD(WP_LOG_TAG, "[worldPhoneInitialize] status[0] = %d, slot_id = %d", status[0], slot_id);
         // inform telcore to world mode change done
-        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(
-                RFX_MSG_URC_WORLD_MODE_CHANGED, slot_id, RfxIntsData(status, 2));
+        sp<RfxMclMessage> urc = RfxMclMessage::obtainUrc(RFX_MSG_URC_WORLD_MODE_CHANGED, slot_id,
+                                                         RfxIntsData(status, 2));
         responseToTelCore(urc);
         rfx_property_set("persist.vendor.radio.wm_state", "1");
     }

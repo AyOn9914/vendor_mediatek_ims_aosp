@@ -27,25 +27,25 @@
 class RmcCallControlChldRequestHandler : public RmcCallControlBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCallControlChldRequestHandler);
 
-    public:
-        RmcCallControlChldRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcCallControlChldRequestHandler();
+  public:
+    RmcCallControlChldRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcCallControlChldRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
+    virtual void onHandleTimer();
 
-    private:
-        void requestHangupAll(const sp<RfxMclMessage>& msg);
-        void requestHangup(const sp<RfxMclMessage>& msg);
-        void requestHangupWaitingOrBackground(const sp<RfxMclMessage>& msg);
-        void requestHangupForegroundResumeBackground(const sp<RfxMclMessage>& msg);
-        void requestSwitchWaitingOrHoldingAndActive(const sp<RfxMclMessage>& msg);
-        void requestConference(const sp<RfxMclMessage>& msg);
-        void requestExplicitCallTransfer(const sp<RfxMclMessage>& msg);
-        void requestSeparateConnection(const sp<RfxMclMessage>& msg);
-        void requestHangupWithReason(const sp<RfxMclMessage>& msg);
+  private:
+    void requestHangupAll(const sp<RfxMclMessage>& msg);
+    void requestHangup(const sp<RfxMclMessage>& msg);
+    void requestHangupWaitingOrBackground(const sp<RfxMclMessage>& msg);
+    void requestHangupForegroundResumeBackground(const sp<RfxMclMessage>& msg);
+    void requestSwitchWaitingOrHoldingAndActive(const sp<RfxMclMessage>& msg);
+    void requestConference(const sp<RfxMclMessage>& msg);
+    void requestExplicitCallTransfer(const sp<RfxMclMessage>& msg);
+    void requestSeparateConnection(const sp<RfxMclMessage>& msg);
+    void requestHangupWithReason(const sp<RfxMclMessage>& msg);
 };
 
 #endif

@@ -25,9 +25,8 @@
 #include "utils/Mutex.h"
 
 using ::android::Mutex;
-using ::android::Vector;
 using ::android::String8;
-
+using ::android::Vector;
 
 /*****************************************************************************
  * Implementation
@@ -36,34 +35,31 @@ using ::android::String8;
 Mutex s_gt_data_mutex;
 
 class GTDataEntry {
-public:
-    GTDataEntry(const char * _key, const char * _value) :
-        key(_key), value(_value) {}
+  public:
+    GTDataEntry(const char* _key, const char* _value) : key(_key), value(_value) {}
 
     String8 key;
     String8 value;
 };
 
-static Vector<GTDataEntry *> *s_gt_property_info = new Vector<GTDataEntry*>();
+static Vector<GTDataEntry*>* s_gt_property_info = new Vector<GTDataEntry*>();
 
-static bool rfx_get_value_from_GTPro(const char *key, char *value) {
+static bool rfx_get_value_from_GTPro(const char* key, char* value) {
     Mutex::Autolock autoLock(s_gt_data_mutex);
-    Vector<GTDataEntry* >::iterator it;
+    Vector<GTDataEntry*>::iterator it;
     if (key == NULL || s_gt_property_info == NULL) {
         return false;
     }
     for (it = s_gt_property_info->begin(); it != s_gt_property_info->end(); it++) {
         if ((*it)->key == String8(key)) {
-            strncpy(value, ((*it)->value).string(),
-                    strlen(((*it)->value).string()));
+            strncpy(value, ((*it)->value).string(), strlen(((*it)->value).string()));
             return true;
         }
     }
     return false;
 }
 
-int rfx_property_get(const char *key, char *value, const char *default_value)
-{
+int rfx_property_get(const char* key, char* value, const char* default_value) {
     if (RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK) {
         if (!rfx_get_value_from_GTPro(key, value)) {
             if (mtk_property_get(key, value, default_value) > 0) {
@@ -78,13 +74,11 @@ int rfx_property_get(const char *key, char *value, const char *default_value)
     }
 }
 
-
-int rfx_property_set(const char *key, const char *value)
-{
+int rfx_property_set(const char* key, const char* value) {
     if (RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK) {
         Mutex::Autolock autoLock(s_gt_data_mutex);
-        if(s_gt_property_info!=NULL) {
-            Vector<GTDataEntry* >::iterator it;
+        if (s_gt_property_info != NULL) {
+            Vector<GTDataEntry*>::iterator it;
             for (it = s_gt_property_info->begin(); it != s_gt_property_info->end(); it++) {
                 if ((*it)->key == String8(key)) {
                     ((*it)->value).setTo(value);
@@ -103,9 +97,9 @@ int rfx_property_set(const char *key, const char *value)
 
 void rfx_property_release_info() {
     if (RfxRilUtils::getRilRunMode() == RilRunMode::RIL_RUN_MODE_MOCK) {
-        Vector<GTDataEntry* >::iterator it;
+        Vector<GTDataEntry*>::iterator it;
         for (it = s_gt_property_info->begin(); it != s_gt_property_info->end();) {
-            delete(*it);
+            delete (*it);
             it = s_gt_property_info->erase(it);
         }
     }

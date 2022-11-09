@@ -39,8 +39,7 @@ RfxRilAdapter::RfxRilAdapter() {
     // TODO Auto-generated constructor stub
 }
 
-RfxRilAdapter::~RfxRilAdapter() {
-}
+RfxRilAdapter::~RfxRilAdapter() {}
 
 void RfxRilAdapter::requestAckToRilj(const sp<RfxMessage>& message) {
     // arg check
@@ -53,18 +52,17 @@ void RfxRilAdapter::requestAckToRilj(const sp<RfxMessage>& message) {
 
     if (message->getClientId() != -1) {
         RFX_LOG_D(RFX_LOG_TAG, "requestAckToRilj not support message with client Id: %d",
-                message->getClientId());
+                  message->getClientId());
         return;
     }
 
     RFX_onRequestAck(message->getRilToken());
     RFX_LOG_D(RFX_LOG_TAG, "requestAckToRilj send done (pId=%d, pToken=%d, id=%d, token=%d)",
-            message->getPId(), message->getPToken(), message->getId(), message->getToken());
+              message->getPId(), message->getPToken(), message->getId(), message->getToken());
 }
 
 bool RfxRilAdapter::responseToRilj(const sp<RfxMessage>& message) {
-
-    void *data = message->getData() == NULL ? NULL : message->getData()->getData();
+    void* data = message->getData() == NULL ? NULL : message->getData()->getData();
     int dataLength = message->getData() == NULL ? 0 : message->getData()->getDataLength();
 
     // replace msg id to id at RfxMessage
@@ -79,26 +77,27 @@ bool RfxRilAdapter::responseToRilj(const sp<RfxMessage>& message) {
         return false;
     }
 
-    if(RESPONSE == message->getType()) {
+    if (RESPONSE == message->getType()) {
         if (message->getClientId() == -1) {
             RFX_onRequestComplete(message->getRilToken(), message->getError(), data, dataLength);
             RFX_LOG_D(RFX_LOG_TAG, "responseToRilj, request id = %d", message->getPId());
         } else {
             RtcRilClientController::onClientRequestComplete(message->getRilToken(),
-                    message->getError(), data, dataLength, message->getClientId());
+                                                            message->getError(), data, dataLength,
+                                                            message->getClientId());
         }
     } else if (URC == message->getType()) {
         UrcDispatchRule rule = message->getUrcDispatchRule();
         if (URC_DISPATCH_TO_IMSRIL != rule) {
-        #if defined(ANDROID_MULTI_SIM)
+#if defined(ANDROID_MULTI_SIM)
             RFX_onUnsolicitedResponse(message->getPId(), data, dataLength,
-                    (RIL_SOCKET_ID) message->getSlotId());
-        #else
+                                      (RIL_SOCKET_ID)message->getSlotId());
+#else
             RFX_onUnsolicitedResponse(message->getPId(), data, dataLength);
-        #endif
+#endif
         }
         RtcRilClientController::onClientUnsolicitedResponse(message->getSlotId(), message->getPId(),
-                data, dataLength, rule);
+                                                            data, dataLength, rule);
         RFX_LOG_D(RFX_LOG_TAG, "responseToRilj, urc id = %d", message->getPId());
     }
 
@@ -106,7 +105,7 @@ bool RfxRilAdapter::responseToRilj(const sp<RfxMessage>& message) {
 }
 
 bool RfxRilAdapter::responseToBT(const sp<RfxMessage>& message) {
-    void *data = message->getData() == NULL ? NULL : message->getData()->getData();
+    void* data = message->getData() == NULL ? NULL : message->getData()->getData();
     int dataLength = message->getData() == NULL ? 0 : message->getData()->getDataLength();
 
     // replace msg id to id at RfxMessage
@@ -117,15 +116,14 @@ bool RfxRilAdapter::responseToBT(const sp<RfxMessage>& message) {
     }
 
     if (SAP_RESPONSE == message->getType()) {
-        RFX_SAP_onRequestComplete(message->getRilToken(), message->getError(), data,
-                dataLength);
+        RFX_SAP_onRequestComplete(message->getRilToken(), message->getError(), data, dataLength);
         RFX_LOG_D(RFX_LOG_TAG, "responseToBT, request id = %d", message->getPId());
     } else if (SAP_URC == message->getType()) {
-    #if defined(ANDROID_MULTI_SIM)
+#if defined(ANDROID_MULTI_SIM)
         RFX_SAP_onUnsolicitedResponse(message->getPId(), data, dataLength, message->getSlotId());
-    #else
+#else
         RFX_SAP_onUnsolicitedResponse(message->getPId(), data, dataLength);
-    #endif
+#endif
         RFX_LOG_D(RFX_LOG_TAG, "responseToBT, urc id = %d", message->getPId());
     }
     return true;
@@ -134,20 +132,20 @@ bool RfxRilAdapter::responseToBT(const sp<RfxMessage>& message) {
 void RfxRilAdapter::requestToMcl(const sp<RfxMessage>& message) {
     sp<RfxMclMessage> mclMessage;
     if (REQUEST == message->getType()) {
-        mclMessage = RfxMclMessage::obtainRequest(message->getId(),
-                message->getData(), message->getSlotId(), message->getToken(),
-                message->getSendToMainProtocol(), message->getRilToken(),
-                message->getPTimeStamp(), message->getAddAtFront());
+        mclMessage = RfxMclMessage::obtainRequest(
+                message->getId(), message->getData(), message->getSlotId(), message->getToken(),
+                message->getSendToMainProtocol(), message->getRilToken(), message->getPTimeStamp(),
+                message->getAddAtFront());
         mclMessage->setMainProtocolSlotId(message->getMainProtocolSlotId());
         // add to pending list
         RfxDispatchThread::addMessageToPendingQueue(message);
     } else if (STATUS_SYNC == message->getType()) {
-        mclMessage = RfxMclMessage::obtainStatusSync(message->getSlotId(), message->getStatusKey(),
-                message->getStatusValue(), message->getForceNotify(), message->getIsDefault(),
-                message->getIsUpdateForMock());
+        mclMessage = RfxMclMessage::obtainStatusSync(
+                message->getSlotId(), message->getStatusKey(), message->getStatusValue(),
+                message->getForceNotify(), message->getIsDefault(), message->getIsUpdateForMock());
     } else if (SAP_REQUEST == message->getType()) {
-        mclMessage = RfxMclMessage::obtainSapRequest(message->getId(),
-                message->getData(), message->getSlotId(), message->getToken());
+        mclMessage = RfxMclMessage::obtainSapRequest(message->getId(), message->getData(),
+                                                     message->getSlotId(), message->getToken());
         // add to pending list
         RfxDispatchThread::addMessageToPendingQueue(message);
     }
@@ -167,28 +165,28 @@ void RfxRilAdapter::requestToMcl(const sp<RfxMessage>& message) {
     }
     if (RfxRilUtils::isEngLoad() && !RfxRilUtils::isInLogReductionList(message->getId())) {
         RFX_LOG_D(RFX_LOG_TAG, "requestToMcl, id = %d, slotId = %d, token = %d", message->getId(),
-                message->getSlotId(), message->getToken());
+                  message->getSlotId(), message->getToken());
     } else {
         RFX_LOG_D(RFX_LOG_TAG, "requestToMcl, id = %d, slotId = %d, token = %d", message->getId(),
-                message->getSlotId(), message->getToken());
+                  message->getSlotId(), message->getToken());
     }
 }
 
 void RfxRilAdapter::requestToMclWithDelay(const sp<RfxMessage>& message, nsecs_t nsec) {
     sp<RfxMclMessage> mclMessage;
     if (STATUS_SYNC == message->getType()) {
-        mclMessage = RfxMclMessage::obtainStatusSync(message->getSlotId(), message->getStatusKey(),
-                message->getStatusValue(), message->getForceNotify(), message->getIsDefault(),
-                message->getIsUpdateForMock());
+        mclMessage = RfxMclMessage::obtainStatusSync(
+                message->getSlotId(), message->getStatusKey(), message->getStatusValue(),
+                message->getForceNotify(), message->getIsDefault(), message->getIsUpdateForMock());
     } else if (SAP_REQUEST == message->getType()) {
-        mclMessage = RfxMclMessage::obtainSapRequest(message->getId(),
-                message->getData(), message->getSlotId(), message->getToken());
+        mclMessage = RfxMclMessage::obtainSapRequest(message->getId(), message->getData(),
+                                                     message->getSlotId(), message->getToken());
         // add to pending list
         RfxDispatchThread::addMessageToPendingQueue(message);
     } else {
         // REQUEST
-        mclMessage = RfxMclMessage::obtainRequest(message->getId(),
-                message->getData(), message->getSlotId(), message->getToken(),
+        mclMessage = RfxMclMessage::obtainRequest(
+                message->getId(), message->getData(), message->getSlotId(), message->getToken(),
                 message->getSendToMainProtocol(), message->getRilToken(), nsec,
                 message->getPTimeStamp(), message->getAddAtFront());
         mclMessage->setMainProtocolSlotId(message->getMainProtocolSlotId());

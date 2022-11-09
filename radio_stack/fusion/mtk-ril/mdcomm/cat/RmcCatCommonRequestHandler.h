@@ -29,8 +29,7 @@
 
 // BTSAP @{
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include <vendor/mediatek/ims/radio_stack/platformlib/common/libmtkrilutils/proto/sap-api.pb.h>
 #include "pb_decode.h"
@@ -39,9 +38,9 @@ extern "C"
 }
 #endif
 
-#define BT_SAP_CARDREADER_RESPONSE_DEFAULT        0x10
-#define BT_SAP_CARDREADER_RESPONSE_READER_POWER   0x80
-#define BT_SAP_CARDREADER_RESPONSE_SIM_INSERT     0x40
+#define BT_SAP_CARDREADER_RESPONSE_DEFAULT 0x10
+#define BT_SAP_CARDREADER_RESPONSE_READER_POWER 0x80
+#define BT_SAP_CARDREADER_RESPONSE_SIM_INSERT 0x40
 // BTSAP @}
 
 #define RFX_LOG_TAG "RmcCatComReqHandler"
@@ -122,42 +121,42 @@ typedef enum {
 class RmcCatCommonRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcCatCommonRequestHandler);
 
-    public:
-        RmcCatCommonRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcCatCommonRequestHandler();
+  public:
+    RmcCatCommonRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcCatCommonRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-        virtual void onHandleTimer();
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        bool isCpinReady();
-        void setStkFlag(bool* source, bool flag);
-        void requestReportStkServiceIsRunning(const sp<RfxMclMessage>& msg);
-        void requestStkSendEnvelopeCommand (const sp<RfxMclMessage>& msg);
-        void requestStkSendTerminalResponse (const sp<RfxMclMessage>& msg);
-        void requestStkHandleCallSetupRequestedFromSim (const sp<RfxMclMessage>& msg);
-        void requestStkSendEnvelopeCommandWithStatus (const sp<RfxMclMessage>& msg);
-        void handleStkEventNotify(const sp<RfxMclMessage>& msg);
-        int getInCallNumber();
-        void requestStkEventNotify(const sp<RfxMclMessage>& msg);
-        void requestStkQeryCpinState(const sp<RfxMclMessage>& msg);
-        void requestStkSendResponseByCmdType (const sp<RfxMclMessage>& msg);
-        // BIP @{
-        void requestBipSendConfirmInfo (const sp<RfxMclMessage>& msg);
-        // BIP @}
-        // BTSAP @{
-        void requestBtSapTransferCardReaderStatus(const sp<RfxMclMessage>& msg);
-        void sendStkBtSapResponseComplete(const sp<RfxMclMessage>& msg,
-                RIL_Errno ret, int msgId, void *data);
-        // BTSAP @}
-    private:
-        bool isProaCmdQueued;
-        bool isEventNotifyQueued;
-        char* pProactiveCmd;
-        char* pEventNotifyCmd;
+  private:
+    bool isCpinReady();
+    void setStkFlag(bool* source, bool flag);
+    void requestReportStkServiceIsRunning(const sp<RfxMclMessage>& msg);
+    void requestStkSendEnvelopeCommand(const sp<RfxMclMessage>& msg);
+    void requestStkSendTerminalResponse(const sp<RfxMclMessage>& msg);
+    void requestStkHandleCallSetupRequestedFromSim(const sp<RfxMclMessage>& msg);
+    void requestStkSendEnvelopeCommandWithStatus(const sp<RfxMclMessage>& msg);
+    void handleStkEventNotify(const sp<RfxMclMessage>& msg);
+    int getInCallNumber();
+    void requestStkEventNotify(const sp<RfxMclMessage>& msg);
+    void requestStkQeryCpinState(const sp<RfxMclMessage>& msg);
+    void requestStkSendResponseByCmdType(const sp<RfxMclMessage>& msg);
+    // BIP @{
+    void requestBipSendConfirmInfo(const sp<RfxMclMessage>& msg);
+    // BIP @}
+    // BTSAP @{
+    void requestBtSapTransferCardReaderStatus(const sp<RfxMclMessage>& msg);
+    void sendStkBtSapResponseComplete(const sp<RfxMclMessage>& msg, RIL_Errno ret, int msgId,
+                                      void* data);
+    // BTSAP @}
+  private:
+    bool isProaCmdQueued;
+    bool isEventNotifyQueued;
+    char* pProactiveCmd;
+    char* pEventNotifyCmd;
 };
 
 #endif

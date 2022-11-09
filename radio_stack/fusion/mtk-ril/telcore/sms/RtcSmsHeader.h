@@ -21,12 +21,10 @@
  * Class ConcatRef
  *****************************************************************************/
 class ConcatRef {
-public:
-    ConcatRef()
-        : refNumber(-1), seqNumber(-1), msgCount(-1), is3Gpp2(false), isEightBits(false) {
-    }
+  public:
+    ConcatRef() : refNumber(-1), seqNumber(-1), msgCount(-1), is3Gpp2(false), isEightBits(false) {}
 
-public:
+  public:
     int refNumber;
     int seqNumber;
     int msgCount;
@@ -38,72 +36,58 @@ public:
  * Class RtcSmsUserDataHeader
  *****************************************************************************/
 class RtcSmsUserDataHeader {
-// Constructor/Destructor
-public:
+    // Constructor/Destructor
+  public:
     // Construct user data header with UDH array.
-    RtcSmsUserDataHeader(
-        unsigned char *header,    // [IN] point to first elemement of header array
-        int len,                  // [IN] the length of header array
-        bool is3Gpp2              // [IN] the format of the SMS, true is 3GPP2, false is 3GPP
+    RtcSmsUserDataHeader(unsigned char* header,  // [IN] point to first elemement of header array
+                         int len,                // [IN] the length of header array
+                         bool is3Gpp2  // [IN] the format of the SMS, true is 3GPP2, false is 3GPP
     );
 
     // Destructor
     virtual ~RtcSmsUserDataHeader() {}
 
-// External Method
-public:
+    // External Method
+  public:
     // Check if the SMS is concatenated SMS.
     //
     // RETURNS: true if the SMS is concatenated SMS
-    bool isConcatSms() const {
-        return mConcatSms;
-    }
+    bool isConcatSms() const { return mConcatSms; }
 
     // Get the reference number of the concatenated SMS.
     //
     // RETURNS: the reference number
-    int getRefNumber() const {
-        return mConcatRef.refNumber;
-    }
+    int getRefNumber() const { return mConcatRef.refNumber; }
 
     // Get the message count of the concatenated SMS.
     //
     // RETURNS: the message count
-    int getMsgCount() const {
-        return mConcatRef.msgCount;
-    }
+    int getMsgCount() const { return mConcatRef.msgCount; }
 
     // Get the sequency number of the concatenated SMS.
-    int getSeqNumber() const {
-        return mConcatRef.seqNumber;
-    }
+    int getSeqNumber() const { return mConcatRef.seqNumber; }
 
     // Check the SMS format is 3GPP2 or not.
     //
     // RETURNS: true if 3GPP2 format SMS
-    bool is3Gpp2() {
-        return mConcatRef.is3Gpp2;
-    }
+    bool is3Gpp2() { return mConcatRef.is3Gpp2; }
 
     // Error happens or not when parsing the SMS header.
     //
     // RETURNS: true if error happen
-    bool isError() {
-        return mError;
-    }
+    bool isError() { return mError; }
 
-private:
+  private:
     // Set Error when parsing SMS header error.
     //
     // RETURNS: NONE
-    void setError(
-        bool error = true   // [IN] true for error
+    void setError(bool error = true  // [IN] true for error
     ) {
         mError = error;
     }
 
-// Implement
-private:
+    // Implement
+  private:
     ConcatRef mConcatRef;
     bool mConcatSms;
     bool mError;

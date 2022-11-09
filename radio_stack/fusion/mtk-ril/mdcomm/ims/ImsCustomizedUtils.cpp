@@ -28,8 +28,8 @@ bool ImsCustomizedUtils::isSupportCustomizedUserAgent() {
 
 String8 ImsCustomizedUtils::getCustomizedUserAgent(String8 format, int slotId) {
     // TODO: Make customized User-Agent by FormatId
-    // Format value is came from RFX_STATUS_KEY_CUSTOMIZED_USER_AGENT_FORMAT by carrier config mechanism.
-    // Please set the preferred format by MCC/MNC.
+    // Format value is came from RFX_STATUS_KEY_CUSTOMIZED_USER_AGENT_FORMAT by carrier config
+    // mechanism. Please set the preferred format by MCC/MNC.
 
     // Carrier config file path is as follow:
     // vendor\mediatek\proprietary\hardware\ril\fusion\libcarrierconfig\config_data\carrier_config_mcc_mnc.h
@@ -46,16 +46,19 @@ String8 ImsCustomizedUtils::getCustomizedUserAgent(String8 format, int slotId) {
     char cust_prop_value2[RFX_PROPERTY_VALUE_MAX] = {0};
 
     RfxRilUtils::printLog(DEBUG, String8("ImsCustomizedUtils"),
-                String8::format("getCustomizedUserAgent(), format = %s", format.string()), slotId);
+                          String8::format("getCustomizedUserAgent(), format = %s", format.string()),
+                          slotId);
 
     rfx_property_get(cust_prop_key1.string(), cust_prop_value1, "");
     RfxRilUtils::printLog(DEBUG, String8("ImsCustomizedUtils"),
-                String8::format("getCustomizedUserAgent(), format = %s", format.string()), slotId);
+                          String8::format("getCustomizedUserAgent(), format = %s", format.string()),
+                          slotId);
 
     rfx_property_get(cust_prop_key2.string(), cust_prop_value2, "");
     RfxRilUtils::printLog(DEBUG, String8("ImsCustomizedUtils"),
-                String8::format("getCustomizedUserAgent(), [%s]= %s",
-                cust_prop_key2.string(), cust_prop_value2), slotId);
+                          String8::format("getCustomizedUserAgent(), [%s]= %s",
+                                          cust_prop_key2.string(), cust_prop_value2),
+                          slotId);
 
     if (String8("1") == format.string()) {
         // AIS
@@ -69,11 +72,13 @@ String8 ImsCustomizedUtils::getCustomizedUserAgent(String8 format, int slotId) {
     } else {
         // No matched
         RfxRilUtils::printLog(DEBUG, String8::format("ImsCustomizedUtils"),
-                    String8::format("getCustomizedUserAgent(): not match any format"), slotId);
+                              String8::format("getCustomizedUserAgent(): not match any format"),
+                              slotId);
     }
 
     RfxRilUtils::printLog(DEBUG, String8::format("ImsCustomizedUtils"),
-                String8::format("getCustomizedUserAgent(): %s", userAgent.string()), slotId);
+                          String8::format("getCustomizedUserAgent(): %s", userAgent.string()),
+                          slotId);
 
     return userAgent;
 }

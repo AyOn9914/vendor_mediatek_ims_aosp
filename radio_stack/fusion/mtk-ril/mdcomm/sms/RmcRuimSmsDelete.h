@@ -25,12 +25,13 @@
 /*****************************************************************************
  * Class RmcCdmaDeleteRuimSmsReq
  *****************************************************************************/
-class RmcCdmaDeleteRuimSmsReq: public RmcSingleAtReq {
+class RmcCdmaDeleteRuimSmsReq : public RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaDeleteRuimSmsReq);
-public:
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
 
-private:
+  public:
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
+
+  private:
     int m_index;
 };
 

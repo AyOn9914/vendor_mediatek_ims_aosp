@@ -30,24 +30,23 @@ using ::android::String8;
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcGsmSmsBaseHandler::RmcGsmSmsBaseHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcGsmSmsBaseHandler::RmcGsmSmsBaseHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcGsmSmsBase"));
 }
 
-int RmcGsmSmsBaseHandler::smsPackPdu(const char* smsc, const char *tpdu,
-        char *pdu, bool check) {
-    int len=0;
+int RmcGsmSmsBaseHandler::smsPackPdu(const char* smsc, const char* tpdu, char* pdu, bool check) {
+    int len = 0;
     TPDU_ERROR_CAUSE_ENUM error_cause = TPDU_NO_ERROR;
-    int i=0;
+    int i = 0;
 
-    //Check SMSC
+    // Check SMSC
     if (smsc == NULL) {
         // "NULL for default SMSC"
-        smsc= "00";
+        smsc = "00";
     } else {
         len = strlen(smsc);
-        if ( (len%2) != 0 || len<2 || (len/2-1) > MAX_SMSC_LENGTH) {
+        if ((len % 2) != 0 || len < 2 || (len / 2 - 1) > MAX_SMSC_LENGTH) {
             logE(mTag, "The length of smsc is not valid: %d", len);
             return -1;
         }
@@ -59,12 +58,12 @@ int RmcGsmSmsBaseHandler::smsPackPdu(const char* smsc, const char *tpdu,
         return -1;
     }
     len = strlen(tpdu);
-    if ( (len%2) != 0) {
+    if ((len % 2) != 0) {
         logE(mTag, "The length of TPDU is not valid: %d", len);
         return -1;
     }
     len /= 2;
-    if ( len > MAX_TPDU_LENGTH) {
+    if (len > MAX_TPDU_LENGTH) {
         logE(mTag, "The length of TPDU is too long: %d", len);
         return -1;
     }
@@ -84,23 +83,22 @@ int RmcGsmSmsBaseHandler::smsPackPdu(const char* smsc, const char *tpdu,
 }
 
 /*****************************************************************************
-* FUNCTION
-*  smsFoCheck
-* DESCRIPTION
-*   This function check the Fist Octet.
-*
-* PARAMETERS
-*  a  IN       fo (first octet)
-* RETURNS
-*  true:  fo is valid
-*  false: fo is invalid
-* GLOBALS AFFECTED
-*  none
-*****************************************************************************/
+ * FUNCTION
+ *  smsFoCheck
+ * DESCRIPTION
+ *   This function check the Fist Octet.
+ *
+ * PARAMETERS
+ *  a  IN       fo (first octet)
+ * RETURNS
+ *  true:  fo is valid
+ *  false: fo is invalid
+ * GLOBALS AFFECTED
+ *  none
+ *****************************************************************************/
 bool RmcGsmSmsBaseHandler::smsFoCheck(int fo) {
     /* Check Message Type Identifier */
-    if ((fo & TPDU_MTI_BITS) >= TPDU_MTI_RESERVED)
-        return false;
+    if ((fo & TPDU_MTI_BITS) >= TPDU_MTI_RESERVED) return false;
 
     /* Check Validity Period , currently only relative format supported */
     if ((((fo & TPDU_VPF_BITS) >> 3) != TPDU_VPF_NOT_PRESENT) &&
@@ -111,21 +109,21 @@ bool RmcGsmSmsBaseHandler::smsFoCheck(int fo) {
 }
 
 /*****************************************************************************
-* FUNCTION
-*  smsPidCheck
-* DESCRIPTION
-*   This function checks the Protocol IDentifier.
-*
-* PARAMETERS
-*  a  IN       pid
-*  b  IN/OUT   *fail_cause_ptr
-*  c  IN/OUT   *aux_info, useful for caller
-* RETURNS
-*  true:  pid is valid
-*  false: pid is invalid
-* GLOBALS AFFECTED
-*  none
-*****************************************************************************/
+ * FUNCTION
+ *  smsPidCheck
+ * DESCRIPTION
+ *   This function checks the Protocol IDentifier.
+ *
+ * PARAMETERS
+ *  a  IN       pid
+ *  b  IN/OUT   *fail_cause_ptr
+ *  c  IN/OUT   *aux_info, useful for caller
+ * RETURNS
+ *  true:  pid is valid
+ *  false: pid is invalid
+ * GLOBALS AFFECTED
+ *  none
+ *****************************************************************************/
 bool RmcGsmSmsBaseHandler::smsPidCheck(int pid) {
     bool ret_val = true;
     logD(mTag, "smsPidCheck, pid=%d", pid);
@@ -145,26 +143,26 @@ bool RmcGsmSmsBaseHandler::smsPidCheck(int pid) {
 }
 
 /*****************************************************************************
-* FUNCTION
-*  smsDcsCheck
-* DESCRIPTION
-*   This function checks the data coding scheme.
-*
-* PARAMETERS
-*  a  IN       dcs
-*  b  IN/OUT   *fail_cause_ptr
-* RETURNS
-*  KAL_TRUE:  dcs is valid
-*  KAL_FALSE: dcs is invalid
-* GLOBALS AFFECTED
-*  none
-*****************************************************************************/
+ * FUNCTION
+ *  smsDcsCheck
+ * DESCRIPTION
+ *   This function checks the data coding scheme.
+ *
+ * PARAMETERS
+ *  a  IN       dcs
+ *  b  IN/OUT   *fail_cause_ptr
+ * RETURNS
+ *  KAL_TRUE:  dcs is valid
+ *  KAL_FALSE: dcs is invalid
+ * GLOBALS AFFECTED
+ *  none
+ *****************************************************************************/
 bool RmcGsmSmsBaseHandler::smsDcsCheck(int dcs) {
     bool ret_val = true;
     unsigned char coding_group;
     logD(mTag, "smsDcsCheck, dcs=%d", dcs);
 
-    if (dcs == 0)                       /* Default DCS */
+    if (dcs == 0) /* Default DCS */
         return true;
 
     coding_group = dcs & 0xf0;
@@ -197,23 +195,23 @@ bool RmcGsmSmsBaseHandler::smsDcsCheck(int dcs) {
 }
 
 /*****************************************************************************
-* FUNCTION
-*  smsDecodeDcs
-* DESCRIPTION
-*   This function decodes the data coding scheme.
-*
-* PARAMETERS
-*  a  IN       dcs
-*  b  IN/OUT   alphabet_type
-*  c  IN/OUT   msg_class
-*  d  IN/OUT   compress
-* RETURNS
-*  none
-* GLOBALS AFFECTED
-*  none
-*****************************************************************************/
-void RmcGsmSmsBaseHandler::smsDecodeDcs(int dcs, SMS_ENCODING_ENUM *alphabet_type,
-        SMS_MESSAGE_CLASS_ENUM *msg_class, bool *is_compress) {
+ * FUNCTION
+ *  smsDecodeDcs
+ * DESCRIPTION
+ *   This function decodes the data coding scheme.
+ *
+ * PARAMETERS
+ *  a  IN       dcs
+ *  b  IN/OUT   alphabet_type
+ *  c  IN/OUT   msg_class
+ *  d  IN/OUT   compress
+ * RETURNS
+ *  none
+ * GLOBALS AFFECTED
+ *  none
+ *****************************************************************************/
+void RmcGsmSmsBaseHandler::smsDecodeDcs(int dcs, SMS_ENCODING_ENUM* alphabet_type,
+                                        SMS_MESSAGE_CLASS_ENUM* msg_class, bool* is_compress) {
     unsigned char coding_group;
 
     /* Default DCS value */
@@ -221,8 +219,7 @@ void RmcGsmSmsBaseHandler::smsDecodeDcs(int dcs, SMS_ENCODING_ENUM *alphabet_typ
     *msg_class = SMS_MESSAGE_CLASS_UNSPECIFIED;
     *is_compress = false;
 
-    if (dcs == 0)
-        return;
+    if (dcs == 0) return;
 
     if (dcs == 0x84) {
         *alphabet_type = SMS_ENCODING_16BIT;
@@ -240,29 +237,27 @@ void RmcGsmSmsBaseHandler::smsDecodeDcs(int dcs, SMS_ENCODING_ENUM *alphabet_typ
         if ((dcs & 0x08) == 0x08) {
             *alphabet_type = SMS_ENCODING_UNKNOWN;
         } else {
-            *msg_class = (SMS_MESSAGE_CLASS_ENUM) (dcs & 0x03);
-            *alphabet_type = (SMS_ENCODING_ENUM) ((dcs & 0x04) >> 2);
+            *msg_class = (SMS_MESSAGE_CLASS_ENUM)(dcs & 0x03);
+            *alphabet_type = (SMS_ENCODING_ENUM)((dcs & 0x04) >> 2);
         }
-    } else if ((coding_group | 0x07) == 0x07) {     /* General Data Coding Scheme */
+    } else if ((coding_group | 0x07) == 0x07) { /* General Data Coding Scheme */
         if ((dcs & 0x10) == 0x10)
-            *msg_class = (SMS_MESSAGE_CLASS_ENUM) (dcs & 0x03);
+            *msg_class = (SMS_MESSAGE_CLASS_ENUM)(dcs & 0x03);
         else
             *msg_class = SMS_MESSAGE_CLASS_UNSPECIFIED;
 
-        *alphabet_type = (SMS_ENCODING_ENUM) ((dcs >> 2) & 0x03);
-        if (((coding_group & 0x02) >> 1) == 1)
-            *is_compress = true;
+        *alphabet_type = (SMS_ENCODING_ENUM)((dcs >> 2) & 0x03);
+        if (((coding_group & 0x02) >> 1) == 1) *is_compress = true;
     } else if ((coding_group & 0x0c) == 0x08) {
         /*
          * according GSM 23.038 clause 4:
          * "Any reserved codings shall be assumed to be the GSM 7 bit default alphabet."
          */
     } else if (((coding_group & 0x0f) == 0x0c) || /* discard */
-             ((coding_group & 0x0f) == 0x0d) || /* store, gsm-7 */
-             ((coding_group & 0x0f) == 0x0e))   /* store, ucs2 */ {
+               ((coding_group & 0x0f) == 0x0d) || /* store, gsm-7 */
+               ((coding_group & 0x0f) == 0x0e)) /* store, ucs2 */ {
         /* 1110: msg wait ind (store, ucs2) */
-        if ((coding_group & 0x0f) == 0x0e)
-            *alphabet_type = SMS_ENCODING_16BIT;
+        if ((coding_group & 0x0f) == 0x0e) *alphabet_type = SMS_ENCODING_16BIT;
     }
 
     /*
@@ -275,23 +270,22 @@ void RmcGsmSmsBaseHandler::smsDecodeDcs(int dcs, SMS_ENCODING_ENUM *alphabet_typ
     if (*alphabet_type == SMS_ENCODING_UNKNOWN) {
         *alphabet_type = SMS_ENCODING_7BIT;
     }
-
 }
 
 /*****************************************************************************
-* FUNCTION
-*  smsIsLenIn8bit
-* DESCRIPTION
-*   This function determines the unit of TP-User-Data.
-*
-* PARAMETERS
-*  a  IN          dcs
-* RETURNS
-*  KAL_TRUE: length in octet
-*  KAL_TRUE: length in septet
-* GLOBALS AFFECTED
-*  none
-*****************************************************************************/
+ * FUNCTION
+ *  smsIsLenIn8bit
+ * DESCRIPTION
+ *   This function determines the unit of TP-User-Data.
+ *
+ * PARAMETERS
+ *  a  IN          dcs
+ * RETURNS
+ *  KAL_TRUE: length in octet
+ *  KAL_TRUE: length in septet
+ * GLOBALS AFFECTED
+ *  none
+ *****************************************************************************/
 bool RmcGsmSmsBaseHandler::smsIsLenIn8bit(int dcs) {
     bool is_compress;
     SMS_ENCODING_ENUM alphabet_type;
@@ -299,14 +293,12 @@ bool RmcGsmSmsBaseHandler::smsIsLenIn8bit(int dcs) {
 
     smsDecodeDcs(dcs, &alphabet_type, &mclass, &is_compress);
 
-    if ((is_compress == true) ||
-        (alphabet_type == SMS_ENCODING_8BIT) ||
+    if ((is_compress == true) || (alphabet_type == SMS_ENCODING_8BIT) ||
         (alphabet_type == SMS_ENCODING_16BIT)) {
         return true;
     } else {
         return false;
     }
-
 }
 
 unsigned int RmcGsmSmsBaseHandler::smsMsgLenInOctet(int dcs, int len) {
@@ -317,46 +309,46 @@ unsigned int RmcGsmSmsBaseHandler::smsMsgLenInOctet(int dcs, int len) {
     }
 }
 
-int RmcGsmSmsBaseHandler::smsHexCharToDecInt(char *hex, int length) {
+int RmcGsmSmsBaseHandler::smsHexCharToDecInt(char* hex, int length) {
     int i = 0;
     int value, digit;
 
     for (i = 0, value = 0; i < length && hex[i] != '\0'; i++) {
-        if (hex[i]>='0' && hex[i]<='9') {
+        if (hex[i] >= '0' && hex[i] <= '9') {
             digit = hex[i] - '0';
-        } else if ( hex[i]>='A' && hex[i] <= 'F') {
+        } else if (hex[i] >= 'A' && hex[i] <= 'F') {
             digit = hex[i] - 'A' + 10;
-        } else if ( hex[i]>='a' && hex[i] <= 'f') {
+        } else if (hex[i] >= 'a' && hex[i] <= 'f') {
             digit = hex[i] - 'a' + 10;
         } else {
             return -1;
         }
-        value = value*16 + digit;
+        value = value * 16 + digit;
     }
 
     return value;
 }
 
-bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
-        TPDU_ERROR_CAUSE_ENUM  *error_cause) {
-    unsigned char off = 0;                  /* offset */
+bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char* pdu_ptr,
+                                             TPDU_ERROR_CAUSE_ENUM* error_cause) {
+    unsigned char off = 0; /* offset */
     int dcs;
     int fo;
     unsigned char udl, user_data_len;
-    int i=0;
-    int pdu_array[pdu_len/2];
+    int i = 0;
+    int pdu_array[pdu_len / 2];
 
     *error_cause = TPDU_NO_ERROR;
 
     /* check length */
-    if (pdu_len/2 > TPDU_MAX_TPDU_SIZE || pdu_len == 0) {
+    if (pdu_len / 2 > TPDU_MAX_TPDU_SIZE || pdu_len == 0) {
         logD(mTag, "smsSubmitPduCheck pdu length check fail, pdu_len=%d", pdu_len);
         *error_cause = TPDU_MSG_LEN_EXCEEDED;
         return false;
     }
 
-    for (i = 0; i < pdu_len/2 ;i ++) {
-        pdu_array[i] = smsHexCharToDecInt((pdu_ptr+2*i), 2);
+    for (i = 0; i < pdu_len / 2; i++) {
+        pdu_array[i] = smsHexCharToDecInt((pdu_ptr + 2 * i), 2);
     }
     /* check sca */
     if (pdu_array[0] > TPDU_MAX_ADDR_LEN) {
@@ -364,7 +356,7 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
         return false;
     }
 
-    off += (1 + pdu_array[0]);              /* move to head of TPDU (skip sca_len, sca) */
+    off += (1 + pdu_array[0]); /* move to head of TPDU (skip sca_len, sca) */
 
     /* check this pdu is SMS-SUBMIT or not */
     if ((pdu_array[off] & TPDU_MTI_BITS) != TPDU_MTI_SUBMIT) {
@@ -379,7 +371,7 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
         return false;
     }
 
-    off += 2;                           /* move to da, (skip fo and msg_ref) */
+    off += 2; /* move to da, (skip fo and msg_ref) */
 
     /* check da */
     if (pdu_array[off] > (TPDU_MAX_ADDR_LEN - 1) * 2) {
@@ -387,7 +379,7 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
         return false;
     }
 
-    off += 1 + 1 + ((pdu_array[off]+1)/2);    /* skip addr_len, addr digits & addr type */
+    off += 1 + 1 + ((pdu_array[off] + 1) / 2); /* skip addr_len, addr digits & addr type */
 
     /* check pid */
     if (smsPidCheck(pdu_array[off]) == false) {
@@ -395,7 +387,7 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
         return false;
     }
 
-    off++;                              /* move to dcs */
+    off++; /* move to dcs */
 
     /* check dcs */
     dcs = pdu_array[off];
@@ -406,10 +398,9 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
 
     /* move to udl */
     if (((fo & TPDU_VPF_BITS) >> 3) == TPDU_VPF_RELATIVE)
-        off += 2;                       /* VP is relative format (1 byte) */
+        off += 2; /* VP is relative format (1 byte) */
     else
-        off++;                          /* VP not present */
-
+        off++; /* VP not present */
 
     /* udl */
     logD(mTag, "udl=%d, off=%d", pdu_array[off], off);
@@ -418,37 +409,36 @@ bool RmcGsmSmsBaseHandler::smsSubmitPduCheck(int pdu_len, char *pdu_ptr,
     /* move to user data */
     off++;
 
-    user_data_len = (unsigned char) smsMsgLenInOctet(dcs, udl);
+    user_data_len = (unsigned char)smsMsgLenInOctet(dcs, udl);
 
-    if (user_data_len > TPDU_ONE_MSG_OCTET || (user_data_len != (pdu_len/2 - off))) {
+    if (user_data_len > TPDU_ONE_MSG_OCTET || (user_data_len != (pdu_len / 2 - off))) {
         logD(mTag, "user data length check fail, user_data_len=%d", user_data_len);
         *error_cause = TPDU_MSG_LEN_EXCEEDED;
         return false;
     }
 
     return true;
-
 }
 
-bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char *pdu,
-        TPDU_ERROR_CAUSE_ENUM *error_cause) {
-    int off = 0;                  /* offset */
+bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char* pdu,
+                                              TPDU_ERROR_CAUSE_ENUM* error_cause) {
+    int off = 0; /* offset */
     int dcs;
     unsigned char udl, user_data_len;
-    int pdu_array[pdu_len/2];
-    int i=0;
+    int pdu_array[pdu_len / 2];
+    int i = 0;
 
     *error_cause = TPDU_NO_ERROR;
 
     /* check length */
-    if (pdu_len/2 > TPDU_MAX_TPDU_SIZE || pdu_len == 0) {
+    if (pdu_len / 2 > TPDU_MAX_TPDU_SIZE || pdu_len == 0) {
         logD(mTag, "smsDeliverPduCheck pdu length fail, pdu_len=%d", pdu_len);
         *error_cause = TPDU_MSG_LEN_EXCEEDED;
         return false;
     }
 
-    for (i = 0; i < pdu_len/2 ;i ++) {
-        pdu_array[i] = smsHexCharToDecInt((pdu+2*i), 2);
+    for (i = 0; i < pdu_len / 2; i++) {
+        pdu_array[i] = smsHexCharToDecInt((pdu + 2 * i), 2);
     }
 
     if (pdu_array[0] > TPDU_MAX_ADDR_LEN) {
@@ -456,7 +446,7 @@ bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char *pdu,
         return false;
     }
 
-    off += (1 + pdu_array[0]);              /* move to head of TPDU (skip sca_len, sca) */
+    off += (1 + pdu_array[0]); /* move to head of TPDU (skip sca_len, sca) */
 
     /* check this pdu is SMS-DELIVER or not */
     if (((pdu_array[off] & TPDU_MTI_BITS) != TPDU_MTI_DELIVER) &&
@@ -465,7 +455,7 @@ bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char *pdu,
         return false;
     }
 
-    off += 1;                           /* move to oa, (skip fo ) */
+    off += 1; /* move to oa, (skip fo ) */
 
     /* check oa */
     if (pdu_array[off] > (TPDU_MAX_ADDR_LEN - 1) * 2) {
@@ -473,18 +463,18 @@ bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char *pdu,
         return false;
     }
 
-    if ((pdu_array[off] % 2) >0)
-        off += 1 + 1 + ((pdu_array[off]+1)/2);    /* skip addr_len, addr digits & addr type */
+    if ((pdu_array[off] % 2) > 0)
+        off += 1 + 1 + ((pdu_array[off] + 1) / 2); /* skip addr_len, addr digits & addr type */
     else
-        off += 1 + 1 + (pdu_array[off]/2);    /* skip addr_len, addr digits & addr type */
+        off += 1 + 1 + (pdu_array[off] / 2); /* skip addr_len, addr digits & addr type */
 
-    off++;                              /* skip pid, move to dcs */
+    off++; /* skip pid, move to dcs */
 
     /* check dcs */
     dcs = pdu_array[off];
     logD(mTag, "dcs =%d", pdu_array[off]);
 
-    off += (1 + 7);                     /* skip dcs, move to uhl */
+    off += (1 + 7); /* skip dcs, move to uhl */
 
     /* udl */
     logD(mTag, "udl =%d", pdu_array[off]);
@@ -493,21 +483,20 @@ bool RmcGsmSmsBaseHandler::smsDeliverPduCheck(int pdu_len, char *pdu,
     /* move to user data */
     off++;
 
-    user_data_len = (unsigned char) smsMsgLenInOctet(dcs, udl);
+    user_data_len = (unsigned char)smsMsgLenInOctet(dcs, udl);
 
-    if (user_data_len > TPDU_ONE_MSG_OCTET || (user_data_len != (pdu_len/2 - off))) {
+    if (user_data_len > TPDU_ONE_MSG_OCTET || (user_data_len != (pdu_len / 2 - off))) {
         logD(mTag, "user data length check fail, user_data_len=%d", user_data_len);
         *error_cause = TPDU_MSG_LEN_EXCEEDED;
         return false;
     }
 
     return true;
-
 }
 
 void RmcGsmSmsBaseHandler::showCurrIncomingSmsType() {
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
 
     if (smsType == SMS_INBOUND_NONE) {
         logD(mTag, "current sms_type = SMS_INBOUND_NONE");
@@ -525,7 +514,7 @@ void RmcGsmSmsBaseHandler::showCurrIncomingSmsType() {
 int RmcGsmSmsBaseHandler::atGetCmsError(const sp<RfxAtResponse> p_response) {
     int ret;
     int err;
-    RfxAtLine *p_cur;
+    RfxAtLine* p_cur;
 
     if (p_response->getSuccess() > 0) {
         return CMS_SUCCESS;
@@ -535,11 +524,11 @@ int RmcGsmSmsBaseHandler::atGetCmsError(const sp<RfxAtResponse> p_response) {
         return CMS_ERROR_NON_CMS;
     }
 
-    if( strStartsWith(p_response->getFinalResponse()->getLine(), "ERROR" ) ) {
+    if (strStartsWith(p_response->getFinalResponse()->getLine(), "ERROR")) {
         return CMS_UNKNOWN;
     }
 
-    if( !strStartsWith(p_response->getFinalResponse()->getLine(), "+CMS ERROR:" ) ) {
+    if (!strStartsWith(p_response->getFinalResponse()->getLine(), "+CMS ERROR:")) {
         return CMS_ERROR_NON_CMS;
     }
 
@@ -562,8 +551,8 @@ int RmcGsmSmsBaseHandler::atGetCmsError(const sp<RfxAtResponse> p_response) {
 int RmcGsmSmsBaseHandler::smsCheckReceivedPdu(int length, char* pdu, bool check) {
     int pdu_length;
     int sca_length;
-    TPDU_ERROR_CAUSE_ENUM  error_cause = TPDU_NO_ERROR;
-    int i=0;
+    TPDU_ERROR_CAUSE_ENUM error_cause = TPDU_NO_ERROR;
+    int i = 0;
 
     pdu_length = strlen(pdu);
     if (pdu_length < 2) {
@@ -594,8 +583,8 @@ int RmcGsmSmsBaseHandler::smsCheckReceivedPdu(int length, char* pdu, bool check)
      *    It needs to fix on emulator coding and takes
      *    time.
      ***************************************************/
-    pdu_length -= (sca_length + 1)*2;
-    if (pdu_length != length*2) {
+    pdu_length -= (sca_length + 1) * 2;
+    if (pdu_length != length * 2) {
         // Still print the log for debug usage
         logW(mTag, "The specified TPDU length is not matched to the TPDU data:  %d", length);
     }
@@ -604,18 +593,15 @@ int RmcGsmSmsBaseHandler::smsCheckReceivedPdu(int length, char* pdu, bool check)
 }
 
 int RmcGsmSmsBaseHandler::hexCharToInt(char c) {
-    if (c >= '0' && c <= '9')
-        return (c - '0');
-    if (c >= 'A' && c <= 'F')
-        return (c - 'A' + 10);
-    if (c >= 'a' && c <= 'f')
-        return (c - 'a' + 10);
+    if (c >= '0' && c <= '9') return (c - '0');
+    if (c >= 'A' && c <= 'F') return (c - 'A' + 10);
+    if (c >= 'a' && c <= 'f') return (c - 'a' + 10);
 
     return 0;
 }
 
-void RmcGsmSmsBaseHandler::hexStringToBytes(const char *in, int inLength, char *out,
-        int outLength) {
+void RmcGsmSmsBaseHandler::hexStringToBytes(const char* in, int inLength, char* out,
+                                            int outLength) {
     int i;
 
     if (in == NULL || out == NULL) {
@@ -626,7 +612,7 @@ void RmcGsmSmsBaseHandler::hexStringToBytes(const char *in, int inLength, char *
         return;
     }
 
-    for (i = 0 ; i < inLength ; i += 2) {
-        out[i/2] = (char)((hexCharToInt(in[i]) << 4) | hexCharToInt(in[i+1]));
+    for (i = 0; i < inLength; i += 2) {
+        out[i / 2] = (char)((hexCharToInt(in[i]) << 4) | hexCharToInt(in[i + 1]));
     }
 }

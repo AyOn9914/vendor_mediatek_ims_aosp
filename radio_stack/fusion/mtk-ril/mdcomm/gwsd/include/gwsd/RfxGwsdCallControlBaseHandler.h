@@ -24,50 +24,41 @@
 #include "RfxBaseHandler.h"
 #include "RfxController.h"
 
-
 /*****************************************************************************
  * Class RfxGwsdCallControlBaseHandler
  *****************************************************************************/
 
 class RfxGwsdCallControlBaseHandler {
-    public:
-        RfxGwsdCallControlBaseHandler() {}
-        virtual ~RfxGwsdCallControlBaseHandler() {}
+  public:
+    RfxGwsdCallControlBaseHandler() {}
+    virtual ~RfxGwsdCallControlBaseHandler() {}
 
-        virtual void registerForGwsdRequest(RfxBaseHandler* handler);
-        virtual void registerForGwsdEvent(RfxBaseHandler* handler);
-        virtual void registerForGwsdUrc(RfxBaseHandler* handler);
-        virtual bool handleGwsdRequest(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
-        virtual bool handleGwsdEvent(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
-        virtual void handleGwsdUrc(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg, int slotId);
+    virtual void registerForGwsdRequest(RfxBaseHandler* handler);
+    virtual void registerForGwsdEvent(RfxBaseHandler* handler);
+    virtual void registerForGwsdUrc(RfxBaseHandler* handler);
+    virtual bool handleGwsdRequest(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
+    virtual bool handleGwsdEvent(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
+    virtual void handleGwsdUrc(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg, int slotId);
 
+    virtual bool fakeGetCurrentCalls(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg,
+                                     int speechCodec);
+    virtual void requestFakeAccept(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
+    virtual void requestFakeReject(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
 
-        virtual bool fakeGetCurrentCalls(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg, int speechCodec);
-        virtual void requestFakeAccept(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
-        virtual void requestFakeReject(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg);
+    virtual void handleIcpgIndicationMessage(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg,
+                                             int slotId);
+    virtual void handleIcpgResultMessage(RfxBaseHandler* handler, const sp<RfxMclMessage>& msg,
+                                         int slotId);
 
-        virtual void handleIcpgIndicationMessage(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg, int slotId);
-        virtual void handleIcpgResultMessage(
-                RfxBaseHandler* handler, const sp<RfxMclMessage>& msg, int slotId);
+    virtual bool onHandleTelCoreRequest(RfxController* controller, const sp<RfxMessage>& message);
+    virtual bool onHandleTelCoreUrc(RfxController* controller, const sp<RfxMessage>& message);
+    virtual bool onHandleTelCoreResponse(RfxController* controller, const sp<RfxMessage>& message);
+    virtual void onRadioOff(RfxController* controller);
+    virtual RIL_CALL_INFO_TYPE handleImsIncomingCall(RfxController* controller);
+    virtual void notifyGwsdImsIncomingCall(RfxController* controller, int callId);
 
-        virtual bool onHandleTelCoreRequest(
-                RfxController* controller, const sp<RfxMessage>& message);
-        virtual bool onHandleTelCoreUrc(
-                RfxController* controller, const sp<RfxMessage>& message);
-        virtual bool onHandleTelCoreResponse(
-                RfxController* controller, const sp<RfxMessage>& message);
-        virtual void onRadioOff(RfxController* controller);
-        virtual RIL_CALL_INFO_TYPE handleImsIncomingCall(RfxController* controller);
-        virtual void notifyGwsdImsIncomingCall(RfxController* controller, int callId);
-
-        virtual void updateRQ(RfxController* controller, int slotId, bool RQ);
-        virtual void onAutoFakeAcceptTimer(RfxController* controller);
-
+    virtual void updateRQ(RfxController* controller, int slotId, bool RQ);
+    virtual void onAutoFakeAcceptTimer(RfxController* controller);
 };
 
 typedef RfxGwsdCallControlBaseHandler* createCallControlHandler_t();

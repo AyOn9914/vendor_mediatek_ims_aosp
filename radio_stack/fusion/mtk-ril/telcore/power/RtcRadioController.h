@@ -29,50 +29,47 @@
  *****************************************************************************/
 
 class RtcRadioController : public RfxController {
-    RFX_DECLARE_CLASS(RtcRadioController); // Required: declare this class
+    RFX_DECLARE_CLASS(RtcRadioController);  // Required: declare this class
 
-    public:
-
-        RtcRadioController();
-        virtual ~RtcRadioController();
+  public:
+    RtcRadioController();
+    virtual ~RtcRadioController();
 
     // Override
-    protected:
+  protected:
+    virtual bool onHandleRequest(const sp<RfxMessage>& message);
+    virtual bool onHandleUrc(const sp<RfxMessage>& message);
+    virtual bool onHandleResponse(const sp<RfxMessage>& message);
+    virtual bool onPreviewMessage(const sp<RfxMessage>& message);
+    virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
+    virtual void onInit();
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
-        virtual bool onHandleRequest(const sp<RfxMessage>& message);
-        virtual bool onHandleUrc(const sp<RfxMessage>& message);
-        virtual bool onHandleResponse(const sp<RfxMessage>& message);
-        virtual bool onPreviewMessage(const sp<RfxMessage>& message);
-        virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
-        virtual void onInit();
-        virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-                bool isModemPowerOff,int radioState);
+  public:
+    void moduleRequestRadioPower(bool power, const sp<RfxAction>& action, RadioCause cause);
 
-    public:
-        void moduleRequestRadioPower(bool power, const sp<RfxAction>& action,
-                RadioCause cause);
+  private:
+    void registerForStatusChange();
 
-    private:
-        void registerForStatusChange();
+    bool canHandleRequest(const sp<RfxMessage>& message);
 
-        bool canHandleRequest(const sp<RfxMessage>& message);
+    void requestRadioPower(const sp<RfxMessage>& message);
 
-        void requestRadioPower(const sp<RfxMessage>& message);
+    bool handleRadioPowerResponse(const sp<RfxMessage>& message);
 
-        bool handleRadioPowerResponse(const sp<RfxMessage>& message);
+    void onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-        void onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
+    sp<RfxMessage> findPendingRequest(std::unordered_map<int, sp<RfxMessage>>& pendingRequest,
+                                      const sp<RfxMessage>& msg);
 
-        sp<RfxMessage> findPendingRequest(std::unordered_map<int, sp<RfxMessage>>& pendingRequest,
-                const sp<RfxMessage>& msg);
+    sp<RfxAction> findAction(std::unordered_map<int, sp<RfxAction>>& mActionMap,
+                             const sp<RfxMessage>& msg);
 
-        sp<RfxAction> findAction(std::unordered_map<int, sp<RfxAction>>& mActionMap,
-                const sp<RfxMessage>& msg);
+    void onSimStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-        void onSimStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
-
-        std::unordered_map<int, sp<RfxMessage>> mPendingRequest;
-        std::unordered_map<int, sp<RfxAction>> mActionMap;
+    std::unordered_map<int, sp<RfxMessage>> mPendingRequest;
+    std::unordered_map<int, sp<RfxAction>> mActionMap;
 };
 
 #endif /* __RP_RADIO_CONTROLLER_H__ */

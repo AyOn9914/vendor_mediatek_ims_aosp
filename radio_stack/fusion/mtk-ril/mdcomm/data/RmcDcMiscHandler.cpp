@@ -35,22 +35,21 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcDcMiscHandler, RIL_CMD_PROXY_5);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_NETWORK_REJECT_CAUSE);
 
 RmcDcMiscHandler::RmcDcMiscHandler(int slotId, int channelId)
-        : RfxBaseHandler(slotId, channelId), m_pRmcDcMiscImpl(NULL) {
-
+    : RfxBaseHandler(slotId, channelId), m_pRmcDcMiscImpl(NULL) {
     const int requestList[] = {
-        RFX_MSG_REQUEST_START_LCE,
-        RFX_MSG_REQUEST_STOP_LCE,
-        RFX_MSG_REQUEST_PULL_LCEDATA,
-        RFX_MSG_REQUEST_SET_FD_MODE,
-        RFX_MSG_REQUEST_SET_LINK_CAPACITY_REPORTING_CRITERIA,
-        RFX_MSG_REQUEST_SEND_DEVICE_STATE,
+            RFX_MSG_REQUEST_START_LCE,
+            RFX_MSG_REQUEST_STOP_LCE,
+            RFX_MSG_REQUEST_PULL_LCEDATA,
+            RFX_MSG_REQUEST_SET_FD_MODE,
+            RFX_MSG_REQUEST_SET_LINK_CAPACITY_REPORTING_CRITERIA,
+            RFX_MSG_REQUEST_SEND_DEVICE_STATE,
     };
 
     const int eventList[] = {
-        RFX_MSG_EVENT_DATA_LCE_STATUS_CHANGED,
-        RFX_MSG_EVENT_RADIO_CAPABILITY_UPDATED,
-        RFX_MSG_EVENT_DATA_LINK_CAPACITY_ESTIMATE,
-        RFX_MSG_EVENT_NETWORK_REJECT_CAUSE,
+            RFX_MSG_EVENT_DATA_LCE_STATUS_CHANGED,
+            RFX_MSG_EVENT_RADIO_CAPABILITY_UPDATED,
+            RFX_MSG_EVENT_DATA_LINK_CAPACITY_ESTIMATE,
+            RFX_MSG_EVENT_NETWORK_REJECT_CAUSE,
     };
 
     registerToHandleRequest(requestList, sizeof(requestList) / sizeof(int));
@@ -168,23 +167,22 @@ void RmcDcMiscHandler::handleNetworkRejectCause(const sp<RfxMclMessage>& msg) {
 
         if (m.empty() || m.size() != 4) {
             for (std::size_t n = 0; n < m.size(); ++n) {
-                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]",
-                    m_slot_id, __FUNCTION__, m.str(n).c_str());
+                RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] match error [%s]", m_slot_id, __FUNCTION__,
+                          m.str(n).c_str());
             }
-            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ECCAUSE content error, #matched %d, return",
-                m_slot_id, __FUNCTION__, (int) m.size());
+            RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] ECCAUSE content error, #matched %d, return", m_slot_id,
+                      __FUNCTION__, (int)m.size());
             return;
         } else {
             emmCause = std::stoi(m.str(1), NULL, 10);
             esmCause = std::stoi(m.str(2), NULL, 10);
             event = std::stoi(m.str(3), NULL, 10);
 
-            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] emm %d, esm %d, event %d",
-                m_slot_id, __FUNCTION__, emmCause, esmCause, event);
+            RFX_LOG_D(RFX_LOG_TAG, "[%d][%s] emm %d, esm %d, event %d", m_slot_id, __FUNCTION__,
+                      emmCause, esmCause, event);
         }
     } else {
-        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] urc format error, return",
-            m_slot_id, __FUNCTION__);
+        RFX_LOG_E(RFX_LOG_TAG, "[%d][%s] urc format error, return", m_slot_id, __FUNCTION__);
         return;
     }
 
@@ -194,31 +192,31 @@ void RmcDcMiscHandler::handleNetworkRejectCause(const sp<RfxMclMessage>& msg) {
     response[1] = esmCause;
     response[2] = event;
     rejCauseUrc = RfxMclMessage::obtainUrc(RFX_MSG_URC_NETWORK_REJECT_CAUSE, m_slot_id,
-            RfxIntsData(response, 3));
+                                           RfxIntsData(response, 3));
     responseToTelCore(rejCauseUrc);
     return;
 }
 
 void RmcDcMiscHandler::handleSendDeviceStateRequest(const sp<RfxMclMessage>& msg) {
     RFX_ASSERT(m_pRmcDcMiscImpl != NULL);
-    int *pReqInt = (int *)msg->getData()->getData();
+    int* pReqInt = (int*)msg->getData()->getData();
 
     // Only handle LOW_DATA_EXPECTED
     if (pReqInt[0] == FASTDORMANCY_LOW_DATA_EXPECTED) {
         int settings[FASTDORMANCY_PARAMETER_LENGTH] = {0};
-        settings[0] = 1;          // args Num
-        settings[1] = pReqInt[1]; // state
+        settings[0] = 1;           // args Num
+        settings[1] = pReqInt[1];  // state
         RFX_LOG_D(RFX_LOG_TAG, "[%d][%s]: state: %d", m_slot_id, __FUNCTION__, settings[1]);
 
         RfxIntsData data(settings, FASTDORMANCY_PARAMETER_LENGTH);
-        sp<RfxMclMessage> request = RfxMclMessage::obtainRequest(msg->getId(),
-                &data, msg->getSlotId(), msg->getToken(),
-                msg->getSendToMainProtocol(), msg->getRilToken(),
-                msg->getTimeStamp(), msg->getAddAtFront());
+        sp<RfxMclMessage> request =
+                RfxMclMessage::obtainRequest(msg->getId(), &data, msg->getSlotId(), msg->getToken(),
+                                             msg->getSendToMainProtocol(), msg->getRilToken(),
+                                             msg->getTimeStamp(), msg->getAddAtFront());
         m_pRmcDcMiscImpl->setFdMode(request);
     } else {
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg, false);
+        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED, RfxVoidData(), msg, false);
         responseToTelCore(response);
     }
 }

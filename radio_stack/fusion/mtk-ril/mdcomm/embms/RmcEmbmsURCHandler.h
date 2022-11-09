@@ -36,27 +36,28 @@
 class RmcEmbmsURCHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcEmbmsURCHandler);
 
-    public:
-        RmcEmbmsURCHandler(int slot_id, int channel_id);
-        virtual ~RmcEmbmsURCHandler();
+  public:
+    RmcEmbmsURCHandler(int slot_id, int channel_id);
+    virtual ~RmcEmbmsURCHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
-    private:
-        void onEmbmsSrvStatus(const sp<RfxMclMessage>& msg);
-        void onEmbmsSessionListUpdate(const sp<RfxMclMessage>& msg);
-        void onEmbmsSaiListUpdate(const sp<RfxMclMessage>& msg);
-        void onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg);
-        void onEpsNetworkUpdate(const sp<RfxMclMessage>& msg);
-        void onEmbmsHvolteUpdate(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-        void handleInitialVariable(const sp<RfxMclMessage>& msg);
-        bool isHvolteDisable();
+  private:
+    void onEmbmsSrvStatus(const sp<RfxMclMessage>& msg);
+    void onEmbmsSessionListUpdate(const sp<RfxMclMessage>& msg);
+    void onEmbmsSaiListUpdate(const sp<RfxMclMessage>& msg);
+    void onEmbmsSessionActiveUpdate(const sp<RfxMclMessage>& msg);
+    void onEpsNetworkUpdate(const sp<RfxMclMessage>& msg);
+    void onEmbmsHvolteUpdate(const sp<RfxMclMessage>& msg);
 
-    private:
-        RIL_EMBMS_LocalOosNotify oos_tmgi;
-        int oos_tmgi_count;
+    void handleInitialVariable(const sp<RfxMclMessage>& msg);
+    bool isHvolteDisable();
+
+  private:
+    RIL_EMBMS_LocalOosNotify oos_tmgi;
+    int oos_tmgi_count;
 };
 
 #endif

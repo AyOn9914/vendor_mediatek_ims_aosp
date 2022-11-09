@@ -27,15 +27,15 @@
  *****************************************************************************/
 
 class RtcOpOemController : public RtcOemController {
-    RFX_DECLARE_CLASS(RtcOpOemController); // Required: declare this class
+    RFX_DECLARE_CLASS(RtcOpOemController);  // Required: declare this class
 
-    public:
-        RtcOpOemController();
-        virtual ~RtcOpOemController();
+  public:
+    RtcOpOemController();
+    virtual ~RtcOpOemController();
 
     // Override
-    protected:
-        void onInit();
+  protected:
+    void onInit();
 };
 
 #endif /* __RTC_OP_OEM_CONTROLLER_H__ */

@@ -23,18 +23,18 @@
 RFX_IMPLEMENT_DATA_CLASS(RfxEmbmsModemEeNotifyData);
 
 RfxEmbmsModemEeNotifyData::RfxEmbmsModemEeNotifyData(void* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData((RIL_EMBMS_ModemEeNotify*)data, length);
 }
 
 RfxEmbmsModemEeNotifyData::RfxEmbmsModemEeNotifyData(RIL_EMBMS_ModemEeNotify* data, int length)
-    : RfxBaseData(data, length)  {
+    : RfxBaseData(data, length) {
     copyData(data, length);
 }
 
-void RfxEmbmsModemEeNotifyData::copyData(RIL_EMBMS_ModemEeNotify *data, int length) {
+void RfxEmbmsModemEeNotifyData::copyData(RIL_EMBMS_ModemEeNotify* data, int length) {
     m_length = length;
-    m_data = (RIL_EMBMS_OosNotify *) calloc(1, sizeof(RIL_EMBMS_ModemEeNotify));
+    m_data = (RIL_EMBMS_OosNotify*)calloc(1, sizeof(RIL_EMBMS_ModemEeNotify));
     if (m_data != NULL) {
         memcpy(m_data, data, length);
     } else {

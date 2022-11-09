@@ -21,16 +21,16 @@
 
 WPFA_IMPLEMENT_DATA_CLASS(WpfaDriverRegFilterData);
 
-WpfaDriverRegFilterData::WpfaDriverRegFilterData(void *_data, int _length) :
-        WpfaDriverBaseData(_data, _length) {
+WpfaDriverRegFilterData::WpfaDriverRegFilterData(void* _data, int _length)
+    : WpfaDriverBaseData(_data, _length) {
     int i = 0;
     if (_data != NULL) {
-        wifiproxy_m2a_reg_dl_filter_t *pSendMsg = (wifiproxy_m2a_reg_dl_filter_t*)_data;
-        wifiproxy_m2a_reg_dl_filter_t *pData = (wifiproxy_m2a_reg_dl_filter_t *)calloc(1,
-                    sizeof(wifiproxy_m2a_reg_dl_filter_t));
+        wifiproxy_m2a_reg_dl_filter_t* pSendMsg = (wifiproxy_m2a_reg_dl_filter_t*)_data;
+        wifiproxy_m2a_reg_dl_filter_t* pData =
+                (wifiproxy_m2a_reg_dl_filter_t*)calloc(1, sizeof(wifiproxy_m2a_reg_dl_filter_t));
 
         if (pData == NULL) {
-            mtkLogD(WPFA_D_LOG_TAG,"pData is null, return.");
+            mtkLogD(WPFA_D_LOG_TAG, "pData is null, return.");
             return;
         }
 
@@ -41,11 +41,11 @@ WpfaDriverRegFilterData::WpfaDriverRegFilterData(void *_data, int _length) :
         pData->reg_hdr.protocol = pSendMsg->reg_hdr.protocol;
         pData->reg_hdr.icmp_type = pSendMsg->reg_hdr.icmp_type;
         pData->reg_hdr.icmp_code = pSendMsg->reg_hdr.icmp_code;
-        for(i = 0; i < 16; i++){
+        for (i = 0; i < 16; i++) {
             pData->reg_hdr.ip_src[i] = pSendMsg->reg_hdr.ip_src[i];
         }
         pData->reg_hdr.ip_src_mask = pSendMsg->reg_hdr.ip_src_mask;
-        for(i = 0; i < 16; i++){
+        for (i = 0; i < 16; i++) {
             pData->reg_hdr.ip_dest[i] = pSendMsg->reg_hdr.ip_dest[i];
         }
         pData->reg_hdr.ip_dest_mask = pSendMsg->reg_hdr.ip_dest_mask;
@@ -56,7 +56,7 @@ WpfaDriverRegFilterData::WpfaDriverRegFilterData(void *_data, int _length) :
         pData->reg_hdr.tcp_flags = pSendMsg->reg_hdr.tcp_flags;
         pData->reg_hdr.tcp_flags_mask = pSendMsg->reg_hdr.tcp_flags_mask;
         pData->reg_hdr.tcp_flags_operation = pSendMsg->reg_hdr.tcp_flags_operation;
-        for(i = 0; i < 16; i++){
+        for (i = 0; i < 16; i++) {
             pData->reg_hdr.icmp_src_ip[i] = pSendMsg->reg_hdr.icmp_src_ip[i];
         }
         pData->reg_hdr.icmp_src_port = pSendMsg->reg_hdr.icmp_src_port;
@@ -66,7 +66,7 @@ WpfaDriverRegFilterData::WpfaDriverRegFilterData(void *_data, int _length) :
 
         pData->fid = pSendMsg->fid;
 
-        mData = (void* )pData;
+        mData = (void*)pData;
         mLength = _length;
     }
 }

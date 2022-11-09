@@ -26,17 +26,17 @@
 class RmcWpModemRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcWpModemRequestHandler);
 
-    public:
-        RmcWpModemRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcWpModemRequestHandler();
+  public:
+    RmcWpModemRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcWpModemRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestStoreModem(const sp<RfxMclMessage>& msg);
-        void requestReloadModem(const sp<RfxMclMessage>& msg);
-        void requestModifyModem(const sp<RfxMclMessage>& msg);
+  private:
+    void requestStoreModem(const sp<RfxMclMessage>& msg);
+    void requestReloadModem(const sp<RfxMclMessage>& msg);
+    void requestModifyModem(const sp<RfxMclMessage>& msg);
 };
 
 #endif /*__RMC_WP_MODEM_REQUEST_HANDLER_H__*/

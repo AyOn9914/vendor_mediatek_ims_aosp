@@ -26,20 +26,20 @@
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcWpModemRequestHandler, RIL_CMD_PROXY_9);
 
-RmcWpModemRequestHandler::RmcWpModemRequestHandler(int slot_id, int channel_id):RfxBaseHandler(slot_id, channel_id) {
+RmcWpModemRequestHandler::RmcWpModemRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     const int request[] = {
-        RFX_MSG_REQUEST_WORLD_MODE_RELOAD_MODEM_TYPE,
-        RFX_MSG_REQUEST_WORLD_MODE_STORE_MODEM_TYPE,
-        RFX_MSG_REQUEST_WORLD_MODE_STORE_ID,
-        RFX_MSG_REQUEST_WORLD_MODE_RELOAD_ID,
-        RFX_MSG_REQUEST_WORLD_MODE_MODIFY_MODEM_TYPE,
+            RFX_MSG_REQUEST_WORLD_MODE_RELOAD_MODEM_TYPE,
+            RFX_MSG_REQUEST_WORLD_MODE_STORE_MODEM_TYPE,
+            RFX_MSG_REQUEST_WORLD_MODE_STORE_ID,
+            RFX_MSG_REQUEST_WORLD_MODE_RELOAD_ID,
+            RFX_MSG_REQUEST_WORLD_MODE_MODIFY_MODEM_TYPE,
     };
 
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
 }
 
-RmcWpModemRequestHandler::~RmcWpModemRequestHandler() {
-}
+RmcWpModemRequestHandler::~RmcWpModemRequestHandler() {}
 
 void RmcWpModemRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(WP_LOG_TAG, "onHandleRequest: %d", msg->getId());
@@ -63,7 +63,7 @@ void RmcWpModemRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcWpModemRequestHandler::requestModifyModem(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int responseInfo[1] = {0};
     int applyType = pInt[0];
     int modemType = pInt[1];
@@ -82,13 +82,13 @@ void RmcWpModemRequestHandler::requestModifyModem(const sp<RfxMclMessage>& msg) 
 }
 
 void RmcWpModemRequestHandler::requestStoreModem(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int modemType = pInt[0] & 0x00FF;
 
     RfxRilUtils::triggerCCCIIoctlEx(CCCI_IOC_STORE_MD_TYPE, &modemType);
     logD(WP_LOG_TAG, "requestStoreModem complete MDtype = %d", modemType);
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
-            msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 
@@ -96,13 +96,13 @@ void RmcWpModemRequestHandler::requestStoreModem(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcWpModemRequestHandler::requestReloadModem(const sp<RfxMclMessage>& msg) {
-    int *pInt = (int *)msg->getData()->getData();
+    int* pInt = (int*)msg->getData()->getData();
     int modemType = pInt[0];
 
     RfxRilUtils::triggerCCCIIoctlEx(CCCI_IOC_RELOAD_MD_TYPE, &modemType);
     logD(WP_LOG_TAG, "requestReloadModem complete MDtype = %d", modemType);
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
-            msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
+    sp<RfxMclMessage> response =
+            RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 

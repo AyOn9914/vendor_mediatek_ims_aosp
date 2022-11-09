@@ -24,6 +24,6 @@
 class RfxCellInfoData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxCellInfoData);
 
-    public:
+  public:
 };
 #endif

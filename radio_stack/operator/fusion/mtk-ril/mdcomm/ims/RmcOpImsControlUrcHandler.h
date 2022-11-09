@@ -22,17 +22,17 @@
 class RmcOpImsControlUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpImsControlUrcHandler);
 
-    public:
-        RmcOpImsControlUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcOpImsControlUrcHandler();
+  public:
+    RmcOpImsControlUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcOpImsControlUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void onDigitsLineIndication(const sp<RfxMclMessage>& msg);
-        void onRcsDigitsLineInfo(const sp<RfxMclMessage>& msg);
+  private:
+    void onDigitsLineIndication(const sp<RfxMclMessage>& msg);
+    void onRcsDigitsLineInfo(const sp<RfxMclMessage>& msg);
 };
 
 #endif

@@ -18,13 +18,13 @@
 #define COMPILER_UTILS_H 1
 
 #if defined __has_cpp_attribute
-    #if __has_cpp_attribute(fallthrough)
-        #define TELEPHONYWARE_FALLTHROUGH [[fallthrough]]
-    #else
-        #define TELEPHONYWARE_FALLTHROUGH
-    #endif
+#if __has_cpp_attribute(fallthrough)
+#define TELEPHONYWARE_FALLTHROUGH [[fallthrough]]
 #else
-    #define TELEPHONYWARE_FALLTHROUGH
+#define TELEPHONYWARE_FALLTHROUGH
+#endif
+#else
+#define TELEPHONYWARE_FALLTHROUGH
 #endif
 
 #endif /*COMPILER_UTILS_H*/

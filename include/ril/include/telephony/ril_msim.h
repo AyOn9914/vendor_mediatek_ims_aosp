@@ -22,22 +22,22 @@ extern "C" {
 #endif
 
 typedef enum {
-  RIL_UICC_SUBSCRIPTION_DEACTIVATE = 0,
-  RIL_UICC_SUBSCRIPTION_ACTIVATE = 1
+    RIL_UICC_SUBSCRIPTION_DEACTIVATE = 0,
+    RIL_UICC_SUBSCRIPTION_ACTIVATE = 1
 } RIL_UiccSubActStatus;
 
 typedef enum {
-  RIL_SUBSCRIPTION_1 = 0,
-  RIL_SUBSCRIPTION_2 = 1,
-  RIL_SUBSCRIPTION_3 = 2
+    RIL_SUBSCRIPTION_1 = 0,
+    RIL_SUBSCRIPTION_2 = 1,
+    RIL_SUBSCRIPTION_3 = 2
 } RIL_SubscriptionType;
 
 typedef struct {
-  int   slot;                        /* 0, 1, ... etc. */
-  int   app_index;                   /* array subscriptor from applications[RIL_CARD_MAX_APPS] in
-                                        RIL_REQUEST_GET_SIM_STATUS */
-  RIL_SubscriptionType  sub_type;    /* Indicates subscription 1 or subscription 2 */
-  RIL_UiccSubActStatus  act_status;
+    int slot;                      /* 0, 1, ... etc. */
+    int app_index;                 /* array subscriptor from applications[RIL_CARD_MAX_APPS] in
+                                      RIL_REQUEST_GET_SIM_STATUS */
+    RIL_SubscriptionType sub_type; /* Indicates subscription 1 or subscription 2 */
+    RIL_UiccSubActStatus act_status;
 } RIL_SelectUiccSub;
 
 #ifdef __cplusplus

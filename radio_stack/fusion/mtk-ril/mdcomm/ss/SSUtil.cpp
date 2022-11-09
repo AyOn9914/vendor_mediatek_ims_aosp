@@ -36,41 +36,23 @@
 /***
  * "AO"  BAOC (Barr All Outgoing Calls) (refer 3GPP TS 22.088 [6] clause 1)
  * "OI"  BOIC (Barr Outgoing International Calls) (refer 3GPP TS 22.088 [6] clause 1)
- * "OX"  BOIC exHC (Barr Outgoing International Calls except to Home Country) (refer 3GPP TS 22.088 [6] clause 1)
- * "AI"  BAIC (Barr All Incoming Calls) (refer 3GPP TS 22.088 [6] clause 2)
- * "IR"  BIC Roam (Barr Incoming Calls when Roaming outside the home country) (refer 3GPP TS 22.088 [6] clause 2)
- * "AB"  All Barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
- * "AG"  All outGoing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
- * "AC"  All inComing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0)
- * "ACR" Incoming Call Barring of Anonymous Communication Rejection (ACR) (3GPP TS 24.611)
+ * "OX"  BOIC exHC (Barr Outgoing International Calls except to Home Country) (refer 3GPP TS 22.088
+ * [6] clause 1) "AI"  BAIC (Barr All Incoming Calls) (refer 3GPP TS 22.088 [6] clause 2) "IR"  BIC
+ * Roam (Barr Incoming Calls when Roaming outside the home country) (refer 3GPP TS 22.088 [6] clause
+ * 2) "AB"  All Barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0) "AG" All
+ * outGoing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0) "AC"  All
+ * inComing barring services (refer 3GPP TS 22.030 [19]) (applicable only for <mode>=0) "ACR"
+ * Incoming Call Barring of Anonymous Communication Rejection (ACR) (3GPP TS 24.611)
  */
-const char * callBarFacilityStrings[CB_SUPPORT_NUM] = {
-    "AO",
-    "OI",
-    "OX",
-    "AI",
-    "IR",
-    "AB",
-    "AG",
-    "AC",
-    "ACR"
-};
+const char* callBarFacilityStrings[CB_SUPPORT_NUM] = {"AO", "OI", "OX", "AI", "IR",
+                                                      "AB", "AG", "AC", "ACR"};
 
-const char * callBarServiceCodeStrings[CB_SUPPORT_NUM] = {
-    "33",
-    "331",
-    "332",
-    "35",
-    "351",
-    "330",
-    "333",
-    "353",
-    "157"
-};
+const char* callBarServiceCodeStrings[CB_SUPPORT_NUM] = {"33",  "331", "332", "35", "351",
+                                                         "330", "333", "353", "157"};
 
-const char * GsmCbsDcsStringp[MAX_DCS_SUPPORT] = {"GSM7","8BIT","UCS2"};
+const char* GsmCbsDcsStringp[MAX_DCS_SUPPORT] = {"GSM7", "8BIT", "UCS2"};
 
-const char *InfoClassToMmiBSCodeString (AtInfoClassE infoClass) {
+const char* InfoClassToMmiBSCodeString(AtInfoClassE infoClass) {
     /**
      * Basic Service
      * group number (note)  Telecommunication Service       MMI Service Code
@@ -97,8 +79,7 @@ const char *InfoClassToMmiBSCodeString (AtInfoClassE infoClass) {
      * 13                   All GPRS bearer services        99
      */
 
-    switch((int) infoClass)
-    {
+    switch ((int)infoClass) {
         case CLASS_NONE:
             return BS_ALL;
             break;
@@ -161,25 +142,26 @@ const char WILD = 'N';
 // No use in 93.
 int MmiBSCodeToInfoClassX(int serviceCode, int ssServiceClassFeature) {
     if (ssServiceClassFeature == 1) {
-    // RFX_LOG_D(RFX_LOG_TAG, "[MmiBSCodeToInfoClassX]Return %d directly.", serviceCode);
+        // RFX_LOG_D(RFX_LOG_TAG, "[MmiBSCodeToInfoClassX]Return %d directly.", serviceCode);
         return serviceCode;
     } else {
         switch (serviceCode) {
             /* BS_ALL_E = BS_TELE_ALL_E + BS_DATA_ALL_E */
             case BS_ALL_E:
-                return (int)(CLASS_SMS + CLASS_FAX + CLASS_VOICE + CLASS_DATA_ASYNC + CLASS_DATA_SYNC);
+                return (int)(CLASS_SMS + CLASS_FAX + CLASS_VOICE + CLASS_DATA_ASYNC +
+                             CLASS_DATA_SYNC);
             case BS_TELE_ALL_E:
                 return (int)(CLASS_SMS + CLASS_FAX + CLASS_VOICE);
             case BS_TELEPHONY_E:
-                return (int) CLASS_VOICE;
+                return (int)CLASS_VOICE;
             case BS_TELE_DATA_ALL_E:
-                return (int) (CLASS_SMS + CLASS_FAX);
+                return (int)(CLASS_SMS + CLASS_FAX);
             case BS_TELE_FAX_E:
-                return (int) CLASS_FAX;
+                return (int)CLASS_FAX;
             case BS_TELE_SMS_E:
-                return (int) CLASS_SMS;
+                return (int)CLASS_SMS;
             case BS_TELE_ALL_EXCEPT_SMS_E:
-                return (int) (CLASS_FAX + CLASS_VOICE);
+                return (int)(CLASS_FAX + CLASS_VOICE);
             /**
              * Note for code 20:
              * From TS 22.030 Annex C:
@@ -196,19 +178,18 @@ int MmiBSCodeToInfoClassX(int serviceCode, int ssServiceClassFeature) {
             case BS_DATA_CIRCUIT_SYNC_E:
                 return (int)(CLASS_DATA_SYNC + CLASS_MTK_VIDEO); /* Also for video call */
             case BS_DATA_CIRCUIT_ASYNC_E:
-                return (int) CLASS_DATA_ASYNC;
+                return (int)CLASS_DATA_ASYNC;
             case BS_DATA_SYNC_TELE_E:
                 return (int)(CLASS_DATA_SYNC + CLASS_VOICE);
             case BS_GPRS_ALL_E:
-                return (int) CLASS_DEDICATED_PACKET_ACCESS;
+                return (int)CLASS_DEDICATED_PACKET_ACCESS;
             default:
-                return (int) CLASS_NONE;
+                return (int)CLASS_NONE;
         }
     }
 }
 
-const char *ssStatusToOpCodeString(SsStatusE status)
-{
+const char* ssStatusToOpCodeString(SsStatusE status) {
     /**
      *   Activation:    *SC*SI#
      *   Deactivation:  #SC*SI#
@@ -240,32 +221,31 @@ const char *ssStatusToOpCodeString(SsStatusE status)
     return "";
 }
 
-char* convertToUCS2(char* data)
-{
-    /** USSD messages using the default alphabet are coded with the
-       * GSM 7-bit default alphabet  given in clause 6.2.1. The message can then consist of
-       * up to 182 user characters (3GPP 23.038).
-       * Callee expects const char * in UCS2 Hex decimal format.
-      */
-    #define MAX_RIL_USSD_STRING_LENGTH 255
+char* convertToUCS2(char* data) {
+/** USSD messages using the default alphabet are coded with the
+ * GSM 7-bit default alphabet  given in clause 6.2.1. The message can then consist of
+ * up to 182 user characters (3GPP 23.038).
+ * Callee expects const char * in UCS2 Hex decimal format.
+ */
+#define MAX_RIL_USSD_STRING_LENGTH 255
 
-    size_t  stringlen     = 0;
-    bytes_t ucs2String    = NULL;
+    size_t stringlen = 0;
+    bytes_t ucs2String = NULL;
     bytes_t ucs2HexString = NULL;
 
     // data equals string8, since it passed by dispatchString
-    const char* string8 = (const char *)(data);
+    const char* string8 = (const char*)(data);
 
-    ucs2String = (bytes_t) calloc(2*(MAX_RIL_USSD_STRING_LENGTH+1),sizeof(char));
+    ucs2String = (bytes_t)calloc(2 * (MAX_RIL_USSD_STRING_LENGTH + 1), sizeof(char));
     if (ucs2String == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "convertToUCS2:ucs2String malloc fail");
         return NULL;
     }
     // memory overwrite if strlen(string8) is larger than MAX_RIL_USSD_STRING_LENGTH
-    stringlen = utf8_to_ucs2((cbytes_t)string8, MIN(strlen(string8),
-            MAX_RIL_USSD_STRING_LENGTH), ucs2String);
+    stringlen = utf8_to_ucs2((cbytes_t)string8, MIN(strlen(string8), MAX_RIL_USSD_STRING_LENGTH),
+                             ucs2String);
     cbytes_t test;
-    ucs2HexString = (bytes_t) calloc(2*stringlen*2+1,sizeof(char));
+    ucs2HexString = (bytes_t)calloc(2 * stringlen * 2 + 1, sizeof(char));
     if (ucs2HexString == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "convertToUCS2:ucs2HexString malloc fail");
         // free here in the case of ucs2HexString is null.
@@ -273,17 +253,16 @@ char* convertToUCS2(char* data)
         return NULL;
     }
 
-    gsm_hex_from_bytes((char *)ucs2HexString, ucs2String, 2*stringlen);
+    gsm_hex_from_bytes((char*)ucs2HexString, ucs2String, 2 * stringlen);
 
     free(ucs2String);
 
     RFX_LOG_W(RFX_LOG_TAG, "convertToUCS2= %s", ucs2HexString);
 
-    return (char *)ucs2HexString;
+    return (char*)ucs2HexString;
 }
 
-const char * callBarFacToServiceCodeStrings(const char * fac)
-{
+const char* callBarFacToServiceCodeStrings(const char* fac) {
     int i;
 
     for (i = 0; i < CB_SUPPORT_NUM; i++) {
@@ -300,21 +279,19 @@ const char * callBarFacToServiceCodeStrings(const char * fac)
     }
 }
 
-GsmCbsDcsE checkCbsDcs(int dcs)
-{
+GsmCbsDcsE checkCbsDcs(int dcs) {
     GsmCbsDcsE result = DCS_GSM7;
 
-    if ((dcs == 0x11) ||((dcs & 0x4C) == 0x48) ||((dcs & 0x9C) == 0x98)) {
+    if ((dcs == 0x11) || ((dcs & 0x4C) == 0x48) || ((dcs & 0x9C) == 0x98)) {
         result = DCS_UCS2;
-    } else if (((dcs & 0x4C) == 0x44) ||((dcs & 0x9C) == 0x94) ||((dcs & 0xF4) == 0xF4)) {
+    } else if (((dcs & 0x4C) == 0x44) || ((dcs & 0x9C) == 0x94) || ((dcs & 0xF4) == 0xF4)) {
         result = DCS_8BIT;
     }
 
     return result;
 }
 
-const char *callForwardReasonToServiceCodeString(CallForwardReasonE cfreason)
-{
+const char* callForwardReasonToServiceCodeString(CallForwardReasonE cfreason) {
     switch (cfreason) {
         case CF_U:
             return CALL_FORWARD_UNCONDITIONAL;
@@ -344,24 +321,23 @@ const char *callForwardReasonToServiceCodeString(CallForwardReasonE cfreason)
 }
 
 void clearErrorMessageFromXcap(int slotId) {
-    char *propName = NULL;
+    char* propName = NULL;
     char propValue[MTK_PROPERTY_VALUE_MAX] = {0};
     int idx = 0;
 
     vector<string> propNames(50);
-    if (asprintf(&propName, "%s.%d",
-            (char *) PROPERTY_ERROR_MESSAGE_FROM_XCAP, slotId) < 0) {
+    if (asprintf(&propName, "%s.%d", (char*)PROPERTY_ERROR_MESSAGE_FROM_XCAP, slotId) < 0) {
         RFX_LOG_E(RFX_LOG_TAG, "Allocate prop name failed");
         return;
     }
 
-    char *tmpPropName = NULL;
-    asprintf(&tmpPropName, "%s.%d", (char*) propName, idx);
+    char* tmpPropName = NULL;
+    asprintf(&tmpPropName, "%s.%d", (char*)propName, idx);
 
     propNames[idx] = string(tmpPropName);
 
     rfx_property_get(propNames[idx].c_str(), propValue, "");
-    while(strlen(propValue) != 0) {
+    while (strlen(propValue) != 0) {
         rfx_property_set(propNames[idx].c_str(), "");
 
         RFX_LOG_D(RFX_LOG_TAG, "clear prop: [%s]: [%s]", propNames[idx].c_str(), propValue);
@@ -379,7 +355,7 @@ void clearErrorMessageFromXcap(int slotId) {
 }
 
 void setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* message) {
-    char *fullMsg = NULL;
+    char* fullMsg = NULL;
 
     if (message == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "setErrorMessageFromXcap: NULL string.");
@@ -403,16 +379,16 @@ void setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* mes
 
     len = strlen(fullMsg);
 
-    char *propName = NULL;
+    char* propName = NULL;
 
-    asprintf(&propName, "%s.%d", (char *) PROPERTY_ERROR_MESSAGE_FROM_XCAP, slotId);
+    asprintf(&propName, "%s.%d", (char*)PROPERTY_ERROR_MESSAGE_FROM_XCAP, slotId);
 
     RFX_LOG_D(RFX_LOG_TAG, "propName: [%s]", propName);
     RFX_LOG_D(RFX_LOG_TAG, "fullMsg: [%s]", fullMsg);
 
     int idx = 0;
 
-    char *tmpMsg = fullMsg;
+    char* tmpMsg = fullMsg;
 
     while (len > 0) {
         RFX_LOG_D(RFX_LOG_TAG, "len: [%d], max: [%d]", len, MTK_PROPERTY_VALUE_MAX);
@@ -431,9 +407,9 @@ void setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* mes
         tmpMsg += copyLen;
         // printf("%s\n", tmpStr);
 
-        char *tmpPropName = NULL;
+        char* tmpPropName = NULL;
 
-        asprintf(&tmpPropName, "%s.%d", (char*) propName, idx);
+        asprintf(&tmpPropName, "%s.%d", (char*)propName, idx);
 
         // setMSimProperty(slotId,
         //         propName,
@@ -453,18 +429,13 @@ void setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* mes
     free(propName);
 }
 
-
 /** True if c is ISO-LATIN characters 0-9, *, # , + */
-bool isReallyDialable(char c) {
-    return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+';
-}
+bool isReallyDialable(char c) { return (c >= '0' && c <= '9') || c == '*' || c == '#' || c == '+'; }
 
 /** This any anything to the right of this char is part of the
  *  post-dial string (eg this is PAUSE or WAIT)
  */
-bool isStartsPostDial (char c) {
-    return c == PAUSE || c == WAIT;
-}
+bool isStartsPostDial(char c) { return c == PAUSE || c == WAIT; }
 
 /**
  * Extracts the network address portion and canonicalize.
@@ -481,7 +452,7 @@ char* extractNetworkPortionAlt(char* phoneNumber) {
 
     int len = strlen(phoneNumber);
     std::string tmp_result = "";
-    char* result = (char *) malloc(len + 1);
+    char* result = (char*)malloc(len + 1);
     bool haveSeenPlus = false;
 
     if (result == NULL) {
@@ -514,7 +485,7 @@ char* encryptString(char* input) {
     int len = strlen(input);
 
     int pivot = (rand() % 9) + 1;
-    char* array = (char *) malloc(len + 2);
+    char* array = (char*)malloc(len + 2);
 
     if (array == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "encryptString, malloc failed!");
@@ -523,7 +494,7 @@ char* encryptString(char* input) {
 
     strncpy(array, input, len);
     for (int i = 0; i < len; i++) {
-        array[i] = (char) (array[i] + pivot);
+        array[i] = (char)(array[i] + pivot);
     }
     char pivotStr[16] = {0};
     sprintf(pivotStr, "%d", pivot);

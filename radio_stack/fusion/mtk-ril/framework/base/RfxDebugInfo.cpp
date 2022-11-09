@@ -29,12 +29,12 @@
 /*****************************************************************************
  * Define
  *****************************************************************************/
-#define RFX_PROPERTY_DEBUG_INFO_ENABLED         "persist.vendor.radio.rfxdbg.enabled"
-#define RFX_PROPERTY_DUMP_OBJ_TREE              "persist.vendor.radio.dumpobjtree"
-#define RFX_PROPERTY_DUMP_OBJ_CREATION_STACK    "persist.vendor.radio.dumpobjstack"
-#define RFX_PROPERTY_DUMP_MSG_LIST              "persist.vendor.radio.dumpmsglist"
-#define RFX_PROPERTY_DUMP_ACT_LIST              "persist.vendor.radio.dumpactlist"
-#define RFX_PROPERTY_DUMP_ACT_CREATION_STACK    "persist.vendor.radio.dumpactstack"
+#define RFX_PROPERTY_DEBUG_INFO_ENABLED "persist.vendor.radio.rfxdbg.enabled"
+#define RFX_PROPERTY_DUMP_OBJ_TREE "persist.vendor.radio.dumpobjtree"
+#define RFX_PROPERTY_DUMP_OBJ_CREATION_STACK "persist.vendor.radio.dumpobjstack"
+#define RFX_PROPERTY_DUMP_MSG_LIST "persist.vendor.radio.dumpmsglist"
+#define RFX_PROPERTY_DUMP_ACT_LIST "persist.vendor.radio.dumpactlist"
+#define RFX_PROPERTY_DUMP_ACT_CREATION_STACK "persist.vendor.radio.dumpactstack"
 
 #define RFX_LOG_TAG "RfxDebugInfo"
 /*****************************************************************************
@@ -47,27 +47,23 @@ void RfxDebugInfo::dump(int level) const {
     if (m_logger) {
         m_logger->dump(level);
     }
-    m_stack.print(*((Printer *)this));
+    m_stack.print(*((Printer*)this));
 }
 
-void RfxDebugInfo::printLine(const char* string) {
-    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%s", string);
-}
+void RfxDebugInfo::printLine(const char* string) { RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%s", string); }
 
 #ifdef RFX_OBJ_DEBUG
-bool RfxDebugInfo::isRfxDebugInfoEnabled() {
-    return s_rfx_debug_info_enabled;
-}
+bool RfxDebugInfo::isRfxDebugInfoEnabled() { return s_rfx_debug_info_enabled; }
 
 void RfxDebugInfo::updateDebugInfoSwitcher() {
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     rfx_property_get(RFX_PROPERTY_DEBUG_INFO_ENABLED, property_value, "0");
 
     int value = atoi(property_value);
 
-    RFX_LOG_D(RFX_LOG_TAG, "Debug info switcher property_value = %s, value = %d",
-                           property_value, value);
+    RFX_LOG_D(RFX_LOG_TAG, "Debug info switcher property_value = %s, value = %d", property_value,
+              value);
 
     if (value == 1) {
         s_rfx_debug_info_enabled = true;
@@ -81,15 +77,15 @@ void RfxDebugInfo::dumpIfNeed() {
         return;
     }
 
-    char property_value[RFX_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[RFX_PROPERTY_VALUE_MAX] = {0};
 
     // dump RfxObject tree
     rfx_property_get(RFX_PROPERTY_DUMP_OBJ_TREE, property_value, "0");
 
     int value = atoi(property_value);
 
-    RFX_LOG_D(RFX_LOG_TAG, "Dump RfxObject tree property_value = %s, value = %d",
-                           property_value, value);
+    RFX_LOG_D(RFX_LOG_TAG, "Dump RfxObject tree property_value = %s, value = %d", property_value,
+              value);
 
     if (value == 1) {
         RfxObject::dumpAllObjTree();
@@ -102,10 +98,10 @@ void RfxDebugInfo::dumpIfNeed() {
     long value16 = strtol(property_value, NULL, 16);
 
     RFX_LOG_D(RFX_LOG_TAG, "Dump RfxObject creation stack property_value = %s, value = %p",
-                           property_value, (void *)value16);
+              property_value, (void*)value16);
 
     if (value16 != 0) {
-        RfxObject::dumpObjConstructionCallStack((void *)value16);
+        RfxObject::dumpObjConstructionCallStack((void*)value16);
         rfx_property_set(RFX_PROPERTY_DUMP_OBJ_CREATION_STACK, "0");
     }
 
@@ -114,8 +110,7 @@ void RfxDebugInfo::dumpIfNeed() {
 
     value = atoi(property_value);
 
-    RFX_LOG_D(RFX_LOG_TAG, "Dump Msg list property_value = %s, value = %d",
-                           property_value, value);
+    RFX_LOG_D(RFX_LOG_TAG, "Dump Msg list property_value = %s, value = %d", property_value, value);
 
     if (value == 1) {
         RfxMessage::dumpMsgList();
@@ -127,8 +122,8 @@ void RfxDebugInfo::dumpIfNeed() {
 
     value = atoi(property_value);
 
-    RFX_LOG_D(RFX_LOG_TAG, "Dump RfxAction list property_value = %s, value = %d",
-                           property_value, value);
+    RFX_LOG_D(RFX_LOG_TAG, "Dump RfxAction list property_value = %s, value = %d", property_value,
+              value);
 
     if (value == 1) {
         RfxAction::dumpActionList();
@@ -141,11 +136,11 @@ void RfxDebugInfo::dumpIfNeed() {
     value16 = strtol(property_value, NULL, 16);
 
     RFX_LOG_D(RFX_LOG_TAG, "Dump RfxAction creation stack property_value = %s, value = %p",
-                           property_value, (void *)value16);
+              property_value, (void*)value16);
 
     if (value16 != 0) {
-        RfxAction::dumpActionConstructionCallStack((void *)value16);
+        RfxAction::dumpActionConstructionCallStack((void*)value16);
         rfx_property_set(RFX_PROPERTY_DUMP_ACT_CREATION_STACK, "0");
     }
 }
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG

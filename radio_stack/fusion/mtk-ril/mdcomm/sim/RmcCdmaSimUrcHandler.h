@@ -22,41 +22,39 @@
  *****************************************************************************/
 #include "RmcSimBaseHandler.h"
 
-
 /*****************************************************************************
  * Class RmcCdmaSimUrcHandler
  *****************************************************************************/
 
 class RmcCdmaSimUrcHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCommSimUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCommSimUrcHandler);
 
-
-public:
+  public:
     RmcCdmaSimUrcHandler(int slot_id, int channel_id);
     virtual ~RmcCdmaSimUrcHandler();
     // Process URC here
-    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
     // Check if the handler have to process the URC or not
     virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
     // Return the list which you want to reqister
-    virtual const char** queryUrcTable(int *record_num);
+    virtual const char** queryUrcTable(int* record_num);
 
-private:
-    void handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+  private:
+    void handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handleCdma3gDualmodeValue(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleCdma3gDualmodeValue(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handleUiccSubscriptionStatus(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleUiccSubscriptionStatus(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handCmdaMccMnc(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handCdma3GSwitchCard(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handCdma3GSwitchCard(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handleSimStateChanged(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleSimStateChanged(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
-    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
     void resetCDMASimState();
 };

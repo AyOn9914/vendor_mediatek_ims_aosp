@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
- /*****************************************************************************
+/*****************************************************************************
  * Include
  *****************************************************************************/
 
 #include "RtcOpCallController.h"
 #include "RtcOpRedialController.h"
 
- /*****************************************************************************
+/*****************************************************************************
  * Class RtcOpCallController
  *****************************************************************************/
 
@@ -29,35 +29,26 @@
 
 RFX_IMPLEMENT_CLASS("RtcOpCallController", RtcOpCallController, RtcCallController);
 
-RtcOpCallController::RtcOpCallController() {
-}
+RtcOpCallController::RtcOpCallController() {}
 
-RtcOpCallController::~RtcOpCallController() {
-}
+RtcOpCallController::~RtcOpCallController() {}
 
 void RtcOpCallController::onInit() {
     RtcCallController::onInit();
     logD(RFX_LOG_TAG, "init()");
-    static const int request_id_list[] = {
-        RFX_MSG_REQUEST_DIAL_FROM,
-        RFX_MSG_REQUEST_SET_EMERGENCY_CALL_CONFIG,
-        RFX_MSG_REQUEST_DEVICE_SWITCH,
-        RFX_MSG_REQUEST_CANCEL_DEVICE_SWITCH,
-        RFX_MSG_REQUEST_EMERGENCY_DIAL,
-        RFX_MSG_REQUEST_DIAL,
-        RFX_MSG_REQUEST_SET_INCOMING_VIRTUAL_LINE
-    };
+    static const int request_id_list[] = {RFX_MSG_REQUEST_DIAL_FROM,
+                                          RFX_MSG_REQUEST_SET_EMERGENCY_CALL_CONFIG,
+                                          RFX_MSG_REQUEST_DEVICE_SWITCH,
+                                          RFX_MSG_REQUEST_CANCEL_DEVICE_SWITCH,
+                                          RFX_MSG_REQUEST_EMERGENCY_DIAL,
+                                          RFX_MSG_REQUEST_DIAL,
+                                          RFX_MSG_REQUEST_SET_INCOMING_VIRTUAL_LINE};
 
-    static const int urc_id_list[] = {
-        RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
-        RFX_MSG_UNSOL_QUERY_TRN
-    };
+    static const int urc_id_list[] = {RFX_MSG_UNSOL_INCOMING_CALL_INDICATION,
+                                      RFX_MSG_UNSOL_QUERY_TRN};
 
-
-    registerToHandleRequest(request_id_list,
-            sizeof(request_id_list) / sizeof(const int));
-    registerToHandleUrc(urc_id_list,
-            sizeof(urc_id_list)/sizeof(const int));
+    registerToHandleRequest(request_id_list, sizeof(request_id_list) / sizeof(const int));
+    registerToHandleUrc(urc_id_list, sizeof(urc_id_list) / sizeof(const int));
 }
 
 void RtcOpCallController::createRedialController() {
@@ -66,7 +57,7 @@ void RtcOpCallController::createRedialController() {
 
 bool RtcOpCallController::onHandleRequest(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleRequest: %s", RFX_ID_TO_STR(msg_id));
 
     switch (msg_id) {
         case RFX_MSG_REQUEST_DIAL:
@@ -74,8 +65,8 @@ bool RtcOpCallController::onHandleRequest(const sp<RfxMessage>& message) {
                 responseDialFailed(message);
                 return true;
             }
-            if (!isOp08Support() || !RfxRilUtils::isDigitsSupport()
-                    || !handleOp08DialRequest(message)) {
+            if (!isOp08Support() || !RfxRilUtils::isDigitsSupport() ||
+                !handleOp08DialRequest(message)) {
                 return RtcCallController::onHandleRequest(message);
             } else {
                 return true;
@@ -98,13 +89,13 @@ bool RtcOpCallController::onHandleRequest(const sp<RfxMessage>& message) {
 
 bool RtcOpCallController::onHandleUrc(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //int slotId = message->getSlotId();
-    //logD(RFX_LOG_TAG, "onHandleUrc: %s", RFX_ID_TO_STR(msg_id));
+    // int slotId = message->getSlotId();
+    // logD(RFX_LOG_TAG, "onHandleUrc: %s", RFX_ID_TO_STR(msg_id));
 
     switch (msg_id) {
         case RFX_MSG_UNSOL_INCOMING_CALL_INDICATION:
-            if (!isOp08Support() || !RfxRilUtils::isDigitsSupport()
-                    || !handleOp08IncomingCall(message)) {
+            if (!isOp08Support() || !RfxRilUtils::isDigitsSupport() ||
+                !handleOp08IncomingCall(message)) {
                 return RtcCallController::onHandleUrc(message);
             } else {
                 return true;
@@ -114,18 +105,18 @@ bool RtcOpCallController::onHandleUrc(const sp<RfxMessage>& message) {
             handleQueryTrn(message);
             return true;
         default:
-           return RtcCallController::onHandleUrc(message);
+            return RtcCallController::onHandleUrc(message);
     }
 
-    //If other URC should be also handled here, and the following method
-    //should be called, please remember to remove the annotation marks.
-    //responseToRilJAndUpdateIsImsCallExist(message);
-    //return true;
+    // If other URC should be also handled here, and the following method
+    // should be called, please remember to remove the annotation marks.
+    // responseToRilJAndUpdateIsImsCallExist(message);
+    // return true;
 }
 
 bool RtcOpCallController::onHandleResponse(const sp<RfxMessage>& message) {
     int msg_id = message->getId();
-    //logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
+    // logD(RFX_LOG_TAG, "onHandleResponse: %s", RFX_ID_TO_STR(msg_id));
 
     switch (msg_id) {
         case RFX_MSG_REQUEST_DIAL_FROM:
@@ -143,10 +134,10 @@ bool RtcOpCallController::onHandleResponse(const sp<RfxMessage>& message) {
 }
 
 bool RtcOpCallController::handleOp08DialRequest(const sp<RfxMessage>& message) {
-    RIL_Dial *pDial = (RIL_Dial*) (message->getData()->getData());
+    RIL_Dial* pDial = (RIL_Dial*)(message->getData()->getData());
 
-    char *fromMsisdn;
-    char *toMsisdn;
+    char* fromMsisdn;
+    char* toMsisdn;
     int pos = 0;
 
     // If OP08 dialString matches specific format, it means to be a Digits line number
@@ -159,14 +150,13 @@ bool RtcOpCallController::handleOp08DialRequest(const sp<RfxMessage>& message) {
         return false;
     } else {
         pos = (tmp - pDial->address) / sizeof(char);
-        fromMsisdn = (char *)alloca(pos + 1);
-        toMsisdn = (char *)alloca(len - pos - 3);
+        fromMsisdn = (char*)alloca(pos + 1);
+        toMsisdn = (char*)alloca(len - pos - 3);
         memset(fromMsisdn, 0, pos + 1);
         memset(toMsisdn, 0, len - pos - 3);
         strncpy(fromMsisdn, pDial->address, pos);
         strncpy(toMsisdn, tmp + 4, len - pos - 4);
-            logD(RFX_LOG_TAG, "dialString:%s, from:%s, to:%s",
-                    pDial->address, fromMsisdn, toMsisdn);
+        logD(RFX_LOG_TAG, "dialString:%s, from:%s, to:%s", pDial->address, fromMsisdn, toMsisdn);
     }
 
     // TODO:
@@ -181,14 +171,15 @@ bool RtcOpCallController::handleOp08DialRequest(const sp<RfxMessage>& message) {
     }
 
     mNoTrnTimeoutHandler.message = message;
-    mNoTrnTimeoutHandler.timerHandle = RfxTimer::start(RfxCallback0(this,
-                &RtcOpCallController::onGetTrnInternalTimeout), ms2ns(GET_TRN_TIMEOUT));
+    mNoTrnTimeoutHandler.timerHandle =
+            RfxTimer::start(RfxCallback0(this, &RtcOpCallController::onGetTrnInternalTimeout),
+                            ms2ns(GET_TRN_TIMEOUT));
 
     sp<RfxAction> action;
     RtcOpImsController* opImsController =
-            (RtcOpImsController *)findController(RFX_OBJ_CLASS_INFO(RtcOpImsController));
-    action = new RfxAction1<const sp<RfxMessage>>(this,
-            &RtcOpCallController::onGetTrnInternal, message);
+            (RtcOpImsController*)findController(RFX_OBJ_CLASS_INFO(RtcOpImsController));
+    action = new RfxAction1<const sp<RfxMessage>>(this, &RtcOpCallController::onGetTrnInternal,
+                                                  message);
     opImsController->getTrn(fromMsisdn, toMsisdn, pDial->address, action);
     return true;
 }
@@ -203,14 +194,14 @@ void RtcOpCallController::onGetTrnInternal(const sp<RfxMessage> origMsg) {
         return;
     }
 
-    int slotId = origMsg->getSlotId(); // get sim slot id.
-    RIL_Dial *pDial = (RIL_Dial*) (origMsg->getData()->getData());
+    int slotId = origMsg->getSlotId();  // get sim slot id.
+    RIL_Dial* pDial = (RIL_Dial*)(origMsg->getData()->getData());
 
-    String8 trnString =getStatusManager(slotId)->getString8Value(RFX_STATUS_KEY_TRN);
+    String8 trnString = getStatusManager(slotId)->getString8Value(RFX_STATUS_KEY_TRN);
 
     free(pDial->address);
     int len = (trnString.length() > MAX_TRN_LENGTH) ? MAX_TRN_LENGTH : trnString.length();
-    pDial->address = (char *)calloc(len + 1, sizeof(char));
+    pDial->address = (char*)calloc(len + 1, sizeof(char));
     RFX_ASSERT(pDial->address != NULL);
     strncpy(pDial->address, trnString.string(), len);
 
@@ -222,7 +213,7 @@ void RtcOpCallController::onGetTrnInternalTimeout() {
     logD(RFX_LOG_TAG, "onGetTrnInternalTimeout");
     if (mNoTrnTimeoutHandler.message != NULL) {
         sp<RfxMessage> responseMsg = RfxMessage::obtainResponse(RIL_E_GENERIC_FAILURE,
-                mNoTrnTimeoutHandler.message, true);
+                                                                mNoTrnTimeoutHandler.message, true);
         responseToRilj(responseMsg);
     }
     mNoTrnTimeoutHandler.timerHandle = NULL;
@@ -232,16 +223,15 @@ void RtcOpCallController::onGetTrnInternalTimeout() {
 void RtcOpCallController::onGetTrnForModem(const char* fromMsisdn, const char* toMsisdn) {
     logD(RFX_LOG_TAG, "onGetTrnForModem");
 
-    String8 trnString =getStatusManager(getSlotId())->getString8Value(RFX_STATUS_KEY_TRN);
+    String8 trnString = getStatusManager(getSlotId())->getString8Value(RFX_STATUS_KEY_TRN);
 
-    char *msg_data[3];
+    char* msg_data[3];
     msg_data[0] = strdup(fromMsisdn);
     msg_data[1] = strdup(toMsisdn);
     msg_data[2] = strdup(trnString.string());
 
-    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(),
-            RFX_MSG_REQUEST_SET_TRN,
-            RfxStringsData(msg_data, 3));
+    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_TRN,
+                                                   RfxStringsData(msg_data, 3));
     requestToMcl(msg);
 }
 
@@ -251,7 +241,7 @@ void RtcOpCallController::handleQueryTrn(const sp<RfxMessage>& message) {
     char** params = (char**)data->getData();
 
     int len = strlen(params[0]) + strlen(params[1]) + 4;
-    char* address = (char *)alloca(len + 1);
+    char* address = (char*)alloca(len + 1);
     memset(address, 0, len + 1);
     strncpy(address, params[0], strlen(params[0]));
     strncat(address, "_to_", 4);
@@ -259,9 +249,9 @@ void RtcOpCallController::handleQueryTrn(const sp<RfxMessage>& message) {
 
     sp<RfxAction> action;
     RtcOpImsController* opImsController =
-            (RtcOpImsController *)findController(RFX_OBJ_CLASS_INFO(RtcOpImsController));
-    action = new RfxAction2<const char*, const char*>(this,
-            &RtcOpCallController::onGetTrnForModem, params[0], params[1]);
+            (RtcOpImsController*)findController(RFX_OBJ_CLASS_INFO(RtcOpImsController));
+    action = new RfxAction2<const char*, const char*>(this, &RtcOpCallController::onGetTrnForModem,
+                                                      params[0], params[1]);
     opImsController->getTrn(params[0], params[1], address, action);
 }
 
@@ -279,13 +269,12 @@ bool RtcOpCallController::handleOp08IncomingCall(const sp<RfxMessage>& message) 
     logD(RFX_LOG_TAG, "reject MT on slot%d, since TRN query is ongoing", m_slot_id);
     //"AT+EAIC=1,callId,seqNo
     int msg_data[4];
-    msg_data[0] = 1;  //disapprove
+    msg_data[0] = 1;  // disapprove
     msg_data[1] = callId;
     msg_data[2] = seqNo;
     msg_data[3] = -1;
-    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(),
-            RFX_MSG_REQUEST_SET_CALL_INDICATION,
-            RfxIntsData(msg_data, 4));
+    sp<RfxMessage> msg = RfxMessage::obtainRequest(getSlotId(), RFX_MSG_REQUEST_SET_CALL_INDICATION,
+                                                   RfxIntsData(msg_data, 4));
     requestToMcl(msg);
     return true;
 }

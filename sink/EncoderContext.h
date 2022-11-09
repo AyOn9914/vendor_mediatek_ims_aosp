@@ -4,29 +4,25 @@
 
 #include <media/stagefright/foundation/AHandler.h>
 
-namespace android
-{
+namespace android {
 
 struct ABuffer;
 struct MediaCodec;
 class MediaCodecBuffer;
 
-#define ENABLE_SILENCE_DETECTION        0
+#define ENABLE_SILENCE_DETECTION 0
 
 // Utility class that receives media access units and converts them into
 // media access unit of a different format.
 struct EncoderContext : public AHandler {
-    EncoderContext(
-        const sp<AMessage> &notify,
-        const sp<ALooper> &codecLooper,
-        const sp<AMessage> &inputFormat,
-        const sp<AMessage> &outputFormat);
+    EncoderContext(const sp<AMessage>& notify, const sp<ALooper>& codecLooper,
+                   const sp<AMessage>& inputFormat, const sp<AMessage>& outputFormat);
 
     size_t getInputBufferCount() const;
     sp<AMessage> getOutputFormat() const;
     bool needToManuallyPrependSPSPPS() const;
 
-    void queueAccessUnit(const sp<ABuffer> &accessUnit);
+    void queueAccessUnit(const sp<ABuffer>& accessUnit);
     void signalEOS();
 
     void requestIDRFrame();
@@ -50,13 +46,13 @@ struct EncoderContext : public AHandler {
     int32_t getVideoBitrate() const;
     void setVideoBitrate(int32_t bitrate);
 
-    //static int32_t GetInt32Property(const char *propName, int32_t defaultValue);
+    // static int32_t GetInt32Property(const char *propName, int32_t defaultValue);
 
-protected:
+  protected:
     virtual ~EncoderContext();
-    virtual void onMessageReceived(const sp<AMessage> &msg);
+    virtual void onMessageReceived(const sp<AMessage>& msg);
 
-private:
+  private:
     sp<AMessage> mNotify;
     sp<ALooper> mCodecLooper;
     sp<AMessage> mInputFormat;
@@ -101,7 +97,7 @@ private:
     // notifies the observer.
     status_t feedRawAudioInputBuffers();
     status_t feedRawVideoInputBuffers();
-    static bool IsSilence(const sp<ABuffer> &accessUnit);
+    static bool IsSilence(const sp<ABuffer>& accessUnit);
 
     DISALLOW_EVIL_CONSTRUCTORS(EncoderContext);
 };

@@ -23,9 +23,10 @@
 class RfxEmbmsStartSessionReqData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmbmsStartSessionReqData);
 
-    public:
-        RfxEmbmsStartSessionReqData(RIL_EMBMS_StartSessionReq* data, int length);
-    private:
-        void copyData(RIL_EMBMS_StartSessionReq *data, int length);
+  public:
+    RfxEmbmsStartSessionReqData(RIL_EMBMS_StartSessionReq* data, int length);
+
+  private:
+    void copyData(RIL_EMBMS_StartSessionReq* data, int length);
 };
 #endif /*RFX_EMBMS_STARTSESSION_REQ_DATA__H*/

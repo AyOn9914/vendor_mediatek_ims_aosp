@@ -20,19 +20,18 @@
 #include <sys/cdefs.h>
 #include <arpa/inet.h>
 
-#define WPFA_IPTABLE_EXEC_OVER      1
+#define WPFA_IPTABLE_EXEC_OVER 1
 #define WPFA_IPTABLE_POLL_WAIT_ERR -1
-#define WPFA_IPTABLE_EXEC_FALED    -3
+#define WPFA_IPTABLE_EXEC_FALED -3
 
 __BEGIN_DECLS
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* MTK start */
-int wpfaExecIptable(char **args);
+int wpfaExecIptable(char** args);
 /* MTK end */
 
 #ifdef __cplusplus

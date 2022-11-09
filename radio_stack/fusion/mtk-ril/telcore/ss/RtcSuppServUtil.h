@@ -29,9 +29,9 @@ using namespace std;
  *****************************************************************************/
 class RtcSuppServUtil {
   public:
-      static vector<string> split(string input, string pattern);
-      static string& trim(string &input);
-      static string sha256(const string str);
+    static vector<string> split(string input, string pattern);
+    static string& trim(string& input);
+    static string sha256(const string str);
 };
 
 #endif /* __RTC_SUPP_SERV_UTIL_H__ */

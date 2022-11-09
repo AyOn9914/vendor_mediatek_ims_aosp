@@ -69,7 +69,7 @@
 #include "atci/RtcAtciController.h"
 // VT
 #include "vt/RtcVtController.h"
-//RTT
+// RTT
 #include "ims/RtcImsRttController.h"
 
 /*****************************************************************************
@@ -78,72 +78,71 @@
 #define RFX_LOG_TAG "RfxContFactory"
 
 #define RFX_CONTROLLER_CREATION_ENTRY(_className) \
-        {_className::createInstance, _className::getClassInfoInstance, false}
+    { _className::createInstance, _className::getClassInfoInstance, false }
 
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sPreNonSlotControllerList = NULL;
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sPreNonSlotOpControllerList = NULL;
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sSlotControllerList = NULL;
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sSlotOpControllerList = NULL;
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sNonSlotControllerList = NULL;
-Vector<rfx_ctrler_factory_init> *RfxControllerFactory::sNonSlotOpControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sPreNonSlotControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sPreNonSlotOpControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sSlotControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sSlotOpControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sNonSlotControllerList = NULL;
+Vector<rfx_ctrler_factory_init>* RfxControllerFactory::sNonSlotOpControllerList = NULL;
 
 /*****************************************************************************
  * Class RfxControllerFactory
  *****************************************************************************/
-const rfx_ctrler_factory_init RfxControllerFactory::s_pre_non_slot_controllers[] = {
-};
+const rfx_ctrler_factory_init RfxControllerFactory::s_pre_non_slot_controllers[] = {};
 
 const rfx_ctrler_factory_init RfxControllerFactory::s_slot_controllers[] = {
-//    RFX_CONTROLLER_CREATION_ENTRY(RfxHelloController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcRadioController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcRatSwitchController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcNetworkController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcDataController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcSuppServController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcEccNumberController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcCatController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcImsController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcImsConfigController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcOemController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcCallController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcImsConferenceController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcMobileWifiController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcCarrierConfigController),
-      // M: eMBMS
-      RFX_CONTROLLER_CREATION_ENTRY(RtcEmbmsControllerProxy),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcImsSmsController),
-      // ATCI
-      RFX_CONTROLLER_CREATION_ENTRY(RtcAtciController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcPhbController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcVtController),
-      RFX_CONTROLLER_CREATION_ENTRY(RtcPhbSimIoController),
-      // RTT
-      RFX_CONTROLLER_CREATION_ENTRY(RtcImsRttController),
+        //    RFX_CONTROLLER_CREATION_ENTRY(RfxHelloController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcRadioController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcRatSwitchController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcNetworkController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcDataController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcSuppServController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcEccNumberController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCatController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcImsController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcImsConfigController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcOemController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCallController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcImsConferenceController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcMobileWifiController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCarrierConfigController),
+        // M: eMBMS
+        RFX_CONTROLLER_CREATION_ENTRY(RtcEmbmsControllerProxy),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcImsSmsController),
+        // ATCI
+        RFX_CONTROLLER_CREATION_ENTRY(RtcAtciController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcPhbController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcVtController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcPhbSimIoController),
+        // RTT
+        RFX_CONTROLLER_CREATION_ENTRY(RtcImsRttController),
 };
 
 const rfx_ctrler_factory_init RfxControllerFactory::s_non_slot_controllers[] = {
-    RFX_CONTROLLER_CREATION_ENTRY(RtcWpController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilityGetController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilitySwitchChecker),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilitySwitchController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcDataAllowController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcModeSwitchController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcModemController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcRilClientController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcAgpsNSlotController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimRadioConfigController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcSmsNSlotController),
-    RFX_CONTROLLER_CREATION_ENTRY(RtcNrSwitchController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcWpController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilityGetController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilitySwitchChecker),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCapabilitySwitchController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcDataAllowController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcModeSwitchController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcModemController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcRilClientController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcAgpsNSlotController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcCommSimRadioConfigController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcSmsNSlotController),
+        RFX_CONTROLLER_CREATION_ENTRY(RtcNrSwitchController),
 };
 
 void RfxControllerFactory::createControllers() {
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
 
     // TODO
-    //RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->initSocketNotifyByFwk();
+    // RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->initSocketNotifyByFwk();
 
-    RfxSlotRootController *non_slot_controller;
+    RfxSlotRootController* non_slot_controller;
 
     // create a special slot root controller as non-slot based controllers parent
     RFX_OBJ_CREATE_EX(non_slot_controller, RfxSlotRootController, root, (RFX_SLOT_ID_UNKNOWN));
@@ -157,56 +156,53 @@ void RfxControllerFactory::createControllers() {
     sNonSlotControllerList = new Vector<rfx_ctrler_factory_init>();
     sNonSlotOpControllerList = new Vector<rfx_ctrler_factory_init>();
 
-    int numOfPreOm = sizeof(s_pre_non_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int numOfPreOm = sizeof(s_pre_non_slot_controllers) / sizeof(rfx_ctrler_factory_init);
     for (int i = 0; i < numOfPreOm; i++) {
         sPreNonSlotControllerList->add(s_pre_non_slot_controllers[i]);
     }
 
-    const rfx_ctrler_factory_init *preControllerList =
-            RfxOpUtils::getPreNonSlotOpCtlerList();
+    const rfx_ctrler_factory_init* preControllerList = RfxOpUtils::getPreNonSlotOpCtlerList();
     int numOfPreOp = RfxOpUtils::getNumOfPreNonSlotOpCtler();
     for (int i = 0; i < numOfPreOp; i++) {
         sPreNonSlotOpControllerList->add(preControllerList[i]);
     }
 
-    int numOfOm = sizeof(s_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int numOfOm = sizeof(s_slot_controllers) / sizeof(rfx_ctrler_factory_init);
     for (int i = 0; i < numOfOm; i++) {
         sSlotControllerList->add(s_slot_controllers[i]);
     }
 
-    const rfx_ctrler_factory_init *controllerList =
-            RfxOpUtils::getSlotOpCtlerList();
+    const rfx_ctrler_factory_init* controllerList = RfxOpUtils::getSlotOpCtlerList();
     int numOfOp = RfxOpUtils::getNumOfSlotOpCtler();
     for (int i = 0; i < numOfOp; i++) {
         sSlotOpControllerList->add(controllerList[i]);
     }
 
-    int numOfNonSlotOm = sizeof(s_non_slot_controllers)/sizeof(rfx_ctrler_factory_init);
+    int numOfNonSlotOm = sizeof(s_non_slot_controllers) / sizeof(rfx_ctrler_factory_init);
     for (int i = 0; i < numOfNonSlotOm; i++) {
         sNonSlotControllerList->add(s_non_slot_controllers[i]);
     }
 
-    const rfx_ctrler_factory_init *nonSlotControllerList =
-            RfxOpUtils::getNonSlotOpCtlerList();
+    const rfx_ctrler_factory_init* nonSlotControllerList = RfxOpUtils::getNonSlotOpCtlerList();
     int numOfNonSlotOp = RfxOpUtils::getNumOfNonSlotOpCtler();
     for (int i = 0; i < numOfNonSlotOp; i++) {
         sNonSlotOpControllerList->add(nonSlotControllerList[i]);
     }
 
     RFX_LOG_D(RFX_LOG_TAG,
-        "numOfOmSlot:%d, numofOpSlot:%d, numOfNonSlotOm: %d,\
-numOfNonSlotOp: %d", numOfOm, numOfOp, numOfNonSlotOm, numOfNonSlotOp);
+              "numOfOmSlot:%d, numofOpSlot:%d, numOfNonSlotOm: %d,\
+numOfNonSlotOp: %d",
+              numOfOm, numOfOp, numOfNonSlotOm, numOfNonSlotOp);
 
     // Replace OM controller with OP controller extending from OM controller
     mergeControllerFactorList();
-
 
     // create some non-slot based controllers firstly
     createControllerInternal(sPreNonSlotControllerList, numOfPreOm, non_slot_controller);
     createControllerInternal(sPreNonSlotOpControllerList, numOfPreOp, non_slot_controller);
 
     // create slot controllers
-    RfxSlotRootController *slot_controller;
+    RfxSlotRootController* slot_controller;
     for (int i = 0; i < RFX_SLOT_COUNT; i++) {
         RFX_OBJ_CREATE_EX(slot_controller, RfxSlotRootController, root, (i));
         root->setSlotRootController(i, slot_controller);
@@ -227,18 +223,14 @@ numOfNonSlotOp: %d", numOfOm, numOfOp, numOfNonSlotOm, numOfNonSlotOp);
 }
 
 void RfxControllerFactory::createControllerInternal(
-    const Vector<rfx_ctrler_factory_init> * controller_list,
-    int length, RfxObject *parent) {
-
+        const Vector<rfx_ctrler_factory_init>* controller_list, int length, RfxObject* parent) {
     rfx_ctrler_factory_init ctrlerInit;
     for (int i = 0; i < length; i++) {
         ctrlerInit = (rfx_ctrler_factory_init)(controller_list->itemAt(i));
-        RfxClassInfo *classInfo = ctrlerInit.getControClassInfo();
-        if (ctrlerInit.skip== false) {
-            RFX_LOG_D(RFX_LOG_TAG, "createControllerInternalEx init %s",
-                    classInfo->getClassName());
-            const RfxCreateControllerFuncptr ptr =
-                    ctrlerInit.getCreateControllerFuncptr;
+        RfxClassInfo* classInfo = ctrlerInit.getControClassInfo();
+        if (ctrlerInit.skip == false) {
+            RFX_LOG_D(RFX_LOG_TAG, "createControllerInternalEx init %s", classInfo->getClassName());
+            const RfxCreateControllerFuncptr ptr = ctrlerInit.getCreateControllerFuncptr;
             if (ptr != NULL) {
                 ptr(parent);
             }
@@ -252,10 +244,10 @@ void RfxControllerFactory::mergeControllerFactorList() {
     int NumOfPreOpContro = sPreNonSlotOpControllerList->size();
     for (int i = 0; i < NumOfPreOmContro; i++) {
         rfx_ctrler_factory_init parent = sPreNonSlotControllerList->itemAt(i);
-        RfxClassInfo *parentClassInfo = parent.getControClassInfo();
-        for (int j=0; j < NumOfPreOpContro; j++) {
+        RfxClassInfo* parentClassInfo = parent.getControClassInfo();
+        for (int j = 0; j < NumOfPreOpContro; j++) {
             rfx_ctrler_factory_init opController = sPreNonSlotOpControllerList->itemAt(j);
-            RfxClassInfo *classInfo = opController.getControClassInfo();
+            RfxClassInfo* classInfo = opController.getControClassInfo();
             if (classInfo->isKindOf(parentClassInfo)) {
                 sPreNonSlotControllerList->replaceAt(opController, i);
                 opController.skip = true;
@@ -270,10 +262,10 @@ void RfxControllerFactory::mergeControllerFactorList() {
     int NumOfOpContro = sSlotOpControllerList->size();
     for (int i = 0; i < NumOfOmContro; i++) {
         rfx_ctrler_factory_init parent = sSlotControllerList->itemAt(i);
-        RfxClassInfo *parentClassInfo = parent.getControClassInfo();
-        for (int j=0; j < NumOfOpContro; j++) {
+        RfxClassInfo* parentClassInfo = parent.getControClassInfo();
+        for (int j = 0; j < NumOfOpContro; j++) {
             rfx_ctrler_factory_init opController = sSlotOpControllerList->itemAt(j);
-            RfxClassInfo *classInfo = opController.getControClassInfo();
+            RfxClassInfo* classInfo = opController.getControClassInfo();
             if (classInfo->isKindOf(parentClassInfo)) {
                 sSlotControllerList->replaceAt(opController, i);
                 opController.skip = true;
@@ -289,10 +281,10 @@ void RfxControllerFactory::mergeControllerFactorList() {
     int NumOfNonOpContro = sNonSlotOpControllerList->size();
     for (int i = 0; i < NumOfNonOmContro; i++) {
         rfx_ctrler_factory_init parent = sNonSlotControllerList->itemAt(i);
-        RfxClassInfo *parentClassInfo = parent.getControClassInfo();
-        for (int j=0; j < NumOfNonOpContro; j++) {
+        RfxClassInfo* parentClassInfo = parent.getControClassInfo();
+        for (int j = 0; j < NumOfNonOpContro; j++) {
             rfx_ctrler_factory_init opController = sNonSlotOpControllerList->itemAt(j);
-            RfxClassInfo *classInfo = opController.getControClassInfo();
+            RfxClassInfo* classInfo = opController.getControClassInfo();
             if (classInfo->isKindOf(parentClassInfo)) {
                 sNonSlotControllerList->replaceAt(opController, i);
                 opController.skip = true;

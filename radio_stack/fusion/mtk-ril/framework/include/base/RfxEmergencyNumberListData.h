@@ -21,15 +21,15 @@
 #include <telephony/ril.h>
 
 #define FREEIF(data)    \
-if (data != NULL) {     \
-    free(data);         \
-    data = NULL;        \
-}
+    if (data != NULL) { \
+        free(data);     \
+        data = NULL;    \
+    }
 
 class RfxEmergencyNumberListData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxEmergencyNumberListData);
 
-    private:
-        void copyEmergencyNumberListData(RIL_EmergencyNumber *data);
+  private:
+    void copyEmergencyNumberListData(RIL_EmergencyNumber* data);
 };
 #endif

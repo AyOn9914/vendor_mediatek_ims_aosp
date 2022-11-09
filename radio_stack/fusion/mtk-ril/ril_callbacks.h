@@ -25,28 +25,26 @@ extern "C" {
 
 #ifdef RIL_SHLIB
 
-extern void RFX_onRequestComplete(RIL_Token t, RIL_Errno e, void *response, size_t responselen);
+extern void RFX_onRequestComplete(RIL_Token t, RIL_Errno e, void* response, size_t responselen);
 #if defined(ANDROID_MULTI_SIM)
-extern void RFX_onUnsolicitedResponse(int unsolResponse, const void *data,
-        size_t datalen, RIL_SOCKET_ID socket_id);
+extern void RFX_onUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen,
+                                      RIL_SOCKET_ID socket_id);
 #else
-extern void RFX_onUnsolicitedResponse(int unsolResponse, const void *data,
-        size_t datalen);
+extern void RFX_onUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen);
 #endif
 
-extern void RFX_requestTimedCallback(RIL_TimedCallback callback, void *param,
-        const struct timeval *relativeTime);
+extern void RFX_requestTimedCallback(RIL_TimedCallback callback, void* param,
+                                     const struct timeval* relativeTime);
 
 extern void RFX_onRequestAck(RIL_Token t);
 #endif
 
-extern void RFX_SAP_onRequestComplete(RIL_Token t, RIL_Errno e, void *response,
-        size_t responselen);
+extern void RFX_SAP_onRequestComplete(RIL_Token t, RIL_Errno e, void* response, size_t responselen);
 #if defined(ANDROID_MULTI_SIM)
-extern void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void *data, size_t datalen,
-        int socket_id);
+extern void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void* data, size_t datalen,
+                                          int socket_id);
 #else
-extern void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void *data, size_t datalen);
+extern void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void* data, size_t datalen);
 #endif
 
 #ifdef __cplusplus

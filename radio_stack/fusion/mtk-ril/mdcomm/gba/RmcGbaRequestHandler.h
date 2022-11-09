@@ -24,16 +24,16 @@
 class RmcGbaRequestHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcGbaRequestHandler);
 
-    public:
-        RmcGbaRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcGbaRequestHandler();
+  public:
+    RmcGbaRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcGbaRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleTimer();
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleTimer();
 
-    private:
-        void requestRunGBA(const sp<RfxMclMessage>& msg);
+  private:
+    void requestRunGBA(const sp<RfxMclMessage>& msg);
 };
 
 #endif

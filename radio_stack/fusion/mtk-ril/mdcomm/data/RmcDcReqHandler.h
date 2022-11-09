@@ -33,56 +33,56 @@
 class RmcDcReqHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcDcReqHandler);
 
-    public:
-        RmcDcReqHandler(int slot_id, int channel_id);
-        virtual ~RmcDcReqHandler();
+  public:
+    RmcDcReqHandler(int slot_id, int channel_id);
+    virtual ~RmcDcReqHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
-        virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+    virtual void onHandleEvent(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleLastFailCauseRequest(const sp<RfxMclMessage>& msg);
-        void handleSetupDataCallRequest(const sp<RfxMclMessage>& msg);
-        void handleDeactivateDataCallRequest(const sp<RfxMclMessage>& msg);
-        void handleDataCallListRequest(const sp<RfxMclMessage>& msg);
-        int deactivateDataCall(int aid);
-        void handleNwPdnAct(const sp<RfxMclMessage>& msg);
-        void handleNwPdnDeact(const sp<RfxMclMessage>& msg);
-        void handleNwModify(const sp<RfxMclMessage>& msg);
-        void handleNwReact(const sp<RfxMclMessage>& msg);
-        void handleMePdnAct(const sp<RfxMclMessage>& msg);
-        void handleMePdnDeact(const sp<RfxMclMessage>& msg);
-        void handlePdnChange(const sp<RfxMclMessage>& msg);
-        void handleSyncApnTableRequest(const sp<RfxMclMessage>& msg);
-        void handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& msg);
-        void handleSyncDataSettingsToMdRequest(const sp<RfxMclMessage>& msg);
-        void handleQualifiedNetworkTypeChanged(const sp<RfxMclMessage>& msg);
-        void handleResetMdDataRetryCount(const sp<RfxMclMessage>& msg);
-        void handleUtTest(const sp<RfxMclMessage>& msg);
-        void handleSetLteAccessStratumReportRequest(const sp<RfxMclMessage>& msg);
-        void handleLteAccessStratumStateChange(const sp<RfxMclMessage>& msg);
-        void handleSetLteUplinkDataTransferRequest(const sp<RfxMclMessage>& msg);
-        void handleClearAllPdnInfoRequest(const sp<RfxMclMessage>& msg);
-        void handleResendSyncDataSettingsToMd(const sp<RfxMclMessage>& msg);
-        void handleQueryPco(const sp<RfxMclMessage>& msg);
-        void handleResetAllConnections(const sp<RfxMclMessage>& msg);
-        void handleSetPreferredDataModem(const sp<RfxMclMessage>& msg);
-        bool isValidInitialAttachApn(const char* apn);
-        void handleGetDataContextIds(const sp<RfxMclMessage>& msg);
-        void handleSendQualifiedNetworkTypesChanged(const sp<RfxMclMessage>& msg);
-        void handleIfVendorSelfIaNeeded(const sp<RfxMclMessage>& msg);
-        void handleMobileDataUsageNotify(const sp<RfxMclMessage>& msg);
-        void handleStartKeepaliveRequest(const sp<RfxMclMessage>& msg);
-        void handleStopKeepaliveRequest(const sp<RfxMclMessage>& msg);
-        void handleKeepaliveStatus(const sp<RfxMclMessage>& msg);
-        void handleNwLimitNotify(const sp<RfxMclMessage>& msg);
+  private:
+    void handleLastFailCauseRequest(const sp<RfxMclMessage>& msg);
+    void handleSetupDataCallRequest(const sp<RfxMclMessage>& msg);
+    void handleDeactivateDataCallRequest(const sp<RfxMclMessage>& msg);
+    void handleDataCallListRequest(const sp<RfxMclMessage>& msg);
+    int deactivateDataCall(int aid);
+    void handleNwPdnAct(const sp<RfxMclMessage>& msg);
+    void handleNwPdnDeact(const sp<RfxMclMessage>& msg);
+    void handleNwModify(const sp<RfxMclMessage>& msg);
+    void handleNwReact(const sp<RfxMclMessage>& msg);
+    void handleMePdnAct(const sp<RfxMclMessage>& msg);
+    void handleMePdnDeact(const sp<RfxMclMessage>& msg);
+    void handlePdnChange(const sp<RfxMclMessage>& msg);
+    void handleSyncApnTableRequest(const sp<RfxMclMessage>& msg);
+    void handleSetInitialAttachApnRequest(const sp<RfxMclMessage>& msg);
+    void handleSyncDataSettingsToMdRequest(const sp<RfxMclMessage>& msg);
+    void handleQualifiedNetworkTypeChanged(const sp<RfxMclMessage>& msg);
+    void handleResetMdDataRetryCount(const sp<RfxMclMessage>& msg);
+    void handleUtTest(const sp<RfxMclMessage>& msg);
+    void handleSetLteAccessStratumReportRequest(const sp<RfxMclMessage>& msg);
+    void handleLteAccessStratumStateChange(const sp<RfxMclMessage>& msg);
+    void handleSetLteUplinkDataTransferRequest(const sp<RfxMclMessage>& msg);
+    void handleClearAllPdnInfoRequest(const sp<RfxMclMessage>& msg);
+    void handleResendSyncDataSettingsToMd(const sp<RfxMclMessage>& msg);
+    void handleQueryPco(const sp<RfxMclMessage>& msg);
+    void handleResetAllConnections(const sp<RfxMclMessage>& msg);
+    void handleSetPreferredDataModem(const sp<RfxMclMessage>& msg);
+    bool isValidInitialAttachApn(const char* apn);
+    void handleGetDataContextIds(const sp<RfxMclMessage>& msg);
+    void handleSendQualifiedNetworkTypesChanged(const sp<RfxMclMessage>& msg);
+    void handleIfVendorSelfIaNeeded(const sp<RfxMclMessage>& msg);
+    void handleMobileDataUsageNotify(const sp<RfxMclMessage>& msg);
+    void handleStartKeepaliveRequest(const sp<RfxMclMessage>& msg);
+    void handleStopKeepaliveRequest(const sp<RfxMclMessage>& msg);
+    void handleKeepaliveStatus(const sp<RfxMclMessage>& msg);
+    void handleNwLimitNotify(const sp<RfxMclMessage>& msg);
 
-    private:
-        RmcDcDefaultReqHandler *m_pRmcDcDefaultReqHdlr;
-        RmcDcImsReqHandler *m_pRmcDcImsReqHdlr;
-        RmcDcOnDemandReqHandler *m_pRmcDcOnDemandReqHdlr;
-        RmcDcPdnManager *m_pPdnManager;
-        int iaMode;
+  private:
+    RmcDcDefaultReqHandler* m_pRmcDcDefaultReqHdlr;
+    RmcDcImsReqHandler* m_pRmcDcImsReqHdlr;
+    RmcDcOnDemandReqHandler* m_pRmcDcOnDemandReqHdlr;
+    RmcDcPdnManager* m_pPdnManager;
+    int iaMode;
 };
 #endif /* __RMC_DC_REQ_HANDLER_H__ */

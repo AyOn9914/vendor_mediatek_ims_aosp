@@ -30,8 +30,7 @@
 #include "ratconfig.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include "usim_fcp_parser.h"
 #ifdef __cplusplus
@@ -43,13 +42,10 @@ extern "C"
  *****************************************************************************/
 using ::android::String8;
 
-static const int ch1ReqList[] = {
-    RFX_MSG_REQUEST_GET_IMSI,
-    RFX_MSG_REQUEST_CDMA_SUBSCRIPTION,
-    RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE,
-    RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
-    RFX_MSG_REQUEST_SET_FACILITY_LOCK
-};
+static const int ch1ReqList[] = {RFX_MSG_REQUEST_GET_IMSI, RFX_MSG_REQUEST_CDMA_SUBSCRIPTION,
+                                 RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE,
+                                 RFX_MSG_REQUEST_QUERY_FACILITY_LOCK,
+                                 RFX_MSG_REQUEST_SET_FACILITY_LOCK};
 
 // CDMA subscription source
 #define SUBSCRIPTION_FROM_RUIM 0
@@ -57,13 +53,13 @@ static const int ch1ReqList[] = {
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringsData, RFX_MSG_REQUEST_CDMA_SUBSCRIPTION);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
-    RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE);
+                                RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE);
 
 /*****************************************************************************
  * Class RmcCdmaSimRequestHandler
  *****************************************************************************/
-RmcCdmaSimRequestHandler::RmcCdmaSimRequestHandler(int slot_id, int channel_id) :
-        RmcSimBaseHandler(slot_id, channel_id) {
+RmcCdmaSimRequestHandler::RmcCdmaSimRequestHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcCdmaSimRequest"));
 
     // Check if modem supports CDMA 3g dual activation. It is a const value set in modem and is
@@ -79,60 +75,54 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCdmaSimRequestHandler::needHandle(
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
 
     switch (request) {
-        case RFX_MSG_REQUEST_GET_IMSI:
-            {
-                char** pStrings = (msg->getData() != NULL) ? ((char**)(msg->getData()->getData()))
-                        : NULL;
-                String8 aid(((pStrings != NULL) && (pStrings[0] != NULL))? pStrings[0] : "");
+        case RFX_MSG_REQUEST_GET_IMSI: {
+            char** pStrings =
+                    (msg->getData() != NULL) ? ((char**)(msg->getData()->getData())) : NULL;
+            String8 aid(((pStrings != NULL) && (pStrings[0] != NULL)) ? pStrings[0] : "");
 
-                if (!aid.isEmpty()) {
-                    if ((aid.find("A0000003431002") >= 0) || (aid.find("A000000000RUIM") >= 0)) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
-                } else {
-                    int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE,
-                            -1);
-                    if ((cardType & RFX_CARD_TYPE_RUIM) || (cardType & RFX_CARD_TYPE_CSIM)) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
+            if (!aid.isEmpty()) {
+                if ((aid.find("A0000003431002") >= 0) || (aid.find("A000000000RUIM") >= 0)) {
+                    result = RmcSimBaseHandler::RESULT_NEED;
+                }
+            } else {
+                int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
+                if ((cardType & RFX_CARD_TYPE_RUIM) || (cardType & RFX_CARD_TYPE_CSIM)) {
+                    result = RmcSimBaseHandler::RESULT_NEED;
                 }
             }
-            break;
+        } break;
         case RFX_MSG_REQUEST_CDMA_SUBSCRIPTION:
         case RFX_MSG_REQUEST_CDMA_GET_SUBSCRIPTION_SOURCE:
             result = RmcSimBaseHandler::RESULT_NEED;
             break;
         case RFX_MSG_REQUEST_QUERY_FACILITY_LOCK:
-        case RFX_MSG_REQUEST_SET_FACILITY_LOCK:
-            {
-                char** pStrings = (msg->getData() != NULL) ? ((char**)(msg->getData()->getData()))
-                        : NULL;
-                char *pAid;
-                if (pStrings != NULL) {
-                    if (request == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK) {
-                        pAid = pStrings[3];
-                    } else {
-                        pAid = pStrings[4];
-                    }
+        case RFX_MSG_REQUEST_SET_FACILITY_LOCK: {
+            char** pStrings =
+                    (msg->getData() != NULL) ? ((char**)(msg->getData()->getData())) : NULL;
+            char* pAid;
+            if (pStrings != NULL) {
+                if (request == RFX_MSG_REQUEST_QUERY_FACILITY_LOCK) {
+                    pAid = pStrings[3];
                 } else {
-                    pAid = NULL;
+                    pAid = pStrings[4];
                 }
+            } else {
+                pAid = NULL;
+            }
 
-                String8 aid((pAid != NULL)? pAid : "");
+            String8 aid((pAid != NULL) ? pAid : "");
 
-                if (!aid.isEmpty()) {
-                    if ((aid.find("A0000003431002") >= 0) || (aid.find("A000000000RUIM") >= 0)) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
-                } else {
-                    int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE,
-                            -1);
-                    if ((cardType & RFX_CARD_TYPE_RUIM) || (cardType & RFX_CARD_TYPE_CSIM)) {
-                        result = RmcSimBaseHandler::RESULT_NEED;
-                    }
+            if (!aid.isEmpty()) {
+                if ((aid.find("A0000003431002") >= 0) || (aid.find("A000000000RUIM") >= 0)) {
+                    result = RmcSimBaseHandler::RESULT_NEED;
+                }
+            } else {
+                int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
+                if ((cardType & RFX_CARD_TYPE_RUIM) || (cardType & RFX_CARD_TYPE_CSIM)) {
+                    result = RmcSimBaseHandler::RESULT_NEED;
                 }
             }
-            break;
+        } break;
         default:
             logE(mTag, "Not support the request!");
             break;
@@ -146,20 +136,20 @@ void RmcCdmaSimRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
 
     if ((getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA3G_SWITCH_CARD) ==
-            AP_TRIGGER_SWITCH_SIM) ||
-            (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA3G_SWITCH_CARD) ==
-            GMSS_TRIGGER_SWITCH_SIM)) {
+         AP_TRIGGER_SWITCH_SIM) ||
+        (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CDMA3G_SWITCH_CARD) ==
+         GMSS_TRIGGER_SWITCH_SIM)) {
         // Ignore request if the CDMA 3G card is switched into SIM.
         logE(mTag, "Ignore the invalid request: %d .", request);
 
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(request, RIL_E_SIM_ERR,
-                RfxVoidData(), msg, false);
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(request, RIL_E_SIM_ERR, RfxVoidData(), msg, false);
         responseToTelCore(response);
 
         return;
     }
 
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_GET_IMSI:
             handleGetImsi(msg);
             break;
@@ -181,9 +171,9 @@ void RmcCdmaSimRequestHandler::handleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-const int* RmcCdmaSimRequestHandler::queryTable(int channel_id, int *record_num) {
+const int* RmcCdmaSimRequestHandler::queryTable(int channel_id, int* record_num) {
     if (channel_id == RIL_CMD_PROXY_1) {
-        *record_num = sizeof(ch1ReqList)/sizeof(int);
+        *record_num = sizeof(ch1ReqList) / sizeof(int);
         return ch1ReqList;
     } else {
         // No request registered!
@@ -202,7 +192,7 @@ void RmcCdmaSimRequestHandler::handleGetImsi(const sp<RfxMclMessage>& msg) {
     String8 cdmaSubscriberId("vendor.ril.uim.subscriberid");
     cdmaSubscriberId.append(String8::format(".%d", (m_slot_id + 1)));
     char** pStrings = (msg->getData() != NULL) ? ((char**)(msg->getData()->getData())) : NULL;
-    String8 aid(((pStrings != NULL) && (pStrings[0] != NULL))? pStrings[0] : "");
+    String8 aid(((pStrings != NULL) && (pStrings[0] != NULL)) ? pStrings[0] : "");
 
     appTypeId = queryAppTypeId(aid);
     cmd.append(String8::format("AT+ECIMI=%d", appTypeId));
@@ -213,14 +203,15 @@ void RmcCdmaSimRequestHandler::handleGetImsi(const sp<RfxMclMessage>& msg) {
         logE(mTag, "handleGetImsi fail!");
 
         response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ERR,
-                RfxStringData(NULL, 0), msg, false);
+                                                 RfxStringData(NULL, 0), msg, false);
     } else {
         String8 c2kimsi(p_response->getIntermediates()->getLine());
 
         rfx_property_set(cdmaSubscriberId, c2kimsi.string());
         getMclStatusManager()->setString8Value(RFX_STATUS_KEY_C2K_IMSI, c2kimsi);
 
-        response = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+        response = RfxMclMessage::obtainResponse(
+                msg->getId(), RIL_E_SUCCESS,
                 RfxStringData((void*)c2kimsi.string(), c2kimsi.length()), msg);
     }
 
@@ -228,8 +219,8 @@ void RmcCdmaSimRequestHandler::handleGetImsi(const sp<RfxMclMessage>& msg) {
 }
 
 void RmcCdmaSimRequestHandler::handleCdmaSubscription(const sp<RfxMclMessage>& msg) {
-    char *p_response[5] = {NULL, NULL, NULL, NULL, NULL};
-    RIL_Errno *result = (RIL_Errno *)calloc(1, sizeof(RIL_Errno));
+    char* p_response[5] = {NULL, NULL, NULL, NULL, NULL};
+    RIL_Errno* result = (RIL_Errno*)calloc(1, sizeof(RIL_Errno));
     assert(result != NULL);
 
     logI(mTag, "handleCdmaSubscription!");
@@ -243,11 +234,11 @@ void RmcCdmaSimRequestHandler::handleCdmaSubscription(const sp<RfxMclMessage>& m
         logE(mTag, "handleCdmaSubscription RIL_E_REQUEST_NOT_SUPPORTED!");
     }
 
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), *result,
-            RfxStringsData((void*)p_response, sizeof(p_response)), msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), *result, RfxStringsData((void*)p_response, sizeof(p_response)), msg);
     responseToTelCore(response);
 
-    for (unsigned int i = 0; i < sizeof(p_response)/sizeof(p_response[0]); i++) {
+    for (unsigned int i = 0; i < sizeof(p_response) / sizeof(p_response[0]); i++) {
         if (p_response[i] != NULL) {
             free(p_response[i]);
         }
@@ -259,22 +250,22 @@ void RmcCdmaSimRequestHandler::handleCdmaSubscription(const sp<RfxMclMessage>& m
 void RmcCdmaSimRequestHandler::handleCdmaGetSubscriptionSource(const sp<RfxMclMessage>& msg) {
     int err = 0;
     sp<RfxAtResponse> p_response = NULL;
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int state = 255;
     int source = -1;
     RIL_Errno result = RIL_E_SIM_ERR;
 
     if (!RatConfig_isC2kSupported()) {
-        sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(),
-                RIL_E_REQUEST_NOT_SUPPORTED,
-                RfxIntsData((void*)&source, sizeof(int)), msg);
+        sp<RfxMclMessage> response =
+                RfxMclMessage::obtainResponse(msg->getId(), RIL_E_REQUEST_NOT_SUPPORTED,
+                                              RfxIntsData((void*)&source, sizeof(int)), msg);
         responseToTelCore(response);
         return;
     }
 
     do {
         p_response = atSendCommandSingleline("AT+EUIMCFG?", "+EUIMCFG");
-        if ((p_response == NULL) || (p_response->getSuccess()== 0)) {
+        if ((p_response == NULL) || (p_response->getSuccess() == 0)) {
             break;
         }
 
@@ -304,8 +295,8 @@ void RmcCdmaSimRequestHandler::handleCdmaGetSubscriptionSource(const sp<RfxMclMe
     if (source == -1) {
         logE(mTag, "handleCdmaGetSubscriptionSource failed to get subscription source!");
     }
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), result,
-            RfxIntsData((void*)&source, sizeof(int)), msg);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), result, RfxIntsData((void*)&source, sizeof(int)), msg);
     responseToTelCore(response);
 
     p_response = NULL;
@@ -316,14 +307,14 @@ void RmcCdmaSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& 
     int err, count = 0, enable = -1;
     int appTypeId = -1;
     int fdnServiceResult = -1;
-    RfxStringData *pRspData = NULL;
+    RfxStringData* pRspData = NULL;
     String8 facFd("FD");
     String8 facSc("SC");
     char** pStrings = (msg->getData() != NULL) ? ((char**)(msg->getData()->getData())) : NULL;
-    String8 facility(((pStrings != NULL) && (pStrings[0] != NULL))? pStrings[0] : "");
-    String8 aid(((pStrings != NULL) && (pStrings[3] != NULL))? pStrings[3] : "");
+    String8 facility(((pStrings != NULL) && (pStrings[0] != NULL)) ? pStrings[0] : "");
+    String8 aid(((pStrings != NULL) && (pStrings[3] != NULL)) ? pStrings[3] : "");
     String8 cmd("");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxMclMessage> response;
     RIL_Errno ril_error = RIL_E_SIM_ERR;
 
@@ -432,14 +423,16 @@ void RmcCdmaSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& 
             ril_error = RIL_E_SUCCESS;
             if (fdnServiceResult == -1) {
                 response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                        RfxIntsData((void*)&enable, sizeof(int)), msg, false);
+                                                         RfxIntsData((void*)&enable, sizeof(int)),
+                                                         msg, false);
             } else {
                 if (fdnServiceResult == 1 && enable == 0) {
                     fdnServiceResult = 0;
                 }
                 logD(mTag, "final FDN result: %d", fdnServiceResult);
-                response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                        RfxIntsData((void*)&fdnServiceResult, sizeof(int)), msg, false);
+                response = RfxMclMessage::obtainResponse(
+                        msg->getId(), ril_error, RfxIntsData((void*)&fdnServiceResult, sizeof(int)),
+                        msg, false);
             }
             responseToTelCore(response);
         }
@@ -452,8 +445,7 @@ void RmcCdmaSimRequestHandler::handleQueryFacilityLock(const sp<RfxMclMessage>& 
 
     return;
 error:
-    response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-            RfxIntsData(), msg, false);
+    response = RfxMclMessage::obtainResponse(msg->getId(), ril_error, RfxIntsData(), msg, false);
     responseToTelCore(response);
 }
 
@@ -464,17 +456,17 @@ void RmcCdmaSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& ms
     int fdnServiceResult = -1;
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
     int attemptsRemaining[4] = {0};
-    RfxStringData *pRspData = NULL;
+    RfxStringData* pRspData = NULL;
     String8 facFd("FD");
     String8 facSc("SC");
     char** pStrings = (msg->getData() != NULL) ? ((char**)(msg->getData()->getData())) : NULL;
-    String8 facility(((pStrings != NULL) && (pStrings[0] != NULL))? pStrings[0] : "");
-    String8 lockStr(((pStrings != NULL) && (pStrings[1] != NULL))? pStrings[1] : "");
-    String8 pwd(((pStrings != NULL) && (pStrings[2] != NULL))? pStrings[2] : "");
-    String8 aid(((pStrings != NULL) && (pStrings[4] != NULL))? pStrings[4] : "");
+    String8 facility(((pStrings != NULL) && (pStrings[0] != NULL)) ? pStrings[0] : "");
+    String8 lockStr(((pStrings != NULL) && (pStrings[1] != NULL)) ? pStrings[1] : "");
+    String8 pwd(((pStrings != NULL) && (pStrings[2] != NULL)) ? pStrings[2] : "");
+    String8 aid(((pStrings != NULL) && (pStrings[4] != NULL)) ? pStrings[4] : "");
     String8 cmd("");
     sp<RfxMclMessage> response;
-    RmcSimPinPukCount *retry = NULL;
+    RmcSimPinPukCount* retry = NULL;
     RIL_Errno ril_error = RIL_E_SIM_ERR;
 
     if (facility != facFd && facility != facSc) {
@@ -499,7 +491,7 @@ void RmcCdmaSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& ms
             goto error;
         }
         cmd.append(String8::format("AT+ECLCK=%d,\"%s\",%s,\"%s\"", appTypeId, facility.string(),
-                lockStr.string(), pwd.string()));
+                                   lockStr.string(), pwd.string()));
         p_response = atSendCommand(cmd);
         err = p_response->getError();
         cmd.clear();
@@ -551,8 +543,9 @@ void RmcCdmaSimRequestHandler::handleSetFacilityLock(const sp<RfxMclMessage>& ms
                 attemptsRemaining[0] = retry->pin2;
             }
             free(retry);
-            response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                    RfxIntsData((void*)attemptsRemaining, sizeof(int)), msg, false);
+            response = RfxMclMessage::obtainResponse(
+                    msg->getId(), ril_error, RfxIntsData((void*)attemptsRemaining, sizeof(int)),
+                    msg, false);
             responseToTelCore(response);
         }
 
@@ -577,10 +570,11 @@ error:
         }
         free(retry);
         response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData((void*)attemptsRemaining, sizeof(int)), msg, false);
+                                                 RfxIntsData((void*)attemptsRemaining, sizeof(int)),
+                                                 msg, false);
     } else {
-        response = RfxMclMessage::obtainResponse(msg->getId(), ril_error,
-                RfxIntsData(), msg, false);
+        response =
+                RfxMclMessage::obtainResponse(msg->getId(), ril_error, RfxIntsData(), msg, false);
     }
     responseToTelCore(response);
 }
@@ -613,13 +607,13 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
     String8 cmd("");
     int cardType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE, -1);
     sp<RfxAtResponse> p_response = NULL;
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err = 0, intPara = 0;
     int channelId = 0;
     String8 result("");
     RIL_SIM_IO_Response sr;
-    unsigned char *response = NULL;
-    unsigned short  responseLen = 0;
+    unsigned char* response = NULL;
+    unsigned short responseLen = 0;
     int mlplVer = -1, msplVer = -1;
     String8 prop("ril.csim.mlpl_mspl_ver");
 
@@ -657,7 +651,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
 
     // Read EFmlpl
     cmd.append(String8::format("AT+ECRLA=%d,%d,%d,%d,%d,%d,%d,,\"%s\"", 2, channelId, 176, 20256,
-            0/*P1*/, 0/*P2*/, 0/*P3*/, "7F105F3C"));
+                               0 /*P1*/, 0 /*P2*/, 0 /*P3*/, "7F105F3C"));
     p_response = atSendCommandSingleline(cmd.string(), "+ECRLA:");
 
     if (p_response != NULL && p_response->getSuccess() == 1) {
@@ -679,7 +673,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
         }
 
         if (line->atTokHasmore()) {
-            char *pRes = NULL;
+            char* pRes = NULL;
             pRes = line->atTokNextstr(&err);
             if (err < 0) {
                 goto error;
@@ -687,7 +681,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
             asprintf(&sr.simResponse, "%s", pRes);
 
             responseLen = hexStringToByteArray((unsigned char*)(sr.simResponse), &response);
-            if (responseLen >=4) {
+            if (responseLen >= 4) {
                 mlplVer = (response[3] << 4) | response[4];
             } else {
                 goto error;
@@ -704,11 +698,11 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
         responseLen = 0;
     }
     logI(mTag, "queryCdmaMlplAndMspl mlplVer: %04x, sr: %s, %02x, %02x", mlplVer, sr.simResponse,
-            sr.sw1, sr.sw2);
+         sr.sw1, sr.sw2);
 
     // Read EFmspl
     cmd.append(String8::format("AT+ECRLA=%d,%d,%d,%d,%d,%d,%d,,\"%s\"", 2, channelId, 176, 20257,
-            0/*P1*/, 0/*P2*/, 0/*P3*/, "7F105F3C"));
+                               0 /*P1*/, 0 /*P2*/, 0 /*P3*/, "7F105F3C"));
     p_response = atSendCommandSingleline(cmd.string(), "+ECRLA:");
 
     if (p_response != NULL && p_response->getSuccess() == 1) {
@@ -730,7 +724,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
         }
 
         if (line->atTokHasmore()) {
-            char *pRes = NULL;
+            char* pRes = NULL;
             pRes = line->atTokNextstr(&err);
             if (err < 0) {
                 goto error;
@@ -738,7 +732,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
             asprintf(&sr.simResponse, "%s", pRes);
 
             responseLen = hexStringToByteArray((unsigned char*)(sr.simResponse), &response);
-            if (responseLen >=4) {
+            if (responseLen >= 4) {
                 msplVer = (response[3] << 4) | response[4];
             } else {
                 goto error;
@@ -750,7 +744,7 @@ void RmcCdmaSimRequestHandler::queryCdmaMlplAndMspl() {
         cmd.clear();
     }
     logI(mTag, "queryCdmaMlplAndMspl msplVer: %04x, sr: %s, %02x, %02x", msplVer, sr.simResponse,
-            sr.sw1, sr.sw2);
+         sr.sw1, sr.sw2);
 
     // Set property
     if ((mlplVer != -1) && (msplVer != -1)) {

@@ -18,30 +18,29 @@
 #define __RFX_TOK_UTILS_H__
 
 class RfxTokUtils {
+  private:
+    RfxTokUtils();
+    virtual ~RfxTokUtils();
 
-    private:
-        RfxTokUtils();
-        virtual ~RfxTokUtils();
+  public:
+    static int at_tok_start(char** p_cur);
+    static int at_tok_char(char** p_cur);
+    static int at_tok_nextint(char** p_cur, int* p_out);
+    static int at_tok_nexthexint(char** p_cur, int* p_out);
 
-    public:
-        static int at_tok_start(char **p_cur);
-        static int at_tok_char(char **p_cur);
-        static int at_tok_nextint(char **p_cur, int *p_out);
-        static int at_tok_nexthexint(char **p_cur, int *p_out);
+    static int at_tok_nextbool(char** p_cur, char* p_out);
+    static int at_tok_nextstr(char** p_cur, char** out);
 
-        static int at_tok_nextbool(char **p_cur, char *p_out);
-        static int at_tok_nextstr(char **p_cur, char **out);
+    static int at_tok_hasmore(char** p_cur);
 
-        static int at_tok_hasmore(char **p_cur);
+    static int at_tok_equal(char** p_cur);
+    static int at_tok_nextlonglong(char** p_cur, long long* p_out);
 
-        static int at_tok_equal(char **p_cur);
-        static int at_tok_nextlonglong(char **p_cur, long long *p_out);
-
-    private:
-        static void skipWhiteSpace(char **p_cur);
-        static void skipNextComma(char **p_cur);
-        static char * nextTok(char **p_cur);
-        static int at_tok_nextint_base(char **p_cur, int *p_out, int base, int  uns);
-        static int at_tok_nextlonglong_base(char **p_cur, long long *p_out, int base, int  uns);
+  private:
+    static void skipWhiteSpace(char** p_cur);
+    static void skipNextComma(char** p_cur);
+    static char* nextTok(char** p_cur);
+    static int at_tok_nextint_base(char** p_cur, int* p_out, int base, int uns);
+    static int at_tok_nextlonglong_base(char** p_cur, long long* p_out, int base, int uns);
 };
 #endif

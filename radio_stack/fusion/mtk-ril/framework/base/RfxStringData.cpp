@@ -18,18 +18,17 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxStringData);
 
-RfxStringData::RfxStringData() : RfxBaseData(NULL, 0) {
-}
+RfxStringData::RfxStringData() : RfxBaseData(NULL, 0) {}
 
-RfxStringData::RfxStringData(void *data, int length) : RfxBaseData(data, length) {
-    copyString((char *)data, length);
+RfxStringData::RfxStringData(void* data, int length) : RfxBaseData(data, length) {
+    copyString((char*)data, length);
 }
 
 RfxStringData::RfxStringData(char data[]) : RfxBaseData(data, strlen(data)) {
     copyString(data, strlen(data));
 }
 
-void RfxStringData::copyString(char *data, int length) {
+void RfxStringData::copyString(char* data, int length) {
     m_length = length;
     if (data != NULL) {
         m_data = strdup(data);

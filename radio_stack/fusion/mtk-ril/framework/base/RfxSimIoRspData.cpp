@@ -19,10 +19,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimIoRspData);
 
-RfxSimIoRspData::RfxSimIoRspData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimIoRspData::RfxSimIoRspData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SIM_IO_Response *pSimIoRsp = (RIL_SIM_IO_Response*)_data;
-        RIL_SIM_IO_Response *pData = (RIL_SIM_IO_Response *)calloc(1, sizeof(RIL_SIM_IO_Response));
+        RIL_SIM_IO_Response* pSimIoRsp = (RIL_SIM_IO_Response*)_data;
+        RIL_SIM_IO_Response* pData = (RIL_SIM_IO_Response*)calloc(1, sizeof(RIL_SIM_IO_Response));
         RFX_ASSERT(pData != NULL);
 
         pData->sw1 = pSimIoRsp->sw1;
@@ -40,7 +40,7 @@ RfxSimIoRspData::RfxSimIoRspData(void *_data, int _length) : RfxBaseData(_data, 
 RfxSimIoRspData::~RfxSimIoRspData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SIM_IO_Response *pData = (RIL_SIM_IO_Response*)m_data;
+        RIL_SIM_IO_Response* pData = (RIL_SIM_IO_Response*)m_data;
         if (pData->simResponse != NULL) {
             free(pData->simResponse);
             pData->simResponse = NULL;

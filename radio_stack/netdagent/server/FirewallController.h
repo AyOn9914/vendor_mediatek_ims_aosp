@@ -42,8 +42,7 @@ enum FirewallChinaRule { MOBILE, WIFI };
  * no such methods.
  */
 class FirewallController {
-public:
-
+  public:
     static const char* LOCAL_FILTER_INPUT;
     static const char* LOCAL_FILTER_OUTPUT;
     static const char* LOCAL_FILTER_OEMOUTPUT;
@@ -71,14 +70,13 @@ public:
     int setpriorityuid(int uid);
     int clearpriorityuid(int uid);
     int clearpriorityuidall();
-    int setprioritytoup(const char *src_ip,  const char *src_port, const char *dst_ip,
-                                       const char *dst_port, const char *protocol);
-    int clearprioritytoup(const char *src_ip,  const char *src_port, const char *dst_ip,
-                                       const char *dst_port, const char *protocol);
+    int setprioritytoup(const char* src_ip, const char* src_port, const char* dst_ip,
+                        const char* dst_port, const char* protocol);
+    int clearprioritytoup(const char* src_ip, const char* src_port, const char* dst_ip,
+                          const char* dst_port, const char* protocol);
     int clearprioritytoupall();
 
-private:
-
+  private:
     static bool openNsiotFlag;
     static bool openNsiotVolteFlag;
 };

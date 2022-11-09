@@ -36,7 +36,7 @@ extern RIL_RadioFunctions s_callbacks;
 /*****************************************************************************
  * Class RfxMessage
  *****************************************************************************/
-extern "C" const char * requestToString(int request);
+extern "C" const char* requestToString(int request);
 
 int intMin = std::numeric_limits<int>::min();
 int intMax = std::numeric_limits<int>::max();
@@ -47,23 +47,40 @@ pthread_mutex_t RfxMessage::pTokenMutex = PTHREAD_MUTEX_INITIALIZER;
 int RfxMessage::pTokenCounter = 0;
 
 #ifdef RFX_OBJ_DEBUG
-Vector<RfxDebugInfo*> *RfxMessage::s_obj_debug_info = NULL;
-static Mutex s_obj_debug_info_mutex; // RfxMessage would be create/destroy in different thread
-#endif //#ifdef RFX_OBJ_DEBUG
+Vector<RfxDebugInfo*>* RfxMessage::s_obj_debug_info = NULL;
+static Mutex s_obj_debug_info_mutex;  // RfxMessage would be create/destroy in different thread
+#endif                                //#ifdef RFX_OBJ_DEBUG
 
-RfxMessage::RfxMessage() :
-            type(REQUEST), source(RADIO_TECH_GROUP_GSM), dest(RADIO_TECH_GROUP_GSM), pId(0),
-            pToken(0), id(0), token(0), slotId(0), clientId(-1), error(RIL_E_SUCCESS),
-            timeStamp(0), pTimeStamp(0), isSentOnCdmaCapabilitySlot(C_SLOT_STATUS_OTHERS),
-            data(NULL), urcDispatchRule(URC_DISPATCH_TO_RILJ),
-            key(RfxStatusKeyEnum(-1)), value(RfxVariant()), force_notify(false),
-            is_default(false), update_for_mock(false), rilToken(NULL), sendToMainProtocol(false),
-            mainProtocolSlotId(0), addAtFront(false),
-            m_priority(MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM) {
+RfxMessage::RfxMessage()
+    : type(REQUEST),
+      source(RADIO_TECH_GROUP_GSM),
+      dest(RADIO_TECH_GROUP_GSM),
+      pId(0),
+      pToken(0),
+      id(0),
+      token(0),
+      slotId(0),
+      clientId(-1),
+      error(RIL_E_SUCCESS),
+      timeStamp(0),
+      pTimeStamp(0),
+      isSentOnCdmaCapabilitySlot(C_SLOT_STATUS_OTHERS),
+      data(NULL),
+      urcDispatchRule(URC_DISPATCH_TO_RILJ),
+      key(RfxStatusKeyEnum(-1)),
+      value(RfxVariant()),
+      force_notify(false),
+      is_default(false),
+      update_for_mock(false),
+      rilToken(NULL),
+      sendToMainProtocol(false),
+      mainProtocolSlotId(0),
+      addAtFront(false),
+      m_priority(MTK_RIL_REQUEST_PRIORITY::MTK_RIL_REQUEST_PRIORITY_MEDIUM) {
 #ifdef RFX_OBJ_DEBUG
     s_obj_debug_info_mutex.lock();
     if (RfxDebugInfo::isRfxDebugInfoEnabled()) {
-        m_debug_info = new RfxDebugInfo(static_cast<IRfxDebugLogger *>(this), (void *)this);
+        m_debug_info = new RfxDebugInfo(static_cast<IRfxDebugLogger*>(this), (void*)this);
         if (s_obj_debug_info == NULL) {
             s_obj_debug_info = new Vector<RfxDebugInfo*>();
         }
@@ -72,31 +89,31 @@ RfxMessage::RfxMessage() :
         m_debug_info = NULL;
     }
     s_obj_debug_info_mutex.unlock();
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG
 }
 
 RfxMessage::~RfxMessage() {
     // RLOGD("~RfxMessage(): type=%d, source=%d, dest=%d, pId=%d, pToken=%d, id=%d, token=%d,\
     //        slotId=%d, error=%d", type, source, dest, pId, pToken, id, token, slotId, error);
     if (data != NULL) {
-        delete(data);
+        delete (data);
     }
 #ifdef RFX_OBJ_DEBUG
     if (m_debug_info != NULL) {
         s_obj_debug_info_mutex.lock();
         size_t size = s_obj_debug_info->size();
         for (size_t i = 0; i < size; i++) {
-            const RfxDebugInfo *item = s_obj_debug_info->itemAt(i);
+            const RfxDebugInfo* item = s_obj_debug_info->itemAt(i);
             if (item == m_debug_info) {
                 s_obj_debug_info->removeAt(i);
                 break;
             }
         }
-        delete(m_debug_info);
+        delete (m_debug_info);
         m_debug_info = NULL;
         s_obj_debug_info_mutex.unlock();
     }
-#endif //#ifdef RFX_OBJ_DEBUG
+#endif  //#ifdef RFX_OBJ_DEBUG
 }
 
 int RfxMessage::generateToken() {
@@ -137,10 +154,10 @@ String8 RfxMessage::toString() const {
     return String8::format(
             "type=%s, source=%s, dest=%s, pId=%s(%d), pToken=%d, id=%s(%d), token=%d, slotId=%d, \
             clientId = %d, error = %d, isSentOnCdmaCapabilitySlot = %d, sendToMainProtocol = %d,\
-            m_priority = %d, pTimeStamp = %" PRId64, typeToString(type), groupToString(source),
-            groupToString(dest), RFX_ID_TO_STR(pId), pId, pToken, RFX_ID_TO_STR(id), id, token,
-            slotId, clientId, error, isSentOnCdmaCapabilitySlot, sendToMainProtocol, m_priority,
-            pTimeStamp);
+            m_priority = %d, pTimeStamp = %" PRId64,
+            typeToString(type), groupToString(source), groupToString(dest), RFX_ID_TO_STR(pId), pId,
+            pToken, RFX_ID_TO_STR(id), id, token, slotId, clientId, error,
+            isSentOnCdmaCapabilitySlot, sendToMainProtocol, m_priority, pTimeStamp);
 }
 
 const char* RfxMessage::typeToString(RFX_MESSAGE_TYPE type) const {
@@ -167,7 +184,7 @@ const char* RfxMessage::typeToString(RFX_MESSAGE_TYPE type) const {
 }
 
 const char* RfxMessage::groupToString(RILD_RadioTechnology_Group group) const {
-        switch (group) {
+    switch (group) {
         case 0:
             return "GSM";
             break;
@@ -209,17 +226,15 @@ sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int id, RILD_RadioTechnolog
 }
 
 sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int id, const sp<RfxMessage>& msg,
-        bool copyData, RILD_RadioTechnology_Group dest) {
-
-    if (msg == NULL || msg.get() == NULL)
-        return NULL;
+                                         bool copyData, RILD_RadioTechnology_Group dest) {
+    if (msg == NULL || msg.get() == NULL) return NULL;
 
     sp<RfxMessage> new_msg = RfxMessage::obtainRequest(slotId, id, dest);
     new_msg->pId = msg->pId;
     new_msg->pToken = msg->pToken;
     new_msg->timeStamp = msg->timeStamp;
     new_msg->pTimeStamp = msg->pTimeStamp;
-    new_msg->clientId = msg -> clientId;
+    new_msg->clientId = msg->clientId;
     new_msg->rilToken = msg->rilToken;
     // copy data
     if (copyData) {
@@ -229,15 +244,15 @@ sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int id, const sp<RfxMessage
     return new_msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int id, const RfxBaseData &data,
-        RILD_RadioTechnology_Group dest) {
+sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int id, const RfxBaseData& data,
+                                         RILD_RadioTechnology_Group dest) {
     sp<RfxMessage> msg = obtainRequest(slotId, id, dest);
     msg->data = RfxDataCloneManager::copyData(id, &data, REQUEST);
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainRequest(int id, const RfxBaseData &data,
-            const sp<RfxMessage>& msg, bool copyData) {
+sp<RfxMessage> RfxMessage::obtainRequest(int id, const RfxBaseData& data, const sp<RfxMessage>& msg,
+                                         bool copyData) {
     sp<RfxMessage> newMsg = RfxMessage::obtainRequest(msg->getSlotId(), id, msg, false);
     if (copyData) {
         newMsg->data = RfxDataCloneManager::copyData(id, msg->getData(), REQUEST);
@@ -248,16 +263,16 @@ sp<RfxMessage> RfxMessage::obtainRequest(int id, const RfxBaseData &data,
     return newMsg;
 }
 
-sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int pId,
-        int pToken, void* data, int length, RIL_Token t, int clientId,
-        RILD_RadioTechnology_Group dest) {
+sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int pId, int pToken, void* data, int length,
+                                         RIL_Token t, int clientId,
+                                         RILD_RadioTechnology_Group dest) {
     sp<RfxMessage> msg = new RfxMessage();
 
     msg->type = REQUEST;
     msg->slotId = slotId;
     msg->pId = pId;
     msg->pToken = pToken;
-    msg->id = pId; // msg could be sent directly
+    msg->id = pId;  // msg could be sent directly
     msg->token = RfxMessage::generateToken();
     msg->timeStamp = systemTime(SYSTEM_TIME_MONOTONIC);
     msg->pTimeStamp = systemTime(SYSTEM_TIME_MONOTONIC);
@@ -269,9 +284,10 @@ sp<RfxMessage> RfxMessage::obtainRequest(int slotId, int pId,
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int pId, int pToken, int id,
-        int token, RIL_Errno e, RfxBaseData* data, nsecs_t pTimeStamp, RIL_Token t,
-        int clientId, RILD_RadioTechnology_Group source) {
+sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int pId, int pToken, int id, int token,
+                                          RIL_Errno e, RfxBaseData* data, nsecs_t pTimeStamp,
+                                          RIL_Token t, int clientId,
+                                          RILD_RadioTechnology_Group source) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = RESPONSE;
     msg->slotId = slotId;
@@ -289,8 +305,7 @@ sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int pId, int pToken, int i
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainResponse(RIL_Errno e, const sp<RfxMessage>& msg,
-        bool copyData) {
+sp<RfxMessage> RfxMessage::obtainResponse(RIL_Errno e, const sp<RfxMessage>& msg, bool copyData) {
     sp<RfxMessage> new_msg = new RfxMessage();
     new_msg->error = e;
     new_msg->type = RESPONSE;
@@ -301,7 +316,7 @@ sp<RfxMessage> RfxMessage::obtainResponse(RIL_Errno e, const sp<RfxMessage>& msg
     new_msg->id = msg->getId();
     new_msg->token = msg->getToken();
     new_msg->timeStamp = systemTime(SYSTEM_TIME_MONOTONIC);
-    new_msg->clientId = msg -> clientId;
+    new_msg->clientId = msg->clientId;
     new_msg->rilToken = msg->getRilToken();
     if (copyData) {
         new_msg->data = RfxDataCloneManager::copyData(msg->getId(), msg->getData(), RESPONSE);
@@ -310,8 +325,8 @@ sp<RfxMessage> RfxMessage::obtainResponse(RIL_Errno e, const sp<RfxMessage>& msg
 }
 
 // Besides id and RfxabseData, copy from msg
-sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int id, RIL_Errno e,
-        const RfxBaseData &data, const sp<RfxMessage>& msg) {
+sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int id, RIL_Errno e, const RfxBaseData& data,
+                                          const sp<RfxMessage>& msg) {
     sp<RfxMessage> new_msg = new RfxMessage();
     new_msg->error = e;
     new_msg->type = RESPONSE;
@@ -330,11 +345,11 @@ sp<RfxMessage> RfxMessage::obtainResponse(int slotId, int id, RIL_Errno e,
 
 sp<RfxMessage> RfxMessage::obtainResponse(int id, const sp<RfxMessage>& msg) {
     return RfxMessage::obtainResponse(msg->getSlotId(), id, msg->getError(), *(msg->getData()),
-            msg);
+                                      msg);
 }
 
-sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const RfxBaseData &data,
-        RILD_RadioTechnology_Group source) {
+sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const RfxBaseData& data,
+                                     RILD_RadioTechnology_Group source) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = URC;
     msg->source = source;
@@ -346,8 +361,8 @@ sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const RfxBaseData &data
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const sp<RfxMessage>& msg,
-        bool copyData, RILD_RadioTechnology_Group source) {
+sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const sp<RfxMessage>& msg, bool copyData,
+                                     RILD_RadioTechnology_Group source) {
     sp<RfxMessage> new_msg = new RfxMessage();
     new_msg->type = URC;
     new_msg->source = source;
@@ -362,7 +377,8 @@ sp<RfxMessage> RfxMessage::obtainUrc(int slotId, int id, const sp<RfxMessage>& m
 }
 
 sp<RfxMessage> RfxMessage::obtainStatusSync(int slotId, RfxStatusKeyEnum key,
-        const RfxVariant value, bool force_notify, bool is_default, bool update_for_mock) {
+                                            const RfxVariant value, bool force_notify,
+                                            bool is_default, bool update_for_mock) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = STATUS_SYNC;
     msg->slotId = slotId;
@@ -374,14 +390,14 @@ sp<RfxMessage> RfxMessage::obtainStatusSync(int slotId, RfxStatusKeyEnum key,
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainSapRequest(int slotId, int pId, int pToken, void *data,
-        int length, RIL_Token t) {
+sp<RfxMessage> RfxMessage::obtainSapRequest(int slotId, int pId, int pToken, void* data, int length,
+                                            RIL_Token t) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = SAP_REQUEST;
     msg->slotId = slotId;
     msg->pId = pId;
     msg->pToken = pToken;
-    msg->id = pId; // msg could be sent directly
+    msg->id = pId;  // msg could be sent directly
     msg->token = RfxMessage::generateToken();
     msg->timeStamp = systemTime(SYSTEM_TIME_MONOTONIC);
     msg->pTimeStamp = systemTime(SYSTEM_TIME_MONOTONIC);
@@ -391,7 +407,8 @@ sp<RfxMessage> RfxMessage::obtainSapRequest(int slotId, int pId, int pToken, voi
 }
 
 sp<RfxMessage> RfxMessage::obtainSapResponse(int slotId, int pId, int pToken, int id, int token,
-        RIL_Errno e, RfxBaseData *data, nsecs_t pTimeStamp, RIL_Token t) {
+                                             RIL_Errno e, RfxBaseData* data, nsecs_t pTimeStamp,
+                                             RIL_Token t) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = SAP_RESPONSE;
     msg->slotId = slotId;
@@ -407,7 +424,7 @@ sp<RfxMessage> RfxMessage::obtainSapResponse(int slotId, int pId, int pToken, in
     return msg;
 }
 
-sp<RfxMessage> RfxMessage::obtainSapUrc(int slotId, int id, const RfxBaseData &data) {
+sp<RfxMessage> RfxMessage::obtainSapUrc(int slotId, int id, const RfxBaseData& data) {
     sp<RfxMessage> msg = new RfxMessage();
     msg->type = SAP_URC;
     msg->slotId = slotId;
@@ -420,8 +437,8 @@ sp<RfxMessage> RfxMessage::obtainSapUrc(int slotId, int id, const RfxBaseData &d
 
 #ifdef RFX_OBJ_DEBUG
 void RfxMessage::dump(int level) const {
-    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%p, wc = %d, sc = %d, %s",
-                  this, getWeakRefs()->getWeakCount(), getStrongCount(), toString().string());
+    RFX_LOG_D(RFX_DEBUG_INFO_TAG, "%p, wc = %d, sc = %d, %s", this, getWeakRefs()->getWeakCount(),
+              getStrongCount(), toString().string());
     RFX_UNUSED(level);
 }
 
@@ -430,10 +447,10 @@ void RfxMessage::dumpMsgList() {
     size_t size = RfxMessage::s_obj_debug_info->size();
     RFX_LOG_D(RFX_DEBUG_INFO_TAG, "dumpMsgList() Msg count is %d", (int)size);
     for (size_t i = 0; i < size; i++) {
-        const RfxDebugInfo *item = RfxMessage::s_obj_debug_info->itemAt(i);
+        const RfxDebugInfo* item = RfxMessage::s_obj_debug_info->itemAt(i);
         item->getLogger()->dump();
     }
     s_obj_debug_info_mutex.unlock();
 }
 
-#endif // #ifdef RFX_OBJ_DEBUG
+#endif  // #ifdef RFX_OBJ_DEBUG

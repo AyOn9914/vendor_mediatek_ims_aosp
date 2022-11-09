@@ -20,11 +20,11 @@
 #include "RilCommandsTable.h"
 
 RfxCommandInfo sCommands[] = {
-    #include "ril_client_commands.h"
+#include "ril_client_commands.h"
 };
 
 RfxUnsolResponseInfo sUnsolCommands[] = {
-    #include "ril_client_unsol_commands.h"
+#include "ril_client_unsol_commands.h"
 };
 
 unsigned int sCommands_size = sizeof(sCommands) / sizeof(sCommands[0]);

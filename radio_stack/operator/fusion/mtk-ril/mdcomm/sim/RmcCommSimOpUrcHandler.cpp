@@ -36,10 +36,7 @@
 
 using ::android::String8;
 
-static const char* commOpUrcList[] = {
-    "+EATTEVT:",
-    "+ESMLRSUEVT:"
-};
+static const char* commOpUrcList[] = {"+EATTEVT:", "+ESMLRSUEVT:"};
 
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_URC_ATT_SIM_LOCK_NOTIFICATION);
 RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_RSU_EVENT);
@@ -47,21 +44,19 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxStringsData, RFX_MSG_UNSOL_RSU_EVENT);
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcCommSimOpUrcHandler::RmcCommSimOpUrcHandler(int slot_id, int channel_id) :
-        RmcCommSimUrcHandler(slot_id, channel_id) {
+RmcCommSimOpUrcHandler::RmcCommSimOpUrcHandler(int slot_id, int channel_id)
+    : RmcCommSimUrcHandler(slot_id, channel_id) {
     setTag(String8("RmcCommSimOpUrc"));
 }
 
-RmcCommSimOpUrcHandler::~RmcCommSimOpUrcHandler() {
-}
+RmcCommSimOpUrcHandler::~RmcCommSimOpUrcHandler() {}
 
 RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCommSimOpUrcHandler::needHandle(
         const sp<RfxMclMessage>& msg) {
     RmcSimBaseHandler::SIM_HANDLE_RESULT result = RmcSimBaseHandler::RESULT_IGNORE;
     char* ss = msg->getRawUrc()->getLine();
 
-    if (strStartsWith(ss, "+EATTEVT:") ||
-            strStartsWith(ss, "+ESMLRSUEVT:")) {
+    if (strStartsWith(ss, "+EATTEVT:") || strStartsWith(ss, "+ESMLRSUEVT:")) {
         result = RmcSimBaseHandler::RESULT_NEED;
     } else {
         result = RmcCommSimUrcHandler::needHandle(msg);
@@ -69,7 +64,7 @@ RmcSimBaseHandler::SIM_HANDLE_RESULT RmcCommSimOpUrcHandler::needHandle(
     return result;
 }
 
-void RmcCommSimOpUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCommSimOpUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     String8 ss(urc->getLine());
 
     if (strStartsWith(ss, "+EATTEVT:")) {
@@ -81,21 +76,21 @@ void RmcCommSimOpUrcHandler::handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *
     }
 }
 
-const char** RmcCommSimOpUrcHandler::queryUrcTable(int *record_num) {
-    const char **superTable = RmcCommSimUrcHandler::queryUrcTable(record_num);
+const char** RmcCommSimOpUrcHandler::queryUrcTable(int* record_num) {
+    const char** superTable = RmcCommSimUrcHandler::queryUrcTable(record_num);
     int subRecordNumber = 0;
     int supRecordNumber = *record_num;
-    char **bufTable = NULL;
+    char** bufTable = NULL;
     int i = 0, j = 0;
 
-    subRecordNumber = sizeof(commOpUrcList)/sizeof(char*);
+    subRecordNumber = sizeof(commOpUrcList) / sizeof(char*);
     *record_num = subRecordNumber + supRecordNumber;
-    bufTable = (char **)calloc(1, *record_num * sizeof(char*));
+    bufTable = (char**)calloc(1, *record_num * sizeof(char*));
     RFX_ASSERT(bufTable != NULL);
-    for(i = 0; i < supRecordNumber; i++) {
+    for (i = 0; i < supRecordNumber; i++) {
         asprintf(&(bufTable[i]), "%s", superTable[i]);
     }
-    for(j = i; j < *record_num; j++) {
+    for (j = i; j < *record_num; j++) {
         asprintf(&(bufTable[j]), "%s", commOpUrcList[j - supRecordNumber]);
     }
     return (const char**)bufTable;
@@ -114,17 +109,17 @@ void RmcCommSimOpUrcHandler::handleAttRsuSimLockEvent(const sp<RfxMclMessage>& m
 
     logD(mTag, "[RSU-SIMLOCK] handleAttRsuSimLockEvent: eventId = %d", eventId);
     sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_ATT_SIM_LOCK_NOTIFICATION,
-                    m_slot_id, RfxIntsData(&eventId, 1));
+                                                       m_slot_id, RfxIntsData(&eventId, 1));
     responseToTelCore(unsol);
 }
 
-void RmcCommSimOpUrcHandler::handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine *urc) {
+void RmcCommSimOpUrcHandler::handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine* urc) {
     int err = 0;
     int opId = 0;
     int eventId = -1;
     char* eventString = NULL;
     char* event[2] = {NULL, NULL};
-    RfxAtLine *pLine = urc;
+    RfxAtLine* pLine = urc;
 
     RFX_UNUSED(msg);
 
@@ -152,8 +147,8 @@ void RmcCommSimOpUrcHandler::handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtL
             eventString = pLine->atTokNextstr(&err);
         }
         asprintf(&event[1], "%s", (eventString == NULL ? "" : eventString));
-        sp<RfxMclMessage> p_urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RSU_EVENT,
-                m_slot_id, RfxStringsData(event, 2));
+        sp<RfxMclMessage> p_urc = RfxMclMessage::obtainUrc(RFX_MSG_UNSOL_RSU_EVENT, m_slot_id,
+                                                           RfxStringsData(event, 2));
         responseToTelCore(p_urc);
         if (event[0] != NULL) {
             free(event[0]);

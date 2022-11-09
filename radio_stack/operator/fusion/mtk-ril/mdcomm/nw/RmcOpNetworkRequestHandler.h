@@ -29,21 +29,21 @@
 class RmcOpNetworkRequestHandler : public RmcNetworkHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcOpNetworkRequestHandler);
 
-    public:
-        RmcOpNetworkRequestHandler(int slot_id, int channel_id);
-        virtual ~RmcOpNetworkRequestHandler();
+  public:
+    RmcOpNetworkRequestHandler(int slot_id, int channel_id);
+    virtual ~RmcOpNetworkRequestHandler();
 
-    protected:
-        virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleRequest(const sp<RfxMclMessage>& msg);
 
-    private:
-        void requestAntennaConf(const sp<RfxMclMessage>& msg);
-        void requestAntennaInfo(const sp<RfxMclMessage>& msg);
+  private:
+    void requestAntennaConf(const sp<RfxMclMessage>& msg);
+    void requestAntennaInfo(const sp<RfxMclMessage>& msg);
 
-    protected:
-        // MTK_TC1_FEATURE for Antenna Testing start
-        int antennaTestingType = 0;
-        // MTK_TC1_FEATURE for Antenna Testing end
+  protected:
+    // MTK_TC1_FEATURE for Antenna Testing start
+    int antennaTestingType = 0;
+    // MTK_TC1_FEATURE for Antenna Testing end
 };
 
 #endif

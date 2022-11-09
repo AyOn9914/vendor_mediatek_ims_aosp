@@ -37,34 +37,32 @@
 #include <mtk_log.h>
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 class WpfaControlMsgHandler : public Thread {
-
-private:
+  private:
     class CcciMsgHandler : public MessageHandler {
-        public:
-            CcciMsgHandler(WpfaControlMsgHandler* _sender, const sp<WpfaDriverMessage>& _msg) :
-                msg(_msg) , sender(_sender){}
+      public:
+        CcciMsgHandler(WpfaControlMsgHandler* _sender, const sp<WpfaDriverMessage>& _msg)
+            : msg(_msg), sender(_sender) {}
 
-            virtual ~CcciMsgHandler() {}
+        virtual ~CcciMsgHandler() {}
 
-            virtual void handleMessage(const Message& message);
+        virtual void handleMessage(const Message& message);
 
-        private:
-            sp<WpfaDriverMessage> msg;
-            WpfaControlMsgHandler* sender;
+      private:
+        sp<WpfaDriverMessage> msg;
+        WpfaControlMsgHandler* sender;
     };
 
-
-private:
+  private:
     WpfaControlMsgHandler();
     virtual ~WpfaControlMsgHandler() {}
 
-public:
+  public:
     static void init(int ccciHandler);
     static void enqueueDriverMessage(const sp<WpfaDriverMessage>& message);
     static void enqueueDriverlMessageFront(const sp<WpfaDriverMessage>& message);
@@ -78,19 +76,19 @@ public:
     void sendMessageToShmReadMsgHandler(const sp<WpfaDriverMessage>& msg);
     void sendMessageToShmWriteMsgHandler(const sp<WpfaDriverMessage>& msg);
 
-private:
+  private:
     int checkDriverAdapterState();
 
     static int mCcciFd;
-    static WpfaControlMsgHandler *s_self;
+    static WpfaControlMsgHandler* s_self;
     sp<Looper> mLooper;
     Message mDummyMsg;
 
-    WpfaDriverAdapter *mDriverAdapter;
-    WpfaCcciReader *mReader;
-    WpfaCcciSender *mSender;
+    WpfaDriverAdapter* mDriverAdapter;
+    WpfaCcciReader* mReader;
+    WpfaCcciSender* mSender;
 
-    WpfaDriverUtilis *mWpfaDriverUtilis;
+    WpfaDriverUtilis* mWpfaDriverUtilis;
 };
 
 #endif

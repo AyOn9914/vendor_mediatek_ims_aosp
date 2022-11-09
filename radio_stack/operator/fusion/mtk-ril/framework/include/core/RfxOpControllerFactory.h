@@ -32,14 +32,14 @@
  *****************************************************************************/
 
 class RfxOpControllerFactory {
-public:
+  public:
     RfxOpControllerFactory();
 
-private:
+  private:
     static void createControllerInternal(const RfxCreateControllerFuncptr* controller_list,
-                                         int length, RfxObject *parent);
+                                         int length, RfxObject* parent);
 
-public:
+  public:
     static const rfx_ctrler_factory_init s_pre_non_slot_controllers[];
     static const rfx_ctrler_factory_init s_slot_controllers[];
     static const rfx_ctrler_factory_init s_non_slot_controllers[];

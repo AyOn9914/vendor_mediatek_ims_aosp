@@ -29,10 +29,10 @@
 #include "RfxRilAdapter.h"
 #include "RfxDefs.h"
 
-using ::android::sp;
-using ::android::wp;
 using ::android::SortedVector;
+using ::android::sp;
 using ::android::Vector;
+using ::android::wp;
 
 extern int RFX_SLOT_COUNT;
 
@@ -40,58 +40,49 @@ extern int RFX_SLOT_COUNT;
  * Class RfxRegistryEntry
  *****************************************************************************/
 class RfxRegistryEntry {
+  public:
+    RfxRegistryEntry()
+        : id(-1),
+          slot_id(RFX_SLOT_ID_UNKNOWN),
+          controller(NULL),
+          priority(RfxController::HANDLER_PRIORITY::DEFAULT),
+          msg_token(-1) {}
 
-public:
-    RfxRegistryEntry() :
-        id(-1),
-        slot_id(RFX_SLOT_ID_UNKNOWN),
-        controller(NULL),
-        priority(RfxController::HANDLER_PRIORITY::DEFAULT),
-        msg_token(-1) {
-    }
+    RfxRegistryEntry(int _id, int _slot_id, wp<RfxController>& _controller,
+                     RfxController::HANDLER_PRIORITY _priority, int token)
+        : id(_id),
+          slot_id(_slot_id),
+          controller(_controller),
+          priority(_priority),
+          msg_token(token) {}
 
-    RfxRegistryEntry(int _id, int _slot_id,
-        wp<RfxController>& _controller,
-        RfxController::HANDLER_PRIORITY _priority,
-        int token) :
-        id(_id),
-        slot_id(_slot_id),
-        controller(_controller),
-        priority(_priority),
-        msg_token(token) {
-    }
-
-    RfxRegistryEntry(const RfxRegistryEntry &other) :
-        id(other.id),
-        slot_id(other.slot_id),
-        controller(other.controller),
-        priority(other.priority),
-        msg_token(other.msg_token) {
-    }
+    RfxRegistryEntry(const RfxRegistryEntry& other)
+        : id(other.id),
+          slot_id(other.slot_id),
+          controller(other.controller),
+          priority(other.priority),
+          msg_token(other.msg_token) {}
 
     bool operator<(const RfxRegistryEntry& rhs) const {
-        return (id < rhs.id) ||
-               (id == rhs.id && slot_id < rhs.slot_id) ||
+        return (id < rhs.id) || (id == rhs.id && slot_id < rhs.slot_id) ||
                (id == rhs.id && slot_id == rhs.slot_id && priority < rhs.priority) ||
-               (id == rhs.id && slot_id == rhs.slot_id &&
-                priority == rhs.priority && msg_token < rhs.msg_token);
+               (id == rhs.id && slot_id == rhs.slot_id && priority == rhs.priority &&
+                msg_token < rhs.msg_token);
     }
 
     bool operator>(const RfxRegistryEntry& rhs) const {
-        return (id > rhs.id) ||
-               (id == rhs.id && slot_id > rhs.slot_id) ||
+        return (id > rhs.id) || (id == rhs.id && slot_id > rhs.slot_id) ||
                (id == rhs.id && slot_id == rhs.slot_id && priority > rhs.priority) ||
-               (id == rhs.id && slot_id == rhs.slot_id &&
-                priority == rhs.priority && msg_token > rhs.msg_token);
+               (id == rhs.id && slot_id == rhs.slot_id && priority == rhs.priority &&
+                msg_token > rhs.msg_token);
     }
 
     bool operator==(const RfxRegistryEntry& rhs) const {
-        return id == rhs.id && slot_id == rhs.slot_id &&
-               priority == rhs.priority && msg_token == rhs.msg_token;
+        return id == rhs.id && slot_id == rhs.slot_id && priority == rhs.priority &&
+               msg_token == rhs.msg_token;
     }
 
-public:
-
+  public:
     int id;
     int slot_id;
     wp<RfxController> controller;
@@ -103,19 +94,14 @@ public:
  * Class RfxSuspendedMsgEntry
  *****************************************************************************/
 class RfxSuspendedMsgEntry {
-public:
-    RfxSuspendedMsgEntry() :
-        controller(NULL),
-        message(NULL) {}
+  public:
+    RfxSuspendedMsgEntry() : controller(NULL), message(NULL) {}
 
-    RfxSuspendedMsgEntry(RfxController *handler,
-        const sp<RfxMessage>& msg) :
-        controller(handler),
-        message(msg) {}
+    RfxSuspendedMsgEntry(RfxController* handler, const sp<RfxMessage>& msg)
+        : controller(handler), message(msg) {}
 
-    RfxSuspendedMsgEntry(const RfxSuspendedMsgEntry& other) :
-        controller(other.controller),
-        message(other.message){}
+    RfxSuspendedMsgEntry(const RfxSuspendedMsgEntry& other)
+        : controller(other.controller), message(other.message) {}
 
     RfxSuspendedMsgEntry& operator=(const RfxSuspendedMsgEntry& other) {
         controller = other.controller;
@@ -123,7 +109,7 @@ public:
         return *this;
     }
 
-public:
+  public:
     wp<RfxController> controller;
     sp<RfxMessage> message;
 };
@@ -132,13 +118,12 @@ public:
  * Class RfxRootController
  *****************************************************************************/
 
-class RfxRootController : public RfxController
-{
+class RfxRootController : public RfxController {
     RFX_DECLARE_CLASS(RfxRootController);
     RFX_OBJ_DECLARE_SINGLETON_CLASS(RfxRootController);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     // Constructor
     RfxRootController() {
         for (int index = 0; index < MAX_RFX_SLOT_ID + 1; index++) {
@@ -149,9 +134,8 @@ public:
 
     virtual ~RfxRootController() {}
 
-// Method
-public:
-
+    // Method
+  public:
     void processSuspendedMessage();
 
     virtual bool processMessage(const sp<RfxMessage>& message);
@@ -159,65 +143,59 @@ public:
     virtual bool processAtciRequest(const sp<RfxMessage>& message);
 
     virtual void clearMessages();
-// Overridable
-public:
+    // Overridable
+  public:
+    void registerToHandleRequest(RfxController* controller, int slot_id, const int* request_id_list,
+                                 size_t length, HANDLER_PRIORITY priority = DEFAULT);
 
-    void registerToHandleRequest(RfxController *controller, int slot_id,
-        const int *request_id_list, size_t length, HANDLER_PRIORITY priority = DEFAULT);
+    void registerToHandleResponse(RfxController* controller, int slot_id,
+                                  const int* response_id_list, size_t length, int token = -1);
 
-    void registerToHandleResponse(RfxController *controller, int slot_id,
-        const int *response_id_list, size_t length, int token = -1);
+    void registerToHandleUrc(RfxController* controller, int slot_id, const int* urc_id_list,
+                             size_t length);
 
-    void registerToHandleUrc(RfxController *controller, int slot_id,
-        const int *urc_id_list, size_t length);
+    void unregisterToHandleRequest(int slot_id, const int* request_id_list, size_t length,
+                                   HANDLER_PRIORITY priority = DEFAULT);
 
-    void unregisterToHandleRequest(int slot_id, const int *request_id_list,
-        size_t length, HANDLER_PRIORITY priority = DEFAULT);
+    void unregisterToHandleUrc(int slot_id, const int* urc_id_list, size_t length);
 
-    void unregisterToHandleUrc(int slot_id, const int *urc_id_list, size_t length);
+    RfxStatusManager* getStatusManager(int slot_id) const;
 
-    RfxStatusManager *getStatusManager(int slot_id) const;
+    RfxController* getSlotRootController(int slot_id) const;
 
-    RfxController *getSlotRootController(int slot_id) const;
+    void setSlotRootController(int slot_id, RfxController* slot_root);
 
-    void setSlotRootController(int slot_id, RfxController *slot_root);
+    void suspendMessage(RfxController* controller, const sp<RfxMessage>& message);
 
-    void suspendMessage(RfxController *controller, const sp<RfxMessage>& message);
+    void clearRegistry(RfxController* controller);
 
-    void clearRegistry(RfxController *controller);
-
-protected:
-
+  protected:
     virtual void onInit();
 
-private:
-
+  private:
     SortedVector<RfxRegistryEntry> m_request_list;
     SortedVector<RfxRegistryEntry> m_response_list;
     SortedVector<RfxRegistryEntry> m_urc_list;
     Vector<RfxSuspendedMsgEntry> m_suspended_msg_list;
     // add one more status manage for no-slot controllers
-    RfxStatusManager *m_status_managers[MAX_RFX_SLOT_ID + 1];
+    RfxStatusManager* m_status_managers[MAX_RFX_SLOT_ID + 1];
     // add one more for append non-slot controllers
-    RfxController *m_slot_root_controllers[MAX_RFX_SLOT_ID + 1];
+    RfxController* m_slot_root_controllers[MAX_RFX_SLOT_ID + 1];
 
-private:
+  private:
+    void registerInternal(SortedVector<RfxRegistryEntry>& list, RfxController* controller,
+                          int slot_id, const int* id_list, size_t length,
+                          HANDLER_PRIORITY priority = DEFAULT, int token = -1);
 
-    void registerInternal(SortedVector<RfxRegistryEntry>& list, RfxController *controller,
-        int slot_id, const int *id_list, size_t length,
-        HANDLER_PRIORITY priority = DEFAULT, int token = -1);
+    void unregisterInternal(SortedVector<RfxRegistryEntry>& list, int slot_id, const int* id_list,
+                            size_t length, HANDLER_PRIORITY priority = DEFAULT, int token = -1);
 
-    void unregisterInternal(SortedVector<RfxRegistryEntry>& list, int slot_id,
-        const int *id_list, size_t length,
-        HANDLER_PRIORITY priority = DEFAULT, int token = -1);
+    RfxController* findMsgHandler(int id, int slot_id, SortedVector<RfxRegistryEntry>& list,
+                                  HANDLER_PRIORITY priority = DEFAULT, int token = -1);
 
-    RfxController *findMsgHandler(int id, int slot_id, SortedVector<RfxRegistryEntry>& list,
-        HANDLER_PRIORITY priority = DEFAULT, int token = -1);
-
-    void clearRegistryInternal(SortedVector<RfxRegistryEntry>& list, RfxController *controller);
+    void clearRegistryInternal(SortedVector<RfxRegistryEntry>& list, RfxController* controller);
 
     void handleSendResponseAck(const sp<RfxMessage>& message);
 };
-
 
 #endif /* __RFX_ROOT_CONTROLLER_H__ */

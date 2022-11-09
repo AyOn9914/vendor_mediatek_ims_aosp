@@ -32,56 +32,56 @@
 #include "WpfaDriverMessage.h"
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::Mutex;
 using ::android::RefBase;
 using ::android::sp;
+using ::android::Thread;
 
 class WpfaCcciSender : public Thread {
-    public:
-        WpfaCcciSender(int fd);
+  public:
+    WpfaCcciSender(int fd);
 
-    private:
-        class CcciMsgHandler : public MessageHandler {
-            public:
-                CcciMsgHandler(WpfaCcciSender* _sender, const sp<WpfaDriverMessage>& _msg) :
-                        msg(_msg),  sender(_sender) {}
+  private:
+    class CcciMsgHandler : public MessageHandler {
+      public:
+        CcciMsgHandler(WpfaCcciSender* _sender, const sp<WpfaDriverMessage>& _msg)
+            : msg(_msg), sender(_sender) {}
 
-                virtual ~CcciMsgHandler() {}
+        virtual ~CcciMsgHandler() {}
 
-            public:
-                virtual void handleMessage(const Message& message);
+      public:
+        virtual void handleMessage(const Message& message);
 
-            private:
-                sp<WpfaDriverMessage> msg;
-                WpfaCcciSender* sender;
-        };
+      private:
+        sp<WpfaDriverMessage> msg;
+        WpfaCcciSender* sender;
+    };
 
-    public:
-        void enqueueCcciMessage(const sp<WpfaDriverMessage>& msg);
+  public:
+    void enqueueCcciMessage(const sp<WpfaDriverMessage>& msg);
 
-        void enqueueCcciMessageFront(const sp<WpfaDriverMessage>& msg);
+    void enqueueCcciMessageFront(const sp<WpfaDriverMessage>& msg);
 
-        sp<Looper> waitLooper(); // Must invoke after new RfxSender
+    sp<Looper> waitLooper();  // Must invoke after new RfxSender
 
-    private:
-        virtual bool threadLoop();
-        void processMessage(const sp<WpfaDriverMessage>& msg);
+  private:
+    virtual bool threadLoop();
+    void processMessage(const sp<WpfaDriverMessage>& msg);
 
-        int driverMsgToCcciMsg(const sp<WpfaDriverMessage>& driverMsg, ccci_msg_send_t *pMsgSend);
+    int driverMsgToCcciMsg(const sp<WpfaDriverMessage>& driverMsg, ccci_msg_send_t* pMsgSend);
 
-        sp<Looper> m_looper;
-        int m_fd;
-        Message m_dummy_msg;
-        friend CcciMsgHandler;
-        //int m_atTimeoutMsec;
-        pthread_t m_threadId;
-        //const char* mName;
+    sp<Looper> m_looper;
+    int m_fd;
+    Message m_dummy_msg;
+    friend CcciMsgHandler;
+    // int m_atTimeoutMsec;
+    pthread_t m_threadId;
+    // const char* mName;
 
-        sem_t mWaitLooperSem;
-        bool mNeedWaitLooper;
-        Mutex mWaitLooperMutex;
+    sem_t mWaitLooperSem;
+    bool mNeedWaitLooper;
+    Mutex mWaitLooperMutex;
 };
 #endif

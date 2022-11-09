@@ -23,13 +23,13 @@
 #include "RmcSimBaseHandler.h"
 
 // External SIM [Start]
-#define VSIM_TRIGGER_RESET      0
-#define VSIM_TRIGGER_PLUG_IN    1
-#define VSIM_TRIGGER_PLUG_OUT   2
+#define VSIM_TRIGGER_RESET 0
+#define VSIM_TRIGGER_PLUG_IN 1
+#define VSIM_TRIGGER_PLUG_OUT 2
 
-#define VSIM_MD_WAITING_RESET   -1
-#define VSIM_MD_WAITING_ATR     1
-#define VSIM_MD_WAITING_APDU    0
+#define VSIM_MD_WAITING_RESET -1
+#define VSIM_MD_WAITING_ATR 1
+#define VSIM_MD_WAITING_APDU 0
 // External SIM [End]
 
 /*****************************************************************************
@@ -37,20 +37,20 @@
  *****************************************************************************/
 
 class RmcCommSimUrcHandler : public RmcSimBaseHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCommSimUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCommSimUrcHandler);
 
-public:
+  public:
     RmcCommSimUrcHandler(int slot_id, int channel_id);
     virtual ~RmcCommSimUrcHandler();
 
     // Process URC here
-    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    virtual void handleUrc(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 
     // Check if the handler have to process the URC or not
     virtual RmcSimBaseHandler::SIM_HANDLE_RESULT needHandle(const sp<RfxMclMessage>& msg);
 
     // Return the list which you want to reqister
-    virtual const char** queryUrcTable(int *record_num);
+    virtual const char** queryUrcTable(int* record_num);
 
     // External SIM [Start]
     // VSIM event flag value: 0: N/A, 1: in, 2: out
@@ -64,20 +64,19 @@ public:
     static int getMdWaitingResponse(int slotId);
     // External SIM [End]
 
-private:
-
+  private:
     static int mTrayPluginCount;
 
-    void handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleCardType(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
     void handleSimStateChanged(const sp<RfxMclMessage>& msg, char* urc);
-    void handleEcpin(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
-    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
-    void handleSimSlotLockStatusChanged(RfxAtLine *urc);
-    void handleSimSlotStatusChanged(RfxAtLine *urc);
-    void handleIccidIndication(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleEcpin(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
+    void handleSimIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
+    void handleSimSlotLockStatusChanged(RfxAtLine* urc);
+    void handleSimSlotStatusChanged(RfxAtLine* urc);
+    void handleIccidIndication(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
     void onSmlConfigureCheck();
-    void handleTestSimDetected(RfxAtLine *urc);
-    void handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
-    void handleTmoRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine *urc);
+    void handleTestSimDetected(RfxAtLine* urc);
+    void handleRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
+    void handleTmoRsuEvent(const sp<RfxMclMessage>& msg, RfxAtLine* urc);
 };
 #endif /* __RMC_COMM_SIM_URC_HANDLER_H__ */

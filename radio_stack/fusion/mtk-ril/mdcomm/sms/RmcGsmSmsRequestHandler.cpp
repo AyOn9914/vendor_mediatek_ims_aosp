@@ -46,31 +46,29 @@ static const int non_realtime_req_list[] = {
         RFX_MSG_REQUEST_IMS_SEND_GSM_SMS_EX,
 };
 
-static const int channel1_req_list[] = {
-        RFX_MSG_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU,
-        RFX_MSG_REQUEST_WRITE_SMS_TO_SIM,
-        RFX_MSG_REQUEST_DELETE_SMS_ON_SIM,
-        RFX_MSG_REQUEST_GSM_SET_BROADCAST_SMS_CONFIG,
-        RFX_MSG_REQUEST_REPORT_SMS_MEMORY_STATUS,
-        RFX_MSG_REQUEST_GET_SMS_SIM_MEM_STATUS,
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE,
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_INTERNAL,
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_EX,
-        RFX_MSG_REQUEST_GSM_GET_BROADCAST_SMS_CONFIG,
-        RFX_MSG_REQUEST_GET_SMSC_ADDRESS,
-        RFX_MSG_REQUEST_SET_SMSC_ADDRESS,
-        RFX_MSG_REQUEST_GSM_GET_BROADCAST_LANGUAGE,
-        RFX_MSG_REQUEST_GSM_SET_BROADCAST_LANGUAGE,
-        RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
-        RFX_MSG_REQUEST_SET_ETWS,
-        RFX_MSG_REQUEST_REMOVE_CB_MESSAGE,
-        RFX_MSG_REQUEST_GET_SMS_PARAMS,
-        RFX_MSG_REQUEST_SET_SMS_PARAMS,
-        RFX_MSG_REQUEST_GET_GSM_SMS_BROADCAST_ACTIVATION
-};
+static const int channel1_req_list[] = {RFX_MSG_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU,
+                                        RFX_MSG_REQUEST_WRITE_SMS_TO_SIM,
+                                        RFX_MSG_REQUEST_DELETE_SMS_ON_SIM,
+                                        RFX_MSG_REQUEST_GSM_SET_BROADCAST_SMS_CONFIG,
+                                        RFX_MSG_REQUEST_REPORT_SMS_MEMORY_STATUS,
+                                        RFX_MSG_REQUEST_GET_SMS_SIM_MEM_STATUS,
+                                        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE,
+                                        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_INTERNAL,
+                                        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_EX,
+                                        RFX_MSG_REQUEST_GSM_GET_BROADCAST_SMS_CONFIG,
+                                        RFX_MSG_REQUEST_GET_SMSC_ADDRESS,
+                                        RFX_MSG_REQUEST_SET_SMSC_ADDRESS,
+                                        RFX_MSG_REQUEST_GSM_GET_BROADCAST_LANGUAGE,
+                                        RFX_MSG_REQUEST_GSM_SET_BROADCAST_LANGUAGE,
+                                        RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION,
+                                        RFX_MSG_REQUEST_SET_ETWS,
+                                        RFX_MSG_REQUEST_REMOVE_CB_MESSAGE,
+                                        RFX_MSG_REQUEST_GET_SMS_PARAMS,
+                                        RFX_MSG_REQUEST_SET_SMS_PARAMS,
+                                        RFX_MSG_REQUEST_GET_GSM_SMS_BROADCAST_ACTIVATION};
 
 static const int event_list[] = {
-    RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK,
+        RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK,
 };
 
 // Register handler
@@ -78,76 +76,59 @@ RFX_IMPLEMENT_HANDLER_CLASS(RmcGsmSmsRequestHandler, RIL_CMD_PROXY_8);
 RFX_REGISTER_HANDLER_CLASS(RmcGsmSmsRequestHandler, RIL_CMD_PROXY_1);
 
 // Register dispatch and response class
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxSmsRspData, \
-        RFX_MSG_REQUEST_SEND_SMS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxSmsRspData, \
-        RFX_MSG_REQUEST_SEND_SMS_EXPECT_MORE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_EX);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_INTERNAL);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSmsWriteData, RfxIntsData, \
-        RFX_MSG_REQUEST_WRITE_SMS_TO_SIM);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_DELETE_SMS_ON_SIM);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_REPORT_SMS_MEMORY_STATUS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSmsSimMemStatusCnfData, \
-        RFX_MSG_REQUEST_GET_SMS_SIM_MEM_STATUS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, \
-        RFX_MSG_REQUEST_GET_SMSC_ADDRESS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, \
-        RFX_MSG_REQUEST_SET_SMSC_ADDRESS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData, \
-        RFX_MSG_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxGsmCbSmsCfgData, \
-        RFX_MSG_REQUEST_GSM_GET_BROADCAST_SMS_CONFIG);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxGsmCbSmsCfgData, RfxVoidData, \
-        RFX_MSG_REQUEST_GSM_SET_BROADCAST_SMS_CONFIG);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, \
-        RFX_MSG_REQUEST_GSM_GET_BROADCAST_LANGUAGE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, \
-        RFX_MSG_REQUEST_GSM_SET_BROADCAST_LANGUAGE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData, \
-        RFX_MSG_REQUEST_GET_GSM_SMS_BROADCAST_ACTIVATION);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_SET_ETWS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, \
-        RFX_MSG_REQUEST_REMOVE_CB_MESSAGE);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSmsParamsData, \
-        RFX_MSG_REQUEST_GET_SMS_PARAMS);
-RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSmsParamsData, RfxVoidData, \
-        RFX_MSG_REQUEST_SET_SMS_PARAMS);
-
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxSmsRspData, RFX_MSG_REQUEST_SEND_SMS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxSmsRspData,
+                                RFX_MSG_REQUEST_SEND_SMS_EXPECT_MORE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SMS_ACKNOWLEDGE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_EX);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SMS_ACKNOWLEDGE_INTERNAL);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSmsWriteData, RfxIntsData, RFX_MSG_REQUEST_WRITE_SMS_TO_SIM);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_DELETE_SMS_ON_SIM);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_REPORT_SMS_MEMORY_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSmsSimMemStatusCnfData,
+                                RFX_MSG_REQUEST_GET_SMS_SIM_MEM_STATUS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData, RFX_MSG_REQUEST_GET_SMSC_ADDRESS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData, RFX_MSG_REQUEST_SET_SMSC_ADDRESS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxVoidData,
+                                RFX_MSG_REQUEST_ACKNOWLEDGE_INCOMING_GSM_SMS_WITH_PDU);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxGsmCbSmsCfgData,
+                                RFX_MSG_REQUEST_GSM_GET_BROADCAST_SMS_CONFIG);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxGsmCbSmsCfgData, RfxVoidData,
+                                RFX_MSG_REQUEST_GSM_SET_BROADCAST_SMS_CONFIG);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxStringData,
+                                RFX_MSG_REQUEST_GSM_GET_BROADCAST_LANGUAGE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringData, RfxVoidData,
+                                RFX_MSG_REQUEST_GSM_SET_BROADCAST_LANGUAGE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData,
+                                RFX_MSG_REQUEST_GSM_SMS_BROADCAST_ACTIVATION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxIntsData,
+                                RFX_MSG_REQUEST_GET_GSM_SMS_BROADCAST_ACTIVATION);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_SET_ETWS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxIntsData, RfxVoidData, RFX_MSG_REQUEST_REMOVE_CB_MESSAGE);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxVoidData, RfxSmsParamsData, RFX_MSG_REQUEST_GET_SMS_PARAMS);
+RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSmsParamsData, RfxVoidData, RFX_MSG_REQUEST_SET_SMS_PARAMS);
 
 // Register event
 RFX_REGISTER_DATA_TO_EVENT_ID(RfxIntsData, RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK);
-
-
 
 /*****************************************************************************
  * Class RmcGsmSmsRequestHandler
  *****************************************************************************/
 
-
-RmcGsmSmsRequestHandler::RmcGsmSmsRequestHandler(int slot_id, int channel_id) :
-        RmcGsmSmsBaseHandler(slot_id, channel_id) {
+RmcGsmSmsRequestHandler::RmcGsmSmsRequestHandler(int slot_id, int channel_id)
+    : RmcGsmSmsBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcGsmSmsRequest"));
     if (channel_id == RIL_CMD_PROXY_8 && RfxRilUtils::isSmsSupport()) {
-        registerToHandleRequest(non_realtime_req_list, sizeof(non_realtime_req_list)/sizeof(int));
+        registerToHandleRequest(non_realtime_req_list, sizeof(non_realtime_req_list) / sizeof(int));
     } else if (channel_id == RIL_CMD_PROXY_1 && RfxRilUtils::isSmsSupport()) {
-        registerToHandleRequest(channel1_req_list, sizeof(channel1_req_list)/sizeof(int));
-        registerToHandleEvent(event_list, sizeof(event_list)/sizeof(int));
+        registerToHandleRequest(channel1_req_list, sizeof(channel1_req_list) / sizeof(int));
+        registerToHandleEvent(event_list, sizeof(event_list) / sizeof(int));
     }
 }
 
 void RmcGsmSmsRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_SEND_SMS:
         case RFX_MSG_REQUEST_SEND_SMS_EXPECT_MORE:
         case RFX_MSG_REQUEST_IMS_SEND_GSM_SMS:
@@ -216,9 +197,9 @@ void RmcGsmSmsRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcGsmSmsRequestHandler::onHandleEvent(const sp < RfxMclMessage > & msg) {
+void RmcGsmSmsRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int event = msg->getId();
-    switch(event) {
+    switch (event) {
         case RFX_MSG_EVENT_SMS_NEW_SMS_ERR_ACK:
             sendNewSmsErrorAck(msg);
             break;
@@ -230,12 +211,13 @@ void RmcGsmSmsRequestHandler::onHandleEvent(const sp < RfxMclMessage > & msg) {
 
 void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
     char** data = (char**)msg->getData()->getData();
-    int err, len=0, cause;
+    int err, len = 0, cause;
     String8 smsc("");
     String8 pdu("");
     String8 cmd1("");
-    RfxAtLine *line = NULL;
-    char buffer[(MAX_SMSC_LENGTH+MAX_TPDU_LENGTH+1)*2+1];   // +2: one for <length of SMSC>, one for \0
+    RfxAtLine* line = NULL;
+    char buffer[(MAX_SMSC_LENGTH + MAX_TPDU_LENGTH + 1) * 2 +
+                1];  // +2: one for <length of SMSC>, one for \0
     RIL_SMS_Response response;
     memset(&response, 0, sizeof(response));
     sp<RfxAtResponse> p_response = NULL;
@@ -245,8 +227,8 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-                RfxVoidData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxVoidData(), msg,
+                                            false);
         responseToTelCore(rsp);
         return;
     }
@@ -261,9 +243,9 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
     /* fill error code first */
     response.errorCode = ril_errno;
 
-    len = smsPackPdu(((!smsc.isEmpty())? smsc.string() : NULL),
-            ((!pdu.isEmpty())? pdu.string() : NULL), buffer, true);
-    if(len < 0) goto error;
+    len = smsPackPdu(((!smsc.isEmpty()) ? smsc.string() : NULL),
+                     ((!pdu.isEmpty()) ? pdu.string() : NULL), buffer, true);
+    if (len < 0) goto error;
 
     /********************************************
      * if the request is RIL_REQUEST_SEND_SMS_EXPECT_MORE
@@ -302,7 +284,7 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
         if (cause == CMS_MTK_FDN_CHECK_FAILURE) {
             ril_errno = RIL_E_FDN_CHECK_FAILURE;
         } else if (cause == CMS_MTK_REQ_RETRY ||
-                (cause == CMS_CM_SMS_CONNECTION_BROKEN && smsRetry == 1)) {
+                   (cause == CMS_CM_SMS_CONNECTION_BROKEN && smsRetry == 1)) {
             ril_errno = RIL_E_SMS_SEND_FAIL_RETRY;
         }
 
@@ -311,7 +293,6 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
          * commands again
          ********************************************/
         p_response = NULL;
-
 
         /********************************************
          * if the request is RIL_REQUEST_SEND_SMS_EXPECT_MORE
@@ -330,7 +311,7 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
         goto error;
     }
 
-// Get message reference and ackPDU
+    // Get message reference and ackPDU
     line = p_response->getIntermediates();
     line->atTokStart(&err);
 
@@ -348,27 +329,29 @@ void RmcGsmSmsRequestHandler::handleSendSms(const sp<RfxMclMessage>& msg) {
     /* fill success code */
     response.errorCode = RIL_E_SUCCESS;
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                RfxSmsRspData((void*)&response, sizeof(response)), msg, false);
+                                        RfxSmsRspData((void*)&response, sizeof(response)), msg,
+                                        false);
 
     responseToTelCore(rsp);
     return;
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxSmsRspData(NULL, 0), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxSmsRspData(NULL, 0), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleSmsAcknowledge(const sp<RfxMclMessage>& msg) {
-    void *pData = msg->getData()->getData();
+    void* pData = msg->getData()->getData();
     int ackSuccess, cause;
     int err = 0;
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
     sp<RfxAtResponse> p_response;
     String8 cmd("");
     sp<RfxMclMessage> rsp;
 
-    ackSuccess = ((int *)pData)[0];
-    cause = ((int *)pData)[1] & 0xFF;
+    ackSuccess = ((int*)pData)[0];
+    cause = ((int*)pData)[1] & 0xFF;
 
     showCurrIncomingSmsType();
     if (ackSuccess == 1) {
@@ -398,8 +381,7 @@ void RmcGsmSmsRequestHandler::handleSmsAcknowledge(const sp<RfxMclMessage>& msg)
         goto error;
     }
 
-    if (err < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (err < 0 || p_response->getSuccess() == 0) goto error;
 
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_NONE);
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
@@ -407,30 +389,31 @@ void RmcGsmSmsRequestHandler::handleSmsAcknowledge(const sp<RfxMclMessage>& msg)
     return;
 error:
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_NONE);
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
     return;
 }
 
 void RmcGsmSmsRequestHandler::handleWriteSmsToSim(const sp<RfxMclMessage>& msg) {
-    RIL_SMS_WriteArgs *p_args = (RIL_SMS_WriteArgs*)(msg->getData()->getData());
+    RIL_SMS_WriteArgs* p_args = (RIL_SMS_WriteArgs*)(msg->getData()->getData());
     String8 cmd("");
-    char buffer[(MAX_SMSC_LENGTH+MAX_TPDU_LENGTH+1)*2+1];   // +2: one for <length of SMSC>, one for \0;
+    char buffer[(MAX_SMSC_LENGTH + MAX_TPDU_LENGTH + 1) * 2 +
+                1];  // +2: one for <length of SMSC>, one for \0;
     int length, err, response[1], ret = 0;
     sp<RfxAtResponse> p_response;
-    RfxAtLine *line;
+    RfxAtLine* line;
     sp<RfxMclMessage> rsp;
 
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-            RfxIntsData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxIntsData(), msg,
+                                            false);
         responseToTelCore(rsp);
         return;
     }
-    //check stat
+    // check stat
     if (p_args->status < RIL_SMS_REC_UNREAD || p_args->status >= RIL_SMS_MESSAGE_MAX) {
         logE(mTag, "The status is invalid: %d", p_args->status);
         goto error;
@@ -451,29 +434,29 @@ void RmcGsmSmsRequestHandler::handleWriteSmsToSim(const sp<RfxMclMessage>& msg) 
     line = p_response->getIntermediates();
 
     line->atTokStart(&err);
-    if( err < 0) goto error;
+    if (err < 0) goto error;
 
     response[0] = line->atTokNextint(&err);
-    if( err < 0) goto error;
+    if (err < 0) goto error;
 
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData((void*)response, sizeof(response)), msg, false);
+                                        RfxIntsData((void*)response, sizeof(response)), msg, false);
 
     responseToTelCore(rsp);
     return;
 error:
-    if(CMS_CM_SIM_IS_FULL == ret) {
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_FULL,
-            RfxIntsData(), msg, false);
+    if (CMS_CM_SIM_IS_FULL == ret) {
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_FULL, RfxIntsData(), msg,
+                                            false);
     } else {
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxIntsData(), msg,
+                                            false);
     }
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleDeleteSmsOnSim(const sp<RfxMclMessage>& msg) {
-    int *pData = (int*)(msg->getData()->getData());
+    int* pData = (int*)(msg->getData()->getData());
     String8 cmd("");
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
@@ -483,29 +466,29 @@ void RmcGsmSmsRequestHandler::handleDeleteSmsOnSim(const sp<RfxMclMessage>& msg)
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-            RfxVoidData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxVoidData(), msg,
+                                            false);
         responseToTelCore(rsp);
         return;
     }
-    index = ((int *)pData)[0];
+    index = ((int*)pData)[0];
 
-    if(index > 0) {
+    if (index > 0) {
         cmd.append(String8::format("AT+CMGD=%d", index));
         p_response = atSendCommand(cmd);
         err = p_response->getError();
 
-        if ( !(err < 0 || p_response->getSuccess() == 0) ) {
+        if (!(err < 0 || p_response->getSuccess() == 0)) {
             ril_errno = RIL_E_SUCCESS;
         }
         p_response = NULL;
-    } else if(-1 == index) {
+    } else if (-1 == index) {
         // delete all sms on SIM
         cmd.append(String8::format("AT+CMGD=0,4"));
         p_response = atSendCommand(cmd);
         err = p_response->getError();
 
-        if ( !(err < 0 || p_response->getSuccess() == 0) ) {
+        if (!(err < 0 || p_response->getSuccess() == 0)) {
             ril_errno = RIL_E_SUCCESS;
         }
         p_response = NULL;
@@ -515,7 +498,7 @@ void RmcGsmSmsRequestHandler::handleDeleteSmsOnSim(const sp<RfxMclMessage>& msg)
 }
 
 void RmcGsmSmsRequestHandler::handleReportSmsMemStatus(const sp<RfxMclMessage>& msg) {
-    int *pData = (int*)(msg->getData()->getData());
+    int* pData = (int*)(msg->getData()->getData());
     int available;
     int err;
     String8 line("");
@@ -526,24 +509,24 @@ void RmcGsmSmsRequestHandler::handleReportSmsMemStatus(const sp<RfxMclMessage>& 
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-            RfxVoidData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxVoidData(), msg,
+                                            false);
         responseToTelCore(rsp);
         return;
     }
 
-    available = ((int *)pData)[0];
+    available = ((int*)pData)[0];
     if (available == 1 || available == 0) {
-        line.append(String8::format("AT+EMEMS=1, %d", available==1 ? 0 : 1));
+        line.append(String8::format("AT+EMEMS=1, %d", available == 1 ? 0 : 1));
         p_response = atSendCommand(line);
         err = p_response->getError();
-        if (! (err < 0 || p_response->getSuccess() <= 0) ) {
+        if (!(err < 0 || p_response->getSuccess() <= 0)) {
             ril_errno = RIL_E_SUCCESS;
             getMclStatusManager()->setIntValue(RFX_STATUS_KEY_SMS_PHONE_STORAGE,
-                    (available==1 ? 0 : 1));
+                                               (available == 1 ? 0 : 1));
         }
         logD(mTag, "Phone storage status: %d",
-                getMclStatusManager()->getIntValue(RFX_STATUS_KEY_SMS_PHONE_STORAGE, 0));
+             getMclStatusManager()->getIntValue(RFX_STATUS_KEY_SMS_PHONE_STORAGE, 0));
     }
 
     rsp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno, RfxVoidData(), msg, false);
@@ -555,22 +538,21 @@ void RmcGsmSmsRequestHandler::handleGetSmsSimMemStatus(const sp<RfxMclMessage>& 
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     RIL_SMS_Memory_Status mem_status = {0, 0};
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     int err;
     int i;
 
     p_response = atSendCommandSingleline("AT+CPMS?", "+CPMS:");
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() <= 0)
-        goto done;
+    if (err < 0 || p_response->getSuccess() <= 0) goto done;
 
     line = p_response->getIntermediates();
     line->atTokStart(&err);
     if (err < 0) goto done;
 
     for (i = 0; i < RIL_SMS_MEM_TYPE_TOTAL; i++) {
-        char *mem_type_str;
+        char* mem_type_str;
 
         mem_type_str = line->atTokNextstr(&err);
         if (err < 0) goto done;
@@ -588,7 +570,8 @@ void RmcGsmSmsRequestHandler::handleGetSmsSimMemStatus(const sp<RfxMclMessage>& 
     }
 
 done:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), ril_errno,
+    rsp = RfxMclMessage::obtainResponse(
+            msg->getId(), ril_errno,
             RfxSmsSimMemStatusCnfData((void*)&mem_status, sizeof(mem_status)), msg, false);
     responseToTelCore(rsp);
 }
@@ -606,16 +589,16 @@ void RmcGsmSmsRequestHandler::sendNewSmsErrorAck(const sp<RfxMclMessage>& msg) {
 
 void RmcGsmSmsRequestHandler::handleGetSmscAddress(const sp<RfxMclMessage>& msg) {
     int err, tosca;
-    char *sca;
-    RfxAtLine *line;
+    char* sca;
+    RfxAtLine* line;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
 
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-            RfxStringData(NULL, 0), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxStringData(NULL, 0),
+                                            msg, false);
         responseToTelCore(rsp);
         return;
     }
@@ -637,30 +620,29 @@ void RmcGsmSmsRequestHandler::handleGetSmscAddress(const sp<RfxMclMessage>& msg)
     tosca = line->atTokNextint(&err);
     if (err < 0) goto error;
 
-    if (tosca == 0x91 && sca[0] != '+')
-    {
+    if (tosca == 0x91 && sca[0] != '+') {
         // add '+' in front of the sca
         sca--;
         sca[0] = '+';
     }
 
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxStringData(sca, strlen(sca)), msg, false);
+                                        RfxStringData(sca, strlen(sca)), msg, false);
 
     responseToTelCore(rsp);
     return;
 
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxStringData(NULL, 0), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxStringData(NULL, 0),
+                                        msg, false);
 
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleSetSmscAddress(const sp<RfxMclMessage>& msg) {
     int err, tosca = 0x81, len;
-    char *sca;
-    char *tempsca = NULL;
+    char* sca;
+    char* tempsca = NULL;
     String8 cmd("");
     String8 empty("");
     sp<RfxAtResponse> p_response;
@@ -670,21 +652,21 @@ void RmcGsmSmsRequestHandler::handleSetSmscAddress(const sp<RfxMclMessage>& msg)
     // check card status
     if (getMclStatusManager()->getIntValue(RFX_STATUS_KEY_CARD_TYPE) == 0) {
         logE(mTag, "SIM card was removed!");
-        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT,
-            RfxVoidData(), msg, false);
+        rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SIM_ABSENT, RfxVoidData(), msg,
+                                            false);
         responseToTelCore(rsp);
         return;
     }
 
-    sca = ((msg->getData()->getData() != NULL)?
-            (char*)(msg->getData()->getData()) : (char*)empty.string());
+    sca = ((msg->getData()->getData() != NULL) ? (char*)(msg->getData()->getData())
+                                               : (char*)empty.string());
 
     if (sca[0] == '\"') {
         int idx = 0;
         int len = strlen(sca);
-        //we need remove " and ", we just copy context, so malloc len - 2 + 1
-        //such as, change "+12345" to +12345
-        tempsca = (char *) malloc ((len - 1) * sizeof(char));
+        // we need remove " and ", we just copy context, so malloc len - 2 + 1
+        // such as, change "+12345" to +12345
+        tempsca = (char*)malloc((len - 1) * sizeof(char));
         RFX_ASSERT(tempsca != NULL);
         for (int i = 1; i < len - 1; i++) {
             tempsca[idx++] = sca[i];
@@ -693,36 +675,31 @@ void RmcGsmSmsRequestHandler::handleSetSmscAddress(const sp<RfxMclMessage>& msg)
         sca = tempsca;
     }
     // get <tosca>
-    if (sca[0] == '+')
-    {
+    if (sca[0] == '+') {
         tosca = 0x91;
         sca++;
     }
 
     len = strlen(sca);
-    if (len > (MAX_SMSC_LENGTH-1)*2)
-    {
+    if (len > (MAX_SMSC_LENGTH - 1) * 2) {
         logE(mTag, "The input length of the SCA is too long: %d", len);
 
-    }
-    else
-    {
+    } else {
         cmd.append(String8::format("AT+CSCA=\"%s\", %d", sca, tosca));
         p_response = atSendCommand(cmd);
         err = p_response->getError();
-        if ( !(err < 0 || p_response->getSuccess() <= 0) )
-        {
+        if (!(err < 0 || p_response->getSuccess() <= 0)) {
             /********************************************
-            * free because it needs to send another AT
-            * commands again
-            ********************************************/
+             * free because it needs to send another AT
+             * commands again
+             ********************************************/
             p_response = NULL;
             cmd.clear();
             // ril_errno = RIL_E_SUCCESS;
             cmd.append("AT+CSAS");
             p_response = atSendCommand(cmd);
             err = p_response->getError();
-            if ( !(err < 0 || p_response->getSuccess() <= 0) ) {
+            if (!(err < 0 || p_response->getSuccess() <= 0)) {
                 ril_errno = RIL_E_SUCCESS;
             }
         }
@@ -737,17 +714,17 @@ void RmcGsmSmsRequestHandler::handleSetSmscAddress(const sp<RfxMclMessage>& msg)
 }
 
 void RmcGsmSmsRequestHandler::handleSmsAcknowledgeWithPdu(const sp<RfxMclMessage>& msg) {
-    const char *ackSuccess;
-    const char *pdu;
+    const char* ackSuccess;
+    const char* pdu;
     int err;
     int smsType = getMclStatusManager()->getIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE,
-            SMS_INBOUND_NONE);
+                                                     SMS_INBOUND_NONE);
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     String8 cmd("");
 
-    ackSuccess = ((const char **)(msg->getData()->getData()))[0];
-    pdu = ((const char **)(msg->getData()->getData()))[1];
+    ackSuccess = ((const char**)(msg->getData()->getData()))[0];
+    pdu = ((const char**)(msg->getData()->getData()))[1];
 
     showCurrIncomingSmsType();
     if (*ackSuccess == '1') {
@@ -777,8 +754,7 @@ void RmcGsmSmsRequestHandler::handleSmsAcknowledgeWithPdu(const sp<RfxMclMessage
         goto error;
     }
 
-    if (err < 0 || p_response->getSuccess() == 0)
-        goto error;
+    if (err < 0 || p_response->getSuccess() == 0) goto error;
 
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_NONE);
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
@@ -786,20 +762,20 @@ void RmcGsmSmsRequestHandler::handleSmsAcknowledgeWithPdu(const sp<RfxMclMessage
     return;
 error:
     getMclStatusManager()->setIntValue(RFX_STATUS_KEY_GSM_INBOUND_SMS_TYPE, SMS_INBOUND_NONE);
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
     return;
 }
 
 void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
-        GSM_CB_QUERY_MODE query) {
+                                                   GSM_CB_QUERY_MODE query) {
     int err = RIL_E_GENERIC_FAILURE;
     char *channels = NULL, *langs = NULL, *settings = NULL;
-    RIL_GSM_BroadcastSmsConfigInfo *info = NULL;
+    RIL_GSM_BroadcastSmsConfigInfo* info = NULL;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     String8 cmd("AT+ECSCBCFG?");
 
     // 1. Query the configuration from modem
@@ -814,18 +790,17 @@ void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
     line = p_response->getIntermediates();
 
     line->atTokStart(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     // get channels
     channels = line->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     // get languages
     langs = line->atTokNextstr(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     logD(mTag, "Current CB channels %s, langs %s, query for %d", channels, langs, query);
-
 
     if (query == GSM_CB_QUERY_CHANNEL) {
         asprintf(&settings, "%s", channels);
@@ -834,20 +809,21 @@ void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
 
             // 2. Convert string to RIL_GSM_BroadcastSmsConfigInfo
             int count = 0, i = 0;
-            RIL_GSM_BroadcastSmsConfigInfo **gsmBciPtrs = NULL;
+            RIL_GSM_BroadcastSmsConfigInfo** gsmBciPtrs = NULL;
 
             gsmBciPtrs = convertChStringToGsmCbCfgInfo(settings, &count);
 
             // 3. Send AP channel configuration
-            rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
+            rsp = RfxMclMessage::obtainResponse(
+                    msg->getId(), RIL_E_SUCCESS,
                     RfxGsmCbSmsCfgData((void*)gsmBciPtrs,
-                    sizeof(RIL_GSM_BroadcastSmsConfigInfo*)*count), msg, false);
+                                       sizeof(RIL_GSM_BroadcastSmsConfigInfo*) * count),
+                    msg, false);
             responseToTelCore(rsp);
 
             // free the output data
             if (gsmBciPtrs != NULL) {
-                for (i = 0; i < count ; i++)
-                {
+                for (i = 0; i < count; i++) {
                     if (gsmBciPtrs[i] != NULL) {
                         free(gsmBciPtrs[i]);
                     }
@@ -856,7 +832,7 @@ void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
             }
         } else {
             rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxGsmCbSmsCfgData(NULL, 0), msg, false);
+                                                RfxGsmCbSmsCfgData(NULL, 0), msg, false);
             responseToTelCore(rsp);
         }
 
@@ -865,11 +841,12 @@ void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
         asprintf(&settings, "%s", langs);
         if (strlen(langs) > 0) {
             rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxStringData((void*)settings, strlen(settings)), msg, false);
+                                                RfxStringData((void*)settings, strlen(settings)),
+                                                msg, false);
             responseToTelCore(rsp);
         } else {
-            rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxStringData(), msg, false);
+            rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxStringData(), msg,
+                                                false);
             responseToTelCore(rsp);
         }
     }
@@ -879,19 +856,19 @@ void RmcGsmSmsRequestHandler::handleGetGsmCbSmsCfg(const sp<RfxMclMessage>& msg,
 
     return;
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxStringData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxStringData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleSetGsmCbSmsCfg(const sp<RfxMclMessage>& msg) {
     int length = msg->getData()->getDataLength();
-    int num = length/sizeof(RIL_GSM_BroadcastSmsConfigInfo *);
+    int num = length / sizeof(RIL_GSM_BroadcastSmsConfigInfo*);
     int start = -1, end = -1;
     int err = RIL_E_GENERIC_FAILURE;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
-    RIL_GSM_BroadcastSmsConfigInfo **info =
+    RIL_GSM_BroadcastSmsConfigInfo** info =
             (RIL_GSM_BroadcastSmsConfigInfo**)msg->getData()->getData();
     String8 settings("");
     String8 cmd("");
@@ -900,7 +877,7 @@ void RmcGsmSmsRequestHandler::handleSetGsmCbSmsCfg(const sp<RfxMclMessage>& msg)
 
     // 1. Convert RIL_GSM_BroadcastSmsConfigInfo to string
 
-    for (int i = 0; i < num ; i++) {
+    for (int i = 0; i < num; i++) {
         start = info[i]->fromServiceId;
         end = info[i]->toServiceId;
 
@@ -930,24 +907,22 @@ void RmcGsmSmsRequestHandler::handleSetGsmCbSmsCfg(const sp<RfxMclMessage>& msg)
         goto error;
     }
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
     return;
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
-RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCbCfgInfo(
-        char* channels, int *count)
-{
+RIL_GSM_BroadcastSmsConfigInfo** RmcGsmSmsRequestHandler::convertChStringToGsmCbCfgInfo(
+        char* channels, int* count) {
     int num = 0, i = 0;
     char key[] = ",-";
     char *pHead = channels, *pCh = NULL, *tmpChStr = NULL;
     RIL_SMS_GSM_CB_CHANNEL_LIST *pCbListHead = NULL, *pCbList = NULL;
-    RIL_GSM_BroadcastSmsConfigInfo **gsmBciPtrs = NULL;
+    RIL_GSM_BroadcastSmsConfigInfo** gsmBciPtrs = NULL;
     char ch[50];
 
     asprintf(&tmpChStr, "%s", channels);
@@ -960,12 +935,12 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
         // New a RIL_SMS_GSM_CB_CHANNEL_list object
         if (pCbListHead == NULL) {
             // Point to the first element
-            pCbListHead = (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(
-                    1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
+            pCbListHead =
+                    (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
             pCbList = pCbListHead;
         } else {
-            pCbList->pNext = (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(
-                    1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
+            pCbList->pNext =
+                    (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
             pCbList = pCbList->pNext;
         }
 
@@ -973,7 +948,7 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
             logE(mTag, "Failed to allocate memory for pCbList");
             break;
         }
-        memset(ch, 0, sizeof(char)*50);
+        memset(ch, 0, sizeof(char) * 50);
         strncpy(ch, pHead, (pCh - pHead));
         // Move pHead to next position
         pHead = pCh + 1;
@@ -982,13 +957,13 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
             num++;
             pCbList->end = pCbList->start = atoi(ch);
             logD(mTag, "Single channel id, Start %d, End %d, num %d", pCbList->start, pCbList->end,
-                    num);
+                 num);
         } else {
             // Match the key desh
             num++;
             pCbList->start = atoi(ch);
             pCh = strpbrk(pHead, key);
-            memset(ch, 0, sizeof(char)*50);
+            memset(ch, 0, sizeof(char) * 50);
             if (pCh != NULL) {
                 strncpy(ch, pHead, (pCh - pHead));
             } else {
@@ -997,9 +972,9 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
             }
             pCbList->end = atoi(ch);
             // Move pHead to next position
-            pHead = ((pCh != NULL)? pCh + 1 : pCh);
+            pHead = ((pCh != NULL) ? pCh + 1 : pCh);
             logD(mTag, "Range channel id, Start %d, End %d, num %d", pCbList->start, pCbList->end,
-                    num);
+                 num);
         }
 
         if (pHead != NULL) {
@@ -1010,23 +985,23 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
     if (pHead != NULL) {
         // The case is the last channel id. e.g. "...,1234". Or only one channel id. e.g. "1234"
         if (pCbListHead == NULL) {
-            pCbListHead = (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(
-                    1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
+            pCbListHead =
+                    (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
             // Keep the first element
             pCbList = pCbListHead;
         } else if (pCbList != NULL) {
-            pCbList->pNext = (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(
-                    1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
+            pCbList->pNext =
+                    (RIL_SMS_GSM_CB_CHANNEL_LIST*)calloc(1, sizeof(RIL_SMS_GSM_CB_CHANNEL_LIST));
             pCbList = pCbList->pNext;
         }
 
         if (pCbList != NULL) {
             num++;
-            memset(ch, 0, sizeof(char)*50);
+            memset(ch, 0, sizeof(char) * 50);
             strncpy(ch, pHead, 49);
             pCbList->end = pCbList->start = atoi(ch);
-            logD(mTag, "The last channel id, Start %d, End %d, num %d", pCbList->start, pCbList->end,
-                    num);
+            logD(mTag, "The last channel id, Start %d, End %d, num %d", pCbList->start,
+                 pCbList->end, num);
         } else {
             logE(mTag, "Failed to allocate memory for pCbList");
         }
@@ -1034,7 +1009,7 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
 
     // 2. Create RIL_GSM_BroadcastSmsConfigInfo and set value
     gsmBciPtrs = (RIL_GSM_BroadcastSmsConfigInfo**)calloc(
-            1, sizeof(RIL_GSM_BroadcastSmsConfigInfo *)*num);
+            1, sizeof(RIL_GSM_BroadcastSmsConfigInfo*) * num);
 
     if (gsmBciPtrs != NULL) {
         pCbList = pCbListHead;
@@ -1072,7 +1047,7 @@ RIL_GSM_BroadcastSmsConfigInfo **RmcGsmSmsRequestHandler::convertChStringToGsmCb
 
 void RmcGsmSmsRequestHandler::handleSetGsmCbSmsLanguage(const sp<RfxMclMessage>& msg) {
     int err = RIL_E_GENERIC_FAILURE;
-    char *langs = (char*)msg->getData()->getData();
+    char* langs = (char*)msg->getData()->getData();
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     String8 cmd("");
@@ -1090,26 +1065,25 @@ void RmcGsmSmsRequestHandler::handleSetGsmCbSmsLanguage(const sp<RfxMclMessage>&
         goto error;
     }
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
 
     return;
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleGsmCbSmsActivation(const sp<RfxMclMessage>& msg) {
-    int activation = ((int *)msg->getData()->getData())[0];
+    int activation = ((int*)msg->getData()->getData())[0];
     int err = RIL_E_GENERIC_FAILURE;
-    String8 cmd(String8::format("AT+ECSCBSW=%d", ((activation == 0)? 1 : 0)));
-    String8 etwsCmd(String8::format("AT+ETWS=%d", ((activation == 0)? 5 : 0)));
+    String8 cmd(String8::format("AT+ECSCBSW=%d", ((activation == 0) ? 1 : 0)));
+    String8 etwsCmd(String8::format("AT+ETWS=%d", ((activation == 0) ? 5 : 0)));
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
 
-    logD(mTag, "Turn GSM CB %s", ((activation == 0)? "on" : "off"));
+    logD(mTag, "Turn GSM CB %s", ((activation == 0) ? "on" : "off"));
 
     p_response = atSendCommand(cmd);
     err = p_response->getError();
@@ -1122,19 +1096,18 @@ void RmcGsmSmsRequestHandler::handleGsmCbSmsActivation(const sp<RfxMclMessage>& 
     p_response = atSendCommand(etwsCmd);
     err = p_response->getError();
 
-    if (err < 0 || p_response->getSuccess() == 0)  {
+    if (err < 0 || p_response->getSuccess() == 0) {
         logE(mTag, "Fail to change ETWS activation");
         goto error;
     }
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
 
     return;
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
@@ -1142,7 +1115,7 @@ void RmcGsmSmsRequestHandler::handleGsmGetCbSmsActivation(const sp<RfxMclMessage
     int activation[1] = {0};
     int err = RIL_E_GENERIC_FAILURE;
     String8 cmd("AT+ECSCBSW?");
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
 
@@ -1158,26 +1131,28 @@ void RmcGsmSmsRequestHandler::handleGsmGetCbSmsActivation(const sp<RfxMclMessage
     line = p_response->getIntermediates();
 
     line->atTokStart(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     // get channels
     activation[0] = line->atTokNextint(&err);
-    if(err < 0) goto error;
+    if (err < 0) goto error;
 
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-            RfxIntsData((void*)activation, sizeof(activation)), msg, false);
+                                        RfxIntsData((void*)activation, sizeof(activation)), msg,
+                                        false);
     responseToTelCore(rsp);
 
     return;
 error:
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-            RfxIntsData((void*)activation, sizeof(activation)), msg, false);
+                                        RfxIntsData((void*)activation, sizeof(activation)), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleGsmEtwsActivation(const sp<RfxMclMessage>& msg) {
     int err = RIL_E_GENERIC_FAILURE;
-    int setting = ((int *)msg->getData()->getData())[0];
+    int setting = ((int*)msg->getData()->getData())[0];
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     String8 cmd(String8::format("AT+ETWS=%d", setting));
@@ -1187,21 +1162,20 @@ void RmcGsmSmsRequestHandler::handleGsmEtwsActivation(const sp<RfxMclMessage>& m
 
     if (err < 0 || p_response->getSuccess() == 0) goto error;
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
     return;
 
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleRemoveCbMsg(const sp<RfxMclMessage>& msg) {
     int ret;
-    int channelId = ((int *)msg->getData()->getData())[0];
-    int serailId = ((int *)msg->getData()->getData())[1];
+    int channelId = ((int*)msg->getData()->getData())[0];
+    int serailId = ((int*)msg->getData()->getData())[1];
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     String8 cmd(String8::format("AT+ECBMR=%d,%d", channelId, serailId));
@@ -1210,20 +1184,19 @@ void RmcGsmSmsRequestHandler::handleRemoveCbMsg(const sp<RfxMclMessage>& msg) {
     ret = p_response->getError();
     if (ret < 0 || p_response->getSuccess() == 0) goto error;
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
     return;
 
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleGetSmsParams(const sp<RfxMclMessage>& msg) {
     int ret;
-    RfxAtLine *line = NULL;
+    RfxAtLine* line = NULL;
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     RIL_SmsParams smsParams;
@@ -1251,30 +1224,31 @@ void RmcGsmSmsRequestHandler::handleGetSmsParams(const sp<RfxMclMessage>& msg) {
     if (ret < 0) goto error;
 
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxSmsParamsData((void*)&smsParams, sizeof(smsParams)), msg, false);
+                                        RfxSmsParamsData((void*)&smsParams, sizeof(smsParams)), msg,
+                                        false);
     responseToTelCore(rsp);
     return;
 
 error:
     rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxSmsParamsData(NULL, 0), msg, false);
+                                        RfxSmsParamsData(NULL, 0), msg, false);
     responseToTelCore(rsp);
 }
 
 void RmcGsmSmsRequestHandler::handleSetSmsParams(const sp<RfxMclMessage>& msg) {
     int err;
-    RIL_SmsParams *p_smsParams = (RIL_SmsParams *)(msg->getData()->getData());
+    RIL_SmsParams* p_smsParams = (RIL_SmsParams*)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     sp<RfxMclMessage> rsp;
     String8 cmd("");
 
-    if(p_smsParams->format != 0x00 && p_smsParams->format != 0x02) {
+    if (p_smsParams->format != 0x00 && p_smsParams->format != 0x02) {
         logE(mTag, "invalid validity period format %d", p_smsParams->format);
         goto error;
     }
 
     cmd.append(String8::format("AT+CSMP=%d,%d,%d,%d", p_smsParams->format, p_smsParams->vp,
-            p_smsParams->pid, p_smsParams->dcs));
+                               p_smsParams->pid, p_smsParams->dcs));
 
     p_response = atSendCommand(cmd);
     err = p_response->getError();
@@ -1285,13 +1259,12 @@ void RmcGsmSmsRequestHandler::handleSetSmsParams(const sp<RfxMclMessage>& msg) {
     err = p_response->getError();
     if (err < 0 || p_response->getSuccess() <= 0) goto error;
 
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_SUCCESS, RfxVoidData(), msg, false);
     responseToTelCore(rsp);
     return;
 
 error:
-    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE,
-                    RfxVoidData(), msg, false);
+    rsp = RfxMclMessage::obtainResponse(msg->getId(), RIL_E_GENERIC_FAILURE, RfxVoidData(), msg,
+                                        false);
     responseToTelCore(rsp);
 }

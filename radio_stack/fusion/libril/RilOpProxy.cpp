@@ -28,7 +28,6 @@
 #undef LOG_TAG
 #define LOG_TAG "RilOpProxy"
 
-
 /*****************************************************************************
  * Class RilOpProxy
  *****************************************************************************/
@@ -44,8 +43,7 @@ void RilOpProxy::initOpLibrary() {
 
     sDlOpHandler = dlopen(OP_RIL_PATH, RTLD_NOW);
     if (sDlOpHandler == NULL) {
-        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlerror());
+        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s", __FUNCTION__, OP_RIL_PATH, dlerror());
         return;
     }
 
@@ -55,15 +53,11 @@ void RilOpProxy::initOpLibrary() {
     mtkLogI(LOG_TAG, "[%s] completed", __FUNCTION__);
 }
 
-void* RilOpProxy::getOpHandler() {
-    return sDlOpHandler;
-}
+void* RilOpProxy::getOpHandler() { return sDlOpHandler; }
 
-void RilOpProxy::registerOpService(
-        RIL_RadioFunctions *callbacks, android::CommandInfo *commands) {
+void RilOpProxy::registerOpService(RIL_RadioFunctions* callbacks, android::CommandInfo* commands) {
     if (sDlOpHandler == NULL) {
-        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlerror());
+        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s", __FUNCTION__, OP_RIL_PATH, dlerror());
         return;
     }
 
@@ -72,13 +66,13 @@ void RilOpProxy::registerOpService(
 
     mtkLogI(LOG_TAG, "[%s] completed", __FUNCTION__);
 
-    void (*func)(RIL_RadioFunctions *, android::CommandInfo *);
-    func = (void(*)(RIL_RadioFunctions *, android::CommandInfo *))
-            dlsym(sDlOpHandler, "registerOpService");
+    void (*func)(RIL_RadioFunctions*, android::CommandInfo*);
+    func = (void (*)(RIL_RadioFunctions*, android::CommandInfo*))dlsym(sDlOpHandler,
+                                                                       "registerOpService");
     const char* dlsym_error = dlerror();
     if (func == NULL) {
-        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlsym_error);
+        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s", __FUNCTION__,
+                OP_RIL_PATH, dlsym_error);
         return;
     }
 
@@ -86,21 +80,19 @@ void RilOpProxy::registerOpService(
     mtkLogI(LOG_TAG, "[%s] completed", __FUNCTION__);
 }
 
-android::CommandInfo *RilOpProxy::getOpCommandInfo(int request) {
-    android::CommandInfo *pCi;
+android::CommandInfo* RilOpProxy::getOpCommandInfo(int request) {
+    android::CommandInfo* pCi;
     if (sDlOpHandler == NULL || isOMSupport()) {
-        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlerror());
+        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s", __FUNCTION__, OP_RIL_PATH, dlerror());
         return NULL;
     }
 
-    android::CommandInfo *(*func)(int request);
-    func = (android::CommandInfo *(*)(int request))
-            dlsym(sDlOpHandler, "getOpCommandInfo");
+    android::CommandInfo* (*func)(int request);
+    func = (android::CommandInfo * (*)(int request)) dlsym(sDlOpHandler, "getOpCommandInfo");
     const char* dlsym_error = dlerror();
     if (func == NULL) {
-        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlsym_error);
+        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s", __FUNCTION__,
+                OP_RIL_PATH, dlsym_error);
         return NULL;
     }
 
@@ -110,23 +102,21 @@ android::CommandInfo *RilOpProxy::getOpCommandInfo(int request) {
     return pCi;
 }
 
-android::UnsolResponseInfo *RilOpProxy::getOpUnsolResponseInfo(
-        int unsolResponse) {
+android::UnsolResponseInfo* RilOpProxy::getOpUnsolResponseInfo(int unsolResponse) {
     if (sDlOpHandler == NULL || isOMSupport()) {
-        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlerror());
+        mtkLogI(LOG_TAG, "[%s] dlopen failed in %s: %s", __FUNCTION__, OP_RIL_PATH, dlerror());
         return NULL;
     }
 
-    android::UnsolResponseInfo *pUnsolResponseInfo = NULL;
+    android::UnsolResponseInfo* pUnsolResponseInfo = NULL;
 
-    android::UnsolResponseInfo *(*func)(int unsolResponse);
-    func = (android::UnsolResponseInfo *(*)(int unsolResponse))
+    android::UnsolResponseInfo* (*func)(int unsolResponse);
+    func = (android::UnsolResponseInfo * (*)(int unsolResponse))
             dlsym(sDlOpHandler, "getOpUnsolResponseInfo");
     const char* dlsym_error = dlerror();
     if (func == NULL) {
-        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s",
-                __FUNCTION__, OP_RIL_PATH, dlsym_error);
+        mtkLogI(LOG_TAG, "[%s] destroy not defined or exported in %s: %s", __FUNCTION__,
+                OP_RIL_PATH, dlsym_error);
         return NULL;
     }
 

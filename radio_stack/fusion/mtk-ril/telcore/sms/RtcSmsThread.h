@@ -26,9 +26,9 @@
  * Name Space Declaration
  *****************************************************************************/
 using ::android::Looper;
-using ::android::Thread;
 using ::android::sp;
 using ::android::status_t;
+using ::android::Thread;
 
 /*****************************************************************************
  * Class RtcSmsThread
@@ -38,7 +38,7 @@ using ::android::status_t;
  * SMSD.
  */
 class RtcSmsThread : public Thread {
-public:
+  public:
     // Constructor
     RtcSmsThread();
 
@@ -52,13 +52,13 @@ public:
     // RETURNS: the looper of the thead
     sp<Looper> getLooper();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual bool threadLoop();
     virtual status_t readyToRun();
 
-// Implement
-private:
+    // Implement
+  private:
     // the looper that is attached to this thread
     sp<Looper> m_looper;
 };

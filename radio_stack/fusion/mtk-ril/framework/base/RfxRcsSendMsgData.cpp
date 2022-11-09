@@ -18,16 +18,16 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxRcsSendMsgData);
 
-RfxRcsSendMsgData::RfxRcsSendMsgData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxRcsSendMsgData::RfxRcsSendMsgData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
         char* sendData = NULL;
-        sendData = (char* ) calloc(_length, sizeof(char));
+        sendData = (char*)calloc(_length, sizeof(char));
         if (sendData != NULL) {
             memcpy(sendData, _data, _length);
 
-            m_data = (void* )sendData;
+            m_data = (void*)sendData;
             m_length = _length;
-            //RFX_LOG_I("RfxRcsSendMsgData", "sendData = %p, m_length = %d", m_data, m_length);
+            // RFX_LOG_I("RfxRcsSendMsgData", "sendData = %p, m_length = %d", m_data, m_length);
         } else {
             RFX_LOG_E("RfxRcsSendMsgData", "calloc return null");
         }

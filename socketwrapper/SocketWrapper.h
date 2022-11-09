@@ -40,12 +40,18 @@ enum VoLTE_Event_IP_Version_e {
     VoLTE_Event_IPv_Max,
 };
 
+#define SOCKETWRAPPER_LOGI(fmt, arg...) ALOGI("" fmt, ##arg);
+#define SOCKETWRAPPER_LOGW(fmt, arg...) ALOGW("" fmt, ##arg);
+#define SOCKETWRAPPER_LOGE(fmt, arg...) ALOGE("" fmt, ##arg);
 
-#define SOCKETWRAPPER_LOGI(fmt, arg...)  ALOGI("" fmt, ##arg);
-#define SOCKETWRAPPER_LOGW(fmt, arg...)  ALOGW("" fmt, ##arg);
-#define SOCKETWRAPPER_LOGE(fmt, arg...)  ALOGE("" fmt, ##arg);
-
-#define SOCKETWRAPPER_ASSERT(expr, M, ...) while(!(expr)) { SOCKETWRAPPER_LOGE("@@@ ASSERT @@@: (%s:%d)" M, __FILE__, __LINE__, ##__VA_ARGS__); fflush(stdout); LOG_ALWAYS_FATAL("ASSERT!!!!"); assert(0); exit(-11);}
+#define SOCKETWRAPPER_ASSERT(expr, M, ...)                                                  \
+    while (!(expr)) {                                                                       \
+        SOCKETWRAPPER_LOGE("@@@ ASSERT @@@: (%s:%d)" M, __FILE__, __LINE__, ##__VA_ARGS__); \
+        fflush(stdout);                                                                     \
+        LOG_ALWAYS_FATAL("ASSERT!!!!");                                                     \
+        assert(0);                                                                          \
+        exit(-11);                                                                          \
+    }
 
 typedef int (*Sock_RxCB_t)(void* cookie, const sp<ABuffer>& buffer);
 
@@ -54,10 +60,10 @@ typedef struct Sock_param {
     uint32_t protocol_version;
 
     /*Socket FD*/
-    int32_t  sockfd;
+    int32_t sockfd;
 
-    uint32_t  dscp;
-    uint32_t  priority;
+    uint32_t dscp;
+    uint32_t priority;
 
     bool isBlock;
 
@@ -68,36 +74,36 @@ typedef struct Sock_param {
     char ifname[16];
     uid_t uid;
     uint32_t tag;
-    uint8_t  local_address[VOLTE_IPADDR_LENGTH];
+    uint8_t local_address[VOLTE_IPADDR_LENGTH];
     uint16_t local_port;
 
-    uint8_t  peer_address[VOLTE_IPADDR_LENGTH];
+    uint8_t peer_address[VOLTE_IPADDR_LENGTH];
     uint16_t peer_port;
 } Sock_param_t;
 
-class SocketWrapper : public RefBase
-{
-public:
+class SocketWrapper : public RefBase {
+  public:
     SocketWrapper();
     virtual ~SocketWrapper();
     int setParam(Sock_param_t param);
-    int getParam(Sock_param_t *param);
-    int setRxCallBack(void *cookie, Sock_RxCB_t rx_cb);
+    int getParam(Sock_param_t* param);
+    int setRxCallBack(void* cookie, Sock_RxCB_t rx_cb);
     int writeSock(const sp<ABuffer>& buffer);
-private:
+
+  private:
     int readSock(int fd, const sp<ABuffer>& buffer);
     int setSock(void);
     int createSock(void);
-    int dumpAddr(struct sockaddr *addr_ptr);
+    int dumpAddr(struct sockaddr* addr_ptr);
     void setUdpConnect(void);
 
     Sock_param_t mParam;
     Sock_RxCB_t mRxCb;
-    void        *mCookie;
-    bool        m_bStarted;
-    bool        m_bSelfCreate;
-    pthread_t   m_Tid;
-    static void * receiveThread(void *pParam);
+    void* mCookie;
+    bool m_bStarted;
+    bool m_bSelfCreate;
+    pthread_t m_Tid;
+    static void* receiveThread(void* pParam);
     /* for thread wakeup */
     int mReadPipe;
     int mWritePipe;
@@ -105,7 +111,7 @@ private:
     uint64_t mrecvDataUasage;
     bool mError;
 
-    //for debug
+    // for debug
     unsigned int mWriteCount;
     unsigned int mWriteFail;
     unsigned int mReceiveCount;

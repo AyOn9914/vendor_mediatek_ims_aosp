@@ -35,4 +35,4 @@ uint64_t ril_nano_time();
 }
 #endif
 
-#endif // LIBRILUTILS_H
+#endif  // LIBRILUTILS_H

@@ -32,47 +32,44 @@
  *****************************************************************************/
 
 class RtcImsSmsController : public RfxController {
-RFX_DECLARE_CLASS(RtcImsSmsController);
+    RFX_DECLARE_CLASS(RtcImsSmsController);
 
-public:
+  public:
     RtcImsSmsController();
     virtual ~RtcImsSmsController();
 
-public:
+  public:
     bool removeReferenceIdCached(int ref);
     void addReferenceId(int ref);
     int getCacheSize();
-    RtcConCatSmsRoot *getConCatSmsRoot() {
-        return mConCatSmsRoot;
-    }
-    void sendCdmaSms(RtcCdmaSmsMessage *msg);
-    void sendGsmSms(RtcGsmSmsMessage *msg);
+    RtcConCatSmsRoot* getConCatSmsRoot() { return mConCatSmsRoot; }
+    void sendCdmaSms(RtcCdmaSmsMessage* msg);
+    void sendGsmSms(RtcGsmSmsMessage* msg);
     void sendCdmaSmsAck(const sp<RfxMessage>& message);
     void sendGsmSmsAck(int success, int cause, const sp<RfxMessage>& message);
     bool isSupportSmsFormatConvert();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-            const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-private:
-    void setTag(String8 tag) {mTag = tag;}
+  private:
+    void setTag(String8 tag) { mTag = tag; }
     bool hasImsCall();
     bool isCdmaRat();
     bool isInCall();
     bool isInCdmaCall();
 
-private:
+  private:
     String8 mTag;
-    RtcGsmSmsController *mGsmCtrl;
-    RtcCdmaSmsController *mCdmaCtrl;
-    RtcConCatSmsRoot *mConCatSmsRoot;
-    Vector<int> mImsSmsRefIdVector; //only store ims sms reference id
-
+    RtcGsmSmsController* mGsmCtrl;
+    RtcCdmaSmsController* mCdmaCtrl;
+    RtcConCatSmsRoot* mConCatSmsRoot;
+    Vector<int> mImsSmsRefIdVector;  // only store ims sms reference id
 };
 #endif /* __RTC_IMS_SMS_CONTROLLER_H__ */

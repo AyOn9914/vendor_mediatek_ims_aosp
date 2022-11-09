@@ -43,67 +43,56 @@
 #undef LOG_TAG
 #define LOG_TAG "RIL-Fusion"
 
-static void *noopRemoveWarning( void *a ) { return a; }
-#define RIL_UNUSED_PARM(a) noopRemoveWarning((void *)&(a));
+static void* noopRemoveWarning(void* a) { return a; }
+#define RIL_UNUSED_PARM(a) noopRemoveWarning((void*)&(a));
 
 #if defined(ANDROID_MULTI_SIM)
-static void
-onRequest (int request, void *data, size_t datalen, RIL_Token t, RIL_SOCKET_ID socket_id);
+static void onRequest(int request, void* data, size_t datalen, RIL_Token t,
+                      RIL_SOCKET_ID socket_id);
 #else
-static void
-onRequest (int request, void *data, size_t datalen, RIL_Token t);
+static void onRequest(int request, void* data, size_t datalen, RIL_Token t);
 #endif
 #if defined(ANDROID_MULTI_SIM)
-static void onSapRequest(int request, void *data, size_t datalen, RIL_Token t,
-        RIL_SOCKET_ID socket_id);
+static void onSapRequest(int request, void* data, size_t datalen, RIL_Token t,
+                         RIL_SOCKET_ID socket_id);
 #else
-static void onSapRequest(int request, void *data, size_t datalen, RIL_Token t);
+static void onSapRequest(int request, void* data, size_t datalen, RIL_Token t);
 #endif
 static RIL_RadioState currentState(RIL_SOCKET_ID socket_id);
-static int onSupports (int requestCode);
-static void onCancel (RIL_Token t);
-static const char *getVersion();
+static int onSupports(int requestCode);
+static void onCancel(RIL_Token t);
+static const char* getVersion();
 static void updateConnectionState(RIL_SOCKET_ID socketId, int isConnected);
 
 /*** Static Variables ***/
 static const RIL_RadioFunctions s_callbacks = {
-    RIL_VERSION,
-    onRequest,
-    currentState,
-    onSupports,
-    onCancel,
-    getVersion,
-    updateConnectionState,
+        RIL_VERSION, onRequest,  currentState,          onSupports,
+        onCancel,    getVersion, updateConnectionState,
 };
 
 #ifdef RIL_SHLIB
-static const struct RIL_Env *s_rilenv;
+static const struct RIL_Env* s_rilenv;
 #endif
 
 /// M: BT sap @{
-static const struct RIL_Env *s_rilsapenv;
+static const struct RIL_Env* s_rilsapenv;
 static const RIL_RadioFunctions s_sapcallbacks = {
-    RIL_VERSION,
-    onSapRequest,
-    currentState,
-    onSupports,
-    onCancel,
-    getVersion,
-    updateConnectionState,
+        RIL_VERSION, onSapRequest, currentState,          onSupports,
+        onCancel,    getVersion,   updateConnectionState,
 };
 
-void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void *data);
+void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void* data);
 // @}
 
 RIL_RadioState getRadioState(RIL_SOCKET_ID rid);
 
 static int s_port = -1;
-static const char * s_device_path = NULL;
-static int          s_device_socket = 0;
+static const char* s_device_path = NULL;
+static int s_device_socket = 0;
 
-static const struct timeval TIMEVAL_SIMPOLL = {1,0};
-static const struct timeval TIMEVAL_CALLSTATEPOLL = {0,500000};
-static const struct timeval TIMEVAL_0 = {0,0};
+static const struct timeval TIMEVAL_SIMPOLL = {1, 0};
+static const struct timeval TIMEVAL_CALLSTATEPOLL = {0, 500000};
+static const struct timeval TIMEVAL_0 = {0, 0};
 
 static RIL_RadioState s_radio_state[MAX_SIM_COUNT];
 static pthread_mutex_t s_state_mutex[MAX_SIM_COUNT];
@@ -124,42 +113,40 @@ int toRealSlot(int slotId);
  * the previous command has completed).
  */
 #if defined(ANDROID_MULTI_SIM)
-static void
-onRequest (int request, void *data, size_t datalen, RIL_Token t, RIL_SOCKET_ID socket_id)
+static void onRequest(int request, void* data, size_t datalen, RIL_Token t, RIL_SOCKET_ID socket_id)
 #else
-static void
-onRequest (int request, void *data, size_t datalen, RIL_Token t)
+static void onRequest(int request, void* data, size_t datalen, RIL_Token t)
 #endif
 {
     RIL_SOCKET_ID socId = RIL_SOCKET_1;
-    #if defined(ANDROID_MULTI_SIM)
+#if defined(ANDROID_MULTI_SIM)
     socId = socket_id;
-    #endif
-    mtkLogD(LOG_TAG, "[RilFusion] onRequest: request = %d, datalen = %zu, slotId = %d",
-            request, datalen, socId);
+#endif
+    mtkLogD(LOG_TAG, "[RilFusion] onRequest: request = %d, datalen = %zu, slotId = %d", request,
+            datalen, socId);
     rfx_enqueue_request_message(request, data, datalen, t, toRealSlot(socId));
 }
 
 #if defined(ANDROID_MULTI_SIM)
-static void onSapRequest(int request, void *data, size_t datalen, RIL_Token t,
-        RIL_SOCKET_ID socket_id) {
+static void onSapRequest(int request, void* data, size_t datalen, RIL_Token t,
+                         RIL_SOCKET_ID socket_id) {
 #else
-static void onSapRequest(int request, void *data, size_t datalen, RIL_Token t) {
+static void onSapRequest(int request, void* data, size_t datalen, RIL_Token t) {
 #endif
     mtkLogD(LOG_TAG, "[RilFusion] onSapRequest: %d", request);
 
     RIL_SOCKET_ID socketId = RIL_SOCKET_1;
-    #if defined(ANDROID_MULTI_SIM)
+#if defined(ANDROID_MULTI_SIM)
     socketId = socket_id;
-    #endif
+#endif
 
     if (request < MsgId_RIL_SIM_SAP_CONNECT /* MsgId_UNKNOWN_REQ */ ||
-            request > MsgId_RIL_SIM_SAP_SET_TRANSFER_PROTOCOL) {
+        request > MsgId_RIL_SIM_SAP_SET_TRANSFER_PROTOCOL) {
         mtkLogE(LOG_TAG, "invalid request");
         RIL_SIM_SAP_ERROR_RSP rsp;
         rsp.dummy_field = 1;
-        sendSapResponseComplete(t, (RIL_Errno) Error_RIL_E_REQUEST_NOT_SUPPORTED,
-                MsgId_RIL_SIM_SAP_ERROR_RESP, &rsp);
+        sendSapResponseComplete(t, (RIL_Errno)Error_RIL_E_REQUEST_NOT_SUPPORTED,
+                                MsgId_RIL_SIM_SAP_ERROR_RESP, &rsp);
         return;
     }
 
@@ -177,8 +164,8 @@ static void onSapRequest(int request, void *data, size_t datalen, RIL_Token t) {
     rfx_enqueue_sap_request_message(request, data, datalen, t, socketId);
 }
 
-void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void *data) {
-    const pb_field_t *fields = NULL;
+void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void* data) {
+    const pb_field_t* fields = NULL;
     size_t encoded_size = 0;
     uint32_t written_size = 0;
     size_t buffer_size = 0;
@@ -222,19 +209,18 @@ void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void *data
             return;
     }
 
-    if ((success = pb_get_encoded_size(&encoded_size, fields, data)) &&
-            encoded_size <= INT32_MAX) {
-        //buffer_size = encoded_size + sizeof(uint32_t);
+    if ((success = pb_get_encoded_size(&encoded_size, fields, data)) && encoded_size <= INT32_MAX) {
+        // buffer_size = encoded_size + sizeof(uint32_t);
         buffer_size = encoded_size;
         uint8_t buffer[buffer_size];
-        //written_size = htonl((uint32_t) encoded_size);
+        // written_size = htonl((uint32_t) encoded_size);
         ostream = pb_ostream_from_buffer(buffer, buffer_size);
-        //pb_write(&ostream, (uint8_t *)&written_size, sizeof(written_size));
+        // pb_write(&ostream, (uint8_t *)&written_size, sizeof(written_size));
         success = pb_encode(&ostream, fields, data);
 
-        if(success) {
+        if (success) {
             mtkLogD(LOG_TAG, "sendSapResponseComplete, Size: %zu (0x%zx) Size as written: 0x%x",
-                encoded_size, encoded_size, written_size);
+                    encoded_size, encoded_size, written_size);
             // Send response
             RFX_SAP_onRequestComplete(t, ret, buffer, buffer_size);
         } else {
@@ -248,7 +234,7 @@ void sendSapResponseComplete(RIL_Token t, RIL_Errno ret, MsgId msgId, void *data
 
 void setRadioState(RIL_RadioState newState, RIL_SOCKET_ID rid) {
     RIL_RadioState oldState;
-    RIL_RadioState *pState = NULL;
+    RIL_RadioState* pState = NULL;
 
     pthread_mutex_lock(&s_state_mutex[rid]);
     oldState = s_radio_state[rid];
@@ -260,16 +246,15 @@ void setRadioState(RIL_RadioState newState, RIL_SOCKET_ID rid) {
     pthread_mutex_unlock(&s_state_mutex[rid]);
 
     if (*pState != oldState) {
-    #if defined(ANDROID_MULTI_SIM)
+#if defined(ANDROID_MULTI_SIM)
         RFX_onUnsolicitedResponse(RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED, NULL, 0, rid);
-    #else
+#else
         RFX_onUnsolicitedResponse(RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED, NULL, 0);
-    #endif
+#endif
     }
 }
 
-RIL_RadioState getRadioState(RIL_SOCKET_ID rid)
-{
+RIL_RadioState getRadioState(RIL_SOCKET_ID rid) {
     RIL_RadioState radioState = s_radio_state[rid];
     mtkLogI(LOG_TAG, "getRadioState(): radioState=%d\n", radioState);
     return radioState;
@@ -279,11 +264,7 @@ RIL_RadioState getRadioState(RIL_SOCKET_ID rid)
  * Synchronous call from the RIL to us to return current radio state.
  * RADIO_STATE_UNAVAILABLE should be the initial state.
  */
-static RIL_RadioState
-currentState(RIL_SOCKET_ID socket_id)
-{
-    return getRadioState(socket_id);
-}
+static RIL_RadioState currentState(RIL_SOCKET_ID socket_id) { return getRadioState(socket_id); }
 /**
  * Call from RIL to us to find out whether a specific request code
  * is supported by this implementation.
@@ -291,32 +272,23 @@ currentState(RIL_SOCKET_ID socket_id)
  * Return 1 for "supported" and 0 for "unsupported"
  */
 
-static int
-onSupports (int requestCode __unused)
-{
+static int onSupports(int requestCode __unused) {
     //@@@ todo
 
     return 1;
 }
 
-static void onCancel (RIL_Token t __unused)
-{
+static void onCancel(RIL_Token t __unused) {
     //@@@todo
-
 }
 
-static const char * getVersion(void)
-{
-    return "android reference-ril 1.0";
-}
-
+static const char* getVersion(void) { return "android reference-ril 1.0"; }
 
 static void updateConnectionState(RIL_SOCKET_ID socketId, int isConnected) {
     rfx_update_connection_state(socketId, isConnected);
 }
 
-static void usage(char *s __unused)
-{
+static void usage(char* s __unused) {
 #ifdef RIL_SHLIB
     fprintf(stderr, "reference-ril requires: -p <tcp port> or -d /dev/tty_device\n");
 #else
@@ -327,9 +299,7 @@ static void usage(char *s __unused)
 
 extern void resetWakelock(void);
 
-static void *
-mainLoop(void *param __unused)
-{
+static void* mainLoop(void* param __unused) {
     int fd;
     int ret;
     mtkLogI(LOG_TAG, "entering mainLoop()");
@@ -350,13 +320,10 @@ mainLoop(void *param __unused)
 
 pthread_t s_tid_mainloop;
 
-void RIL_setRilEnvForGT(const struct RIL_Env *env) {
-    s_rilenv = env;
-}
+void RIL_setRilEnvForGT(const struct RIL_Env* env) { s_rilenv = env; }
 
-const RIL_RadioFunctions *RIL_Init(const struct RIL_Env *env, int argc __unused,
-        char **argv __unused)
-{
+const RIL_RadioFunctions* RIL_Init(const struct RIL_Env* env, int argc __unused,
+                                   char** argv __unused) {
     int ret;
     int fd = -1;
     int opt;
@@ -364,7 +331,7 @@ const RIL_RadioFunctions *RIL_Init(const struct RIL_Env *env, int argc __unused,
 
     s_rilenv = env;
 
-    pthread_attr_init (&attr);
+    pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     ret = pthread_create(&s_tid_mainloop, &attr, mainLoop, NULL);
     if (ret != 0) {
@@ -374,61 +341,56 @@ const RIL_RadioFunctions *RIL_Init(const struct RIL_Env *env, int argc __unused,
     return &s_callbacks;
 }
 
-const RIL_RadioFunctions *RIL_SAP_Init(const struct RIL_Env *env, int argc __unused,
-        char **argv __unused) {
+const RIL_RadioFunctions* RIL_SAP_Init(const struct RIL_Env* env, int argc __unused,
+                                       char** argv __unused) {
     mtkLogD(LOG_TAG, "RIL_SAP_Init");
     s_rilsapenv = env;
     return &s_sapcallbacks;
 }
 
-void RFX_onRequestComplete(RIL_Token t, RIL_Errno e, void *response, size_t responselen) {
+void RFX_onRequestComplete(RIL_Token t, RIL_Errno e, void* response, size_t responselen) {
     s_rilenv->OnRequestComplete(t, e, response, responselen);
 }
 
 #if defined(ANDROID_MULTI_SIM)
-void RFX_onUnsolicitedResponse(int unsolResponse, const void *data,
-        size_t datalen, RIL_SOCKET_ID socket_id) {
+void RFX_onUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen,
+                               RIL_SOCKET_ID socket_id) {
     s_rilenv->OnUnsolicitedResponse(unsolResponse, data, datalen, socket_id);
 }
 #else
-void RFX_onUnsolicitedResponse(int unsolResponse, const void *data,
-        size_t datalen) {
+void RFX_onUnsolicitedResponse(int unsolResponse, const void* data, size_t datalen) {
     s_rilenv->OnUnsolicitedResponse(unsolResponse, data, datalen);
 }
 #endif
 
-void RFX_requestTimedCallback(RIL_TimedCallback callback, void *param,
-        const struct timeval *relativeTime) {
+void RFX_requestTimedCallback(RIL_TimedCallback callback, void* param,
+                              const struct timeval* relativeTime) {
     s_rilenv->RequestTimedCallback(callback, param, relativeTime);
 }
 
-void RFX_onRequestAck(RIL_Token t) {
-    s_rilenv->OnRequestAck(t);
-}
+void RFX_onRequestAck(RIL_Token t) { s_rilenv->OnRequestAck(t); }
 
-void RFX_SAP_onRequestComplete(RIL_Token t, RIL_Errno e, void *response,
-        size_t responselen) {
+void RFX_SAP_onRequestComplete(RIL_Token t, RIL_Errno e, void* response, size_t responselen) {
     s_rilsapenv->OnRequestComplete(t, e, response, responselen);
 }
 
 #if defined(ANDROID_MULTI_SIM)
-void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void *data, size_t datalen, int socket_id) {
+void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void* data, size_t datalen, int socket_id) {
     s_rilsapenv->OnUnsolicitedResponse(unsolResponse, data, datalen, socket_id);
 }
 #else
-void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void *data, size_t datalen) {
+void RFX_SAP_onUnsolicitedResponse(int unsolResponse, void* data, size_t datalen) {
     s_rilsapenv->OnUnsolicitedResponse(unsolResponse, data, datalen)
 }
 #endif
 
-#else /* RIL_SHLIB */
-int main (int argc, char **argv)
-{
+#else  /* RIL_SHLIB */
+int main(int argc, char** argv) {
     int ret;
     int fd = -1;
     int opt;
 
-    while ( -1 != (opt = getopt(argc, argv, "p:d:"))) {
+    while (-1 != (opt = getopt(argc, argv, "p:d:"))) {
         switch (opt) {
             case 'p':
                 s_port = atoi(optarg);
@@ -436,18 +398,18 @@ int main (int argc, char **argv)
                     usage(argv[0]);
                 }
                 mtkLogI(LOG_TAG, "Opening loopback port %d\n", s_port);
-            break;
+                break;
 
             case 'd':
                 s_device_path = optarg;
                 mtkLogI(LOG_TAG, "Opening tty device %s\n", s_device_path);
-            break;
+                break;
 
             case 's':
-                s_device_path   = optarg;
+                s_device_path = optarg;
                 s_device_socket = 1;
                 mtkLogI(LOG_TAG, "Opening socket %s\n", s_device_path);
-            break;
+                break;
 
             default:
                 usage(argv[0]);

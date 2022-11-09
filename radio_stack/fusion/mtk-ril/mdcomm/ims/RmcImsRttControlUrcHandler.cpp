@@ -29,24 +29,19 @@ RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_RTT_CAPABILITY_INDICATION
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_RTT_MODIFY_REQUEST_RECEIVE);
 RFX_REGISTER_DATA_TO_URC_ID(RfxIntsData, RFX_MSG_UNSOL_AUDIO_INDICATION);
 
-RmcImsRttControlUrcHandler::RmcImsRttControlUrcHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
+RmcImsRttControlUrcHandler::RmcImsRttControlUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     logD(RFX_LOG_TAG, "RmcImsRttControlUrcHandler constructor");
 
     int m_slot_id = slot_id;
     const char* urc[] = {
-        "+RTTCALL",
-        "+ERTTSTR",
-        "+EIMSTCAP",
-        "+PRTTCALL",
-        "+EIMSAUDIOSID",
+            "+RTTCALL", "+ERTTSTR", "+EIMSTCAP", "+PRTTCALL", "+EIMSAUDIOSID",
     };
 
-    registerToHandleURC(urc, sizeof(urc)/sizeof(char *));
+    registerToHandleURC(urc, sizeof(urc) / sizeof(char*));
 }
 
-RmcImsRttControlUrcHandler::~RmcImsRttControlUrcHandler() {
-}
+RmcImsRttControlUrcHandler::~RmcImsRttControlUrcHandler() {}
 
 void RmcImsRttControlUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     if (strStartsWith(msg->getRawUrc()->getLine(), "+RTTCALL")) {
@@ -80,7 +75,6 @@ void RmcImsRttControlUrcHandler::onRttModifyResponse(const sp<RfxMclMessage>& ms
 }
 
 void RmcImsRttControlUrcHandler::onRttTextReceive(const sp<RfxMclMessage>& msg) {
-
     // +ERTTSTR= =<callid>, <len>, <text>
     const int maxLen = 3;
     bool appendPhoneId = true;

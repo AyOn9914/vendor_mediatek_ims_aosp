@@ -26,17 +26,17 @@ using namespace std;
 
 #define UNUSED(x) ((void)(x))
 
-const char *InfoClassToMmiBSCodeString (AtInfoClassE infoClass);
-int         MmiBSCodeToInfoClassX (int serviceCode, int ssServiceClassFeature);
-const char *ssStatusToOpCodeString(SsStatusE status);
-char*       convertToUCS2(char* data);
-const char *callBarFacToServiceCodeStrings(const char * fac);
-GsmCbsDcsE  checkCbsDcs(int dcs);
-const char *callForwardReasonToServiceCodeString(CallForwardReasonE cfreason);
-void        setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* message);
-void        clearErrorMessageFromXcap(int slotId);
-bool        isReallyDialable(char c);
-bool        isStartsPostDial(char c);
-char*       extractNetworkPortionAlt(char* phoneNumber);
-char*       encryptString(char* input);
+const char* InfoClassToMmiBSCodeString(AtInfoClassE infoClass);
+int MmiBSCodeToInfoClassX(int serviceCode, int ssServiceClassFeature);
+const char* ssStatusToOpCodeString(SsStatusE status);
+char* convertToUCS2(char* data);
+const char* callBarFacToServiceCodeStrings(const char* fac);
+GsmCbsDcsE checkCbsDcs(int dcs);
+const char* callForwardReasonToServiceCodeString(CallForwardReasonE cfreason);
+void setErrorMessageFromXcap(int slotId, AT_CME_Error errorCode, const char* message);
+void clearErrorMessageFromXcap(int slotId);
+bool isReallyDialable(char c);
+bool isStartsPostDial(char c);
+char* extractNetworkPortionAlt(char* phoneNumber);
+char* encryptString(char* input);
 #endif /* SS_UTIL */

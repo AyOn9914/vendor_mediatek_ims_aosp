@@ -31,8 +31,8 @@
 RFX_IMPLEMENT_CLASS("RtcCardTypeReadyController", RtcCardTypeReadyController, RfxController);
 RFX_OBJ_IMPLEMENT_SINGLETON_CLASS(RtcCardTypeReadyController);
 
-RtcCardTypeReadyController::RtcCardTypeReadyController() : mTimeoutHandle(NULL),
-    m_timeout_msec(RFX_COMMON_SLOT_MERGE_NOTIFY_TIMEOUT_MSEC) {
+RtcCardTypeReadyController::RtcCardTypeReadyController()
+    : mTimeoutHandle(NULL), m_timeout_msec(RFX_COMMON_SLOT_MERGE_NOTIFY_TIMEOUT_MSEC) {
     m_card_types = new int[MAX_RFX_SLOT_ID];
     m_card_type_states = new int[MAX_RFX_SLOT_ID];
     for (int slotId = RFX_SLOT_ID_0; slotId < RFX_SLOT_COUNT; slotId++) {
@@ -60,34 +60,40 @@ RtcCardTypeReadyController::~RtcCardTypeReadyController() {
 void RtcCardTypeReadyController::onInit() {
     RfxController::onInit();
 
-    for (int i = RFX_SLOT_ID_0; i< RFX_SLOT_COUNT; i++) {
-        getStatusManager(i)->registerStatusChangedEx(RFX_STATUS_KEY_MODEM_SIM_TASK_READY,
+    for (int i = RFX_SLOT_ID_0; i < RFX_SLOT_COUNT; i++) {
+        getStatusManager(i)->registerStatusChangedEx(
+                RFX_STATUS_KEY_MODEM_SIM_TASK_READY,
                 RfxStatusChangeCallbackEx(this, &RtcCardTypeReadyController::onSimTaskReady));
     }
-    getNonSlotScopeStatusManager()->registerStatusChanged(RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
+    getNonSlotScopeStatusManager()->registerStatusChanged(
+            RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
             RfxStatusChangeCallback(this, &RtcCardTypeReadyController::onSimSwitchChanged));
 }
 
 void RtcCardTypeReadyController::onDeinit() {
-    for (int i = RFX_SLOT_ID_0; i< RFX_SLOT_COUNT; i++) {
-        getStatusManager(i)->unRegisterStatusChangedEx(RFX_STATUS_KEY_MODEM_SIM_TASK_READY,
+    for (int i = RFX_SLOT_ID_0; i < RFX_SLOT_COUNT; i++) {
+        getStatusManager(i)->unRegisterStatusChangedEx(
+                RFX_STATUS_KEY_MODEM_SIM_TASK_READY,
                 RfxStatusChangeCallbackEx(this, &RtcCardTypeReadyController::onSimTaskReady));
     }
-    getNonSlotScopeStatusManager()->unRegisterStatusChanged(RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
+    getNonSlotScopeStatusManager()->unRegisterStatusChanged(
+            RFX_STATUS_KEY_CAPABILITY_SWITCH_STATE,
             RfxStatusChangeCallback(this, &RtcCardTypeReadyController::onSimSwitchChanged));
 
     RfxController::onDeinit();
 }
 
 void RtcCardTypeReadyController::onSimTaskReady(int slotId, RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+                                                RfxVariant old_value, RfxVariant value) {
     RFX_UNUSED(key);
     int oldCardType = m_card_types[slotId];
     m_card_type_states[slotId] = CARD_STATE_NOT_HOT_PLUG;
 
     if (value.asBool() == true) {
-        m_card_types[slotId] = getStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_CARD_TYPE, CARD_TYPE_NONE);
-        /// M: the value has been changed mean: this sim ready action is not triggered by hot plug action.
+        m_card_types[slotId] =
+                getStatusManager(slotId)->getIntValue(RFX_STATUS_KEY_CARD_TYPE, CARD_TYPE_NONE);
+        /// M: the value has been changed mean: this sim ready action is not triggered by hot plug
+        /// action.
         if (old_value.asBool() == true && !isAnyCardInvalid()) {
             int newCardType = m_card_types[slotId];
             /// M:There was a sim card
@@ -99,16 +105,16 @@ void RtcCardTypeReadyController::onSimTaskReady(int slotId, RfxStatusKeyEnum key
                     } else {
                         m_card_type_states[slotId] = CARD_STATE_NO_CHANGED;
                     }
-                /// M: but there is no sim card, that mean: card has been plugout.
+                    /// M: but there is no sim card, that mean: card has been plugout.
                 } else if (newCardType == CARD_TYPE_NONE) {
                     m_card_type_states[slotId] = CARD_STATE_HOT_PLUGOUT;
                 }
-            /// M: There was no sim card.
+                /// M: There was no sim card.
             } else if (oldCardType == CARD_TYPE_NONE) {
                 /// M:But there is a sim card, now. mean: card has been insertted.
                 if (newCardType > CARD_TYPE_NONE) {
                     m_card_type_states[slotId] = CARD_STATE_HOT_PLUGIN;
-                /// M: and there is no sim card.
+                    /// M: and there is no sim card.
                 } else {
                     m_card_type_states[slotId] = CARD_STATE_NO_CHANGED;
                 }
@@ -117,15 +123,16 @@ void RtcCardTypeReadyController::onSimTaskReady(int slotId, RfxStatusKeyEnum key
 
         if (isCommontSlotSupport() && !isVsimEnabled()) {
             if (needMergeNotify(slotId)) {
-                RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "[onSimTaskReady] Slot %d, state : %d -> %d, "
-                    "cardType : %d, CommonSlot need merge notify, return",
-                    slotId, old_value.asBool(), value.asBool(), m_card_types[slotId]);
+                RFX_LOG_D(RTC_MODE_CONTROLLER_TAG,
+                          "[onSimTaskReady] Slot %d, state : %d -> %d, "
+                          "cardType : %d, CommonSlot need merge notify, return",
+                          slotId, old_value.asBool(), value.asBool(), m_card_types[slotId]);
                 if (mTimeoutHandle != NULL) {
                     RfxTimer::stop(mTimeoutHandle);
                     mTimeoutHandle = NULL;
                 }
-                mTimeoutHandle = RfxTimer::start(RfxCallback0(this,
-                        &RtcCardTypeReadyController::onMergeNotifyTimeout),
+                mTimeoutHandle = RfxTimer::start(
+                        RfxCallback0(this, &RtcCardTypeReadyController::onMergeNotifyTimeout),
                         ms2ns(m_timeout_msec));
                 return;
             }
@@ -145,7 +152,7 @@ void RtcCardTypeReadyController::onSimTaskReady(int slotId, RfxStatusKeyEnum key
     }
 
     RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "[onSimTaskReady] Slot %d, state : %d -> %d, cardType : %d",
-            slotId, old_value.asBool(), value.asBool(), m_card_types[slotId]);
+              slotId, old_value.asBool(), value.asBool(), m_card_types[slotId]);
 
     for (int i = RFX_SLOT_ID_0; i < RFX_SLOT_COUNT; i++) {
         if (m_card_types[i] == CARD_TYPE_INVALID) {
@@ -159,19 +166,19 @@ void RtcCardTypeReadyController::onSimTaskReady(int slotId, RfxStatusKeyEnum key
     }
 
     RtcModeSwitchController* modeSwitchController =
-            (RtcModeSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+            (RtcModeSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
     modeSwitchController->onCardTypeReady(m_card_types, m_card_type_states, RFX_SLOT_COUNT);
 }
 
 bool RtcCardTypeReadyController::isCommontSlotSupport() {
-    char property_value[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char property_value[MTK_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_COMMON_SLOT_SUPPORT, property_value, "0");
     return (atoi(property_value) == 1);
 }
 
 bool RtcCardTypeReadyController::isVsimEnabled() {
     bool enabled = false;
-    char vsim_enabled_prop[MTK_PROPERTY_VALUE_MAX] = { 0 };
+    char vsim_enabled_prop[MTK_PROPERTY_VALUE_MAX] = {0};
     for (int i = RFX_SLOT_ID_0; i < RFX_SLOT_COUNT; i++) {
         getMSimProperty(i, (char*)PROPERTY_EXTERNAL_SIM_ENABLED, vsim_enabled_prop);
         if (atoi(vsim_enabled_prop) > 0) {
@@ -188,8 +195,8 @@ bool RtcCardTypeReadyController::needMergeNotify(int slotId) {
             if (i == slotId) {
                 continue;
             }
-            if (m_card_types[i] == CARD_TYPE_NONE
-                    && m_card_type_states[i] != CARD_STATE_NO_CHANGED) {
+            if (m_card_types[i] == CARD_TYPE_NONE &&
+                m_card_type_states[i] != CARD_STATE_NO_CHANGED) {
                 return true;
             }
         }
@@ -209,7 +216,7 @@ bool RtcCardTypeReadyController::needMergeNotify(int slotId) {
 void RtcCardTypeReadyController::onMergeNotifyTimeout() {
     RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "[onMergeNotifyTimeout]");
     RtcModeSwitchController* modeSwitchController =
-            (RtcModeSwitchController *)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
+            (RtcModeSwitchController*)findController(RFX_OBJ_CLASS_INFO(RtcModeSwitchController));
     modeSwitchController->onCardTypeReady(m_card_types, m_card_type_states, RFX_SLOT_COUNT);
 }
 
@@ -224,26 +231,28 @@ bool RtcCardTypeReadyController::isAnyCardInvalid() {
     // at previous onSimTaskReady.So, keep card state.
     for (i = 0; i < RFX_SLOT_COUNT; i++) {
         if (CARD_TYPE_INVALID == m_card_types[i]) {
-            RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "[onSimTaskReady] slot[%d] is invalid, do not update\
-card state to no change", i);
+            RFX_LOG_D(RTC_MODE_CONTROLLER_TAG,
+                      "[onSimTaskReady] slot[%d] is invalid, do not update\
+card state to no change",
+                      i);
             break;
         }
     }
-    return (i == RFX_SLOT_COUNT)? false: true;
+    return (i == RFX_SLOT_COUNT) ? false : true;
 }
 
-void RtcCardTypeReadyController::onSimSwitchChanged(RfxStatusKeyEnum key,
-        RfxVariant old_value, RfxVariant value) {
+void RtcCardTypeReadyController::onSimSwitchChanged(RfxStatusKeyEnum key, RfxVariant old_value,
+                                                    RfxVariant value) {
     RFX_UNUSED(key);
     int oldState = old_value.asInt();
     int newState = value.asInt();
 
-    RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "onSimSwitchChanged (%d, %d), reset card type",
-            oldState, newState);
+    RFX_LOG_D(RTC_MODE_CONTROLLER_TAG, "onSimSwitchChanged (%d, %d), reset card type", oldState,
+              newState);
 
     if (CAPABILITY_SWITCH_STATE_START == newState) {
         // Reset card type.
-        for(int i = 0; i < RFX_SLOT_COUNT; i++) {
+        for (int i = 0; i < RFX_SLOT_COUNT; i++) {
             m_card_types[i] = CARD_TYPE_INVALID;
         }
     }

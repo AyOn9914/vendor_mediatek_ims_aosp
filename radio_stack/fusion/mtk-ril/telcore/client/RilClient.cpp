@@ -41,13 +41,13 @@
  *****************************************************************************/
 
 #define RFX_LOG_TAG "RilClient"
-#define NUM_ELEMS(a)  (sizeof (a) / sizeof (a)[0])
+#define NUM_ELEMS(a) (sizeof(a) / sizeof(a)[0])
 
 using namespace std;
 using namespace android;
 
 #if RILC_LOG
-    static char printBuf[PRINTBUF_SIZE];
+static char printBuf[PRINTBUF_SIZE];
 #endif
 
 static Mutex sMutex;
@@ -63,9 +63,9 @@ RilClient::RilClient(int identity, char* socketName) {
     activityThread->run("StateThread");
     setClientState(CLIENT_INITIALIZING);
 
-    mPendingUrc = (UrcList**)calloc(1, sizeof(UrcList*)*getSimCount());
+    mPendingUrc = (UrcList**)calloc(1, sizeof(UrcList*) * getSimCount());
     if (mPendingUrc == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG,"OOM");
+        RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
     for (int i = 0; i < getSimCount(); i++) {
@@ -97,7 +97,7 @@ RilClient::~RilClient() {
 
 void RilClient::clientStateCallback() {
     RFX_LOG_D(RFX_LOG_TAG, "Enter callback %s", clientStateToString(clientState));
-    switch(clientState) {
+    switch (clientState) {
         case CLIENT_INITIALIZING:
             handleStateInitializing();
             break;
@@ -116,7 +116,6 @@ void RilClient::clientStateCallback() {
 }
 
 void RilClient::handleStateInitializing() {
-
     int ret;
     char* socketName = this->socketName;
     struct sockaddr_un my_addr;
@@ -126,18 +125,17 @@ void RilClient::handleStateInitializing() {
         listenFd = android_get_control_socket(socketName);
     }
 
-    //do retry if init.rc didn't define socket
+    // do retry if init.rc didn't define socket
     if (listenFd < 0) {
         RFX_LOG_D(RFX_LOG_TAG, "init.rc didn't define, create socket manually");
         memset(&my_addr, 0, sizeof(struct sockaddr_un));
         my_addr.sun_family = AF_UNIX;
 
         char path[256];
-        sprintf (path, "%s", socketName);
+        sprintf(path, "%s", socketName);
         RFX_LOG_D(RFX_LOG_TAG, "socketName is %s", path);
         my_addr.sun_path[0] = 0;
-        strncpy(&(my_addr.sun_path[1]), path,
-            sizeof(my_addr.sun_path) - 1);
+        strncpy(&(my_addr.sun_path[1]), path, sizeof(my_addr.sun_path) - 1);
 
         listenFd = socket(AF_UNIX, SOCK_STREAM, 0);
         if (listenFd < 0) {
@@ -146,10 +144,10 @@ void RilClient::handleStateInitializing() {
             return;
         }
 
-        int ret = ::bind(listenFd, (struct sockaddr *) &my_addr,
-                sizeof(struct sockaddr_un));
+        int ret = ::bind(listenFd, (struct sockaddr*)&my_addr, sizeof(struct sockaddr_un));
         if (ret < 0) {
-            RFX_LOG_E(RFX_LOG_TAG, "bind fail, ret = %d, errno = %d, set state to close", ret, errno);
+            RFX_LOG_E(RFX_LOG_TAG, "bind fail, ret = %d, errno = %d, set state to close", ret,
+                      errno);
             close(listenFd);
             listenFd = -1;
         }
@@ -164,19 +162,19 @@ void RilClient::handleStateInitializing() {
     RFX_LOG_I(RFX_LOG_TAG, "start listen on fd: %d, socket name: %s", listenFd, socketName);
     ret = listen(listenFd, 4);
     if (ret < 0) {
-        RFX_LOG_E(RFX_LOG_TAG, "Failed to listen on control socket '%d': %s",
-             listenFd, strerror(errno));
+        RFX_LOG_E(RFX_LOG_TAG, "Failed to listen on control socket '%d': %s", listenFd,
+                  strerror(errno));
         close(listenFd);
         listenFd = -1;
         setClientState(CLIENT_CLOSED);
         return;
     }
 
-    socklen_t socklen = sizeof (peer_addr);
-    commandFd = accept (listenFd,  (sockaddr *) &peer_addr, &socklen);
+    socklen_t socklen = sizeof(peer_addr);
+    commandFd = accept(listenFd, (sockaddr*)&peer_addr, &socklen);
     RFX_LOG_I(RFX_LOG_TAG, "initialize: commandFd is %d", commandFd);
 
-    if (commandFd < 0 ) {
+    if (commandFd < 0) {
         RFX_LOG_D(RFX_LOG_TAG, "Error on accept() errno:%d", errno);
         close(listenFd);
         listenFd = -1;
@@ -192,8 +190,8 @@ void RilClient::handleStateActive() {
     // send pending URC first
     sendPendedUrcs(commandFd);
 
-    RecordStream *p_rs;
-    void *p_record;
+    RecordStream* p_rs;
+    void* p_record;
     size_t recordlen;
     int ret;
 
@@ -206,7 +204,7 @@ void RilClient::handleStateActive() {
         p_rs = stream;
     }
     RFX_LOG_D(RFX_LOG_TAG, "command Fd active is %d", commandFd);
-    while(clientState == CLIENT_ACTIVE) {
+    while (clientState == CLIENT_ACTIVE) {
         /* loop until EAGAIN/EINTR, end of stream, or other error */
         ret = record_stream_get_next(p_rs, &p_record, &recordlen);
 
@@ -233,7 +231,7 @@ void RilClient::handleStateActive() {
         close(commandFd);
         commandFd = -1;
         setClientState(CLIENT_DEACTIVE);
-    }  else {
+    } else {
         RFX_LOG_D(RFX_LOG_TAG, "socket read: ret: %d, errno: %d, keep reading", ret, errno);
         setClientState(CLIENT_ACTIVE);
     }
@@ -279,8 +277,8 @@ void RilClient::handleStateClosed() {
 
 void RilClient::setClientState(RilClientState state) {
     if (clientState != state) {
-        RFX_LOG_D(RFX_LOG_TAG, "set client state %s with old state %s",
-            clientStateToString(state), clientStateToString(clientState));
+        RFX_LOG_D(RFX_LOG_TAG, "set client state %s with old state %s", clientStateToString(state),
+                  clientStateToString(clientState));
         clientState = state;
     } else {
         RFX_LOG_D(RFX_LOG_TAG, "client state is already %s", clientStateToString(state));
@@ -289,27 +287,27 @@ void RilClient::setClientState(RilClientState state) {
 
 char* RilClient::clientStateToString(RilClientState state) {
     char* ret;
-    switch(state) {
+    switch (state) {
         case CLIENT_INITIALIZING:
-            ret =  (char *) "CLIENT_INITIALIZING";
+            ret = (char*)"CLIENT_INITIALIZING";
             break;
         case CLIENT_ACTIVE:
-            ret =  (char *) "CLIENT_ACTIVE";
+            ret = (char*)"CLIENT_ACTIVE";
             break;
         case CLIENT_DEACTIVE:
-            ret =  (char *) "CLIENT_DEACTIVE";
+            ret = (char*)"CLIENT_DEACTIVE";
             break;
         case CLIENT_CLOSED:
-            ret = (char *) "CLIENT_CLOSED";
+            ret = (char*)"CLIENT_CLOSED";
             break;
         default:
-            ret = (char *) "NO_SUCH_STATE";
+            ret = (char*)"NO_SUCH_STATE";
             break;
     }
     return ret;
 }
 
-RilClient::StateActivityThread::StateActivityThread (RilClient* client){
+RilClient::StateActivityThread::StateActivityThread(RilClient* client) {
     this->client = client;
     RFX_LOG_D(RFX_LOG_TAG, "Consctruct Activity thread");
 }
@@ -319,7 +317,7 @@ RilClient::StateActivityThread::~StateActivityThread() {
 }
 
 bool RilClient::StateActivityThread::threadLoop() {
-    while(1) {
+    while (1) {
         client->clientStateCallback();
         if (client->clientState == CLIENT_CLOSED) {
             return false;
@@ -327,33 +325,32 @@ bool RilClient::StateActivityThread::threadLoop() {
     }
 }
 
-
-void RilClient::processCommands(void *buffer, size_t buflen, int clientId) {
+void RilClient::processCommands(void* buffer, size_t buflen, int clientId) {
     Parcel p;
     status_t status;
     int32_t request = 0;
     int32_t token = 0;
-    RfxRequestInfo *pRI;
+    RfxRequestInfo* pRI;
 
-    p.setData((uint8_t *) buffer, buflen);
+    p.setData((uint8_t*)buffer, buflen);
     status = p.readInt32(&request);
-    status = p.readInt32 (&token);
+    status = p.readInt32(&token);
 
     char prop_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_3G_SIM, prop_value, "1");
     int capabilitySim = atoi(prop_value) - 1;
 
     RFX_LOG_D(RFX_LOG_TAG, "enqueue request id %d with token %d for client %d to slot = %d",
-            request, token, clientId, capabilitySim);
+              request, token, clientId, capabilitySim);
 
-    pRI = (RfxRequestInfo *)calloc(1, sizeof(RfxRequestInfo));
+    pRI = (RfxRequestInfo*)calloc(1, sizeof(RfxRequestInfo));
     if (pRI == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG,"OOM");
+        RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
-    pRI->socket_id = (RIL_SOCKET_ID) capabilitySim;
+    pRI->socket_id = (RIL_SOCKET_ID)capabilitySim;
     pRI->token = token;
-    pRI->clientId = (ClientId) clientId;
+    pRI->clientId = (ClientId)clientId;
     for (unsigned int i = 0; i < sCommands_size; i++) {
         if (request == sCommands[i].requestNumber) {
             RFX_LOG_D(RFX_LOG_TAG, "find entry! request = %d", request);
@@ -366,18 +363,18 @@ void RilClient::processCommands(void *buffer, size_t buflen, int clientId) {
     RFX_LOG_E(RFX_LOG_TAG, "Didn't find any entry, please check ril_client_commands.h");
 }
 
-void RilClient::handleUnsolicited(int slotId, int unsolResponse, void *data,
-        size_t datalen, UrcDispatchRule rule) {
+void RilClient::handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                  UrcDispatchRule rule) {
     RFX_UNUSED(rule);
 
     int ret;
-    RfxUnsolResponseInfo *pUI = NULL;
+    RfxUnsolResponseInfo* pUI = NULL;
     char prop_value[RFX_PROPERTY_VALUE_MAX] = {0};
     rfx_property_get(PROPERTY_3G_SIM, prop_value, "1");
     int capabilitySim = atoi(prop_value) - 1;
     RFX_LOG_D(RFX_LOG_TAG, "capabilitySim = %d", capabilitySim);
 
-    if(capabilitySim != slotId) {
+    if (capabilitySim != slotId) {
         RFX_LOG_D(RFX_LOG_TAG, "only handle capabilitySim");
         return;
     }
@@ -419,8 +416,7 @@ void RilClient::addHeaderToResponse(Parcel* p) {
     return;
 }
 
-void RilClient::requestComplete(RIL_Token token, RIL_Errno e, void *response,
-        size_t responselen) {
+void RilClient::requestComplete(RIL_Token token, RIL_Errno e, void* response, size_t responselen) {
     if (commandFd < 0) {
         RFX_LOG_D(RFX_LOG_TAG, "command Fd not ready here");
         return;
@@ -428,13 +424,13 @@ void RilClient::requestComplete(RIL_Token token, RIL_Errno e, void *response,
 
     int ret;
     size_t errorOffset;
-    RfxRequestInfo *pRI = (RfxRequestInfo *) token;
+    RfxRequestInfo* pRI = (RfxRequestInfo*)token;
 
     Parcel p;
     p.writeInt32(RESPONSE_SOLICITED);
     p.writeInt32(pRI->token);
     errorOffset = p.dataPosition();
-    p.writeInt32 (e);
+    p.writeInt32(e);
 
     if (response != NULL) {
         // ret = p.write(response, responselen);
@@ -455,10 +451,10 @@ void RilClient::requestComplete(RIL_Token token, RIL_Errno e, void *response,
     free(pRI);
 }
 
-void RilClient::cacheUrc(int unsolResponse, const void *data, size_t datalen,
-         UrcDispatchRule rule, int slotId) {
+void RilClient::cacheUrc(int unsolResponse, const void* data, size_t datalen, UrcDispatchRule rule,
+                         int slotId) {
     Mutex::Autolock autoLock(sMutex);
-    //Only the URC list we wanted.
+    // Only the URC list we wanted.
     if (!isNeedToCache(unsolResponse)) {
         RFX_LOG_I(RFX_LOG_TAG, "Don't need to cache the request %d", unsolResponse);
         return;
@@ -468,27 +464,24 @@ void RilClient::cacheUrc(int unsolResponse, const void *data, size_t datalen,
     int pendedUrcCount = 0;
 
     while (urcCur != NULL) {
-        RFX_LOG_D(RFX_LOG_TAG, "Pended Vsim URC:%d, slot:%d, :%d",
-            pendedUrcCount,
-            slotId,
-            urcCur->id);
+        RFX_LOG_D(RFX_LOG_TAG, "Pended Vsim URC:%d, slot:%d, :%d", pendedUrcCount, slotId,
+                  urcCur->id);
         urcPrev = urcCur;
         urcCur = urcCur->pNext;
         pendedUrcCount++;
     }
     urcCur = (UrcList*)calloc(1, sizeof(UrcList));
     if (urcCur == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG,"OOM");
+        RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
-    if (urcPrev != NULL)
-        urcPrev->pNext = urcCur;
+    if (urcPrev != NULL) urcPrev->pNext = urcCur;
     urcCur->pNext = NULL;
     urcCur->id = unsolResponse;
     urcCur->datalen = datalen;
     urcCur->data = (char*)calloc(1, datalen + 1);
     if (urcCur->data == NULL) {
-        RFX_LOG_E(RFX_LOG_TAG,"OOM");
+        RFX_LOG_E(RFX_LOG_TAG, "OOM");
         free(urcCur);
         return;
     }
@@ -525,6 +518,4 @@ void RilClient::sendPendedUrcs(int fdCommand) {
     }
 }
 
-bool RilClient::isNeedToCache(int unsolResponse __unused) {
-    return false;
-}
+bool RilClient::isNeedToCache(int unsolResponse __unused) { return false; }

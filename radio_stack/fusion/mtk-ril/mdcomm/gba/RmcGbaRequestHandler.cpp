@@ -23,25 +23,22 @@
 
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxStringsData, RfxStringsData, RFX_MSG_REQUEST_RUN_GBA);
 
-static const int requests[] = {
-    RFX_MSG_REQUEST_RUN_GBA
-};
+static const int requests[] = {RFX_MSG_REQUEST_RUN_GBA};
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcGbaRequestHandler, RIL_CMD_PROXY_6);
 
-RmcGbaRequestHandler::RmcGbaRequestHandler(int slot_id,
-        int channel_id):RfxBaseHandler(slot_id, channel_id){
-    registerToHandleRequest(requests, sizeof(requests)/sizeof(int));
+RmcGbaRequestHandler::RmcGbaRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    registerToHandleRequest(requests, sizeof(requests) / sizeof(int));
 }
 
-RmcGbaRequestHandler::~RmcGbaRequestHandler() {
-}
+RmcGbaRequestHandler::~RmcGbaRequestHandler() {}
 
 void RmcGbaRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     logD(TAG, "onHandleRequest: %d", msg->getId());
     int request = msg->getId();
-    switch(request) {
+    switch (request) {
         case RFX_MSG_REQUEST_RUN_GBA:
             requestRunGBA(msg);
             break;
@@ -57,15 +54,15 @@ void RmcGbaRequestHandler::onHandleTimer() {
 }
 
 void RmcGbaRequestHandler::requestRunGBA(const sp<RfxMclMessage>& msg) {
-    const char** strings = (const char**) (msg->getData()->getData());
+    const char** strings = (const char**)(msg->getData()->getData());
     sp<RfxAtResponse> p_response;
     int err;
     char* cmd = NULL;
     RIL_Errno ret = RIL_E_GENERIC_FAILURE;
-    RfxAtLine *line;
-    char *responses[4] = {NULL, NULL, NULL, NULL};
-    char *nafqdn = NULL;
-    char *pch = NULL;
+    RfxAtLine* line;
+    char* responses[4] = {NULL, NULL, NULL, NULL};
+    char* nafqdn = NULL;
+    char* pch = NULL;
     int nafProtocolLen = 0;
     int i;
 
@@ -113,9 +110,9 @@ void RmcGbaRequestHandler::requestRunGBA(const sp<RfxMclMessage>& msg) {
     }
 
     for (i = 0; i < nafProtocolLen; i++) {
-        if (!((*(strings[1] + i) >= 'A' && *(strings[1] + i) <= 'F')
-           || (*(strings[1] + i) >= 'a' && *(strings[1] + i) <= 'f')
-           || (*(strings[1] + i) >= '0' && *(strings[1] + i) <= '9'))) {
+        if (!((*(strings[1] + i) >= 'A' && *(strings[1] + i) <= 'F') ||
+              (*(strings[1] + i) >= 'a' && *(strings[1] + i) <= 'f') ||
+              (*(strings[1] + i) >= '0' && *(strings[1] + i) <= '9'))) {
             logD(TAG, "Naf secure protocol id is ilegal");
             goto error;
         }
@@ -127,15 +124,14 @@ void RmcGbaRequestHandler::requestRunGBA(const sp<RfxMclMessage>& msg) {
         goto error;
     }
 
-    asprintf(&cmd,"AT+EGBA=%s,%s,%s,%s",
-             strings[0], strings[1], strings[2], strings[3]);
+    asprintf(&cmd, "AT+EGBA=%s,%s,%s,%s", strings[0], strings[1], strings[2], strings[3]);
 
     p_response = atSendCommandMultiline(cmd, "+EGBA:");
 
     free(cmd);
 
     err = p_response->getError();
-    if (err < 0 ||  p_response == NULL) {
+    if (err < 0 || p_response == NULL) {
         logE(TAG, "requestRunGBA Fail");
         goto error;
     }
@@ -189,8 +185,8 @@ void RmcGbaRequestHandler::requestRunGBA(const sp<RfxMclMessage>& msg) {
         }
 
         if (RfxRilUtils::isUserLoad() != 1) {
-            logD(TAG, "requestRunGBA: key=%s, key_length=%s, btid=%s, keylifetime=%s",
-                responses[0], responses[1],responses[2],responses[3]);
+            logD(TAG, "requestRunGBA: key=%s, key_length=%s, btid=%s, keylifetime=%s", responses[0],
+                 responses[1], responses[2], responses[3]);
         } else {
             logD(TAG, "requestRunGBA finished");
         }
@@ -200,8 +196,8 @@ void RmcGbaRequestHandler::requestRunGBA(const sp<RfxMclMessage>& msg) {
     ret = RIL_E_SUCCESS;
 
 error:
-    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(msg->getId(), ret,
-            RfxStringsData((void*)responses, sizeof(responses)), msg, false);
+    sp<RfxMclMessage> response = RfxMclMessage::obtainResponse(
+            msg->getId(), ret, RfxStringsData((void*)responses, sizeof(responses)), msg, false);
     // response to TeleCore
     responseToTelCore(response);
 }

@@ -22,7 +22,6 @@
 #include <data/RmcDataDefs.h>
 #include "mtk_log.h"
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
@@ -32,11 +31,9 @@
 // Extend from RtcDataController
 RFX_IMPLEMENT_CLASS("RtcOpDataController", RtcOpDataController, RtcDataController);
 
-RtcOpDataController::RtcOpDataController() {
-}
+RtcOpDataController::RtcOpDataController() {}
 
-RtcOpDataController::~RtcOpDataController() {
-}
+RtcOpDataController::~RtcOpDataController() {}
 
 void RtcOpDataController::onInit() {
     RtcDataController::onInit();

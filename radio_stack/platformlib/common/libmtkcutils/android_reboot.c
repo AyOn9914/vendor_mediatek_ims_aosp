@@ -42,34 +42,29 @@ typedef struct {
     struct mntent entry;
 } mntent_list;
 
-static bool has_mount_option(const char* opts, const char* opt_to_find)
-{
-  bool ret = false;
-  char* copy = NULL;
-  char* opt;
-  char* rem;
+static bool has_mount_option(const char* opts, const char* opt_to_find) {
+    bool ret = false;
+    char* copy = NULL;
+    char* opt;
+    char* rem;
 
-  while ((opt = strtok_r(copy ? NULL : (copy = strdup(opts)), ",", &rem))) {
-      if (!strcmp(opt, opt_to_find)) {
-          ret = true;
-          break;
-      }
-  }
+    while ((opt = strtok_r(copy ? NULL : (copy = strdup(opts)), ",", &rem))) {
+        if (!strcmp(opt, opt_to_find)) {
+            ret = true;
+            break;
+        }
+    }
 
-  free(copy);
-  return ret;
+    free(copy);
+    return ret;
 }
 
-static bool is_block_device(const char* fsname)
-{
-    return !strncmp(fsname, "/dev/block", 10);
-}
+static bool is_block_device(const char* fsname) { return !strncmp(fsname, "/dev/block", 10); }
 
 /* Find all read+write block devices in /proc/mounts and add them to
  * |rw_entries|.
  */
-static void find_rw(struct listnode* rw_entries)
-{
+static void find_rw(struct listnode* rw_entries) {
     FILE* fp;
     struct mntent* mentry;
 
@@ -78,8 +73,7 @@ static void find_rw(struct listnode* rw_entries)
         return;
     }
     while ((mentry = getmntent(fp)) != NULL) {
-        if (is_block_device(mentry->mnt_fsname) &&
-            has_mount_option(mentry->mnt_opts, "rw")) {
+        if (is_block_device(mentry->mnt_fsname) && has_mount_option(mentry->mnt_opts, "rw")) {
             mntent_list* item = (mntent_list*)calloc(1, sizeof(mntent_list));
             if (!item) {
                 KLOG_WARNING(TAG, "Failed to calloc for find_rw. \n");
@@ -96,8 +90,7 @@ static void find_rw(struct listnode* rw_entries)
     endmntent(fp);
 }
 
-static void free_entries(struct listnode* entries)
-{
+static void free_entries(struct listnode* entries) {
     struct listnode* node;
     struct listnode* n;
     list_for_each_safe(node, n, entries) {
@@ -110,8 +103,7 @@ static void free_entries(struct listnode* entries)
     }
 }
 
-static mntent_list* find_item(struct listnode* rw_entries, const char* fsname_to_find)
-{
+static mntent_list* find_item(struct listnode* rw_entries, const char* fsname_to_find) {
     struct listnode* node;
     list_for_each(node, rw_entries) {
         mntent_list* item = node_to_item(node, mntent_list, list);
@@ -133,8 +125,7 @@ static mntent_list* find_item(struct listnode* rw_entries, const char* fsname_to
  * repeatedly until there are no more writable filesystems mounted on
  * block devices.
  */
-static void remount_ro(void (*cb_on_remount)(const struct mntent*))
-{
+static void remount_ro(void (*cb_on_remount)(const struct mntent*)) {
     int fd, cnt;
     FILE* fp;
     struct mntent* mentry;
@@ -174,8 +165,7 @@ static void remount_ro(void (*cb_on_remount)(const struct mntent*))
             goto out;
         }
         while ((mentry = getmntent(fp)) != NULL) {
-            if (!is_block_device(mentry->mnt_fsname) ||
-                !has_mount_option(mentry->mnt_opts, "ro")) {
+            if (!is_block_device(mentry->mnt_fsname) || !has_mount_option(mentry->mnt_opts, "ro")) {
                 continue;
             }
             mntent_list* item = find_item(&rw_entries, mentry->mnt_fsname);
@@ -190,15 +180,13 @@ static void remount_ro(void (*cb_on_remount)(const struct mntent*))
             /* All rw block devices are now readonly. */
             break;
         }
-        TEMP_FAILURE_RETRY(
-            usleep(READONLY_CHECK_MS * 1000 / READONLY_CHECK_TIMES));
+        TEMP_FAILURE_RETRY(usleep(READONLY_CHECK_MS * 1000 / READONLY_CHECK_TIMES));
         cnt++;
     }
 
     list_for_each(node, &rw_entries) {
         mntent_list* item = node_to_item(node, mntent_list, list);
-        KLOG_WARNING(TAG, "Failed to remount %s in readonly mode.\n",
-                     item->entry.mnt_fsname);
+        KLOG_WARNING(TAG, "Failed to remount %s in readonly mode.\n", item->entry.mnt_fsname);
     }
 
     if (cb_on_remount) {
@@ -213,10 +201,8 @@ out:
     free_entries(&ro_entries);
 }
 
-int android_reboot_with_callback(
-    int cmd, int flags __unused, const char *arg,
-    void (*cb_on_remount)(const struct mntent*))
-{
+int android_reboot_with_callback(int cmd, int flags __unused, const char* arg,
+                                 void (*cb_on_remount)(const struct mntent*)) {
     int ret;
     remount_ro(cb_on_remount);
     switch (cmd) {
@@ -230,7 +216,7 @@ int android_reboot_with_callback(
 
         case ANDROID_RB_RESTART2:
             ret = syscall(__NR_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2,
-                           LINUX_REBOOT_CMD_RESTART2, arg);
+                          LINUX_REBOOT_CMD_RESTART2, arg);
             break;
 
         default:
@@ -240,7 +226,6 @@ int android_reboot_with_callback(
     return ret;
 }
 
-int android_reboot(int cmd, int flags, const char *arg)
-{
+int android_reboot(int cmd, int flags, const char* arg) {
     return android_reboot_with_callback(cmd, flags, arg, NULL);
 }

@@ -25,18 +25,15 @@
 
 namespace VTService {
 
-class IVTClient: public IInterface, public IVTNotifyCallback {
- public:
-  DECLARE_META_INTERFACE(VTClient);
+class IVTClient : public IInterface, public IVTNotifyCallback {
+  public:
+    DECLARE_META_INTERFACE(VTClient);
 };
 
-class BnVTClient: public BnInterface<IVTClient> {
- public:
-  virtual status_t onTransact(
-          uint32_t code,
-          const Parcel& data,
-          Parcel * reply,
-          uint32_t flags = 0);
+class BnVTClient : public BnInterface<IVTClient> {
+  public:
+    virtual status_t onTransact(uint32_t code, const Parcel& data, Parcel* reply,
+                                uint32_t flags = 0);
 };
 
 extern sp<IVTClient> gVTClient;

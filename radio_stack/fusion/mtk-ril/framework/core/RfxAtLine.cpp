@@ -20,9 +20,8 @@
 
 #define RFX_LOG_TAG "RfxAtLine"
 
-static const char *s_finalResponsesSuccess[] = {
-    "OK",
-    "CONNECT"   /* some stacks start up data on another channel */
+static const char* s_finalResponsesSuccess[] = {
+        "OK", "CONNECT" /* some stacks start up data on another channel */
 };
 
 /**
@@ -30,15 +29,11 @@ static const char *s_finalResponsesSuccess[] = {
  * See 27.007 annex B
  * WARNING: NO CARRIER and others are sometimes unsolicited
  */
-static const char *s_finalResponsesError[] = {
-    "ERROR",
-    "+CMS ERROR:",
-    "+CME ERROR:",
-    "NO CARRIER",   /* sometimes! */
-    "NO ANSWER",
-    "NO DIALTONE",
-    "+C2K ERROR:",
-    "+EC2KCME ERROR",  /* for distinguish CME error between MD1 and MD3 */
+static const char* s_finalResponsesError[] = {
+        "ERROR",       "+CMS ERROR:",
+        "+CME ERROR:", "NO CARRIER", /* sometimes! */
+        "NO ANSWER",   "NO DIALTONE",
+        "+C2K ERROR:", "+EC2KCME ERROR", /* for distinguish CME error between MD1 and MD3 */
 };
 
 /**
@@ -49,36 +44,26 @@ static const char *s_finalResponsesError[] = {
  * OK
  * WARNING: NO CARRIER and others are sometimes unsolicited
  */
-static const char *s_IntermediatePattern[] = {
-    "> ",
+static const char* s_IntermediatePattern[] = {
+        "> ",
 };
 
-static const char *s_finalResponsesSuccessInNumeric[] = {
-    "0",
-    "1",
+static const char* s_finalResponsesSuccessInNumeric[] = {
+        "0",
+        "1",
 };
 
-static const char *s_finalResponsesErrorInNumeric[] = {
-    "2",
-    "3",
-    "4",
-    "6",
-    "7",
-    "8",
-    "+CMS ERROR:",
-    "+CME ERROR:",
-    "+C2K ERROR:",
+static const char* s_finalResponsesErrorInNumeric[] = {
+        "2", "3", "4", "6", "7", "8", "+CMS ERROR:", "+CME ERROR:", "+C2K ERROR:",
 };
 
-static const char *s_ackResponse[] = {
-    "ACK"
-};
+static const char* s_ackResponse[] = {"ACK"};
 
-RfxAtLine::RfxAtLine(const RfxAtLine &other) {
+RfxAtLine::RfxAtLine(const RfxAtLine& other) {
     // Only copy THIS node
     RFX_ASSERT(other.m_pNext == NULL);
 
-    m_line = (char *) calloc(strlen(other.m_line)+1, sizeof(char));
+    m_line = (char*)calloc(strlen(other.m_line) + 1, sizeof(char));
     if (m_line == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         m_pNext = NULL;
@@ -94,7 +79,7 @@ RfxAtLine::RfxAtLine(const RfxAtLine &other) {
 }
 
 RfxAtLine::RfxAtLine(const char* line, RfxAtLine* next) {
-    m_line = (char *) calloc(strlen(line)+1, sizeof(char));
+    m_line = (char*)calloc(strlen(line) + 1, sizeof(char));
     if (m_line == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         m_pNext = NULL;
@@ -111,7 +96,7 @@ RfxAtLine::RfxAtLine(const char* line, RfxAtLine* next) {
 
 RfxAtLine::~RfxAtLine() {
     if (m_pNext) {
-        delete(m_pNext);
+        delete (m_pNext);
     }
 
     m_pCur = NULL;
@@ -125,7 +110,7 @@ RfxAtLine::~RfxAtLine() {
  * Set err to -1 if this is not a valid response string, 0 on success.
  * updates m_pCur with current position
  */
-void RfxAtLine::atTokStart(int *err) {
+void RfxAtLine::atTokStart(int* err) {
     *err = 0;
     m_pCur = m_line;
     if (m_pCur == NULL) {
@@ -146,7 +131,7 @@ void RfxAtLine::atTokStart(int *err) {
     m_pCur++;
 }
 
-char* RfxAtLine::atTokChar(int *err) {
+char* RfxAtLine::atTokChar(int* err) {
     *err = 0;
     if (m_pCur == NULL) {
         *err = -1;
@@ -183,7 +168,7 @@ void RfxAtLine::skipNextComma() {
 }
 
 char* RfxAtLine::nextTok() {
-    char *ret;
+    char* ret;
 
     skipWhiteSpace();
 
@@ -193,7 +178,7 @@ char* RfxAtLine::nextTok() {
         m_pCur++;
         ret = strsep(&m_pCur, "\"");
         skipNextComma();
-    } else if (*m_pCur == '(' && *(m_pCur+1) == '"') {
+    } else if (*m_pCur == '(' && *(m_pCur + 1) == '"') {
         m_pCur = m_pCur + 2;
         ret = strsep(&m_pCur, "\"");
         skipNextComma();
@@ -204,7 +189,6 @@ char* RfxAtLine::nextTok() {
     return ret;
 }
 
-
 /**
  * Parses the next integer in the AT response line and places it in *p_out
  * Set err to 0 on success and -1 on fail
@@ -212,9 +196,9 @@ char* RfxAtLine::nextTok() {
  * "base" is the same as the base param in strtol
  */
 
-int RfxAtLine::atTokNextintBase(int base, int  uns, int *err) {
+int RfxAtLine::atTokNextintBase(int base, int uns, int* err) {
     int out;
-    char *ret;
+    char* ret;
     *err = 0;
 
     if (m_pCur == NULL) {
@@ -229,7 +213,7 @@ int RfxAtLine::atTokNextintBase(int base, int  uns, int *err) {
         return 0;
     } else {
         long l;
-        char *end;
+        char* end;
 
         if (uns)
             l = strtoul(ret, &end, base);
@@ -252,9 +236,7 @@ int RfxAtLine::atTokNextintBase(int base, int  uns, int *err) {
  * Set err to 0 on success and -1 on fail
  * updates m_pCur
  */
-int RfxAtLine::atTokNextint(int *err) {
-    return atTokNextintBase(10, 0, err);
-}
+int RfxAtLine::atTokNextint(int* err) { return atTokNextintBase(10, 0, err); }
 
 /**
  * Parses the next base 16 integer in the AT response line
@@ -262,11 +244,9 @@ int RfxAtLine::atTokNextint(int *err) {
  * Set err to 0 on success and -1 on fail
  * updates m_pCur
  */
-int RfxAtLine::atTokNexthexint(int *err) {
-    return atTokNextintBase(16, 1, err);
-}
+int RfxAtLine::atTokNexthexint(int* err) { return atTokNextintBase(16, 1, err); }
 
-bool RfxAtLine::atTokNextbool(int *err) {
+bool RfxAtLine::atTokNextbool(int* err) {
     int result;
 
     result = atTokNextint(err);
@@ -282,10 +262,10 @@ bool RfxAtLine::atTokNextbool(int *err) {
         return false;
     }
 
-    return result? true: false;
+    return result ? true : false;
 }
 
-char* RfxAtLine::atTokNextstr(int *err) {
+char* RfxAtLine::atTokNextstr(int* err) {
     *err = 0;
     if (m_pCur == NULL) {
         *err = -1;
@@ -296,13 +276,10 @@ char* RfxAtLine::atTokNextstr(int *err) {
 }
 
 /** returns 1 on "has more tokens" and 0 if no */
-int RfxAtLine::atTokHasmore()
-{
-    return ! (m_pCur== NULL || *m_pCur == '\0');
-}
+int RfxAtLine::atTokHasmore() { return !(m_pCur == NULL || *m_pCur == '\0'); }
 
 /// M: eMBMS feature
-void RfxAtLine::atTokEqual(int *err) {
+void RfxAtLine::atTokEqual(int* err) {
     *err = 0;
     m_pCur = m_line;
     if (m_pCur == NULL) {
@@ -330,8 +307,8 @@ void RfxAtLine::atTokEqual(int *err) {
  * "base" is the same as the base param in strtoll
  */
 
-long long RfxAtLine::atTokNextlonglongBase(int base, int  uns, int *err) {
-    char *ret;
+long long RfxAtLine::atTokNextlonglongBase(int base, int uns, int* err) {
+    char* ret;
     long long out;
     *err = 0;
 
@@ -347,7 +324,7 @@ long long RfxAtLine::atTokNextlonglongBase(int base, int  uns, int *err) {
         return 0;
     } else {
         long long ll;
-        char *end;
+        char* end;
 
         if (uns)
             ll = strtoull(ret, &end, base);
@@ -371,12 +348,10 @@ long long RfxAtLine::atTokNextlonglongBase(int base, int  uns, int *err) {
  * Set err to 0 on success and -1 on fail
  * updates m_pCur
  */
-long long RfxAtLine::atTokNextlonglong(int *err) {
-    return atTokNextlonglongBase(10, 0, err);
-}
+long long RfxAtLine::atTokNextlonglong(int* err) { return atTokNextlonglongBase(10, 0, err); }
 
 int RfxAtLine::isFinalResponseSuccess() {
-    for (size_t i = 0 ; i < NUM_ELEMS(s_finalResponsesSuccess) ; i++) {
+    for (size_t i = 0; i < NUM_ELEMS(s_finalResponsesSuccess); i++) {
         if (RfxMisc::strStartsWith(m_line, s_finalResponsesSuccess[i])) {
             return 1;
         }
@@ -388,10 +363,10 @@ int RfxAtLine::isFinalResponseSuccess() {
 int RfxAtLine::isFinalResponseErrorEx(int channel_id) {
     size_t i;
 
-    int j=0;
-    for(j=0; j<RfxRilUtils::rfxGetSimCount(); j++){
-        if( (channel_id == (int)(RIL_URC+j*RIL_CHANNEL_OFFSET)) &&
-                (RfxMisc::strStartsWith(m_line, "NO CARRIER")) ){
+    int j = 0;
+    for (j = 0; j < RfxRilUtils::rfxGetSimCount(); j++) {
+        if ((channel_id == (int)(RIL_URC + j * RIL_CHANNEL_OFFSET)) &&
+            (RfxMisc::strStartsWith(m_line, "NO CARRIER"))) {
             // [ALPS01225455]NO CARRIER in URC channel is URC, not final response for mediatek modem
             return 0;
         }
@@ -417,28 +392,28 @@ int RfxAtLine::isIntermediatePattern() {
 
 bool RfxAtLine::isFinalResponseSuccessInNumeric() {
     for (size_t i = 0; i < NUM_ELEMS(s_finalResponsesSuccessInNumeric); i++) {
-         if (!strcmp(m_line, s_finalResponsesSuccessInNumeric[i])) {
+        if (!strcmp(m_line, s_finalResponsesSuccessInNumeric[i])) {
             return 1;
-         }
+        }
     }
     return 0;
 }
 
 bool RfxAtLine::isFinalResponseErrorInNumeric() {
     for (size_t i = 0; i < NUM_ELEMS(s_finalResponsesErrorInNumeric); i++) {
-         if (!strncmp(m_line, s_finalResponsesErrorInNumeric[i],
-                 strlen(s_finalResponsesErrorInNumeric[i]))) {
+        if (!strncmp(m_line, s_finalResponsesErrorInNumeric[i],
+                     strlen(s_finalResponsesErrorInNumeric[i]))) {
             return 1;
-         }
+        }
     }
     return 0;
 }
 
 bool RfxAtLine::isAckResponse() {
     for (size_t i = 0; i < NUM_ELEMS(s_ackResponse); i++) {
-         if (!strncmp(m_line, s_ackResponse[i], strlen(s_ackResponse[i]))) {
+        if (!strncmp(m_line, s_ackResponse[i], strlen(s_ackResponse[i]))) {
             return true;
-         }
+        }
     }
     return false;
 }

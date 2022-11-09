@@ -22,6 +22,6 @@
 
 class RfxIaApnData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxIaApnData);
-    void copyString(char **dst, char *src);
+    void copyString(char** dst, char* src);
 };
 #endif

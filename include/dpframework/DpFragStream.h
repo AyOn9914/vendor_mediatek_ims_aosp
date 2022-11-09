@@ -8,9 +8,8 @@ class DpChannel;
 class DpRingBufferPool;
 class DpBasicBufferPool;
 
-class DpFragStream
-{
-public:
+class DpFragStream {
+  public:
     DpFragStream();
 
     ~DpFragStream();
@@ -23,30 +22,17 @@ public:
      * height   : source image height
      * pitch    : source image pitch
      */
-    DP_STATUS_ENUM setSrcConfig(DpColorFormat format,
-                                int32_t       width,
-                                int32_t       height,
-                                int32_t       MCUXSize,
-                                int32_t       MCUYSize,
-                                int32_t       pitch,
-                                DpRect        *pROI = 0);
+    DP_STATUS_ENUM setSrcConfig(DpColorFormat format, int32_t width, int32_t height,
+                                int32_t MCUXSize, int32_t MCUYSize, int32_t pitch,
+                                DpRect* pROI = 0);
 
-    DP_STATUS_ENUM setSrcConfig(DpColorFormat format,
-                                int32_t       width,
-                                int32_t       height,
-                                int32_t       MCUXSize,
-                                int32_t       MCUYSize,
-                                int32_t       YPitch,
-                                int32_t       UVPitch,
-                                DpRect        *pROI = 0);
+    DP_STATUS_ENUM setSrcConfig(DpColorFormat format, int32_t width, int32_t height,
+                                int32_t MCUXSize, int32_t MCUYSize, int32_t YPitch, int32_t UVPitch,
+                                DpRect* pROI = 0);
 
-    DP_STATUS_ENUM setDstBuffer(void     **pAddrList,
-                                uint32_t *pSizeList,
-                                uint32_t planeNumber);
+    DP_STATUS_ENUM setDstBuffer(void** pAddrList, uint32_t* pSizeList, uint32_t planeNumber);
 
-    DP_STATUS_ENUM setDstBuffer(int32_t  fileDesc,
-                                uint32_t *pSizeList,
-                                uint32_t planeNumber);
+    DP_STATUS_ENUM setDstBuffer(int32_t fileDesc, uint32_t* pSizeList, uint32_t planeNumber);
 
     /**
      * Set target image information
@@ -56,25 +42,20 @@ public:
      * height   : target image height
      * pitch    : target image pitch
      */
-    DP_STATUS_ENUM setDstConfig(DpColorFormat format,
-                                int32_t       width,
-                                int32_t       height,
-                                int32_t       pitch);
+    DP_STATUS_ENUM setDstConfig(DpColorFormat format, int32_t width, int32_t height, int32_t pitch);
 
-    DP_STATUS_ENUM setDstConfig(DpColorFormat format,
-                                int32_t       width,
-                                int32_t       height,
-                                int32_t       YPitch,
-                                int32_t       UVPitch);
+    DP_STATUS_ENUM setDstConfig(DpColorFormat format, int32_t width, int32_t height, int32_t YPitch,
+                                int32_t UVPitch);
 
     /**
      * Start fragment processing
      */
-    DP_STATUS_ENUM startFrag(uint32_t* pMCUYCount,bool bShrpEnabled,struct timeval *endTime = NULL);
+    DP_STATUS_ENUM startFrag(uint32_t* pMCUYCount, bool bShrpEnabled,
+                             struct timeval* endTime = NULL);
 
     uint32_t getPqID();
 
-    DP_STATUS_ENUM setPQParameter(const DpPqParam &pqParam);
+    DP_STATUS_ENUM setPQParameter(const DpPqParam& pqParam);
 
     /**
      * Query fragment information
@@ -89,16 +70,9 @@ public:
      * pPitch   : The required source pitch for decoder
      * waitBuf  : Wait for the fragment information ready
      */
-    DP_STATUS_ENUM dequeueFrag(int32_t       *pBufID,
-                               DpColorFormat *pFormat,
-                               void          **pBase,
-                               int32_t       *pMCUXStart,
-                               int32_t       *pMCUYStart,
-                               int32_t       *pWidth,
-                               int32_t       *pHeight,
-                               int32_t       *pPitch,
-                               bool          waitBuf = true);
-
+    DP_STATUS_ENUM dequeueFrag(int32_t* pBufID, DpColorFormat* pFormat, void** pBase,
+                               int32_t* pMCUXStart, int32_t* pMCUYStart, int32_t* pWidth,
+                               int32_t* pHeight, int32_t* pPitch, bool waitBuf = true);
 
     /**
      * Query fragment information
@@ -114,16 +88,10 @@ public:
      * pPitch   : The required source pitch for decoder
      * waitBuf  : Wait for the fragment information ready
      */
-    DP_STATUS_ENUM dequeueFrag(int32_t       *pBufID,
-                               DpColorFormat *pFormat,
-                               void          **pBase,
-                               int32_t       *pFileDesc,
-                               int32_t       *pMCUXStart,
-                               int32_t       *pMCUYStart,
-                               int32_t       *pWidth,
-                               int32_t       *pHeight,
-                               int32_t       *pPitch,
-                               bool          waitBuf = true);
+    DP_STATUS_ENUM dequeueFrag(int32_t* pBufID, DpColorFormat* pFormat, void** pBase,
+                               int32_t* pFileDesc, int32_t* pMCUXStart, int32_t* pMCUYStart,
+                               int32_t* pWidth, int32_t* pHeight, int32_t* pPitch,
+                               bool waitBuf = true);
 
     /**
      * Set fragment information
@@ -137,54 +105,50 @@ public:
      */
     DP_STATUS_ENUM stopFrag();
 
-    DP_STATUS_ENUM setDither(bool enDither)
-    {
+    DP_STATUS_ENUM setDither(bool enDither) {
         m_ditherStatus = enDither;
 
         return DP_STATUS_RETURN_SUCCESS;
     }
 
-    DP_STATUS_ENUM setMcuCol(int32_t mcu_col)
-    {
+    DP_STATUS_ENUM setMcuCol(int32_t mcu_col) {
         m_MCU_col = mcu_col;
 
         return DP_STATUS_RETURN_SUCCESS;
     }
 
-    DP_STATUS_ENUM setEmbeddJPEG(bool enEmbeddedJPEG = false)
-    {
+    DP_STATUS_ENUM setEmbeddJPEG(bool enEmbeddedJPEG = false) {
         m_embeddedJPEG = enEmbeddedJPEG;
 
         return DP_STATUS_RETURN_SUCCESS;
     }
 
-
-private:
-    DpStream          *m_pStream;
-    DpChannel         *m_pChannel;
-    int32_t           m_channelID;
-    DpRingBufferPool  *m_pSrcPool;
-    DpBasicBufferPool *m_pDstPool;
-    DpColorFormat     m_srcFormat;
-    int32_t           m_MCUYSize;
-    int32_t           m_MCUXSize;
-    int32_t           m_srcWidth;
-    int32_t           m_srcHeight;
-    int32_t           m_srcYPitch;
-    int32_t           m_srcUVPitch;
-    int32_t           m_dstBufID;
-    DpColorFormat     m_dstFormat;
-    int32_t           m_dstWidth;
-    int32_t           m_dstHeight;
-    int32_t           m_dstYPitch;
-    int32_t           m_dstUVPitch;
-    int32_t           m_MCU_col;
-    DpRect            m_cropInfo;
-    bool              m_ditherStatus;
-    bool              m_embeddedJPEG;
-    DpPqConfig        m_PqConfig;
-    uint32_t          m_PqID;
-    int32_t           m_pqSupport;
+  private:
+    DpStream* m_pStream;
+    DpChannel* m_pChannel;
+    int32_t m_channelID;
+    DpRingBufferPool* m_pSrcPool;
+    DpBasicBufferPool* m_pDstPool;
+    DpColorFormat m_srcFormat;
+    int32_t m_MCUYSize;
+    int32_t m_MCUXSize;
+    int32_t m_srcWidth;
+    int32_t m_srcHeight;
+    int32_t m_srcYPitch;
+    int32_t m_srcUVPitch;
+    int32_t m_dstBufID;
+    DpColorFormat m_dstFormat;
+    int32_t m_dstWidth;
+    int32_t m_dstHeight;
+    int32_t m_dstYPitch;
+    int32_t m_dstUVPitch;
+    int32_t m_MCU_col;
+    DpRect m_cropInfo;
+    bool m_ditherStatus;
+    bool m_embeddedJPEG;
+    DpPqConfig m_PqConfig;
+    uint32_t m_PqID;
+    int32_t m_pqSupport;
 };
 
 #endif  // __DP_FRAG_STREAM_H__

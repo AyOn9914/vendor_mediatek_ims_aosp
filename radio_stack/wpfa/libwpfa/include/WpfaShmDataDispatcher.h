@@ -16,7 +16,6 @@ using namespace std;
  * =============================================================================
  */
 
-
 /*
  * =============================================================================
  *                     typedef
@@ -30,20 +29,19 @@ using namespace std;
  */
 
 class WpfaShmDataDispatcher {
-public:
+  public:
     WpfaShmDataDispatcher();
     virtual ~WpfaShmDataDispatcher();
 
-    bool init(WpfaRingBuffer *ringBuf);
+    bool init(WpfaRingBuffer* ringBuf);
     void start();
 
-protected:
-
-private:
-    WpfaRingBuffer *mWpfaRingBuffer;
+  protected:
+  private:
+    WpfaRingBuffer* mWpfaRingBuffer;
 
     pthread_t mNotifierThread;
-    static void *notifierThreadStart(void *arg);
+    static void* notifierThreadStart(void* arg);
     void runNotifierLoop();
 
     int notifyReader();

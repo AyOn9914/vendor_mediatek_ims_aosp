@@ -47,8 +47,7 @@ static dev_t __ashmem_rdev;
 static pthread_mutex_t __ashmem_lock = PTHREAD_MUTEX_INITIALIZER;
 
 /* logistics of getting file descriptor for ashmem */
-static int __ashmem_open_locked()
-{
+static int __ashmem_open_locked() {
     int ret;
     struct stat st;
 
@@ -74,8 +73,7 @@ static int __ashmem_open_locked()
     return fd;
 }
 
-static int __ashmem_open()
-{
+static int __ashmem_open() {
     int fd;
 
     pthread_mutex_lock(&__ashmem_lock);
@@ -86,8 +84,7 @@ static int __ashmem_open()
 }
 
 /* Make sure file descriptor references ashmem, negative number means false */
-static int __ashmem_is_ashmem(int fd)
-{
+static int __ashmem_is_ashmem(int fd) {
     dev_t rdev;
     struct stat st;
 
@@ -119,14 +116,14 @@ static int __ashmem_is_ashmem(int fd)
     }
 
     if (rdev) {
-        LOG_ALWAYS_FATAL("illegal fd=%d mode=0%o rdev=%d:%d expected 0%o %d:%d",
-          fd, st.st_mode, major(st.st_rdev), minor(st.st_rdev),
-          S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IRGRP,
-          major(rdev), minor(rdev));
+        LOG_ALWAYS_FATAL("illegal fd=%d mode=0%o rdev=%d:%d expected 0%o %d:%d", fd, st.st_mode,
+                         major(st.st_rdev), minor(st.st_rdev),
+                         S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IRGRP,
+                         major(rdev), minor(rdev));
     } else {
-        LOG_ALWAYS_FATAL("illegal fd=%d mode=0%o rdev=%d:%d expected 0%o",
-          fd, st.st_mode, major(st.st_rdev), minor(st.st_rdev),
-          S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IRGRP);
+        LOG_ALWAYS_FATAL("illegal fd=%d mode=0%o rdev=%d:%d expected 0%o", fd, st.st_mode,
+                         major(st.st_rdev), minor(st.st_rdev),
+                         S_IFCHR | S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IRGRP);
     }
     /* NOTREACHED */
 
@@ -141,8 +138,7 @@ static int __ashmem_is_ashmem(int fd)
  * `name' is an optional label to give the region (visible in /proc/pid/maps)
  * `size' is the size of the region, in page-aligned bytes
  */
-int ashmem_create_region(const char *name, size_t size)
-{
+int ashmem_create_region(const char* name, size_t size) {
     int ret, save_errno;
 
     int fd = __ashmem_open();
@@ -174,8 +170,7 @@ error:
     return ret;
 }
 
-int ashmem_set_prot_region(int fd, int prot)
-{
+int ashmem_set_prot_region(int fd, int prot) {
     int ret = __ashmem_is_ashmem(fd);
     if (ret < 0) {
         return ret;
@@ -184,9 +179,8 @@ int ashmem_set_prot_region(int fd, int prot)
     return TEMP_FAILURE_RETRY(ioctl(fd, ASHMEM_SET_PROT_MASK, prot));
 }
 
-int ashmem_pin_region(int fd, size_t offset, size_t len)
-{
-    struct ashmem_pin pin = { offset, len };
+int ashmem_pin_region(int fd, size_t offset, size_t len) {
+    struct ashmem_pin pin = {offset, len};
 
     int ret = __ashmem_is_ashmem(fd);
     if (ret < 0) {
@@ -196,9 +190,8 @@ int ashmem_pin_region(int fd, size_t offset, size_t len)
     return TEMP_FAILURE_RETRY(ioctl(fd, ASHMEM_PIN, &pin));
 }
 
-int ashmem_unpin_region(int fd, size_t offset, size_t len)
-{
-    struct ashmem_pin pin = { offset, len };
+int ashmem_unpin_region(int fd, size_t offset, size_t len) {
+    struct ashmem_pin pin = {offset, len};
 
     int ret = __ashmem_is_ashmem(fd);
     if (ret < 0) {
@@ -208,8 +201,7 @@ int ashmem_unpin_region(int fd, size_t offset, size_t len)
     return TEMP_FAILURE_RETRY(ioctl(fd, ASHMEM_UNPIN, &pin));
 }
 
-int ashmem_get_size_region(int fd)
-{
+int ashmem_get_size_region(int fd) {
     int ret = __ashmem_is_ashmem(fd);
     if (ret < 0) {
         return ret;

@@ -21,10 +21,10 @@ RFX_IMPLEMENT_DATA_CLASS(RfxCapabilityData);
 
 #define RFX_LOG_TAG "RfxCapabilityData"
 
-RfxCapabilityData::RfxCapabilityData(void *data, int length) : RfxBaseData(data, length)  {
+RfxCapabilityData::RfxCapabilityData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        RIL_Capability* pOriginal = (RIL_Capability *) data;
-        RIL_Capability* pData = (RIL_Capability *) calloc(1, sizeof(RIL_Capability));
+        RIL_Capability* pOriginal = (RIL_Capability*)data;
+        RIL_Capability* pData = (RIL_Capability*)calloc(1, sizeof(RIL_Capability));
         if (pData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
@@ -44,7 +44,7 @@ RfxCapabilityData::RfxCapabilityData(void *data, int length) : RfxBaseData(data,
 RfxCapabilityData::~RfxCapabilityData() {
     // free memory
     if (m_data != NULL) {
-        RIL_Capability* pData = (RIL_Capability *) m_data;
+        RIL_Capability* pData = (RIL_Capability*)m_data;
         if (pData->id != NULL) {
             free(pData->id);
         }

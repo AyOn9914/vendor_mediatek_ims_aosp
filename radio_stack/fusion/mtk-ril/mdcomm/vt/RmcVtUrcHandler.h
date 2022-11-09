@@ -40,16 +40,16 @@ typedef struct {
 class RmcVtUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcVtUrcHandler);
 
-    public:
-        RmcVtUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcVtUrcHandler();
+  public:
+    RmcVtUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcVtUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleEANBR(const sp<RfxMclMessage>& msg);
-        void handleEIRAT(const sp<RfxMclMessage>& msg);
+  private:
+    void handleEANBR(const sp<RfxMclMessage>& msg);
+    void handleEIRAT(const sp<RfxMclMessage>& msg);
 };
 
 #endif

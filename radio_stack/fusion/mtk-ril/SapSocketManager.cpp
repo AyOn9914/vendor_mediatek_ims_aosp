@@ -26,7 +26,6 @@
 #define LOG_TAG "SapSocketMgr"
 
 SapSocketManager::SapSocketManager() {
-
     RFX_LOG_D(LOG_TAG, "[SapSocketManager] constructor");
     for (int i = 0; i < getSimCount(); i++) {
         socket_sap_gsm_fds[i] = -1;
@@ -39,7 +38,7 @@ SapSocketManager::SapSocketManager() {
 }
 
 bool SapSocketManager::setSapSocket(RIL_SOCKET_ID socketId, RILD_RadioTechnology_Group group,
-        int fd) {
+                                    int fd) {
     if (socketId >= getSimCount()) {
         RFX_LOG_D(LOG_TAG, "[SapSocketManager] setSapSocket parameter error: %d", socketId);
         return false;
@@ -51,27 +50,27 @@ bool SapSocketManager::setSapSocket(RIL_SOCKET_ID socketId, RILD_RadioTechnology
             socket_sap_gsm_fds[socketId] = fd;
             pthread_mutex_unlock(&sap_socket_gsm_mutex[socketId]);
             RFX_LOG_D(LOG_TAG, "[SapSocketManager] setSapSocket (socketId=%d, group=%d, fd=%d)",
-                    socketId, group, fd);
+                      socketId, group, fd);
             break;
         case RADIO_TECH_GROUP_SAP_C2K:
             pthread_mutex_lock(&sap_socket_c2k_mutex[socketId]);
             socket_sap_c2k_fds[socketId] = fd;
             pthread_mutex_unlock(&sap_socket_c2k_mutex[socketId]);
             RFX_LOG_D(LOG_TAG, "[SapSocketManager] setSapSocket (socketId=%d, group=%d, fd=%d)",
-                    socketId, group, fd);
+                      socketId, group, fd);
             break;
         case RADIO_TECH_GROUP_SAP_BT:
             pthread_mutex_lock(&sap_socket_bt_mutex[socketId]);
             socket_sap_bt_fds[socketId] = fd;
             pthread_mutex_unlock(&sap_socket_bt_mutex[socketId]);
             RFX_LOG_D(LOG_TAG, "[SapSocketManager] setSapSocket (socketId=%d, group=%d, fd=%d)",
-                    socketId, group, fd);
+                      socketId, group, fd);
             break;
     }
     return true;
 }
 
-bool SapSocketManager::sendSapMessageToRild(void *data, int datalen, RIL_SOCKET_ID socketId) {
+bool SapSocketManager::sendSapMessageToRild(void* data, int datalen, RIL_SOCKET_ID socketId) {
     bool ret = true;
     int targetFd = -1;
 
@@ -84,15 +83,18 @@ bool SapSocketManager::sendSapMessageToRild(void *data, int datalen, RIL_SOCKET_
     if (RADIO_TECH_GROUP_GSM == dest) {
         // send to gsm rild
         targetFd = socket_sap_gsm_fds[socketId];
-        RFX_LOG_D(LOG_TAG, "[SapSocketManager] sendSapMessageToRild send to gsm, fd = %d", targetFd);
+        RFX_LOG_D(LOG_TAG, "[SapSocketManager] sendSapMessageToRild send to gsm, fd = %d",
+                  targetFd);
     } else if (RADIO_TECH_GROUP_C2K == dest) {
         // send to c2k rild
         targetFd = socket_sap_c2k_fds[socketId];
-        RFX_LOG_D(LOG_TAG, "[SapSocketManager] sendSapMessageToRild send to c2k, fd = %d", targetFd);
+        RFX_LOG_D(LOG_TAG, "[SapSocketManager] sendSapMessageToRild send to c2k, fd = %d",
+                  targetFd);
     }
     if (targetFd == -1) {
-        RFX_LOG_D(LOG_TAG, "[SapSocketManager] sendSapMessageToRild socket not ready (dest=%d, targetFd=%d)",
-                dest, targetFd);
+        RFX_LOG_D(LOG_TAG,
+                  "[SapSocketManager] sendSapMessageToRild socket not ready (dest=%d, targetFd=%d)",
+                  dest, targetFd);
         return false;
     }
 
@@ -102,11 +104,12 @@ bool SapSocketManager::sendSapMessageToRild(void *data, int datalen, RIL_SOCKET_
         pthread_mutex_lock(&sap_socket_c2k_mutex[socketId]);
     }
     ssize_t sent = 0;
-    sent = send(targetFd , data , datalen, 0);
+    sent = send(targetFd, data, datalen, 0);
     if (sent < 0) {
-        RFX_LOG_D(LOG_TAG, "[SapSocketManager]\
+        RFX_LOG_D(LOG_TAG,
+                  "[SapSocketManager]\
                 sendSapMessageToRild send data fail (sent=%d, err=%d)(%d, %d, %d, dataSize=%d)",
-                sent, errno, socketId, dest, targetFd, datalen);
+                  sent, errno, socketId, dest, targetFd, datalen);
         ret = false;
     }
     if (RADIO_TECH_GROUP_GSM == dest) {
@@ -120,7 +123,7 @@ bool SapSocketManager::sendSapMessageToRild(void *data, int datalen, RIL_SOCKET_
 
 RILD_RadioTechnology_Group SapSocketManager::choiceDestViaCurrCardType(int slotId) {
     RILD_RadioTechnology_Group dest = RADIO_TECH_GROUP_GSM;
-    const char *fullUiccType = NULL;
+    const char* fullUiccType = NULL;
     char tmp[MTK_PROPERTY_VALUE_MAX] = {0};
 
     do {
@@ -128,7 +131,8 @@ RILD_RadioTechnology_Group SapSocketManager::choiceDestViaCurrCardType(int slotI
             fullUiccType = PROPERTY_RIL_FULL_UICC_TYPE[slotId];
             rfx_property_get(fullUiccType, tmp, "");
         } else {
-            RFX_LOG_D(LOG_TAG, "[SapSocketManager] choiceDestViaCurrCardType, slotId %d is wrong!", slotId);
+            RFX_LOG_D(LOG_TAG, "[SapSocketManager] choiceDestViaCurrCardType, slotId %d is wrong!",
+                      slotId);
             break;
         }
 
@@ -143,10 +147,12 @@ RILD_RadioTechnology_Group SapSocketManager::choiceDestViaCurrCardType(int slotI
             break;
         }
 
-        RFX_LOG_D(LOG_TAG, "[SapSocketManager] choiceDestViaCurrCardType, No 3GPP and 3GPP2?!(slot %d)",
-                slotId);
+        RFX_LOG_D(LOG_TAG,
+                  "[SapSocketManager] choiceDestViaCurrCardType, No 3GPP and 3GPP2?!(slot %d)",
+                  slotId);
     } while (0);
 
-    RFX_LOG_D(LOG_TAG, "[SapSocketManager] choiceDestViaCurrCardType, dest %d! (slot %d)", dest, slotId);
+    RFX_LOG_D(LOG_TAG, "[SapSocketManager] choiceDestViaCurrCardType, dest %d! (slot %d)", dest,
+              slotId);
     return dest;
 }

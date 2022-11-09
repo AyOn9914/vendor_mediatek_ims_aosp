@@ -23,8 +23,8 @@
 class RfxIntsData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxIntsData);
 
-    public:
-        RfxIntsData();
-        RfxIntsData(int data[], int count);
+  public:
+    RfxIntsData();
+    RfxIntsData(int data[], int count);
 };
 #endif

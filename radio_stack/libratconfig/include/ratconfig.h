@@ -29,7 +29,6 @@ int RatConfig_isTdscdmaSupported();
 int RatConfig_isGsmSupported();
 int RatConfig_isNrSupported();
 
-
 #ifdef __cplusplus
 }
 #endif

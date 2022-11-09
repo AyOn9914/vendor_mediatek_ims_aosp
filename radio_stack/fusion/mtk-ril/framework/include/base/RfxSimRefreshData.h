@@ -24,6 +24,6 @@
 class RfxSimRefreshData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxSimRefreshData);
 
-    public:
+  public:
 };
 #endif

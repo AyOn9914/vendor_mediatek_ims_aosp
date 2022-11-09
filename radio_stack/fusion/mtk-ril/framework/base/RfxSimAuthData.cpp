@@ -19,11 +19,11 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSimAuthData);
 
-RfxSimAuthData::RfxSimAuthData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxSimAuthData::RfxSimAuthData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_SimAuthentication *pSimAuth = (RIL_SimAuthentication*)_data;
-        RIL_SimAuthentication *pData = (RIL_SimAuthentication *)calloc(1,
-                sizeof(RIL_SimAuthentication));
+        RIL_SimAuthentication* pSimAuth = (RIL_SimAuthentication*)_data;
+        RIL_SimAuthentication* pData =
+                (RIL_SimAuthentication*)calloc(1, sizeof(RIL_SimAuthentication));
         RFX_ASSERT(pData != NULL);
 
         pData->authContext = pSimAuth->authContext;
@@ -43,7 +43,7 @@ RfxSimAuthData::RfxSimAuthData(void *_data, int _length) : RfxBaseData(_data, _l
 RfxSimAuthData::~RfxSimAuthData() {
     // free memory
     if (m_data != NULL) {
-        RIL_SimAuthentication *pData = (RIL_SimAuthentication*)m_data;
+        RIL_SimAuthentication* pData = (RIL_SimAuthentication*)m_data;
         if (pData->aid != NULL) {
             free(pData->aid);
             pData->aid = NULL;

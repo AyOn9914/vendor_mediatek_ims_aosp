@@ -23,7 +23,7 @@ char* RmcEmbmsUtils::addLogMask(int input) {
         out[0] = '*';
         return out;
     }
-    for (int i = 0; i < (len/2); ++i) {
+    for (int i = 0; i < (len / 2); ++i) {
         out[i] = '*';
     }
     return out;

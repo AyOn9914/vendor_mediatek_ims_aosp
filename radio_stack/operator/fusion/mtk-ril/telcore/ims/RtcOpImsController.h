@@ -36,23 +36,24 @@ class RtcOpImsController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcOpImsController);
 
-public:
+  public:
     RtcOpImsController();
     virtual ~RtcOpImsController();
 
     void getTrn(const char* fromMsisdn, const char* toMsisdn, const char* address,
-        const sp<RfxAction>& action);
+                const sp<RfxAction>& action);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& response);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
-private:
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
+
+  private:
     void handleSetTrn(const sp<RfxMessage>& message);
 
     sp<RfxAction> findAction(std::string addrString);

@@ -26,9 +26,9 @@
  * Class RmcDcImsReqHandler
  *****************************************************************************/
 class RmcDcImsReqHandler : public RmcDcCommonReqHandler {
-    public:
-        RmcDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager);
-        virtual ~RmcDcImsReqHandler();
-        virtual void requestSetupDataCall(const sp<RfxMclMessage>& msg);
+  public:
+    RmcDcImsReqHandler(int slot_id, int channel_id, RmcDcPdnManager* pdnManager);
+    virtual ~RmcDcImsReqHandler();
+    virtual void requestSetupDataCall(const sp<RfxMclMessage>& msg);
 };
 #endif /* __RMC_DC_IMS_REQ_HANDLER_H__ */

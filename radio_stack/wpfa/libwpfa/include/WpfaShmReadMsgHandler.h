@@ -32,37 +32,34 @@
 #include <mtk_log.h>
 
 using ::android::Looper;
-using ::android::Thread;
-using ::android::MessageHandler;
 using ::android::Message;
+using ::android::MessageHandler;
 using ::android::sp;
+using ::android::Thread;
 
 #define MAX_SIZE_RING_BURRER (512)
 
 class WpfaShmReadMsgHandler : public Thread {
-
-private:
+  private:
     class ShmReadMsgHandler : public MessageHandler {
-        public:
-            ShmReadMsgHandler(WpfaShmReadMsgHandler* _dispatcher,
-                    const sp<WpfaDriverMessage>& _msg) :
-                msg(_msg) , sender(_dispatcher){}
+      public:
+        ShmReadMsgHandler(WpfaShmReadMsgHandler* _dispatcher, const sp<WpfaDriverMessage>& _msg)
+            : msg(_msg), sender(_dispatcher) {}
 
-            virtual ~ShmReadMsgHandler() {}
+        virtual ~ShmReadMsgHandler() {}
 
-            virtual void handleMessage(const Message& message);
+        virtual void handleMessage(const Message& message);
 
-        private:
-            sp<WpfaDriverMessage> msg;
-            WpfaShmReadMsgHandler* sender;
+      private:
+        sp<WpfaDriverMessage> msg;
+        WpfaShmReadMsgHandler* sender;
     };
 
-
-private:
+  private:
     WpfaShmReadMsgHandler();
     virtual ~WpfaShmReadMsgHandler() {}
 
-public:
+  public:
     static void init();
     static void enqueueShmReadMessage(const sp<WpfaDriverMessage>& message);
     static void enqueueShmReadMessageFront(const sp<WpfaDriverMessage>& message);
@@ -70,7 +67,7 @@ public:
     static sp<Looper> waitLooper();
     virtual bool threadLoop();
 
-private:
+  private:
     void processMessage(const sp<WpfaDriverMessage>& msg);
     void onDataReady(uint16_t tId);
     void onRequestDataAck(uint16_t tId);
@@ -78,16 +75,16 @@ private:
 
     int checkDriverAdapterState();
     int sendMessageToModem(uint16_t msgId, uint16_t tId);
-    int dump_hex(unsigned char *data, int len);
-    int getDestAddress(unsigned char *data, int len);
-    int sendPktToKernel(unsigned char *data, int len);
+    int dump_hex(unsigned char* data, int len);
+    int getDestAddress(unsigned char* data, int len);
+    int sendPktToKernel(unsigned char* data, int len);
 
-    static WpfaShmReadMsgHandler *s_self;
+    static WpfaShmReadMsgHandler* s_self;
     sp<Looper> mLooper;
     Message mDummyMsg;
 
     uint16_t mTid;
-    WpfaDriverAdapter *mDriverAdapter;
+    WpfaDriverAdapter* mDriverAdapter;
 };
 
 #endif

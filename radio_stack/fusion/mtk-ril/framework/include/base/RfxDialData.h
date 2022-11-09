@@ -24,6 +24,6 @@
 class RfxDialData : public RfxBaseData {
     RFX_DECLARE_DATA_CLASS(RfxDialData);
 
-    public:
+  public:
 };
 #endif

@@ -22,7 +22,7 @@
 #include <time.h>
 
 #if !defined(_WIN32)
-# include <pthread.h>
+#include <pthread.h>
 #endif
 
 // #include <utils/Errors.h>
@@ -95,10 +95,7 @@ class Condition;
  */
 class CAPABILITY("mutex") Mutex {
   public:
-    enum {
-        PRIVATE = 0,
-        SHARED = 1
-    };
+    enum { PRIVATE = 0, SHARED = 1 };
 
     Mutex();
     explicit Mutex(const char* name);
@@ -161,12 +158,8 @@ class CAPABILITY("mutex") Mutex {
 
 #if !defined(_WIN32)
 
-inline Mutex::Mutex() {
-    pthread_mutex_init(&mMutex, NULL);
-}
-inline Mutex::Mutex(__attribute__((unused)) const char* name) {
-    pthread_mutex_init(&mMutex, NULL);
-}
+inline Mutex::Mutex() { pthread_mutex_init(&mMutex, NULL); }
+inline Mutex::Mutex(__attribute__((unused)) const char* name) { pthread_mutex_init(&mMutex, NULL); }
 inline Mutex::Mutex(int type, __attribute__((unused)) const char* name) {
     if (type == SHARED) {
         pthread_mutexattr_t attr;
@@ -178,30 +171,22 @@ inline Mutex::Mutex(int type, __attribute__((unused)) const char* name) {
         pthread_mutex_init(&mMutex, NULL);
     }
 }
-inline Mutex::~Mutex() {
-    pthread_mutex_destroy(&mMutex);
-}
-inline status_t Mutex::lock() {
-    return -pthread_mutex_lock(&mMutex);
-}
-inline void Mutex::unlock() {
-    pthread_mutex_unlock(&mMutex);
-}
-inline status_t Mutex::tryLock() {
-    return -pthread_mutex_trylock(&mMutex);
-}
+inline Mutex::~Mutex() { pthread_mutex_destroy(&mMutex); }
+inline status_t Mutex::lock() { return -pthread_mutex_lock(&mMutex); }
+inline void Mutex::unlock() { pthread_mutex_unlock(&mMutex); }
+inline status_t Mutex::tryLock() { return -pthread_mutex_trylock(&mMutex); }
 #if defined(__ANDROID__)
 inline status_t Mutex::timedLock(nsecs_t timeoutNs) {
     timeoutNs += systemTime(SYSTEM_TIME_REALTIME);
     const struct timespec ts = {
-        /* .tv_sec = */ static_cast<time_t>(timeoutNs / 1000000000),
-        /* .tv_nsec = */ static_cast<long>(timeoutNs % 1000000000),
+            /* .tv_sec = */ static_cast<time_t>(timeoutNs / 1000000000),
+            /* .tv_nsec = */ static_cast<long>(timeoutNs % 1000000000),
     };
     return -pthread_mutex_timedlock(&mMutex, &ts);
 }
 #endif
 
-#endif // !defined(_WIN32)
+#endif  // !defined(_WIN32)
 
 // ---------------------------------------------------------------------------
 
@@ -214,7 +199,7 @@ inline status_t Mutex::timedLock(nsecs_t timeoutNs) {
 typedef Mutex::Autolock AutoMutex;
 
 // ---------------------------------------------------------------------------
-}; // namespace android
+};  // namespace android
 // ---------------------------------------------------------------------------
 
-#endif // _LIBS_UTILS_MUTEX_H
+#endif  // _LIBS_UTILS_MUTEX_H

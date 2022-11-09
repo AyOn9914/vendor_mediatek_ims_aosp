@@ -28,7 +28,7 @@
 using ::android::String8;
 
 static const int event_list[] = {
-    RFX_MSG_EVENT_SMS_NOTIFY_SMS_READY,
+        RFX_MSG_EVENT_SMS_NOTIFY_SMS_READY,
 };
 
 // Register handler
@@ -43,16 +43,16 @@ RFX_REGISTER_DATA_TO_EVENT_ID(RfxVoidData, RFX_MSG_EVENT_SMS_NOTIFY_SMS_READY);
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcCommSmsRequestHandler::RmcCommSmsRequestHandler(int slot_id, int channel_id) :
-        RfxBaseHandler(slot_id, channel_id) {
-        setTag(String8("RmcCommSmsReq"));
-        registerToHandleEvent(event_list, sizeof(event_list)/sizeof(int));
+RmcCommSmsRequestHandler::RmcCommSmsRequestHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
+    setTag(String8("RmcCommSmsReq"));
+    registerToHandleEvent(event_list, sizeof(event_list) / sizeof(int));
 }
 
-void RmcCommSmsRequestHandler::onHandleEvent(const sp < RfxMclMessage > & msg) {
+void RmcCommSmsRequestHandler::onHandleEvent(const sp<RfxMclMessage>& msg) {
     int event = msg->getId();
 
-    switch(event) {
+    switch (event) {
         case RFX_MSG_EVENT_SMS_NOTIFY_SMS_READY:
             notifySmsReady(msg);
             break;
@@ -76,8 +76,8 @@ void RmcCommSmsRequestHandler::notifySmsReady(const sp<RfxMclMessage>& msg) {
         return;
     }
 
-    sp<RfxMclMessage> unsol = RfxMclMessage::obtainUrc(RFX_MSG_URC_SMS_READY_NOTIFICATION,
-            m_slot_id, RfxVoidData());
+    sp<RfxMclMessage> unsol =
+            RfxMclMessage::obtainUrc(RFX_MSG_URC_SMS_READY_NOTIFICATION, m_slot_id, RfxVoidData());
     responseToTelCore(unsol);
 
     // To set PDU mode must be when SMS task is ready in modem.

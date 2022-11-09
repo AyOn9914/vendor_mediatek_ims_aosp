@@ -24,16 +24,14 @@
 #include "CommandController.h"
 #include "CommandDispatch.h"
 
-
 using android::netdagent::gCtls;
 
 namespace android {
 namespace netdagent {
 
-FirewallCmd::FirewallCmd() : CommandDispatch("firewall") {
-}
+FirewallCmd::FirewallCmd() : CommandDispatch("firewall") {}
 
-int FirewallCmd::sendGenericOkFail(CommandRespondor *cr, int cond) {
+int FirewallCmd::sendGenericOkFail(CommandRespondor* cr, int cond) {
     if (!cond) {
         cr->sendMsg(ResponseCode::CommandOkay, "Firewall command succeeded", false);
     } else {
@@ -70,13 +68,13 @@ ChildChain FirewallCmd::parseChildChain(const char* arg) {
 
 FirewallChinaRule FirewallCmd::parseChain(const char* arg) {
     if (!strcmp(arg, "mobile")) {
-            return MOBILE;
+        return MOBILE;
     } else {
-            return WIFI;
+        return WIFI;
     }
 }
 
-int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
+int FirewallCmd::runCommand(CommandRespondor* cr, int argc, char** argv) {
     if (argc < 2) {
         cr->sendMsg(ResponseCode::CommandSyntaxError, "Missing command", false);
         return 0;
@@ -84,9 +82,10 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
 
     if (!strcmp(argv[1], "set_udp_forwarding")) {
         if (argc != 5) {
-            cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall set_udp_forwarding internalInterface externalInterface ipAddr",
-                         false);
+            cr->sendMsg(
+                    ResponseCode::CommandSyntaxError,
+                    "Usage: firewall set_udp_forwarding internalInterface externalInterface ipAddr",
+                    false);
             return 0;
         }
 
@@ -102,8 +101,8 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "clear_udp_forwarding")) {
         if (argc != 4) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall clear_udp_forwarding internalInterface externalInterface",
-                         false);
+                        "Usage: firewall clear_udp_forwarding internalInterface externalInterface",
+                        false);
             return 0;
         }
 
@@ -118,8 +117,7 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "get_usb_client")) {
         if (argc != 3) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall get_usb_client interface",
-                         false);
+                        "Usage: firewall get_usb_client interface", false);
             return 0;
         }
         int res = 0;
@@ -136,23 +134,21 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
         return sendGenericOkFail(cr, res);
     }
 
-    //add pass volte packet for VOLTE NSIOT test
-    if(!strcmp(argv[1], "set_volte_nsiot_firewall")){
+    // add pass volte packet for VOLTE NSIOT test
+    if (!strcmp(argv[1], "set_volte_nsiot_firewall")) {
         if (argc != 3) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall set_volte_nsiot_firewall <interface>",
-                         false);
+                        "Usage: firewall set_volte_nsiot_firewall <interface>", false);
             return 0;
         }
-       int res = gCtls->firewallCtrl.setVolteNsiotFirewall(argv[2]);
-       return sendGenericOkFail(cr, res);
+        int res = gCtls->firewallCtrl.setVolteNsiotFirewall(argv[2]);
+        return sendGenericOkFail(cr, res);
     }
 
-    if(!strcmp(argv[1], "clear_volte_nsiot_firewall")){
+    if (!strcmp(argv[1], "clear_volte_nsiot_firewall")) {
         if (argc != 3) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall clearVolteNsiotFirewall <interface>",
-                         false);
+                        "Usage: firewall clearVolteNsiotFirewall <interface>", false);
             return 0;
         }
         int res = gCtls->firewallCtrl.clearVolteNsiotFirewall(argv[2]);
@@ -162,7 +158,7 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "set_plmn_iface_rule")) {
         if (argc != 5) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall set_plmn_iface_rule <channel> <mask> <allow|deny>", false);
+                        "Usage: firewall set_plmn_iface_rule <channel> <mask> <allow|deny>", false);
             return 0;
         }
 
@@ -177,7 +173,9 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "set_interface_for_chain_rule")) {
         if (argc != 5) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall set_interface_for_chain_rule <interface> <dozable|powersave> <allow|deny>", false);
+                        "Usage: firewall set_interface_for_chain_rule <interface> "
+                        "<dozable|powersave> <allow|deny>",
+                        false);
             return 0;
         }
 
@@ -190,8 +188,8 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
 
     if (!strcmp(argv[1], "priority_set_uid")) {
         if (argc != 3) {
-            cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_set_uid <uid>", false);
+            cr->sendMsg(ResponseCode::CommandSyntaxError, "Usage: firewall priority_set_uid <uid>",
+                        false);
             return 0;
         }
         int uid = atoi(argv[2]);
@@ -202,7 +200,7 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "priority_clear_uid")) {
         if (argc != 3) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_clear_uid <uid>", false);
+                        "Usage: firewall priority_clear_uid <uid>", false);
             return 0;
         }
         int uid = atoi(argv[2]);
@@ -212,8 +210,8 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
 
     if (!strcmp(argv[1], "priority_clear_uid_all")) {
         if (argc != 2) {
-            cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_clear_all", false);
+            cr->sendMsg(ResponseCode::CommandSyntaxError, "Usage: firewall priority_clear_all",
+                        false);
             return 0;
         }
         int res = gCtls->firewallCtrl.clearpriorityuidall();
@@ -223,14 +221,16 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "priority_set_toup")) {
         if (argc != 7) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_set_toup <src_ip> <src_port> <dst_ip, <dst_port>, <protocol>", false);
+                        "Usage: firewall priority_set_toup <src_ip> <src_port> <dst_ip, "
+                        "<dst_port>, <protocol>",
+                        false);
             return 0;
         }
-        const char *src_ip = argv[2];
-        const char *src_port = argv[3];
-        const char *dst_ip = argv[4];
-        const char *dst_port = argv[5];
-        const char *proto = argv[6];
+        const char* src_ip = argv[2];
+        const char* src_port = argv[3];
+        const char* dst_ip = argv[4];
+        const char* dst_port = argv[5];
+        const char* proto = argv[6];
 
         int res = gCtls->firewallCtrl.setprioritytoup(src_ip, src_port, dst_ip, dst_port, proto);
         return sendGenericOkFail(cr, res);
@@ -239,14 +239,16 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "priority_clear_toup")) {
         if (argc != 7) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_clear_toup <src_ip> <src_port> <dst_ip, <dst_port>, <protocol>", false);
+                        "Usage: firewall priority_clear_toup <src_ip> <src_port> <dst_ip, "
+                        "<dst_port>, <protocol>",
+                        false);
             return 0;
         }
-        const char *src_ip = argv[2];
-        const char *src_port = argv[3];
-        const char *dst_ip = argv[4];
-        const char *dst_port = argv[5];
-        const char *proto = argv[6];
+        const char* src_ip = argv[2];
+        const char* src_port = argv[3];
+        const char* dst_ip = argv[4];
+        const char* dst_port = argv[5];
+        const char* proto = argv[6];
 
         int res = gCtls->firewallCtrl.clearprioritytoup(src_ip, src_port, dst_ip, dst_port, proto);
         return sendGenericOkFail(cr, res);
@@ -254,8 +256,8 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
 
     if (!strcmp(argv[1], "priority_clear_toup_all")) {
         if (argc != 2) {
-            cr->sendMsg(ResponseCode::CommandSyntaxError,
-                         "Usage: firewall priority_clear_toup_all", false);
+            cr->sendMsg(ResponseCode::CommandSyntaxError, "Usage: firewall priority_clear_toup_all",
+                        false);
             return 0;
         }
         int res = gCtls->firewallCtrl.clearprioritytoupall();
@@ -266,7 +268,7 @@ int FirewallCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     return 0;
 }
 
-int FirewallCmd::runCommand(int argc, char **argv) {
+int FirewallCmd::runCommand(int argc, char** argv) {
     if (argc < 2) {
         ALOGE("Missing command using %s\n", argv[0]);
         return -1;
@@ -289,7 +291,7 @@ int FirewallCmd::runCommand(int argc, char **argv) {
 
     if (!strcmp(argv[1], "clear_udp_forwarding")) {
         if (argc != 4) {
-        ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
+            ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
             return -1;
         }
 
@@ -320,17 +322,17 @@ int FirewallCmd::runCommand(int argc, char **argv) {
         return res;
     }
 
-    //add pass volte packet for VOLTE NSIOT test
-    if(!strcmp(argv[1], "set_volte_nsiot_firewall")){
+    // add pass volte packet for VOLTE NSIOT test
+    if (!strcmp(argv[1], "set_volte_nsiot_firewall")) {
         if (argc != 3) {
             ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
             return -1;
         }
-       int res = gCtls->firewallCtrl.setVolteNsiotFirewall(argv[2]);
-       return res;
+        int res = gCtls->firewallCtrl.setVolteNsiotFirewall(argv[2]);
+        return res;
     }
 
-    if(!strcmp(argv[1], "clear_volte_nsiot_firewall")){
+    if (!strcmp(argv[1], "clear_volte_nsiot_firewall")) {
         if (argc != 3) {
             ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
             return -1;
@@ -392,7 +394,7 @@ int FirewallCmd::runCommand(int argc, char **argv) {
         return res;
     }
 
-   if (!strcmp(argv[1], "priority_set_uid")) {
+    if (!strcmp(argv[1], "priority_set_uid")) {
         if (argc != 3) {
             ALOGE("Usage: firewall priority_set_uid <uid>");
             return 0;
@@ -423,14 +425,15 @@ int FirewallCmd::runCommand(int argc, char **argv) {
 
     if (!strcmp(argv[1], "priority_set_toup")) {
         if (argc != 7) {
-            ALOGE("Usage: firewall priority_set_toup <src_ip> <src_port> <dst_ip, <dst_port>, <protocol>");
+            ALOGE("Usage: firewall priority_set_toup <src_ip> <src_port> <dst_ip, <dst_port>, "
+                  "<protocol>");
             return -1;
         }
-        const char *src_ip = argv[2];
-        const char *src_port = argv[3];
-        const char *dst_ip = argv[4];
-        const char *dst_port = argv[5];
-        const char *proto = argv[6];
+        const char* src_ip = argv[2];
+        const char* src_port = argv[3];
+        const char* dst_ip = argv[4];
+        const char* dst_port = argv[5];
+        const char* proto = argv[6];
 
         int res = gCtls->firewallCtrl.setprioritytoup(src_ip, src_port, dst_ip, dst_port, proto);
         return res;
@@ -438,14 +441,15 @@ int FirewallCmd::runCommand(int argc, char **argv) {
 
     if (!strcmp(argv[1], "priority_clear_toup")) {
         if (argc != 7) {
-            ALOGE("Usage: firewall priority_clear_toup <src_ip> <src_port> <dst_ip, <dst_port>, <protocol>");
+            ALOGE("Usage: firewall priority_clear_toup <src_ip> <src_port> <dst_ip, <dst_port>, "
+                  "<protocol>");
             return -1;
         }
-        const char *src_ip = argv[2];
-        const char *src_port = argv[3];
-        const char *dst_ip = argv[4];
-        const char *dst_port = argv[5];
-        const char *proto = argv[6];
+        const char* src_ip = argv[2];
+        const char* src_port = argv[3];
+        const char* dst_ip = argv[4];
+        const char* dst_port = argv[5];
+        const char* proto = argv[6];
 
         int res = gCtls->firewallCtrl.clearprioritytoup(src_ip, src_port, dst_ip, dst_port, proto);
         return res;
@@ -464,26 +468,24 @@ int FirewallCmd::runCommand(int argc, char **argv) {
     return -1;
 }
 
+ThrottleCmd::ThrottleCmd() : CommandDispatch("throttle") {}
 
-ThrottleCmd::ThrottleCmd() : CommandDispatch("throttle") {
-}
-
-int ThrottleCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
+int ThrottleCmd::runCommand(CommandRespondor* cr, int argc, char** argv) {
     if (argc < 2) {
         cr->sendMsg(ResponseCode::CommandSyntaxError, "Missing argument", false);
         return 0;
     }
 
-   if (!strcmp(argv[1], "cat")) {
+    if (!strcmp(argv[1], "cat")) {
         if (argc != 4 || (argc == 4 && (strcmp(argv[3], "rx") && (strcmp(argv[3], "tx"))))) {
-            cr->sendMsg(ResponseCode::CommandSyntaxError,
-                    "Usage: throttle cat <interface> <rx|tx>", false);
+            cr->sendMsg(ResponseCode::CommandSyntaxError, "Usage: throttle cat <interface> <rx|tx>",
+                        false);
             return 0;
         }
         int val = 0;
         int rc = 0;
 
-        if(!strcmp(argv[2], "modem")){
+        if (!strcmp(argv[2], "modem")) {
             if (!strcmp(argv[3], "rx")) {
                 rc = gCtls->throttleCtrl.getModemRxThrottle(&val);
             } else {
@@ -500,7 +502,7 @@ int ThrottleCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
         if (rc) {
             cr->sendMsg(ResponseCode::OperationFailed, "Failed to get throttle", true);
         } else {
-            char *msg = NULL;
+            char* msg = NULL;
             asprintf(&msg, "%u", val);
             cr->sendMsg(ResponseCode::CommandOkay, msg, false);
             free(msg);
@@ -512,11 +514,11 @@ int ThrottleCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     if (!strcmp(argv[1], "set")) {
         if (argc != 5) {
             cr->sendMsg(ResponseCode::CommandSyntaxError,
-                    "Usage: throttle set <interface> <rx_kbps> <tx_kbps>", false);
+                        "Usage: throttle set <interface> <rx_kbps> <tx_kbps>", false);
             return 0;
         }
-        if(!strcmp(argv[2], "modem")){
-            if (gCtls->throttleCtrl.setModemThrottle(atoi(argv[3]),atoi(argv[4]))) {
+        if (!strcmp(argv[2], "modem")) {
+            if (gCtls->throttleCtrl.setModemThrottle(atoi(argv[3]), atoi(argv[4]))) {
                 cr->sendMsg(ResponseCode::OperationFailed, "Failed to set modem throttle", true);
             } else {
                 cr->sendMsg(ResponseCode::CommandOkay, "Interface throttling set", false);
@@ -535,13 +537,13 @@ int ThrottleCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
     return 0;
 }
 
-int ThrottleCmd::runCommand(int argc, char **argv) {
+int ThrottleCmd::runCommand(int argc, char** argv) {
     if (argc < 2) {
         ALOGE("Missing command using %s\n", argv[0]);
         return -1;
     }
 
-   if (!strcmp(argv[1], "cat")) {
+    if (!strcmp(argv[1], "cat")) {
         if (argc != 4 || (argc == 4 && (strcmp(argv[3], "rx") && (strcmp(argv[3], "tx"))))) {
             ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
             return -1;
@@ -549,7 +551,7 @@ int ThrottleCmd::runCommand(int argc, char **argv) {
         int val = 0;
         int rc = 0;
 
-        if(!strcmp(argv[2], "modem")){
+        if (!strcmp(argv[2], "modem")) {
             if (!strcmp(argv[3], "rx")) {
                 rc = gCtls->throttleCtrl.getModemRxThrottle(&val);
             } else {
@@ -572,8 +574,8 @@ int ThrottleCmd::runCommand(int argc, char **argv) {
             return -1;
         }
         int res;
-        if(!strcmp(argv[2], "modem")){
-            res = gCtls->throttleCtrl.setModemThrottle(atoi(argv[3]),atoi(argv[4]));
+        if (!strcmp(argv[2], "modem")) {
+            res = gCtls->throttleCtrl.setModemThrottle(atoi(argv[3]), atoi(argv[4]));
             return res;
         }
         res = gCtls->throttleCtrl.setInterfaceThrottle(argv[2], atoi(argv[3]), atoi(argv[4]));
@@ -584,8 +586,7 @@ int ThrottleCmd::runCommand(int argc, char **argv) {
     return -1;
 }
 
-NetworkCmd::NetworkCmd() : CommandDispatch("network") {
-}
+NetworkCmd::NetworkCmd() : CommandDispatch("network") {}
 
 int NetworkCmd::runCommand(CommandRespondor* cr, int argc, char** argv) {
     if (argc < 2) {
@@ -595,13 +596,13 @@ int NetworkCmd::runCommand(CommandRespondor* cr, int argc, char** argv) {
 
     //    0       1         2              3           4         5        6        7
     // network forward <enable|disable> <inIface> <outIface> <nxthop> <tableId> <family>
-    if(!strcmp(argv[1], "forward")) {
-        if(argc < 7) {
+    if (!strcmp(argv[1], "forward")) {
+        if (argc < 7) {
             cr->sendMsg(ResponseCode::CommandSyntaxError, "Missing argument", false);
             return 0;
         }
         int family = atoi(argv[7]);
-        if(!strcmp(argv[2], "enable"))
+        if (!strcmp(argv[2], "enable"))
             gCtls->netCtrl.forwardIpsec(argv[3], argv[4], argv[5], argv[6], family, 1);
         else
             gCtls->netCtrl.forwardIpsec(argv[3], argv[4], argv[5], argv[6], family, 0);
@@ -621,13 +622,13 @@ int NetworkCmd::runCommand(int argc, char** argv) {
 
     //    0       1         2              3           4         5        6        7
     // network forward <enable|disable> <inIface> <outIface> <nxthop> <tableId> <family>
-    if(!strcmp(argv[1], "forward")) {
-        if(argc < 7) {
+    if (!strcmp(argv[1], "forward")) {
+        if (argc < 7) {
             ALOGE("Missing command using %s %s\n", argv[0], argv[1]);
             return -1;
         }
         int family = atoi(argv[7]);
-        if(!strcmp(argv[2], "enable"))
+        if (!strcmp(argv[2], "enable"))
             gCtls->netCtrl.forwardIpsec(argv[3], argv[4], argv[5], argv[6], family, 1);
         else
             gCtls->netCtrl.forwardIpsec(argv[3], argv[4], argv[5], argv[6], family, 0);
@@ -637,7 +638,6 @@ int NetworkCmd::runCommand(int argc, char** argv) {
     ALOGE("Unknown network %s command\n", argv[1]);
     return -1;
 }
-
 
 #if 0
 ThroughputCmd::ThroughputCmd() : CommandDispatch("throughput") {
@@ -678,7 +678,6 @@ int ThroughputCmd::runCommand(CommandRespondor *cr, int argc, char **argv) {
 
     return rc;
 }
-
 
 #endif
 

@@ -40,13 +40,11 @@ typedef struct UrcList {
     char* data;
     size_t datalen;
     UrcDispatchRule rule;
-    UrcList *pNext;
+    UrcList* pNext;
 } UrcList;
 
 class RilClient {
-
-public:
-
+  public:
     RilClient(int identity, char* socketName);
     virtual ~RilClient();
     void setClientState(RilClientState state);
@@ -54,16 +52,16 @@ public:
     int identity;
     char* socketName;
     int commandFd;
-    RecordStream *stream;
+    RecordStream* stream;
     int listenFd;
     RilClientState clientState;
 
-    class StateActivityThread: public Thread {
-    public:
+    class StateActivityThread : public Thread {
+      public:
         StateActivityThread(RilClient* client);
         virtual ~StateActivityThread();
 
-    protected:
+      protected:
         RilClient* client;
         virtual bool threadLoop();
     };
@@ -78,20 +76,19 @@ public:
     virtual void handleStateActive();
     virtual void handleStateDeactive();
     virtual void handleStateClosed();
-    virtual void processCommands(void *buffer, size_t buflen, int clientId);
-    virtual void handleUnsolicited(int slotId, int unsolResponse, void *data,
-            size_t datalen, UrcDispatchRule rule);
+    virtual void processCommands(void* buffer, size_t buflen, int clientId);
+    virtual void handleUnsolicited(int slotId, int unsolResponse, void* data, size_t datalen,
+                                   UrcDispatchRule rule);
     virtual void addHeaderToResponse(Parcel* p);
-    virtual void requestComplete(RIL_Token token, RIL_Errno e, void *response,
-            size_t responselen);
+    virtual void requestComplete(RIL_Token token, RIL_Errno e, void* response, size_t responselen);
     virtual bool isNeedToCache(int unsolResponse);
-    virtual void cacheUrc(int unsolResponse, const void *data, size_t datalen,
-            UrcDispatchRule rule, int slotId);
+    virtual void cacheUrc(int unsolResponse, const void* data, size_t datalen, UrcDispatchRule rule,
+                          int slotId);
     virtual void sendUrc(int slotId, UrcList* urcCached);
     virtual void sendPendedUrcs(int fdCommand);
 
-    private:
-        UrcList **mPendingUrc = NULL;
+  private:
+    UrcList** mPendingUrc = NULL;
 };
 
 #endif /* __RIL_CLIENT_H__ */

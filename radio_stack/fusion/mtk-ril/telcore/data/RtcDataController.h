@@ -44,13 +44,13 @@
  *************************************************
  ****************************/
 
-#define DATA_SETTING_NUMBERS   5
-#define SKIP_DATA_SETTINGS    -2
-#define INVALID_VALUE         -1
+#define DATA_SETTING_NUMBERS 5
+#define SKIP_DATA_SETTINGS -2
+#define INVALID_VALUE -1
 
 typedef enum {
-    MOBILE_DATA      = 0,
-    ROAMING_DATA     = 1,
+    MOBILE_DATA = 0,
+    ROAMING_DATA = 1,
     DEFAULT_DATA_SIM = 2,
     DOMESTIC_ROAMING_DATA = 3,
     INTERNATIONAL_ROAMING_DATA = 4
@@ -59,20 +59,20 @@ typedef enum {
 class RtcDataController : public RfxController {
     RFX_DECLARE_CLASS(RtcDataController);  // Required: declare this class
 
-public:
+  public:
     RtcDataController();
 
     virtual ~RtcDataController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-            bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
     virtual void preCheckIfNeedDisableIms(const sp<RfxMessage>& message);
@@ -83,7 +83,8 @@ protected:
     virtual void handleSetPreferredDataModem(const sp<RfxMessage>& message);
     virtual void onImsConfirmed(const sp<RfxMessage> message);
     virtual void requestResumeIms(const sp<RfxMessage> message);
-private:
+
+  private:
     // Private functions
     void registerForStatusChange();
     void onWorldModeStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
@@ -104,13 +105,13 @@ private:
     void dequeueForPreferredDataMode(const sp<RfxMessage>& message);
     int getProfileID(int apnTypeId);
 
-private:
+  private:
     bool isUnderCapabilitySwitch;
     int requestTokenIdForDisableIms;
     int transIdForDisableIms;
     int mIsPreferredDataMode;
-    std::map<int, int> m_mapProfileIdToken; // <ProfileId, Token>
-    std::map<int, int> m_mapCidProfileId; // <Cid, ProfileId>
+    std::map<int, int> m_mapProfileIdToken;  // <ProfileId, Token>
+    std::map<int, int> m_mapCidProfileId;    // <Cid, ProfileId>
 };
 
 #endif /* __RTC_DATA_CONTROLLER_H__ */

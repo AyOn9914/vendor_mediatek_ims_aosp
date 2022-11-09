@@ -27,12 +27,12 @@ extern "C" {
 
 /*
  * Set tags (and owning UIDs) for network sockets.
-*/
+ */
 extern int qtaguid_tagSocket(int sockfd, int tag, uid_t uid);
 
 /*
  * Untag a network socket before closing.
-*/
+ */
 extern int qtaguid_untagSocket(int sockfd);
 
 /*

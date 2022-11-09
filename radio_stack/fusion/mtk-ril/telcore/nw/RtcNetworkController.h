@@ -31,34 +31,32 @@
  * Define
  *****************************************************************************/
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
 class RtcNetworkController : public RfxController {
     RFX_DECLARE_CLASS(RtcNetworkController);
 
-public:
+  public:
     RtcNetworkController();
     virtual ~RtcNetworkController();
 
-protected:
+  protected:
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual void onInit();
 
-    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message,
-        bool isModemPowerOff,int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
 
-    void onHandleModemReset(RfxStatusKeyEnum key, RfxVariant old_value,
-        RfxVariant value);
+    void onHandleModemReset(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     void onLocalAbortAvailableNetworkDone();
     bool isAPInCall();
 
-private:
+  private:
     bool mNetworkScanOngoing;
     bool mForceStopNetworkScan;
     sp<RfxMessage> mNwScanMessage;

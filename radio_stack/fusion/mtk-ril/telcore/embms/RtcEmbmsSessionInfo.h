@@ -32,22 +32,22 @@ using ::android::String16;
  * Class RtcEmbmsSessionInfo
  *****************************************************************************/
 
-
 class RtcEmbmsSessionInfo {
-public:
+  public:
     RtcEmbmsSessionInfo();
     virtual ~RtcEmbmsSessionInfo();
     void dump();
     void copy(RtcEmbmsSessionInfo& src);
-public:
-    int             mTransId;              /* Transaction ID for eMBMS middleware usage */
-    int             mTmgiLen;              /* The length of TMGI */
-    char            mTmgi[EMBMS_MAX_LEN_TMGI+1];
-    int             mSaiCount;
-    int             mSais[EMBMS_MAX_NUM_SAI];
-    int             mFreqCount;
-    int             mFreqs[EMBMS_MAX_NUM_FREQ];
-    sp<RfxMessage>  mOriginalRequest;       /* The reqeust message */
+
+  public:
+    int mTransId; /* Transaction ID for eMBMS middleware usage */
+    int mTmgiLen; /* The length of TMGI */
+    char mTmgi[EMBMS_MAX_LEN_TMGI + 1];
+    int mSaiCount;
+    int mSais[EMBMS_MAX_NUM_SAI];
+    int mFreqCount;
+    int mFreqs[EMBMS_MAX_NUM_FREQ];
+    sp<RfxMessage> mOriginalRequest; /* The reqeust message */
 };
 
 #endif /* __RTC_EMBMS_SESSION_INFO_H__ */

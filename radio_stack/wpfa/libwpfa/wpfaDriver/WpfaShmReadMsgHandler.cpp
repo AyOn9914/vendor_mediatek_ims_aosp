@@ -19,16 +19,16 @@
 #include "WpfaDriverUtilis.h"
 
 /* Raw socket headers*/
-#include <netdb.h>            // struct addrinfo
-#include <sys/types.h>        // needed for socket(), uint8_t, uint16_t, uint32_t
-#include <sys/socket.h>       // needed for socket()
-#include <netinet/in.h>       // IPPROTO_HOPOPTS, IPPROTO_TCP, IPPROTO_FRAGMENT, INET6_ADDRSTRLEN
-#include <netinet/ip.h>       // IP_MAXPACKET (which is 65535)
-#include <netinet/ip6.h>      // struct ip6_hdr
+#include <netdb.h>        // struct addrinfo
+#include <sys/types.h>    // needed for socket(), uint8_t, uint16_t, uint32_t
+#include <sys/socket.h>   // needed for socket()
+#include <netinet/in.h>   // IPPROTO_HOPOPTS, IPPROTO_TCP, IPPROTO_FRAGMENT, INET6_ADDRSTRLEN
+#include <netinet/ip.h>   // IP_MAXPACKET (which is 65535)
+#include <netinet/ip6.h>  // struct ip6_hdr
 //#define __FAVOR_BSD         // Use BSD format of tcp header
-#include <netinet/tcp.h>      // struct tcphdr
-#include <arpa/inet.h>        // inet_pton() and inet_ntop()
-#include <sys/ioctl.h>        // macro ioctl is defined
+#include <netinet/tcp.h>  // struct tcphdr
+#include <arpa/inet.h>    // inet_pton() and inet_ntop()
+#include <sys/ioctl.h>    // macro ioctl is defined
 //#include <bits/ioctls.h>    // defines values for argument "request" of ioctl.
 #include <net/if.h>           // struct ifreq
 #include <linux/if_ether.h>   // ETH_P_IP = 0x0800, ETH_P_IPV6 = 0x86DD
@@ -36,23 +36,20 @@
 #include <net/ethernet.h>
 #include <cstdio>
 
-
 #define WPFA_D_LOG_TAG "WpfaShmReadMsgHandler"
 
 using ::android::Mutex;
 
-WpfaShmReadMsgHandler *WpfaShmReadMsgHandler::s_self = NULL;
+WpfaShmReadMsgHandler* WpfaShmReadMsgHandler::s_self = NULL;
 
 static sem_t sWaitLooperSem;
 static bool sNeedWaitLooper = true;
 static Mutex sWaitLooperMutex;
 
-
 /*****************************************************************************
  * Class RuleReqMsgHandler
  *****************************************************************************/
-void WpfaShmReadMsgHandler::ShmReadMsgHandler::handleMessage(
-        const Message& message) {
+void WpfaShmReadMsgHandler::ShmReadMsgHandler::handleMessage(const Message& message) {
     WPFA_UNUSED(message);
     sender->processMessage(msg);
 }
@@ -84,13 +81,13 @@ bool WpfaShmReadMsgHandler::threadLoop() {
         mtkLogD(WPFA_D_LOG_TAG, "threadLoop, result = %d, err=%d", result, err);
     } while (result == Looper::POLL_WAKE || result == Looper::POLL_CALLBACK);
 
-    WPFA_D_ASSERT(0); // Can't go here
+    WPFA_D_ASSERT(0);  // Can't go here
     return true;
 }
 
 void WpfaShmReadMsgHandler::enqueueShmReadMessage(const sp<WpfaDriverMessage>& message) {
-    //if (!RfxRilUtils::isInLogReductionList(message->getId())) {
-        mtkLogD(WPFA_D_LOG_TAG, "enqueueShmReadMessage: %s", message->toString().string());
+    // if (!RfxRilUtils::isInLogReductionList(message->getId())) {
+    mtkLogD(WPFA_D_LOG_TAG, "enqueueShmReadMessage: %s", message->toString().string());
     //}
     WpfaShmReadMsgHandler* sender = s_self;
     sp<MessageHandler> handler = new ShmReadMsgHandler(sender, message);
@@ -140,21 +137,21 @@ void WpfaShmReadMsgHandler::processMessage(const sp<WpfaDriverMessage>& msg) {
 
 void WpfaShmReadMsgHandler::onDataReady(uint16_t tId) {
     // check and update mTid
-    //if (mTid == MODEM_TID_INIT) {  // for first time get DataReady
-        mTid = tId;
-        if (MAX_SIZE_RING_BURRER == 0) {
-            // loacl ring buffer is not supported
-            mtkLogD(WPFA_D_LOG_TAG, "MAX_SIZE_RING_BURRER=0");
+    // if (mTid == MODEM_TID_INIT) {  // for first time get DataReady
+    mTid = tId;
+    if (MAX_SIZE_RING_BURRER == 0) {
+        // loacl ring buffer is not supported
+        mtkLogD(WPFA_D_LOG_TAG, "MAX_SIZE_RING_BURRER=0");
+        sendMessageToModem(MSG_A2M_REQUEST_DATA, tId);
+    } else {
+        // check free space of local ring buffer
+        if (1) {
             sendMessageToModem(MSG_A2M_REQUEST_DATA, tId);
         } else {
-            // check free space of local ring buffer
-            if (1) {
-                sendMessageToModem(MSG_A2M_REQUEST_DATA, tId);
-            } else {
-                mtkLogE(WPFA_D_LOG_TAG, "onDataReady, local buffer is full!");
-                //need to assert
-            }
+            mtkLogE(WPFA_D_LOG_TAG, "onDataReady, local buffer is full!");
+            // need to assert
         }
+    }
 }
 
 void WpfaShmReadMsgHandler::onRequestDataAck(uint16_t tId) {
@@ -182,16 +179,11 @@ int WpfaShmReadMsgHandler::checkDriverAdapterState() {
 int WpfaShmReadMsgHandler::sendMessageToModem(uint16_t msgId, uint16_t tId) {
     int retValue = checkDriverAdapterState();
     if (retValue == 0) {
-        sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(
-        msgId,
-        tId,
-        CCCI_CTRL_MSG,
-        0);
+        sp<WpfaDriverMessage> msg = WpfaDriverMessage::obtainMessage(msgId, tId, CCCI_CTRL_MSG, 0);
         retValue = mDriverAdapter->sendMsgToControlMsgDispatcher(msg);
     }
     return retValue;
 }
-
 
 /* MD UL AP Path Via TTY instead of SHM (For M2 RD IT purpose) */
 void WpfaShmReadMsgHandler::onRequestULIpPkt(const sp<WpfaDriverMessage>& msg) {
@@ -230,86 +222,85 @@ void WpfaShmReadMsgHandler::onRequestULIpPkt(const sp<WpfaDriverMessage>& msg) {
     // }
 }
 
-int WpfaShmReadMsgHandler::dump_hex(unsigned char *data, int len) {
-    int i,counter ,rest;
-    char * dumpbuffer;
-    char  printbuf[1024];
+int WpfaShmReadMsgHandler::dump_hex(unsigned char* data, int len) {
+    int i, counter, rest;
+    char* dumpbuffer;
+    char printbuf[1024];
 
-    dumpbuffer = (char*)malloc(16*1024);
+    dumpbuffer = (char*)malloc(16 * 1024);
     if (!dumpbuffer) {
         mtkLogD(WPFA_D_LOG_TAG, "DUMP_HEX ALLOC memory fail \n");
         return -1;
     }
 
-    if (len >8*1024 ){
+    if (len > 8 * 1024) {
         mtkLogD(WPFA_D_LOG_TAG, "trac the packet \n");
-        len = 8*1024;
+        len = 8 * 1024;
     }
 
-    //memset((void *)dumpbuffer,0,16*1024);
-    memset(dumpbuffer, 0, 16*1024);
-    //mtkLogD(UPLINK_LOG_TAG, "dumpbuffer size =%d \n",(int)sizeof(*dumpbuffer));
+    // memset((void *)dumpbuffer,0,16*1024);
+    memset(dumpbuffer, 0, 16 * 1024);
+    // mtkLogD(UPLINK_LOG_TAG, "dumpbuffer size =%d \n",(int)sizeof(*dumpbuffer));
 
-    for (i = 0 ; i < len ; i++) {
-       sprintf(&dumpbuffer[i*2],"%02x",data[i]);
+    for (i = 0; i < len; i++) {
+        sprintf(&dumpbuffer[i * 2], "%02x", data[i]);
     }
-    dumpbuffer[i*2] = '\0' ;
+    dumpbuffer[i * 2] = '\0';
 
     // android log buffer =1024bytes, need to splite the log
-    counter = len/300 ;
-    rest = len - counter*300 ;
+    counter = len / 300;
+    rest = len - counter * 300;
 
-    mtkLogD(WPFA_D_LOG_TAG, " Data Length = %d ,counter =%d ,rest =%d", len ,counter,rest);
+    mtkLogD(WPFA_D_LOG_TAG, " Data Length = %d ,counter =%d ,rest =%d", len, counter, rest);
 
     mtkLogD(WPFA_D_LOG_TAG, " NFQUEU Data: ");
-    for (i = 0 ; i < counter ; i++) {
+    for (i = 0; i < counter; i++) {
         memset(printbuf, 0, sizeof(printbuf));
-        memcpy(printbuf ,dumpbuffer+i*600 , 300*2);
-        printbuf[600]='\0';
-        mtkLogD(WPFA_D_LOG_TAG, "data:%s",printbuf);
+        memcpy(printbuf, dumpbuffer + i * 600, 300 * 2);
+        printbuf[600] = '\0';
+        mtkLogD(WPFA_D_LOG_TAG, "data:%s", printbuf);
         mtkLogD(WPFA_D_LOG_TAG, "~");
     }
 
-    //for rest data
+    // for rest data
     memset(printbuf, 0, sizeof(printbuf));
-    memcpy(printbuf ,dumpbuffer+counter*600 , rest*2);
-    printbuf[rest*2]='\0';
-    mtkLogD(WPFA_D_LOG_TAG, "%s",printbuf);
+    memcpy(printbuf, dumpbuffer + counter * 600, rest * 2);
+    printbuf[rest * 2] = '\0';
+    mtkLogD(WPFA_D_LOG_TAG, "%s", printbuf);
 
     free(dumpbuffer);
     return 1;
 }
 
-int WpfaShmReadMsgHandler::getDestAddress(unsigned char *data, int len) {
-    struct iphdr *iphdrTemp;
-    char *iphdrTempArray;
-    char *sourceAddr;
-    char *destAddr;
+int WpfaShmReadMsgHandler::getDestAddress(unsigned char* data, int len) {
+    struct iphdr* iphdrTemp;
+    char* iphdrTempArray;
+    char* sourceAddr;
+    char* destAddr;
     int i;
     int mdaddr = 0;
 
-    if(len < sizeof(struct iphdr)) {
+    if (len < sizeof(struct iphdr)) {
         return -1;
     }
 
-    iphdrTempArray = (char *)malloc(sizeof(struct iphdr));
+    iphdrTempArray = (char*)malloc(sizeof(struct iphdr));
 
-    if(!iphdrTempArray){
+    if (!iphdrTempArray) {
         mtkLogD(WPFA_D_LOG_TAG, "iphdrTempArray ALLOC memory fail");
     }
 
-    for(i=0; i < sizeof(struct iphdr); i++) {
+    for (i = 0; i < sizeof(struct iphdr); i++) {
         iphdrTempArray[i] = data[i];
     }
-    iphdrTemp = (struct iphdr*) iphdrTempArray;
-    destAddr = (char *)(&iphdrTemp->daddr);
-    mtkLogD(WPFA_D_LOG_TAG, "iphdrTemp->daddr= %d , or %d %d %d %d",htonl(iphdrTemp->daddr),
+    iphdrTemp = (struct iphdr*)iphdrTempArray;
+    destAddr = (char*)(&iphdrTemp->daddr);
+    mtkLogD(WPFA_D_LOG_TAG, "iphdrTemp->daddr= %d , or %d %d %d %d", htonl(iphdrTemp->daddr),
             destAddr[0], destAddr[1], destAddr[2], destAddr[3]);
     mdaddr = htonl(iphdrTemp->daddr);
     free(iphdrTempArray);
 
     return mdaddr;
-
 }
 
 // Send IPv4 Packet to MD. If needs to support v6, it needs to use PF_PACKET instead.
@@ -317,6 +308,4 @@ int WpfaShmReadMsgHandler::getDestAddress(unsigned char *data, int len) {
 // This function references some open sources(might has licenses issues),
 // and this function ONLY for testing in DEV phase when MD MCIF is not ready.
 // Remove it after DEV phase.
-int WpfaShmReadMsgHandler::sendPktToKernel(unsigned char *data, int len) {
-    return -1;
-}
+int WpfaShmReadMsgHandler::sendPktToKernel(unsigned char* data, int len) { return -1; }

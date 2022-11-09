@@ -22,7 +22,7 @@
 
 #define WPFA_D_LOG_TAG "WpfaDriverAdapter"
 
-WpfaDriverAdapter *WpfaDriverAdapter::sInstance = NULL;
+WpfaDriverAdapter* WpfaDriverAdapter::sInstance = NULL;
 Mutex WpfaDriverAdapter::sWpfaDriverAdapterInitMutex;
 int WpfaDriverAdapter::mCcciHandler = -1;
 
@@ -39,21 +39,19 @@ void WpfaDriverAdapter::init() {
     WpfaControlMsgHandler::init(mCcciHandler);
 }
 
-WpfaDriverAdapter::~WpfaDriverAdapter() {
-    mtkLogD(WPFA_D_LOG_TAG, "-del()");
-}
+WpfaDriverAdapter::~WpfaDriverAdapter() { mtkLogD(WPFA_D_LOG_TAG, "-del()"); }
 
 WpfaDriverAdapter* WpfaDriverAdapter::getInstance() {
     if (sInstance != NULL) {
-       return sInstance;
+        return sInstance;
     } else {
-       sWpfaDriverAdapterInitMutex.lock();
-       sInstance = new WpfaDriverAdapter();
-       if (sInstance == NULL) {
-          mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriverAdapter fail");
-       }
-       sWpfaDriverAdapterInitMutex.unlock();
-       return sInstance;
+        sWpfaDriverAdapterInitMutex.lock();
+        sInstance = new WpfaDriverAdapter();
+        if (sInstance == NULL) {
+            mtkLogE(WPFA_D_LOG_TAG, "new WpfaDriverAdapter fail");
+        }
+        sWpfaDriverAdapterInitMutex.unlock();
+        return sInstance;
     }
 }
 
@@ -86,6 +84,4 @@ void WpfaDriverAdapter::setCcciHandler(int fd) {
     mtkLogD(WPFA_D_LOG_TAG, "setCcciHandler:%d", mCcciHandler);
 }
 
-int WpfaDriverAdapter::getCcciHandler() {
-    return mCcciHandler;
-}
+int WpfaDriverAdapter::getCcciHandler() { return mCcciHandler; }

@@ -114,16 +114,12 @@ static String8 getTimeString(struct tm tm) {
 /*
  * Implementation of ProcessCallStack
  */
-ProcessCallStack::ProcessCallStack() {
-}
+ProcessCallStack::ProcessCallStack() {}
 
-ProcessCallStack::ProcessCallStack(const ProcessCallStack& rhs) :
-        mThreadMap(rhs.mThreadMap),
-        mTimeUpdated(rhs.mTimeUpdated) {
-}
+ProcessCallStack::ProcessCallStack(const ProcessCallStack& rhs)
+    : mThreadMap(rhs.mThreadMap), mTimeUpdated(rhs.mTimeUpdated) {}
 
-ProcessCallStack::~ProcessCallStack() {
-}
+ProcessCallStack::~ProcessCallStack() {}
 
 void ProcessCallStack::clear() {
     mThreadMap.clear();
@@ -131,12 +127,11 @@ void ProcessCallStack::clear() {
 }
 
 void ProcessCallStack::update() {
-    DIR *dp;
+    DIR* dp;
 
     dp = opendir(PATH_SELF_TASK);
     if (dp == NULL) {
-        ALOGE("%s: Failed to update the process's call stacks: %s",
-              __FUNCTION__, strerror(errno));
+        ALOGE("%s: Failed to update the process's call stacks: %s", __FUNCTION__, strerror(errno));
         return;
     }
 
@@ -164,15 +159,13 @@ void ProcessCallStack::update() {
 
         if (tid < 0) {
             // Ignore '.' and '..'
-            ALOGV("%s: Failed to read tid from %s/%s",
-                  __FUNCTION__, PATH_SELF_TASK, ep->d_name);
+            ALOGV("%s: Failed to read tid from %s/%s", __FUNCTION__, PATH_SELF_TASK, ep->d_name);
             continue;
         }
 
         ssize_t idx = mThreadMap.add(tid, ThreadInfo());
-        if (idx < 0) { // returns negative error value on error
-            ALOGE("%s: Failed to add new ThreadInfo: %s",
-                  __FUNCTION__, strerror(-idx));
+        if (idx < 0) {  // returns negative error value on error
+            ALOGE("%s: Failed to add new ThreadInfo: %s", __FUNCTION__, strerror(-idx));
             continue;
         }
 
@@ -190,8 +183,8 @@ void ProcessCallStack::update() {
         // Read/save thread name
         threadInfo.threadName = getThreadName(tid);
 
-        ALOGV("%s: Got call stack for tid %d (size %zu)",
-              __FUNCTION__, tid, threadInfo.callStack.size());
+        ALOGV("%s: Got call stack for tid %d (size %zu)", __FUNCTION__, tid,
+              threadInfo.callStack.size());
     }
 
     closedir(dp);
@@ -199,7 +192,7 @@ void ProcessCallStack::update() {
 
 void ProcessCallStack::log(const char* logtag, android_LogPriority priority,
                            const char* prefix) const {
-    LogPrinter printer(logtag, priority, prefix, /*ignoreBlankLines*/false);
+    LogPrinter printer(logtag, priority, prefix, /*ignoreBlankLines*/ false);
     print(printer);
 }
 
@@ -213,8 +206,7 @@ void ProcessCallStack::print(Printer& printer) const {
 }
 
 void ProcessCallStack::printInternal(Printer& printer, Printer& csPrinter) const {
-    dumpProcessHeader(printer, getpid(),
-                      getTimeString(mTimeUpdated).string());
+    dumpProcessHeader(printer, getpid(), getTimeString(mTimeUpdated).string());
 
     for (size_t i = 0; i < mThreadMap.size(); ++i) {
         pid_t tid = mThreadMap.keyAt(i);
@@ -231,7 +223,6 @@ void ProcessCallStack::printInternal(Printer& printer, Printer& csPrinter) const
 }
 
 void ProcessCallStack::dump(int fd, int indent, const char* prefix) const {
-
     if (indent < 0) {
         ALOGW("%s: Bad indent (%d)", __FUNCTION__, indent);
         return;
@@ -242,7 +233,6 @@ void ProcessCallStack::dump(int fd, int indent, const char* prefix) const {
 }
 
 String8 ProcessCallStack::toString(const char* prefix) const {
-
     String8 dest;
     String8Printer printer(&dest, prefix);
     print(printer);
@@ -250,8 +240,6 @@ String8 ProcessCallStack::toString(const char* prefix) const {
     return dest;
 }
 
-size_t ProcessCallStack::size() const {
-    return mThreadMap.size();
-}
+size_t ProcessCallStack::size() const { return mThreadMap.size(); }
 
-}; //namespace android
+};  // namespace android

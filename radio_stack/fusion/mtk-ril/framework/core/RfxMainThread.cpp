@@ -34,11 +34,10 @@ using ::android::Mutex;
 
 #define RFX_LOG_TAG "RfxMainThread"
 
-
 /*****************************************************************************
  * Main thread watch dog
  *****************************************************************************/
-#define RFX_MAIN_THREAD_WATCHDOG_TIME (10*60*1000)
+#define RFX_MAIN_THREAD_WATCHDOG_TIME (10 * 60 * 1000)
 
 static timer_t sWatchDogTimer;
 static struct timespec sStartReal;
@@ -50,20 +49,20 @@ static void _watch_dog(sigval_t sig) {
     struct timespec endReal;
     struct timespec endMono;
 
-    RFX_LOG_I("RFX_WATCHDOG","timeout start real tv_s:%ld, tv_ns:%ld",
-            sStartReal.tv_sec, sStartReal.tv_nsec);
+    RFX_LOG_I("RFX_WATCHDOG", "timeout start real tv_s:%ld, tv_ns:%ld", sStartReal.tv_sec,
+              sStartReal.tv_nsec);
 
-    RFX_LOG_I("RFX_WATCHDOG","timeout start mono tv_s:%ld, tv_ns:%ld",
-            sStartMono.tv_sec, sStartMono.tv_nsec);
+    RFX_LOG_I("RFX_WATCHDOG", "timeout start mono tv_s:%ld, tv_ns:%ld", sStartMono.tv_sec,
+              sStartMono.tv_nsec);
 
     clock_gettime(CLOCK_REALTIME, &endReal);
     clock_gettime(CLOCK_MONOTONIC, &endMono);
 
-    RFX_LOG_I("RFX_WATCHDOG","timeout end real tv_s:%ld, tv_ns:%ld",
-            endReal.tv_sec, endReal.tv_nsec);
+    RFX_LOG_I("RFX_WATCHDOG", "timeout end real tv_s:%ld, tv_ns:%ld", endReal.tv_sec,
+              endReal.tv_nsec);
 
-    RFX_LOG_I("RFX_WATCHDOG","timeout end mono tv_s:%ld, tv_ns:%ld",
-            endMono.tv_sec, endMono.tv_nsec);
+    RFX_LOG_I("RFX_WATCHDOG", "timeout end mono tv_s:%ld, tv_ns:%ld", endMono.tv_sec,
+              endMono.tv_nsec);
 
     // asserts here means one message cost
     // over 10s or main thread is blocked
@@ -77,7 +76,7 @@ static void _init_watch_dog(void) {
     sevp.sigev_notify = SIGEV_THREAD;
     sevp.sigev_notify_function = _watch_dog;
 
-    if(timer_create(CLOCK_MONOTONIC, &sevp, &sWatchDogTimer) == -1) {
+    if (timer_create(CLOCK_MONOTONIC, &sevp, &sWatchDogTimer) == -1) {
         RFX_LOG_E("RFX_WATCHDOG", "timer_create  failed reason=[%s]", strerror(errno));
         RFX_ASSERT(0);
     }
@@ -87,8 +86,8 @@ static void _start_watch_dog(int milliseconds) {
     struct itimerspec expire;
     expire.it_interval.tv_sec = 0;
     expire.it_interval.tv_nsec = 0;
-    expire.it_value.tv_sec = milliseconds/1000;
-    expire.it_value.tv_nsec = (milliseconds%1000)*1000000;
+    expire.it_value.tv_sec = milliseconds / 1000;
+    expire.it_value.tv_nsec = (milliseconds % 1000) * 1000000;
     int ret = timer_settime(sWatchDogTimer, 0, &expire, NULL);
     if (ret != 0) {
         RFX_LOG_E("RFX_WATCHDOG", "Couldn't set timer: %s", strerror(errno));
@@ -97,11 +96,7 @@ static void _start_watch_dog(int milliseconds) {
     clock_gettime(CLOCK_MONOTONIC, &sStartMono);
 }
 
-
-static void _stop_watch_dog() {
-    _start_watch_dog(0);
-}
-
+static void _stop_watch_dog() { _start_watch_dog(0); }
 
 /*****************************************************************************
  * Class RfxMainHandler
@@ -119,10 +114,10 @@ void RfxMainHandler::handleMessage(const Message& message) {
     onHandleMessage(message);
 
     // process async events
-    //RFX_LOG_D(RFX_LOG_TAG, "process async queue begin, mainHandler = %p", this);
+    // RFX_LOG_D(RFX_LOG_TAG, "process async queue begin, mainHandler = %p", this);
 
-    RfxAsyncSignalQueue *async_queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
-    RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+    RfxAsyncSignalQueue* async_queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
+    RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
     do {
         // Process Post Event
         async_queue->processEmit();
@@ -131,14 +126,14 @@ void RfxMainHandler::handleMessage(const Message& message) {
         root->processSuspendedMessage();
     } while (!async_queue->isEmpty());
 
-    //RFX_LOG_D(RFX_LOG_TAG, "process async queue end, mainHandler = %p", this);
+    // RFX_LOG_D(RFX_LOG_TAG, "process async queue end, mainHandler = %p", this);
 
     // Just For test
     RfxTestSuitController* testSuitController = RFX_OBJ_GET_INSTANCE(RfxTestSuitController);
     if (testSuitController->isEnableTest()) {
         testSuitController->checkSuccessAndEnqueueNext();
     }
-    //RFX_LOG_D(RFX_LOG_TAG, "handle msg end, mainHandler = %p", this);
+    // RFX_LOG_D(RFX_LOG_TAG, "handle msg end, mainHandler = %p", this);
 
 #ifdef RFX_OBJ_DEBUG
     RfxDebugInfo::dumpIfNeed();
@@ -160,7 +155,7 @@ void RfxMainHandler::handleMessage(const Message& message) {
 static Mutex sMsgIgnoreMutex;
 
 class RfxMessageHandler : public RfxMainHandler {
-public:
+  public:
     explicit RfxMessageHandler(const sp<RfxMessage>& msg) : m_msg(msg) {}
     virtual ~RfxMessageHandler() {}
 
@@ -173,7 +168,7 @@ public:
         sMsgIgnoreMutex.unlock();
     }
 
-protected:
+  protected:
     /**
      * Handles a message.
      */
@@ -187,8 +182,8 @@ protected:
             RFX_LOG_D(RFX_LOG_TAG, "Ignore message [%s]", m_msg->toString().string());
             // reply RIL_E_RADIO_NOT_AVAILABLE
             if (REQUEST == m_msg->getType()) {
-                sp<RfxMessage> response = RfxMessage::obtainResponse(RIL_E_RADIO_NOT_AVAILABLE,
-                        m_msg);
+                sp<RfxMessage> response =
+                        RfxMessage::obtainResponse(RIL_E_RADIO_NOT_AVAILABLE, m_msg);
                 RFX_OBJ_GET_INSTANCE(RfxRilAdapter)->responseToRilj(response);
             }
             sMsgIgnoreMutex.unlock();
@@ -198,11 +193,11 @@ protected:
         RFX_UNUSED(message);
         // dispatch msg to root controller, it will
         // do further dispatch
-        RfxRootController *root = RFX_OBJ_GET_INSTANCE(RfxRootController);
+        RfxRootController* root = RFX_OBJ_GET_INSTANCE(RfxRootController);
         root->processMessage(m_msg);
     }
 
-private:
+  private:
     sp<RfxMessage> m_msg;
     static nsecs_t s_ignore_time_stamp;
     static bool s_new_ignore;
@@ -219,15 +214,11 @@ static sem_t sWaitLooperSem;
 static bool sNeedWaitLooper = true;
 static Mutex sWaitLooperMutex;
 
-RfxMainThread *RfxMainThread::s_self = NULL;
+RfxMainThread* RfxMainThread::s_self = NULL;
 
-RfxMainThread::RfxMainThread() : m_looper(NULL) {
+RfxMainThread::RfxMainThread() : m_looper(NULL) {}
 
-}
-
-RfxMainThread::~RfxMainThread() {
-
-}
+RfxMainThread::~RfxMainThread() {}
 
 void RfxMainThread::init() {
     RFX_LOG_D(RFX_LOG_TAG, "init begin");
@@ -252,7 +243,6 @@ sp<Looper> RfxMainThread::waitLooper() {
     return getLooper();
 }
 
-
 void RfxMainThread::clearMessages() {
     RFX_LOG_D(RFX_LOG_TAG, "clearMessages()");
     RfxMessageHandler::setIgnoreTimeStamp(systemTime(SYSTEM_TIME_MONOTONIC));
@@ -263,14 +253,14 @@ void RfxMainThread::initControllers() {
     // initialize controllers
     RfxControllerFactory::createControllers();
 
-    //Create TestSuitController For test.
+    // Create TestSuitController For test.
     RFX_OBJ_GET_INSTANCE(RfxTestSuitController);
 
     RFX_LOG_D(RFX_LOG_TAG, "initControllers end");
 
     RFX_LOG_D(RFX_LOG_TAG, "initControllers process async queue start");
 
-    RfxAsyncSignalQueue *async_queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
+    RfxAsyncSignalQueue* async_queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
     do {
         // Process Post Event
         async_queue->processEmit();
@@ -283,7 +273,6 @@ void RfxMainThread::initControllers() {
 }
 
 bool RfxMainThread::threadLoop() {
-
 #ifdef RFX_OBJ_DEBUG
     RfxDebugInfo::updateDebugInfoSwitcher();
 #endif
@@ -308,21 +297,23 @@ bool RfxMainThread::threadLoop() {
 
     RFX_LOG_D(RFX_LOG_TAG, "threadLoop, m_looper.get() = %p", m_looper.get());
 
-    RFX_ASSERT(0); // Can't go here
+    RFX_ASSERT(0);  // Can't go here
     return true;
 }
 
 void RfxMainThread::enqueueMessage(const sp<RfxMessage>& message) {
     RFX_ASSERT(s_self != NULL && s_self->m_looper != NULL);
     sp<MessageHandler> handler = new RfxMessageHandler(message);
-    RFX_LOG_D(RFX_LOG_TAG, "enqueueMessage(), mainHandler = %p, msg = [%s]", handler.get(), message->toString().string());
+    RFX_LOG_D(RFX_LOG_TAG, "enqueueMessage(), mainHandler = %p, msg = [%s]", handler.get(),
+              message->toString().string());
     s_self->m_looper->sendMessage(handler, s_self->m_dummy_msg);
 }
 
 void RfxMainThread::enqueueMessageFront(const sp<RfxMessage>& message) {
     RFX_ASSERT(s_self != NULL && s_self->m_looper != NULL);
     sp<MessageHandler> handler = new RfxMessageHandler(message);
-    RFX_LOG_D(RFX_LOG_TAG, "enqueueMessageFront(), mainHandler = %p, msg = [%s]", handler.get(), message->toString().string());
+    RFX_LOG_D(RFX_LOG_TAG, "enqueueMessageFront(), mainHandler = %p, msg = [%s]", handler.get(),
+              message->toString().string());
     s_self->m_looper->sendMessageAtTime(0, handler, s_self->m_dummy_msg);
 }
 

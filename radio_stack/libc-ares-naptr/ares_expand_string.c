@@ -17,15 +17,15 @@
 #include "ares_setup.h"
 
 #ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 #ifdef HAVE_NETINET_IN_H
-#  include <netinet/in.h>
+#include <netinet/in.h>
 #endif
 #ifdef HAVE_ARPA_NAMESER_H
-#  include <arpa/nameser.h>
+#include <arpa/nameser.h>
 #else
-#  include "nameser.h"
+#include "nameser.h"
 #endif
 
 #include <string.h>
@@ -38,41 +38,34 @@
  * are the characters of the string. The returned result will be NULL
  * terminated.
  */
-int ares_expand_string(const unsigned char *encoded,
-                       const unsigned char *abuf,
-                       int alen,
-                       unsigned char **s,
-                       long *enclen)
-{
-  unsigned char *q;
-  union {
-    ssize_t sig;
-     size_t uns;
-  } elen;
+int ares_expand_string(const unsigned char* encoded, const unsigned char* abuf, int alen,
+                       unsigned char** s, long* enclen) {
+    unsigned char* q;
+    union {
+        ssize_t sig;
+        size_t uns;
+    } elen;
 
-  if (encoded == abuf+alen)
-    return ARES_EBADSTR;
+    if (encoded == abuf + alen) return ARES_EBADSTR;
 
-  elen.uns = *encoded;
-  if (encoded+elen.sig+1 > abuf+alen)
-    return ARES_EBADSTR;
+    elen.uns = *encoded;
+    if (encoded + elen.sig + 1 > abuf + alen) return ARES_EBADSTR;
 
-  encoded++;
-  printf("%s length:%zd\n",__func__,elen.uns);
-  if(elen.uns == 0)
-    *s = NULL;
-  else {
-    *s = malloc(elen.uns+1);
-    if (*s == NULL)
-      return ARES_ENOMEM;
+    encoded++;
+    printf("%s length:%zd\n", __func__, elen.uns);
+    if (elen.uns == 0)
+        *s = NULL;
+    else {
+        *s = malloc(elen.uns + 1);
+        if (*s == NULL) return ARES_ENOMEM;
 
-    q = *s;
-    strncpy((char *)q, (char *)encoded, elen.uns);
-    q[elen.uns] = '\0';
+        q = *s;
+        strncpy((char*)q, (char*)encoded, elen.uns);
+        q[elen.uns] = '\0';
 
-    *s = q;
-  }
-  *enclen = (long)(elen.sig+1);
+        *s = q;
+    }
+    *enclen = (long)(elen.sig + 1);
 
-  return ARES_SUCCESS;
+    return ARES_SUCCESS;
 }

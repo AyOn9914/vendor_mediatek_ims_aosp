@@ -26,49 +26,50 @@
 
 using ::android::String8;
 
-static const char* urcList[] = {
-    "+CIEV: 103"
-};
-
+static const char* urcList[] = {"+CIEV: 103"};
 
 RFX_IMPLEMENT_HANDLER_CLASS(RmcOpSCBMUrcHandler, RIL_CMD_PROXY_URC);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_ENTER_SCBM);
 RFX_REGISTER_DATA_TO_URC_ID(RfxVoidData, RFX_MSG_UNSOL_EXIT_SCBM);
 
-
 /*****************************************************************************
  * Class RfxController
  *****************************************************************************/
-RmcOpSCBMUrcHandler::RmcOpSCBMUrcHandler(int slot_id, int channel_id) :
-    RfxBaseHandler(slot_id, channel_id) {
+RmcOpSCBMUrcHandler::RmcOpSCBMUrcHandler(int slot_id, int channel_id)
+    : RfxBaseHandler(slot_id, channel_id) {
     setTag(String8("RmcOpSCBMUrc"));
-    const char **p = urcList;
-    registerToHandleURC(p, sizeof(urcList)/sizeof(char*));
+    const char** p = urcList;
+    registerToHandleURC(p, sizeof(urcList) / sizeof(char*));
 }
 
-RmcOpSCBMUrcHandler::~RmcOpSCBMUrcHandler() {
-}
+RmcOpSCBMUrcHandler::~RmcOpSCBMUrcHandler() {}
 
 void RmcOpSCBMUrcHandler::onHandleUrc(const sp<RfxMclMessage>& msg) {
     char* urc = msg->getRawUrc()->getLine();
 
-    if (strstr(urc, "+CIEV: 103") != NULL ) {
+    if (strstr(urc, "+CIEV: 103") != NULL) {
         handleSCBMStatusMessage(msg);
     }
 }
 
 void RmcOpSCBMUrcHandler::handleSCBMStatusMessage(const sp<RfxMclMessage>& msg) {
     int type = 0, value = 0, ret = 0, urcType = 0;
-    RfxAtLine *line = msg->getRawUrc();
+    RfxAtLine* line = msg->getRawUrc();
 
     line->atTokStart(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     type = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     value = line->atTokNextint(&ret);
-    if (ret < 0) { return; }
+    if (ret < 0) {
+        return;
+    }
 
     /**
      * 103: SCBM Mode Indicator

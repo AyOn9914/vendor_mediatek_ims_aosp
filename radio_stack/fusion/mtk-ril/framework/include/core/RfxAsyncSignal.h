@@ -25,9 +25,9 @@
 #include "RfxObject.h"
 #include "utils/RefBase.h"
 
+using ::android::RefBase;
 using ::android::sp;
 using ::android::wp;
-using ::android::RefBase;
 
 /*****************************************************************************
  * Define
@@ -40,71 +40,63 @@ using ::android::RefBase;
  *****************************************************************************/
 
 // Event callback
-typedef void (RfxObject::*RfxAsyncSlotObjMemFuncPtrEx)(void *data);
+typedef void (RfxObject::*RfxAsyncSlotObjMemFuncPtrEx)(void* data);
 // RfxAsyncSignal0 callbak
 typedef void (RfxObject::*RfxAsyncSlotObjMemFuncPtr)();
 
 class RfxAsyncSignalQueue : public RfxObject {
-
     RFX_DECLARE_CLASS(RfxAsyncSignalQueue);
     RFX_OBJ_DECLARE_SINGLETON_CLASS(RfxAsyncSignalQueue);
 
-// Constructor / Destructor
-public:
+    // Constructor / Destructor
+  public:
     // Default constructor
-    RfxAsyncSignalQueue() : m_list_head(NULL), m_list_tail(NULL) {
-    }
+    RfxAsyncSignalQueue() : m_list_head(NULL), m_list_tail(NULL) {}
 
     // Destructor
-    virtual ~RfxAsyncSignalQueue() {
-        clear();
-    }
+    virtual ~RfxAsyncSignalQueue() { clear(); }
 
-// Methods
-public:
+    // Methods
+  public:
     // Test if the slot list is empty
-    bool isEmpty() const {
-        return m_list_head == NULL;
-    }
+    bool isEmpty() const { return m_list_head == NULL; }
 
     // Add a slot into the tail of slot queue
-    void putSlot(RfxObject *obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void *data);
+    void putSlot(RfxObject* obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void* data);
 
     // Add a slot into the tail of slot queue (without event)
-    void putSlot0(RfxObject *obj, RfxAsyncSlotObjMemFuncPtr memFunc) {
+    void putSlot0(RfxObject* obj, RfxAsyncSlotObjMemFuncPtr memFunc) {
         putSlot(obj, (RfxAsyncSlotObjMemFuncPtrEx)memFunc, NULL);
     }
 
     // Clear all slots in the slot list
     void clear();
 
-// Framewrok methods
-public:
+    // Framewrok methods
+  public:
     void processEmit();
 
-// Implementation
-private:
+    // Implementation
+  private:
     class SlotQueueEntry {
+      public:
+        SlotQueueEntry(RfxObject* obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void* data)
+            : m_target_ptr(obj), m_callback(memFunc), m_data(data), m_next(NULL) {}
 
-    public:
-        SlotQueueEntry(RfxObject *obj, RfxAsyncSlotObjMemFuncPtrEx memFunc, void *data) :
-                m_target_ptr(obj), m_callback(memFunc), m_data(data), m_next(NULL) {
-        }
-
-    public:
-        wp<RfxObject>               m_target_ptr;
+      public:
+        wp<RfxObject> m_target_ptr;
         RfxAsyncSlotObjMemFuncPtrEx m_callback;
-        void                        *m_data;
-        SlotQueueEntry              *m_next;
+        void* m_data;
+        SlotQueueEntry* m_next;
     };
 
-    SlotQueueEntry *m_list_head; // Pointer to the first slot entry of queue
-    SlotQueueEntry *m_list_tail; // Pointer to the last slot entry of queue
+    SlotQueueEntry* m_list_head;  // Pointer to the first slot entry of queue
+    SlotQueueEntry* m_list_tail;  // Pointer to the last slot entry of queue
 
     // Get the first slot entry of the queue, and remove it from queue.
     // RETURNS: The first of slot entry of the queue.
     //          Return NULL if the queue is empty.
-    SlotQueueEntry *getSlot();
+    SlotQueueEntry* getSlot();
 };
 
 /*****************************************************************************
@@ -114,9 +106,8 @@ private:
 // A helper invoke post without type safe.
 // This function is for internal use by framework.
 template <class _MemFunc>
-inline
-void rfxPostInvoke(RfxObject *obj, _MemFunc func, void *data = NULL) {
-    RfxAsyncSignalQueue *queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
+inline void rfxPostInvoke(RfxObject* obj, _MemFunc func, void* data = NULL) {
+    RfxAsyncSignalQueue* queue = RFX_OBJ_GET_INSTANCE(RfxAsyncSignalQueue);
     queue->putSlot(obj, static_cast<RfxAsyncSlotObjMemFuncPtrEx>(func), data);
 }
 

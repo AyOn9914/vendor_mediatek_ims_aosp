@@ -25,24 +25,24 @@
 class RmcEccNumberUrcHandler : public RfxBaseHandler {
     RFX_DECLARE_HANDLER_CLASS(RmcEccNumberUrcHandler);
 
-    public:
-        RmcEccNumberUrcHandler(int slot_id, int channel_id);
-        virtual ~RmcEccNumberUrcHandler();
+  public:
+    RmcEccNumberUrcHandler(int slot_id, int channel_id);
+    virtual ~RmcEccNumberUrcHandler();
 
-    protected:
-        virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
+  protected:
+    virtual void onHandleUrc(const sp<RfxMclMessage>& msg);
 
-    private:
-        void handleGsmSimEcc(const sp<RfxMclMessage>& msg);
+  private:
+    void handleGsmSimEcc(const sp<RfxMclMessage>& msg);
 
-        void handleC2kSimEcc(const sp<RfxMclMessage>& msg);
+    void handleC2kSimEcc(const sp<RfxMclMessage>& msg);
 
-        void handleNetworkEcc(const sp<RfxMclMessage>& msg);
+    void handleNetworkEcc(const sp<RfxMclMessage>& msg);
 
-        void handleTestCommand(const sp<RfxMclMessage>& msg);
+    void handleTestCommand(const sp<RfxMclMessage>& msg);
 
-    private:
-        bool mNeedRefreshNwEcc;
+  private:
+    bool mNeedRefreshNwEcc;
 };
 
 #endif /* __RMC_ECC_NUMBER_URC_HANDLER_H__ */

@@ -21,97 +21,95 @@
 #include "RmcDataDefs.h"
 #include "RmcDcUtility.h"
 
-class RmcDcPdnManager: public RfxBaseHandler {
-    public:
-        RmcDcPdnManager(int slot_id, int channel_id);
-        virtual ~RmcDcPdnManager();
+class RmcDcPdnManager : public RfxBaseHandler {
+  public:
+    RmcDcPdnManager(int slot_id, int channel_id);
+    virtual ~RmcDcPdnManager();
 
-    public:
-        int getPdnTableSize();
-        bool validateAid(int aid);
+  public:
+    int getPdnTableSize();
+    bool validateAid(int aid);
 
-        // Get Pdn info of the specified AID.
-        PdnInfo getPdnInfo(int aid);
-        void setPdnInfo(int aid, PdnInfo* info);
-        void clearPdnInfo(int aid);
-        void clearAllPdnInfo();
+    // Get Pdn info of the specified AID.
+    PdnInfo getPdnInfo(int aid);
+    void setPdnInfo(int aid, PdnInfo* info);
+    void clearPdnInfo(int aid);
+    void clearAllPdnInfo();
 
-        // A set of set functions to update PDN attributes of a specific AID.
-        void updatePdnActiveStatus(int aid, int pdnActiveStatus);
-        void updateApnName(int aid, const char* apnName);
-        void updateTransIntfId(int aid, int transIntfId);
-        void updateIpAddress(int aid, const char* ipv4Addr, int index, const char* ipv6Addr);
-        void updatePcscfAddress(int aid, int index, const char* pcscfAddr);
-        void updateIpv4Dns(int aid, int index, const char* v4Dns);
-        void updateIpv6Dns(int aid, int index, const char* v6Dns);
-        void updateIpv4Address(int aid, const char* ipv4Addr);
-        void updateIpv6Address(int aid, int index, const char* ipv6Addr);
-        void updateDns(int aid, int v4DnsNumber, int v6DnsNumber,
-                const char** v4Dns, const char** v6Dns);
-        void updateMtu(int aid, int mtu);
-        void updateRat(int aid, int rat);
-        void updateBearerId(int aid, int bearerId);
+    // A set of set functions to update PDN attributes of a specific AID.
+    void updatePdnActiveStatus(int aid, int pdnActiveStatus);
+    void updateApnName(int aid, const char* apnName);
+    void updateTransIntfId(int aid, int transIntfId);
+    void updateIpAddress(int aid, const char* ipv4Addr, int index, const char* ipv6Addr);
+    void updatePcscfAddress(int aid, int index, const char* pcscfAddr);
+    void updateIpv4Dns(int aid, int index, const char* v4Dns);
+    void updateIpv6Dns(int aid, int index, const char* v6Dns);
+    void updateIpv4Address(int aid, const char* ipv4Addr);
+    void updateIpv6Address(int aid, int index, const char* ipv6Addr);
+    void updateDns(int aid, int v4DnsNumber, int v6DnsNumber, const char** v4Dns,
+                   const char** v6Dns);
+    void updateMtu(int aid, int mtu);
+    void updateRat(int aid, int rat);
+    void updateBearerId(int aid, int bearerId);
 
-        void setAid(int index, int aid);
-        void setPrimaryAid(int index, int primaryAid);
-        void setAidAndPrimaryAid(int index, int aid, int primaryAid);
-        void setIsDedicateBearer(int aid, bool isDedicateBearer);
-        void setIsEmergency(int aid, bool isEmergency);
-        void setReason(int aid, int reason);
-        void setDeactReason(int aid, int deactReason);
-        void setSscMode(int aid, int sscMode);
-        void setPdnType(int aid, int pdnType);
-        void setSignalingFlag(int aid, int flag);
-        void setProfileId(int aid, int profileId);
+    void setAid(int index, int aid);
+    void setPrimaryAid(int index, int primaryAid);
+    void setAidAndPrimaryAid(int index, int aid, int primaryAid);
+    void setIsDedicateBearer(int aid, bool isDedicateBearer);
+    void setIsEmergency(int aid, bool isEmergency);
+    void setReason(int aid, int reason);
+    void setDeactReason(int aid, int deactReason);
+    void setSscMode(int aid, int sscMode);
+    void setPdnType(int aid, int pdnType);
+    void setSignalingFlag(int aid, int flag);
+    void setProfileId(int aid, int profileId);
 
-        // A set of get functions to get PDN attributes of a specific AID.
-        int getPdnActiveStatus(int aid);
-        char* getApnName(int aid);
-        int getTransIntfId(int aid);
-        int getAid(int index);
-        int getPrimaryAid(int index);
-        char* getIpv4Dns(int aid, int index);
-        char* getIpv6Dns(int aid, int index);
-        int getMtu(int aid);
-        int getSignalingFlag(int aid);
-        char* getIpv4Address(int aid);
-        char* getIpv6Address(int aid, int index);
-        int getReason(int aid);
-        int getDeactReason(int aid);
-        int getSscMode(int aid);
-        int getPdnType(int aid);
-        int getProfileId(int aid);
-        bool isDedicateBearer(int aid);
-        void initAtCmds();
+    // A set of get functions to get PDN attributes of a specific AID.
+    int getPdnActiveStatus(int aid);
+    char* getApnName(int aid);
+    int getTransIntfId(int aid);
+    int getAid(int index);
+    int getPrimaryAid(int index);
+    char* getIpv4Dns(int aid, int index);
+    char* getIpv6Dns(int aid, int index);
+    int getMtu(int aid);
+    int getSignalingFlag(int aid);
+    char* getIpv4Address(int aid);
+    char* getIpv6Address(int aid, int index);
+    int getReason(int aid);
+    int getDeactReason(int aid);
+    int getSscMode(int aid);
+    int getPdnType(int aid);
+    int getProfileId(int aid);
+    bool isDedicateBearer(int aid);
+    void initAtCmds();
 
-    private:
-        void initPdnTable();
-        int getModemSupportPdnNumber();
-        void clearPdnInfo(PdnInfo* info);
+  private:
+    void initPdnTable();
+    int getModemSupportPdnNumber();
+    void clearPdnInfo(PdnInfo* info);
 
-        void dumpAllPdnInfo();
-        // PdnInfo to string.
-        // TODO: public and move to utility class if other class needs it.
-        static String8 pdnInfoToString(PdnInfo* pdnInfo);
+    void dumpAllPdnInfo();
+    // PdnInfo to string.
+    // TODO: public and move to utility class if other class needs it.
+    static String8 pdnInfoToString(PdnInfo* pdnInfo);
 
-        // Update status key to notify PDN status, requested by AGPS.
-        void updateAndNotifyPdnConnectStatusChanged();
+    // Update status key to notify PDN status, requested by AGPS.
+    void updateAndNotifyPdnConnectStatusChanged();
 
-    private:
-        int mPdnTableSize;
-        PdnInfo *m_pPdnInfo;
-        int mNumOfConnectedPdn;
-        static const int DEFAULT_PDN_TABLE_SIZE = 11;
+  private:
+    int mPdnTableSize;
+    PdnInfo* m_pPdnInfo;
+    int mNumOfConnectedPdn;
+    static const int DEFAULT_PDN_TABLE_SIZE = 11;
 
-        // Add variable to config internal debug info.
-        static const bool DEBUG_MORE_INFO = false;
+    // Add variable to config internal debug info.
+    static const bool DEBUG_MORE_INFO = false;
 };
 
 // Validate whether the aid is valid, return TRUE if it is valid.
 // Use it before access PDN info to avoid bad memory access behavior.
-inline bool RmcDcPdnManager::validateAid(int aid) {
-    return (aid >= 0 && aid < mPdnTableSize);
-}
+inline bool RmcDcPdnManager::validateAid(int aid) { return (aid >= 0 && aid < mPdnTableSize); }
 
 inline void RmcDcPdnManager::updateApnName(int aid, const char* apnName) {
     RFX_ASSERT(validateAid(aid));
@@ -154,8 +152,8 @@ inline void RmcDcPdnManager::updateIpv4Dns(int aid, int index, const char* v4Dns
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_DNS_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return;
         }
     }
@@ -168,8 +166,8 @@ inline void RmcDcPdnManager::updateIpv6Dns(int aid, int index, const char* v6Dns
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_DNS_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return;
         }
     }
@@ -188,8 +186,8 @@ inline void RmcDcPdnManager::updateIpv6Address(int aid, int index, const char* i
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_IPV6_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return;
         }
     }
@@ -278,8 +276,8 @@ inline char* RmcDcPdnManager::getIpv4Dns(int aid, int index) {
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_DNS_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return NULL;
         }
     }
@@ -291,8 +289,8 @@ inline char* RmcDcPdnManager::getIpv6Dns(int aid, int index) {
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_DNS_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return NULL;
         }
     }
@@ -319,8 +317,8 @@ inline char* RmcDcPdnManager::getIpv6Address(int aid, int index) {
     RFX_ASSERT(validateAid(aid));
     if (RmcDcUtility::isUserBuild()) {
         if (index >= MAX_NUM_IPV6_ADDRESS_NUMBER) {
-            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d",
-                    m_slot_id, __FUNCTION__, index, aid);
+            RFX_LOG_E("RmcDcPdnManager", "[%d][%s] index%d is out of bound on aid%d", m_slot_id,
+                      __FUNCTION__, index, aid);
             return NULL;
         }
     }

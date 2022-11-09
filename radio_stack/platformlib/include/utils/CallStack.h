@@ -34,12 +34,12 @@ class Printer;
 
 // Collect/print the call stack (function, file, line) traces for a single thread.
 class CallStack {
-public:
+  public:
     // Create an empty call stack. No-op.
     CallStack();
     // Create a callstack with the current thread's stack trace.
     // Immediately dump it to logcat using the given logtag.
-    CallStack(const char* logtag, int32_t ignoreDepth=1);
+    CallStack(const char* logtag, int32_t ignoreDepth = 1);
     ~CallStack();
 
     // Reset the stack frames (same as creating an empty call stack).
@@ -47,11 +47,10 @@ public:
 
     // Immediately collect the stack traces for the specified thread.
     // The default is to dump the stack of the current call.
-    void update(int32_t ignoreDepth=1, pid_t tid=BACKTRACE_CURRENT_THREAD);
+    void update(int32_t ignoreDepth = 1, pid_t tid = BACKTRACE_CURRENT_THREAD);
 
     // Dump a stack trace to the log using the supplied logtag.
-    void log(const char* logtag,
-             android_LogPriority priority = ANDROID_LOG_DEBUG,
+    void log(const char* logtag, android_LogPriority priority = ANDROID_LOG_DEBUG,
              const char* prefix = 0) const;
 
     // Dump a stack trace to the specified file descriptor.
@@ -66,10 +65,10 @@ public:
     // Get the count of stack frames that are in this call stack.
     size_t size() const { return mFrameLines.size(); }
 
-private:
+  private:
     Vector<String8> mFrameLines;
 };
 
-}; // namespace android
+};  // namespace android
 
-#endif // ANDROID_CALLSTACK_H
+#endif  // ANDROID_CALLSTACK_H

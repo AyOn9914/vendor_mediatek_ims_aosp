@@ -19,22 +19,22 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxVtSendMsgData);
 
-RfxVtSendMsgData::RfxVtSendMsgData(void *_data, int _length) : RfxBaseData(_data, _length) {
+RfxVtSendMsgData::RfxVtSendMsgData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        RIL_VT_SERVICE_MSG *pSendMsg = (RIL_VT_SERVICE_MSG*)_data;
-        RIL_VT_SERVICE_MSG *pData = (RIL_VT_SERVICE_MSG *)calloc(1, sizeof(RIL_VT_SERVICE_MSG));
+        RIL_VT_SERVICE_MSG* pSendMsg = (RIL_VT_SERVICE_MSG*)_data;
+        RIL_VT_SERVICE_MSG* pData = (RIL_VT_SERVICE_MSG*)calloc(1, sizeof(RIL_VT_SERVICE_MSG));
 
         if (NULL != pData) {
-            pData->slot_id      = pSendMsg->slot_id;
-            pData->size         = pSendMsg->size;
-            pData->data         = (char *) calloc(1, pSendMsg->size);
+            pData->slot_id = pSendMsg->slot_id;
+            pData->size = pSendMsg->size;
+            pData->data = (char*)calloc(1, pSendMsg->size);
 
             if (NULL != pData->data) {
                 memcpy(pData->data, pSendMsg->data, pSendMsg->size);
             }
         }
 
-        m_data = (void* )pData;
+        m_data = (void*)pData;
         m_length = _length;
     }
 }
@@ -42,8 +42,7 @@ RfxVtSendMsgData::RfxVtSendMsgData(void *_data, int _length) : RfxBaseData(_data
 RfxVtSendMsgData::~RfxVtSendMsgData() {
     // free memory
     if (m_data != NULL) {
-
-        RIL_VT_SERVICE_MSG * pData = (RIL_VT_SERVICE_MSG* )m_data;
+        RIL_VT_SERVICE_MSG* pData = (RIL_VT_SERVICE_MSG*)m_data;
         if (pData->data != NULL) {
             free(pData->data);
             pData->data = NULL;

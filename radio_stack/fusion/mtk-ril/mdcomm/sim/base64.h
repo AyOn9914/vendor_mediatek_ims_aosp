@@ -19,16 +19,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned char * base64_encode(const unsigned char *src, size_t len,
-                  size_t *out_len);
-unsigned char * base64_decode(const unsigned char *src, size_t len,
-                  size_t *out_len);
-unsigned char * base64_decode_to_str(const unsigned char *src, size_t len);
-unsigned char * base64_encode_to_str(const unsigned char *src, size_t len);
-unsigned char* byteArrayToHexStringB64(unsigned char* array,size_t length);
-size_t hexStringToByteArrayB64(const unsigned char* hexString, unsigned char ** byte);
+unsigned char* base64_encode(const unsigned char* src, size_t len, size_t* out_len);
+unsigned char* base64_decode(const unsigned char* src, size_t len, size_t* out_len);
+unsigned char* base64_decode_to_str(const unsigned char* src, size_t len);
+unsigned char* base64_encode_to_str(const unsigned char* src, size_t len);
+unsigned char* byteArrayToHexStringB64(unsigned char* array, size_t length);
+size_t hexStringToByteArrayB64(const unsigned char* hexString, unsigned char** byte);
 
 #define BASE64_UNUSED(x) (x)
-
 
 #endif /* BASE64_H */

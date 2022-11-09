@@ -20,18 +20,17 @@ RFX_IMPLEMENT_DATA_CLASS(RfxIntsData);
 
 #define RFX_LOG_TAG "RfxIntsData"
 
-RfxIntsData::RfxIntsData() : RfxBaseData(NULL, 0) {
-}
+RfxIntsData::RfxIntsData() : RfxBaseData(NULL, 0) {}
 
-RfxIntsData::RfxIntsData(void *data, int length) : RfxBaseData(data, length)  {
+RfxIntsData::RfxIntsData(void* data, int length) : RfxBaseData(data, length) {
     if (data != NULL) {
-        int num = length/sizeof(int);
-        int *pTmp = (int *) calloc(num, sizeof(int));
+        int num = length / sizeof(int);
+        int* pTmp = (int*)calloc(num, sizeof(int));
         if (pTmp == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;
         }
-        int *pCur = (int *) data;
+        int* pCur = (int*)data;
         m_length = length;
 
         for (int i = 0; i < num; i++) {
@@ -43,7 +42,7 @@ RfxIntsData::RfxIntsData(void *data, int length) : RfxBaseData(data, length)  {
 
 RfxIntsData::RfxIntsData(int data[], int count) : RfxBaseData(data, count * sizeof(int)) {
     if (data != NULL) {
-        int *pTmp = (int *) calloc(count, sizeof(int));
+        int* pTmp = (int*)calloc(count, sizeof(int));
         if (pTmp == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             return;

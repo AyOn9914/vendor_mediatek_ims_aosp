@@ -43,8 +43,7 @@
 #include "RfxLog.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include <hardware_legacy/power.h>
 #include "base64.h"
@@ -57,25 +56,26 @@ extern "C"
 #endif
 
 #define PHBIO_LOG_TAG "RmcPhbSimIo"
-#define DlogD(x...) if (mIsEngLoad == 1) logD( x )
+#define DlogD(x...) \
+    if (mIsEngLoad == 1) logD(x)
 
 // register handler to channel
 RFX_IMPLEMENT_HANDLER_CLASS(RmcPhbSimIoRequestHandler, RIL_CMD_PROXY_7);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSimIoData, RfxSimIoRspData, RFX_MSG_REQUEST_PHB_SIM_IO);
 RFX_REGISTER_DATA_TO_REQUEST_ID(RfxSimIoData, RfxSimIoRspData, RFX_MSG_REQUEST_PHB_PBR_SIM_IO);
 
-RmcPhbSimIoRequestHandler::RmcPhbSimIoRequestHandler(int slot_id, int channel_id):RmcSimBaseHandler(slot_id, channel_id) {
+RmcPhbSimIoRequestHandler::RmcPhbSimIoRequestHandler(int slot_id, int channel_id)
+    : RmcSimBaseHandler(slot_id, channel_id) {
     const int request[] = {
-        RFX_MSG_REQUEST_PHB_SIM_IO,
-        RFX_MSG_REQUEST_PHB_PBR_SIM_IO,
+            RFX_MSG_REQUEST_PHB_SIM_IO,
+            RFX_MSG_REQUEST_PHB_PBR_SIM_IO,
     };
 
-    registerToHandleRequest(request, sizeof(request)/sizeof(int));
+    registerToHandleRequest(request, sizeof(request) / sizeof(int));
     mIsEngLoad = RfxRilUtils::isEngLoad();
 }
 
-RmcPhbSimIoRequestHandler::~RmcPhbSimIoRequestHandler() {
-}
+RmcPhbSimIoRequestHandler::~RmcPhbSimIoRequestHandler() {}
 
 void RmcPhbSimIoRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     DlogD(PHBIO_LOG_TAG, "onHandleRequest: %d", msg->getId());
@@ -91,12 +91,12 @@ void RmcPhbSimIoRequestHandler::onHandleRequest(const sp<RfxMclMessage>& msg) {
     }
 }
 
-void RmcPhbSimIoRequestHandler::makePhbSimRspFromUsimFcp(unsigned char ** simResponse) {
+void RmcPhbSimIoRequestHandler::makePhbSimRspFromUsimFcp(unsigned char** simResponse) {
     int format_wrong = 0;
-    unsigned char * fcpByte = NULL;
-    unsigned short  fcpLen = 0;
-    usim_file_descriptor_struct fDescriptor = {0,0,0,0};
-    usim_file_size_struct fSize  = {0};
+    unsigned char* fcpByte = NULL;
+    unsigned short fcpLen = 0;
+    usim_file_descriptor_struct fDescriptor = {0, 0, 0, 0};
+    usim_file_size_struct fSize = {0};
     unsigned char simRspByte[GET_RESPONSE_EF_SIZE_BYTES] = {0};
 
     fcpLen = hexStringToByteArray(*simResponse, &fcpByte);
@@ -107,7 +107,8 @@ void RmcPhbSimIoRequestHandler::makePhbSimRspFromUsimFcp(unsigned char ** simRes
         goto done;
     }
 
-    if ((!IS_DF_ADF(fDescriptor.fd)) && (FALSE == usim_fcp_query_tag(fcpByte, fcpLen, FCP_FILE_SIZE_T,&fSize))) {
+    if ((!IS_DF_ADF(fDescriptor.fd)) &&
+        (FALSE == usim_fcp_query_tag(fcpByte, fcpLen, FCP_FILE_SIZE_T, &fSize))) {
         logE(PHBIO_LOG_TAG, "USIM File Size fail:%s", *simResponse);
         format_wrong = 1;
         goto done;
@@ -134,7 +135,6 @@ void RmcPhbSimIoRequestHandler::makePhbSimRspFromUsimFcp(unsigned char ** simRes
         simRspByte[RESPONSE_DATA_RECORD_LENGTH] = fDescriptor.rec_len;
     }
 
-
 done:
     free(*simResponse);
     free(fcpByte);
@@ -147,22 +147,21 @@ done:
         *simResponse = NULL;
         logE(PHBIO_LOG_TAG, "simRsp done, but simRsp is null because command format may be wrong");
     }
-
 }
 
 void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& msg) {
     int err = 0, intPara = 0;
-    RIL_SIM_IO_v6 *pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
+    RIL_SIM_IO_v6* pData = (RIL_SIM_IO_v6*)(msg->getData()->getData());
     String8 cmd("");
     String8 path("");
-    String8 aid((pData->aidPtr != NULL)? pData->aidPtr : "");
-    String8 data((pData->data != NULL)? pData->data : "");
+    String8 aid((pData->aidPtr != NULL) ? pData->aidPtr : "");
+    String8 data((pData->data != NULL) ? pData->data : "");
     String8 simResponse("");
     int appTypeId = queryAppTypeId(aid), channelId = 0;
     int remain = pData->p3;
     RIL_Errno result = RIL_E_SIM_ERR;
-    RfxAtLine *line = NULL;
-    char *tmpStr = NULL;
+    RfxAtLine* line = NULL;
+    char* tmpStr = NULL;
     sp<RfxAtResponse> p_response = NULL;
     sp<RfxMclMessage> response;
     RIL_SIM_IO_Response sr;
@@ -172,11 +171,11 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
 
     memset(&sr, 0, sizeof(RIL_SIM_IO_Response));
 
-    //check timestampe between the request msg and the capability switch begin
+    // check timestampe between the request msg and the capability switch begin
     tSimSwitch = getNonSlotMclStatusManager()->getInt64Value(
             RFX_STATUS_KEY_SIM_SWITCH_RADIO_UNAVAIL_TIME);
     if (msg->getTimeStamp() <= tSimSwitch) {
-        //check timestampe between the request msg and the capability switch begin
+        // check timestampe between the request msg and the capability switch begin
         result = RIL_E_INVALID_STATE;
         goto error;
     }
@@ -254,8 +253,8 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
         goto error;
     }
 
-    DlogD(PHBIO_LOG_TAG, "SIM_IO(%d, %d, %d, %d, %d, %d, %s)", channelId,
-            pData->command, pData->fileid, pData->p1, pData->p2, pData->p3, pData->path);
+    DlogD(PHBIO_LOG_TAG, "SIM_IO(%d, %d, %d, %d, %d, %d, %s)", channelId, pData->command,
+          pData->fileid, pData->p1, pData->p2, pData->p3, pData->path);
 
     while (remain > 0) {
         // 3. Send AT+ECRLA
@@ -265,22 +264,22 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
         if (pData->command == 192) {
             // GET RESPONSE
             cmd.append(String8::format("AT+ECRLA=%d,%d,%d,%d,%d,%d,%d", appTypeId, channelId,
-                    pData->command, pData->fileid, pData->p1, pData->p2, 0 /*P3*/));
+                                       pData->command, pData->fileid, pData->p1, pData->p2,
+                                       0 /*P3*/));
         } else if (data.isEmpty()) {
             // READ COMMAND, P3: Max value is 256 and use 0 to represent 256
             len = ((remain < 256) ? remain : 256);
             cmd.append(String8::format("AT+ECRLA=%d,%d,%d,%d,%d,%d,%d", appTypeId, channelId,
-                    pData->command, pData->fileid, (0xFF & (offset >> 8))/*P1*/,
-                    (0xFF & offset)/*P2*/,
-                    ((remain < 256) ? remain : 0)/*P3*/));
+                                       pData->command, pData->fileid, (0xFF & (offset >> 8)) /*P1*/,
+                                       (0xFF & offset) /*P2*/,
+                                       ((remain < 256) ? remain : 0) /*P3*/));
         } else {
             // WRITE COMMAND, P3: Max value is 255
             len = (remain > 255) ? 255 : remain;
 
             cmd.append(String8::format("AT+ECRLA=%d,%d,%d,%d,%d,%d,%d", appTypeId, channelId,
-                    pData->command, pData->fileid, (0xFF & (offset >> 8))/*P1*/,
-                    (0xFF & offset)/*P2*/,
-                    len/*P3*/));
+                                       pData->command, pData->fileid, (0xFF & (offset >> 8)) /*P1*/,
+                                       (0xFF & offset) /*P2*/, len /*P3*/));
         }
 
         if ((!data.isEmpty()) && (pData->data != NULL)) {
@@ -327,7 +326,7 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
             }
 
             if (line->atTokHasmore()) {
-                char *pRes = NULL;
+                char* pRes = NULL;
                 pRes = line->atTokNextstr(&err);
                 if (err < 0) {
                     goto error;
@@ -335,8 +334,8 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
                 simResponse.append(String8::format("%s", pRes));
 
                 if (pData->command == 192) {
-                    // In the case of GET_RESPONSE, we use 0 instead of pData->p3 so we set reamin as 0
-                    // directly.
+                    // In the case of GET_RESPONSE, we use 0 instead of pData->p3 so we set reamin
+                    // as 0 directly.
                     remain = 0;
                 } else if (pData->data == NULL) {
                     // Case of command type READ
@@ -351,8 +350,8 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
                 }
                 // Run FCP parser for USIM and CSIM when the command is GET_RESPONSE
                 if ((appTypeId == UICC_APP_USIM || appTypeId == UICC_APP_CSIM ||
-                        appTypeId == UICC_APP_ISIM || isSimIoFcp(sr.simResponse)) &&
-                        pData->command == 192 /* GET_RESPONSE */) {
+                     appTypeId == UICC_APP_ISIM || isSimIoFcp(sr.simResponse)) &&
+                    pData->command == 192 /* GET_RESPONSE */) {
                     makePhbSimRspFromUsimFcp((unsigned char**)&sr.simResponse);
                 }
 
@@ -368,12 +367,12 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
     }
 
     if (RfxRilUtils::isEngLoad()) {
-        logI(PHBIO_LOG_TAG, "SIM_IO(result %d, sw1 %d, sw2 %d, response %s)", result, sr.sw1, sr.sw2,
-                sr.simResponse);
+        logI(PHBIO_LOG_TAG, "SIM_IO(result %d, sw1 %d, sw2 %d, response %s)", result, sr.sw1,
+             sr.sw2, sr.simResponse);
     }
 
     response = RfxMclMessage::obtainResponse(msg->getId(), result,
-            RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
+                                             RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
 
     responseToTelCore(response);
     p_response = NULL;
@@ -384,7 +383,7 @@ void RmcPhbSimIoRequestHandler::requestHandlePhbSimIo(const sp<RfxMclMessage>& m
     return;
 error:
     response = RfxMclMessage::obtainResponse(msg->getId(), result,
-            RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
+                                             RfxSimIoRspData((void*)&sr, sizeof(sr)), msg, false);
 
     responseToTelCore(response);
     p_response = NULL;
@@ -392,5 +391,4 @@ error:
     if (sr.simResponse != NULL) {
         free(sr.simResponse);
     }
-
 }

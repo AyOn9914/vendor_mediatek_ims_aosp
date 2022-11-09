@@ -26,10 +26,10 @@ const int PhoneNumberUtils::TOA_INTERNATIONAL = 0x91;
 const char PhoneNumberUtils::PAUSE = ',';
 const char PhoneNumberUtils::WAIT = ';';
 const char PhoneNumberUtils::WILD = 'N';
-const char PhoneNumberUtils::REPLACEMENT_CHAR = (char) 0xfffd;
+const char PhoneNumberUtils::REPLACEMENT_CHAR = (char)0xfffd;
 
 string PhoneNumberUtils::numToString(int number) {
-    char temp[128] = { 0 };
+    char temp[128] = {0};
     sprintf(temp, "%d", number);
     string ret = temp;
     return ret;
@@ -54,17 +54,17 @@ BYTE* PhoneNumberUtils::hexStringToBytes(string s) {
     }
 
     int sz = s.length();
-    BYTE* ret = new BYTE[sz/2];
+    BYTE* ret = new BYTE[sz / 2];
 
-    for (int i=0 ; i <sz ; i+=2) {
-        ret[i/2] = (BYTE) ((hexCharToInt(s.at(i)) << 4)
-                | hexCharToInt(s.at(i+1)));
+    for (int i = 0; i < sz; i += 2) {
+        ret[i / 2] = (BYTE)((hexCharToInt(s.at(i)) << 4) | hexCharToInt(s.at(i + 1)));
     }
     return ret;
 }
 
 string PhoneNumberUtils::stringFromBytes(BYTE* data, int offset, int byteCount) {
-    char* value = NULL;;
+    char* value = NULL;
+    ;
     int length = 0;
 
     // We inline UTF-8, ISO-8859-1, and US-ASCII decoders for speed.
@@ -80,14 +80,18 @@ outer:
             // 0xxxxxxx
             // Range:  U-00000000 - U-0000007F
             int val = b0 & 0xff;
-            v[s++] = (char) val;
-        } else if (((b0 & 0xe0) == 0xc0) || ((b0 & 0xf0) == 0xe0) ||
-                ((b0 & 0xf8) == 0xf0) || ((b0 & 0xfc) == 0xf8) || ((b0 & 0xfe) == 0xfc)) {
+            v[s++] = (char)val;
+        } else if (((b0 & 0xe0) == 0xc0) || ((b0 & 0xf0) == 0xe0) || ((b0 & 0xf8) == 0xf0) ||
+                   ((b0 & 0xfc) == 0xf8) || ((b0 & 0xfe) == 0xfc)) {
             int utfCount = 1;
-            if ((b0 & 0xf0) == 0xe0) utfCount = 2;
-            else if ((b0 & 0xf8) == 0xf0) utfCount = 3;
-            else if ((b0 & 0xfc) == 0xf8) utfCount = 4;
-            else if ((b0 & 0xfe) == 0xfc) utfCount = 5;
+            if ((b0 & 0xf0) == 0xe0)
+                utfCount = 2;
+            else if ((b0 & 0xf8) == 0xf0)
+                utfCount = 3;
+            else if ((b0 & 0xfc) == 0xf8)
+                utfCount = 4;
+            else if ((b0 & 0xfe) == 0xfc)
+                utfCount = 5;
 
             // 110xxxxx (10xxxxxx)+
             // Range:  U-00000080 - U-000007FF (count == 1)
@@ -142,15 +146,15 @@ outer:
 
             // Encode chars from U+10000 up as surrogate pairs
             if (val < 0x10000) {
-                v[s++] = (char) val;
+                v[s++] = (char)val;
             } else {
                 int x = val & 0xffff;
                 int u = (val >> 16) & 0x1f;
                 int w = (u - 1) & 0xffff;
                 int hi = 0xd800 | (w << 6) | (x >> 10);
                 int lo = 0xdc00 | (x & 0x3ff);
-                v[s++] = (char) hi;
-                v[s++] = (char) lo;
+                v[s++] = (char)hi;
+                v[s++] = (char)lo;
             }
         } else {
             // Illegal values 0x8*, 0x9*, 0xa*, 0xb*, 0xfd-0xff

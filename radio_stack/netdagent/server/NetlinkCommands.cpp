@@ -33,8 +33,8 @@ int openNetlinkSocket(int protocol) {
     if (sock == -1) {
         return -errno;
     }
-    if (connect(sock, reinterpret_cast<const sockaddr*>(&KERNEL_NLADDR),
-                sizeof(KERNEL_NLADDR)) == -1) {
+    if (connect(sock, reinterpret_cast<const sockaddr*>(&KERNEL_NLADDR), sizeof(KERNEL_NLADDR)) ==
+        -1) {
         return -errno;
     }
     return sock;
@@ -74,8 +74,8 @@ __attribute__((optnone))
 int sendNetlinkRequest(uint16_t action, uint16_t flags, iovec* iov, int iovlen,
                                           const NetlinkDumpCallback *callback) {
     nlmsghdr nlmsg = {
-        .nlmsg_type = action,
-        .nlmsg_flags = flags,
+            .nlmsg_type = action,
+            .nlmsg_flags = flags,
     };
     iov[0].iov_base = &nlmsg;
     iov[0].iov_len = sizeof(nlmsg);
@@ -108,7 +108,6 @@ int sendNetlinkRequest(uint16_t action, uint16_t flags, iovec* iov, int iovlen,
     return ret;
 }
 
-
 int processNetlinkDump(int sock, const NetlinkDumpCallback& callback) {
     char buf[kNetlinkDumpBufferSize];
 
@@ -121,18 +120,17 @@ int processNetlinkDump(int sock, const NetlinkDumpCallback& callback) {
         }
 
         uint32_t len = bytesread;
-        for (nlmsghdr *nlh = reinterpret_cast<nlmsghdr *>(buf);
-             NLMSG_OK(nlh, len);
+        for (nlmsghdr* nlh = reinterpret_cast<nlmsghdr*>(buf); NLMSG_OK(nlh, len);
              nlh = NLMSG_NEXT(nlh, len)) {
             switch (nlh->nlmsg_type) {
-              case NLMSG_DONE:
-                return 0;
-              case NLMSG_ERROR: {
-                nlmsgerr *err = reinterpret_cast<nlmsgerr *>(NLMSG_DATA(nlh));
-                return err->error;
-              }
-              default:
-                callback(nlh);
+                case NLMSG_DONE:
+                    return 0;
+                case NLMSG_ERROR: {
+                    nlmsgerr* err = reinterpret_cast<nlmsgerr*>(NLMSG_DATA(nlh));
+                    return err->error;
+                }
+                default:
+                    callback(nlh);
             }
         }
     } while (bytesread > 0);
@@ -140,8 +138,8 @@ int processNetlinkDump(int sock, const NetlinkDumpCallback& callback) {
     return 0;
 }
 
-int rtNetlinkFlush(uint16_t getAction, uint16_t deleteAction,
-                                     const char *what, const NetlinkDumpFilter& shouldDelete) {
+int rtNetlinkFlush(uint16_t getAction, uint16_t deleteAction, const char* what,
+                   const NetlinkDumpFilter& shouldDelete) {
     // RTM_GETxxx is always RTM_DELxxx + 1, see <linux/rtnetlink.h>.
     if (getAction != deleteAction + 1) {
         ALOGE("Unknown flush type getAction=%d deleteAction=%d", getAction, deleteAction);
@@ -153,7 +151,7 @@ int rtNetlinkFlush(uint16_t getAction, uint16_t deleteAction,
         return writeSock;
     }
 
-    NetlinkDumpCallback callback = [writeSock, deleteAction, shouldDelete, what] (nlmsghdr *nlh) {
+    NetlinkDumpCallback callback = [writeSock, deleteAction, shouldDelete, what](nlmsghdr* nlh) {
         if (!shouldDelete(nlh)) return;
 
         nlh->nlmsg_type = deleteAction;
@@ -174,14 +172,14 @@ int rtNetlinkFlush(uint16_t getAction, uint16_t deleteAction,
     };
 
     int ret = 0;
-    for (const int family : { AF_INET, AF_INET6 }) {
+    for (const int family : {AF_INET, AF_INET6}) {
         // struct fib_rule_hdr and struct rtmsg are functionally identical.
         rtmsg rule = {
-            .rtm_family = static_cast<uint8_t>(family),
+                .rtm_family = static_cast<uint8_t>(family),
         };
         iovec iov[] = {
-            { NULL,  0 },
-            { &rule, sizeof(rule) },
+                {NULL, 0},
+                {&rule, sizeof(rule)},
         };
         uint16_t flags = NETLINK_DUMP_FLAGS;
 
@@ -195,17 +193,17 @@ int rtNetlinkFlush(uint16_t getAction, uint16_t deleteAction,
     return ret;
 }
 
-uint32_t getRtmU32Attribute(const nlmsghdr *nlh, int attribute) {
+uint32_t getRtmU32Attribute(const nlmsghdr* nlh, int attribute) {
     uint32_t rta_len = RTM_PAYLOAD(nlh);
-    rtmsg *msg = reinterpret_cast<rtmsg *>(NLMSG_DATA(nlh));
-    rtattr *rta = reinterpret_cast<rtattr *> RTM_RTA(msg);
+    rtmsg* msg = reinterpret_cast<rtmsg*>(NLMSG_DATA(nlh));
+    rtattr* rta = reinterpret_cast<rtattr*> RTM_RTA(msg);
     for (; RTA_OK(rta, rta_len); rta = RTA_NEXT(rta, rta_len)) {
         if (rta->rta_type == attribute) {
-            return *(static_cast<uint32_t *>(RTA_DATA(rta)));
+            return *(static_cast<uint32_t*>(RTA_DATA(rta)));
         }
     }
     return 0;
 }
 
-}  // namespace net
+}  // namespace netdagent
 }  // namespace android

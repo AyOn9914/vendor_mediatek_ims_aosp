@@ -26,22 +26,15 @@
 #include "RfxStringData.h"
 #include <libmtkrilutils.h>
 
-static const char *s_smsUnsoliciteds[] = {
-    "+CMT:",
-    "+CDS:",
-    "+CBM:",
-    "+EIMSCMT:",
-    "+EIMSCDS:",
-    "+ECBMWAC:"
-};
+static const char* s_smsUnsoliciteds[] = {
+        "+CMT:", "+CDS:", "+CBM:", "+EIMSCMT:", "+EIMSCDS:", "+ECBMWAC:"};
 
 #define RFX_LOG_TAG "AT"
 
-RfxReader::RfxReader(int fd, int channel_id, RfxChannelContext *context) :
-        m_fd(fd), m_channel_id(channel_id), m_context(context),
-        mName(NULL), m_pATBufferCur(NULL) {
-        memset(&m_threadId, 0, sizeof(pthread_t));
-        memset(m_aTBuffer, 0, (MAX_AT_RESPONSE+1));
+RfxReader::RfxReader(int fd, int channel_id, RfxChannelContext* context)
+    : m_fd(fd), m_channel_id(channel_id), m_context(context), mName(NULL), m_pATBufferCur(NULL) {
+    memset(&m_threadId, 0, sizeof(pthread_t));
+    memset(m_aTBuffer, 0, (MAX_AT_RESPONSE + 1));
 }
 
 bool RfxReader::threadLoop() {
@@ -49,10 +42,10 @@ bool RfxReader::threadLoop() {
     mName = RfxChannelManager::channelIdToString(m_channel_id);
 
     // start to read data from m_fd
-    printLog(INFO, String8::format("threadLoop. RfxReader %s init, channel id = %d, fd = %d",
-            mName, m_channel_id, m_fd));
+    printLog(INFO, String8::format("threadLoop. RfxReader %s init, channel id = %d, fd = %d", mName,
+                                   m_channel_id, m_fd));
 
-    if ((m_channel_id%RIL_CHANNEL_OFFSET )== RIL_CMD_IMS) {
+    if ((m_channel_id % RIL_CHANNEL_OFFSET) == RIL_CMD_IMS) {
         readerLoopForFragData();
     } else {
         readerLoop();
@@ -64,19 +57,18 @@ void RfxReader::readerLoop() {
     int err = 0;
 
     m_pATBufferCur = m_aTBuffer;
-    for (;; ) {
-        const char *line;
+    for (;;) {
+        const char* line;
         line = readline(m_aTBuffer);
 
-        //RFX_LOG_D(LOG_TAG, "%s:%s", readerName, line);
-        if (line == NULL)
-            break;
-        while((err = m_context->m_readerMutex.tryLock()) != 0){
+        // RFX_LOG_D(LOG_TAG, "%s:%s", readerName, line);
+        if (line == NULL) break;
+        while ((err = m_context->m_readerMutex.tryLock()) != 0) {
             usleep(200 * 1000);
         }
         if (isSMSUnsolicited(line)) {
-            char *line1;
-            const char *line2;
+            char* line1;
+            const char* line2;
             printLog(DEBUG, String8::format("SMS Urc Received!"));
             // The scope of string returned by 'readline()' is valid only
             // till next call to 'readline()' hence making a copy of line
@@ -98,7 +90,7 @@ void RfxReader::readerLoop() {
             int index = 0;
             if ((index = needToHidenLog(line1)) >= 0) {
                 printLog(INFO, String8::format("%s: line1:%s:***,line2:***", mName,
-                        getHidenLogPreFix(index)));
+                                               getHidenLogPreFix(index)));
             } else {
                 printLog(INFO, String8::format("%s: line1:%s,line2:%s", mName, line1, line2));
             }
@@ -106,27 +98,27 @@ void RfxReader::readerLoop() {
             RfxAtLine* atLine2 = new RfxAtLine(line2, NULL);
             handleUnsolicited(atLine1, atLine2);
             // free at RfxMclMessage deconstructor
-            //delete(atLine1);
-            //delete(atLine2);
+            // delete(atLine1);
+            // delete(atLine2);
             free(line1);
         } else {
-            while((err = m_context->m_commandMutex.tryLock()) != 0){
+            while ((err = m_context->m_commandMutex.tryLock()) != 0) {
                 usleep(200 * 1000);
             }
 
             int index = 0;
             if ((index = needToHidenLog(line)) >= 0) {
                 printLog(INFO, String8::format("AT< %s=*** (%s, tid:%lu)\n",
-                        getHidenLogPreFix(index), mName, m_threadId));
+                                               getHidenLogPreFix(index), mName, m_threadId));
             } else if (!strstr(line, ":") && isdigit(line[0])) {
                 printLog(INFO, String8::format("AT< *** (%s, tid:%lu)\n", mName, m_threadId));
             } else {
                 if (isLogReductionCmd(line)) {
-                    printLog(DEBUG, String8::format("AT< %s (%s, tid:%lu)\n", line, mName,
-                            m_threadId));
+                    printLog(DEBUG,
+                             String8::format("AT< %s (%s, tid:%lu)\n", line, mName, m_threadId));
                 } else {
-                    printLog(INFO, String8::format("AT< %s (%s, tid:%lu)\n", line, mName,
-                            m_threadId));
+                    printLog(INFO,
+                             String8::format("AT< %s (%s, tid:%lu)\n", line, mName, m_threadId));
                 }
             }
 
@@ -155,12 +147,12 @@ void RfxReader::readerLoop() {
     isTrmMutex.unlock();
 }
 
-char* RfxReader::readline(char *buffer) {
+char* RfxReader::readline(char* buffer) {
     ssize_t count;
 
-    char *p_read = NULL;
-    char *p_eol = NULL;
-    char *ret;
+    char* p_read = NULL;
+    char* p_eol = NULL;
+    char* ret;
 
     /* this is a little odd. I use *s_ATBufferCur == 0 to
      * mean "buffer consumed completely". If it points to a character, than
@@ -206,7 +198,7 @@ char* RfxReader::readline(char *buffer) {
             if (RfxRilUtils::isUserLoad() != 1) {
                 if (count < 0) {
                     printLog(DEBUG, String8::format("AT read end: %zd (err: %d - %s)\n", count,
-                            errno, strerror(errno)));
+                                                    errno, strerror(errno)));
                 } else {
                     printLog(DEBUG, String8::format("AT read end: %zd\n", count));
                 }
@@ -239,8 +231,7 @@ char* RfxReader::readline(char *buffer) {
 
     ret = m_pATBufferCur;
     *p_eol = '\0';
-    if (m_pATBufferCur[0] == '>' && m_pATBufferCur[1] == ' ' &&
-            m_pATBufferCur[2] == '\0') {
+    if (m_pATBufferCur[0] == '>' && m_pATBufferCur[1] == ' ' && m_pATBufferCur[2] == '\0') {
         printLog(DEBUG, String8::format("atchannel: This is sms prompt!"));
         m_pATBufferCur = p_eol + 1; /* this will always be <= p_read,    */
         m_pATBufferCur[0] = '\0';
@@ -252,13 +243,13 @@ char* RfxReader::readline(char *buffer) {
     return ret;
 }
 
-void RfxReader::processLine(const char *line) {
+void RfxReader::processLine(const char* line) {
     sp<RfxAtResponse> response = m_context->getResponse();
     RfxAtLine* atLine = new RfxAtLine(line, NULL);
 
     int isIntermediateResult = 0;
     bool isNumericSet = false;
-    int slotId = m_channel_id/RIL_PROXY_OFFSET;
+    int slotId = m_channel_id / RIL_PROXY_OFFSET;
     int isRequestAck = 0;
 
     if (RFX_MSG_TYPE_NONE == m_context->getType()) {
@@ -272,64 +263,61 @@ void RfxReader::processLine(const char *line) {
         RFX_LOG_D(RFX_LOG_TAG, "receive ACK (%s)\n", line);
     } else {
         switch (response->getCommandType()) {
-        case NO_RESULT:
-            break;
-        case NUMERIC:
-            if (response->getIntermediates() == NULL
-                && isdigit(atLine->getLine()[0])
-                ) {
-                response->setIntermediates(atLine);
-                isIntermediateResult = 1;
-            } else {
-                /* either we already have an intermediate response or
-                 *     the line doesn't begin with a digit */
-                //handleUnsolicited(line,p_channel);
-            }
-            break;
-        case SINGLELINE:
-            if (response->getIntermediates() == NULL
-                && RfxMisc::strStartsWith(atLine->getLine(), response->getResponsePrefix())
-                ) {
-                response->setIntermediates(atLine);
-                isIntermediateResult = 1;
-            } else {
-                /* we already have an intermediate response */
-                //handleUnsolicited(line,p_channel);
-            }
-            break;
-        case MULTILINE:
-            if (RfxMisc::strStartsWith(atLine->getLine(), response->getResponsePrefix())) {
-                response->setIntermediates(atLine);
-                isIntermediateResult = 1;
-            } else {
-                //handleUnsolicited(line,p_channel);
-            }
-            break;
-        /* atci start */
-        case RAW:
-            isNumericSet = RfxMclStatusManager::getMclStatusManager(slotId)->getBoolValue(
-                    RFX_STATUS_KEY_ATCI_IS_NUMERIC, false);
-            if (isNumericSet) {
-                if (!atLine->isFinalResponseSuccessInNumeric() &&
-                        !atLine->isFinalResponseErrorInNumeric()) {
+            case NO_RESULT:
+                break;
+            case NUMERIC:
+                if (response->getIntermediates() == NULL && isdigit(atLine->getLine()[0])) {
                     response->setIntermediates(atLine);
                     isIntermediateResult = 1;
+                } else {
+                    /* either we already have an intermediate response or
+                     *     the line doesn't begin with a digit */
+                    // handleUnsolicited(line,p_channel);
                 }
-            } else {    //isNumericSet is false
-                if (!atLine->isFinalResponseSuccess() &&
+                break;
+            case SINGLELINE:
+                if (response->getIntermediates() == NULL &&
+                    RfxMisc::strStartsWith(atLine->getLine(), response->getResponsePrefix())) {
+                    response->setIntermediates(atLine);
+                    isIntermediateResult = 1;
+                } else {
+                    /* we already have an intermediate response */
+                    // handleUnsolicited(line,p_channel);
+                }
+                break;
+            case MULTILINE:
+                if (RfxMisc::strStartsWith(atLine->getLine(), response->getResponsePrefix())) {
+                    response->setIntermediates(atLine);
+                    isIntermediateResult = 1;
+                } else {
+                    // handleUnsolicited(line,p_channel);
+                }
+                break;
+            /* atci start */
+            case RAW:
+                isNumericSet = RfxMclStatusManager::getMclStatusManager(slotId)->getBoolValue(
+                        RFX_STATUS_KEY_ATCI_IS_NUMERIC, false);
+                if (isNumericSet) {
+                    if (!atLine->isFinalResponseSuccessInNumeric() &&
+                        !atLine->isFinalResponseErrorInNumeric()) {
+                        response->setIntermediates(atLine);
+                        isIntermediateResult = 1;
+                    }
+                } else {  // isNumericSet is false
+                    if (!atLine->isFinalResponseSuccess() &&
                         !atLine->isFinalResponseErrorEx(m_channel_id) &&
                         !atLine->isIntermediatePattern()) {
-                    response->setIntermediates(atLine);
-                    isIntermediateResult = 1;
+                        response->setIntermediates(atLine);
+                        isIntermediateResult = 1;
+                    }
                 }
-            }
-            break;
-        /* atci end */
-        default: /* this should never be reached */
-            printLog(ERROR, String8::format("Unsupported AT command type %d\n",
-                    response->getCommandType()));
-            //handleUnsolicited(line,p_channel);
-            break;
+                break;
+            /* atci end */
+            default: /* this should never be reached */
+                printLog(ERROR, String8::format("Unsupported AT command type %d\n",
+                                                response->getCommandType()));
+                // handleUnsolicited(line,p_channel);
+                break;
         }
     }
 
@@ -369,11 +357,12 @@ void RfxReader::handleUnsolicited(RfxAtLine* line1, RfxAtLine* line2) {
     RfxMclDispatcherThread::enqueueMclMessage(msg);
 
     // send each raw urc to atci module
-    int slotId = RfxMclStatusManager::getNonSlotMclStatusManager()->
-            getIntValue(RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT,0);
-    sp<RfxMclMessage> atciMsg = RfxMclMessage::obtainEvent(RFX_MSG_EVENT_RAW_URC,
+    int slotId = RfxMclStatusManager::getNonSlotMclStatusManager()->getIntValue(
+            RFX_STATUS_KEY_MAIN_CAPABILITY_SLOT, 0);
+    sp<RfxMclMessage> atciMsg = RfxMclMessage::obtainEvent(
+            RFX_MSG_EVENT_RAW_URC,
             RfxStringData(msg->getRawUrc()->getLine(), strlen(msg->getRawUrc()->getLine())),
-            RIL_CMD_PROXY_6, m_channel_id/RIL_CHANNEL_OFFSET);
+            RIL_CMD_PROXY_6, m_channel_id / RIL_CHANNEL_OFFSET);
     RfxMclDispatcherThread::enqueueMclMessage(atciMsg);
 }
 
@@ -383,7 +372,7 @@ void RfxReader::handleFinalResponse(RfxAtLine* line) {
     m_context->m_commandCondition.signal();
 }
 
-int RfxReader::isSMSUnsolicited(const char *line) {
+int RfxReader::isSMSUnsolicited(const char* line) {
     size_t i;
     for (i = 0; i < NUM_ELEMS(s_smsUnsoliciteds); i++) {
         if (RfxMisc::strStartsWith(line, s_smsUnsoliciteds[i])) {
@@ -393,7 +382,7 @@ int RfxReader::isSMSUnsolicited(const char *line) {
     return 0;
 }
 
-char* RfxReader::findNextEOL(char *cur) {
+char* RfxReader::findNextEOL(char* cur) {
     if (cur[0] == '>' && cur[1] == ' ' && cur[2] == '\0')
         /* SMS prompt character...not \r terminated */
         return cur + 2;
@@ -409,13 +398,14 @@ char* RfxReader::findNextEOL(char *cur) {
 void RfxReader::readerLoopForFragData() {
     int err = 0;
     int count = 0;
-    unsigned char *header = (unsigned char *) calloc(RfxFragmentEncoder::HEADER_SIZE+1, sizeof(char));
+    unsigned char* header =
+            (unsigned char*)calloc(RfxFragmentEncoder::HEADER_SIZE + 1, sizeof(char));
     if (header == NULL) {
         RFX_LOG_E(RFX_LOG_TAG, "OOM");
         return;
     }
-    char *aggregateData = NULL;
-    char *tmpData;
+    char* aggregateData = NULL;
+    char* tmpData;
 
     RfxFragmentData fragData;
     size_t dataReceived = 0;
@@ -425,8 +415,8 @@ void RfxReader::readerLoopForFragData() {
         do {
             count = read(m_fd, header, RfxFragmentEncoder::HEADER_SIZE);
             if (count < 0 && errno != EINTR) {
-                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count,
-                        errno, strerror(errno)));
+                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count, errno,
+                                                strerror(errno)));
                 free(header);
                 return;
             } else {
@@ -441,13 +431,13 @@ void RfxReader::readerLoopForFragData() {
         }
 
         fragData = RfxFragmentEncoder::decodeHeader(header);
-        aggregateData = (char *) calloc(fragData.getDataLength(), sizeof(char));
+        aggregateData = (char*)calloc(fragData.getDataLength(), sizeof(char));
         if (aggregateData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             free(header);
             return;
         }
-        tmpData = (char *) calloc(RfxFragmentEncoder::MAX_FRAME_SIZE, sizeof(char));
+        tmpData = (char*)calloc(RfxFragmentEncoder::MAX_FRAME_SIZE, sizeof(char));
         if (tmpData == NULL) {
             RFX_LOG_E(RFX_LOG_TAG, "OOM");
             free(aggregateData);
@@ -457,33 +447,34 @@ void RfxReader::readerLoopForFragData() {
         writeP = 0;
         printLog(INFO, String8::format("fragData.getDataLength(): %zu", fragData.getDataLength()));
 
-        size_t readTimes = (fragData.getDataLength()/RfxFragmentEncoder::MAX_FRAME_SIZE);
+        size_t readTimes = (fragData.getDataLength() / RfxFragmentEncoder::MAX_FRAME_SIZE);
         size_t remain = fragData.getDataLength() % RfxFragmentEncoder::MAX_FRAME_SIZE;
         size_t readTmp = 0;
         while (readTimes) {
             while (readTmp < RfxFragmentEncoder::MAX_FRAME_SIZE) {
-                count = read(m_fd, tmpData, RfxFragmentEncoder::MAX_FRAME_SIZE-readTmp);
-                printLog(DEBUG, String8::format("read count:%d, readTmp:%zu, writeP: %d",
-                        count, readTmp, writeP));
+                count = read(m_fd, tmpData, RfxFragmentEncoder::MAX_FRAME_SIZE - readTmp);
+                printLog(DEBUG, String8::format("read count:%d, readTmp:%zu, writeP: %d", count,
+                                                readTmp, writeP));
                 if (count < 0 && errno == EINTR) {
                     printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count,
-                            errno, strerror(errno)));
+                                                    errno, strerror(errno)));
                     continue;
                 } else if (count < 0) {
                     printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count,
-                            errno, strerror(errno)));
+                                                    errno, strerror(errno)));
                     free(aggregateData);
                     free(tmpData);
                     free(header);
                     return;
                 } else {
-                    memcpy((void*)(aggregateData+writeP), (void*)tmpData, count);
+                    memcpy((void*)(aggregateData + writeP), (void*)tmpData, count);
                     writeP += count;
                     readTmp += count;
                     memset(tmpData, 0, RfxFragmentEncoder::MAX_FRAME_SIZE);
 
-                    printLog(INFO, String8::format("ViLTE read readtimes: %zu, remain: %zu, count: %d",
-                            readTimes, remain, count));
+                    printLog(INFO,
+                             String8::format("ViLTE read readtimes: %zu, remain: %zu, count: %d",
+                                             readTimes, remain, count));
                 }
             }
             readTmp = 0;
@@ -491,21 +482,21 @@ void RfxReader::readerLoopForFragData() {
         }
 
         while (readTmp < remain) {
-            count = read(m_fd, tmpData, remain-readTmp);
+            count = read(m_fd, tmpData, remain - readTmp);
             printLog(DEBUG, String8::format("remain read count:%d, readTmp:%zu", count, readTmp));
             if (count < 0 && errno == EINTR) {
-                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count,
-                        errno, strerror(errno)));
+                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count, errno,
+                                                strerror(errno)));
                 continue;
             } else if (count < 0) {
-                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count,
-                        errno, strerror(errno)));
+                printLog(ERROR, String8::format("ViLTE read end: %d (err: %d - %s)\n", count, errno,
+                                                strerror(errno)));
                 free(aggregateData);
                 free(tmpData);
                 free(header);
                 return;
             } else {
-                memcpy((void*)(aggregateData+writeP), (void*)tmpData, count);
+                memcpy((void*)(aggregateData + writeP), (void*)tmpData, count);
                 writeP += count;
                 readTmp += count;
                 printLog(INFO, String8::format("ViLTE read count: %d", count));
@@ -520,21 +511,16 @@ void RfxReader::readerLoopForFragData() {
     free(header);
 }
 
-void RfxReader::handleUserDataEvent(int clientId, char *data, size_t length) {
+void RfxReader::handleUserDataEvent(int clientId, char* data, size_t length) {
     printLog(INFO, String8::format("handleUserDataEvent, len:%zu, client %d", length, clientId));
     // create Message and set to MclDispatcherThread
     sp<RfxMclMessage> msg = RfxMclMessage::obtainEvent(
-            RFX_MSG_EVENT_IMS_DATA,
-            RfxRawData((void *)data, length),
-            RIL_CMD_PROXY_IMS,
-            RIL_CMD_PROXY_IMS/RIL_CHANNEL_OFFSET,
-            clientId);
+            RFX_MSG_EVENT_IMS_DATA, RfxRawData((void*)data, length), RIL_CMD_PROXY_IMS,
+            RIL_CMD_PROXY_IMS / RIL_CHANNEL_OFFSET, clientId);
     RfxMclDispatcherThread::enqueueMclMessage(msg);
 }
 
-void RfxReader::handleRequestAck() {
-    m_context->m_commandCondition.signal();
-}
+void RfxReader::handleRequestAck() { m_context->m_commandCondition.signal(); }
 
 void RfxReader::setChannelId(int channelId) {
     m_channel_id = channelId;
@@ -543,5 +529,5 @@ void RfxReader::setChannelId(int channelId) {
 
 void RfxReader::printLog(int level, String8 log) {
     RfxRilUtils::printLog(level, String8::format("%s", RFX_LOG_TAG), log,
-            m_channel_id/RIL_CHANNEL_OFFSET);
+                          m_channel_id / RIL_CHANNEL_OFFSET);
 }

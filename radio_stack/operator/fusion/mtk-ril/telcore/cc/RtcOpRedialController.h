@@ -28,12 +28,12 @@
 class RtcOpRedialController : public RtcRedialController {
     RFX_DECLARE_CLASS(RtcOpRedialController);
 
-public:
+  public:
     RtcOpRedialController();
     virtual ~RtcOpRedialController();
     virtual bool isEmergencyModeSupported(int slotId);
 
-protected:
+  protected:
     virtual void onInit();
     virtual void onDeinit();
 };

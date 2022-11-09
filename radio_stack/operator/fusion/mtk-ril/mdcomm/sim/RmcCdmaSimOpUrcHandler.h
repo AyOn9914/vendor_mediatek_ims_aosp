@@ -22,16 +22,14 @@
  *****************************************************************************/
 #include "RmcCdmaSimUrcHandler.h"
 
-
 /*****************************************************************************
  * Class RmcCdmaSimOpUrcHandler
  *****************************************************************************/
 
 class RmcCdmaSimOpUrcHandler : public RmcCdmaSimUrcHandler {
-RFX_DECLARE_HANDLER_CLASS(RmcCdmaSimOpUrcHandler);
+    RFX_DECLARE_HANDLER_CLASS(RmcCdmaSimOpUrcHandler);
 
-
-public:
+  public:
     RmcCdmaSimOpUrcHandler(int slot_id, int channel_id);
     virtual ~RmcCdmaSimOpUrcHandler();
 };

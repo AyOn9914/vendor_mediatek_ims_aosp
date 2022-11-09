@@ -33,9 +33,8 @@ enum {
 int acquire_wake_lock(int lock, const char* id);
 int release_wake_lock(const char* id);
 
-
 #if __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-#endif // _HARDWARE_POWER_H
+#endif  // _HARDWARE_POWER_H

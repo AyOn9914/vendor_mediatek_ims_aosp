@@ -28,12 +28,12 @@
 class RmcCdmaBcActivationReq : RmcSingleAtReq {
     RFX_DECLARE_DATA_CLASS(RmcCdmaBcActivationReq);
 
-// Override
-public:
-    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler *h);
+    // Override
+  public:
+    virtual RmcAtSendInfo* onGetAtInfo(RfxBaseHandler* h);
 
-// Implementation
-private:
+    // Implementation
+  private:
     int m_activate;
 };
 #endif /* __RMC_CDMA_BC_ACTIVATE_H__ */

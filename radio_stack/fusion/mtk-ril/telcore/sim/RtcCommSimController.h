@@ -26,9 +26,9 @@
  * typedef
  *****************************************************************************/
 
-#define SIM_APP_COUNT  5
-#define SIM_CACHED_FILE_COUNT  10
-#define SIM_FILE_PATH_LEN  16
+#define SIM_APP_COUNT 5
+#define SIM_CACHED_FILE_COUNT 10
+#define SIM_FILE_PATH_LEN 16
 
 typedef struct {
     bool valid;
@@ -58,25 +58,62 @@ typedef enum {
     UICC_APP_ID_END
 } App_Id;
 
-static const RIL_SIM_File_Info  RIL_SIM_CACHE_FILES[SIM_APP_COUNT][SIM_CACHED_FILE_COUNT] = {
-    // ISIM
-    {{0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"},
-    {0, "\0"}, {0, "\0"}},
-    // USIM
-    {{0x2FE2, "3F00"}, {0x6F07, "3F007FFF"}, {0x6FAD, "3F007FFF"}, {0x6F3E, "3F007FFF"},
-    {0x6F3F, "3F007FFF"}, {0x6F38, "3F007FFF"}, {0x6F46, "3F007FFF"}, {0x6F14, "3F007FFF"},
-    {0x6F18, "3F007FFF"}, {0x6F02, "3F007F43"}},
-    // CSIM
-    {{0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"},
-    {0, "\0"}, {0, "\0"}},
-    // SIM
-    {{0x2FE2, "3F00"}, {0x6F07, "3F007F20"}, {0x6FAD, "3F007F20"}, {0x6F3E, "3F007F20"},
-    {0x6F3F, "3F007F20"}, {0x6F38, "3F007F20"}, {0x6F46, "3F007F20"}, {0x6F14, "3F007F20"},
-    {0x6F18, "3F007F20"}, {0x6F02, "3F007F43"}},
-    // RUIM
-    {{0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"}, {0, "\0"},
-    {0, "\0"}, {0, "\0"}}
-};
+static const RIL_SIM_File_Info RIL_SIM_CACHE_FILES[SIM_APP_COUNT][SIM_CACHED_FILE_COUNT] = {
+        // ISIM
+        {{0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"}},
+        // USIM
+        {{0x2FE2, "3F00"},
+         {0x6F07, "3F007FFF"},
+         {0x6FAD, "3F007FFF"},
+         {0x6F3E, "3F007FFF"},
+         {0x6F3F, "3F007FFF"},
+         {0x6F38, "3F007FFF"},
+         {0x6F46, "3F007FFF"},
+         {0x6F14, "3F007FFF"},
+         {0x6F18, "3F007FFF"},
+         {0x6F02, "3F007F43"}},
+        // CSIM
+        {{0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"}},
+        // SIM
+        {{0x2FE2, "3F00"},
+         {0x6F07, "3F007F20"},
+         {0x6FAD, "3F007F20"},
+         {0x6F3E, "3F007F20"},
+         {0x6F3F, "3F007F20"},
+         {0x6F38, "3F007F20"},
+         {0x6F46, "3F007F20"},
+         {0x6F14, "3F007F20"},
+         {0x6F18, "3F007F20"},
+         {0x6F02, "3F007F43"}},
+        // RUIM
+        {{0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"},
+         {0, "\0"}}};
 
 // SIM on/off state.
 #define SIM_POWER_STATE_SIM_OFF 10
@@ -86,24 +123,25 @@ static const RIL_SIM_File_Info  RIL_SIM_CACHE_FILES[SIM_APP_COUNT][SIM_CACHED_FI
  *****************************************************************************/
 
 class RtcCommSimController : public RfxController {
-RFX_DECLARE_CLASS(RtcCommSimController);
+    RFX_DECLARE_CLASS(RtcCommSimController);
 
-public:
+  public:
     RtcCommSimController();
     virtual ~RtcCommSimController();
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
 
-    virtual bool onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
 
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
     virtual bool onHandleUrc(const sp<RfxMessage>& message);
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
-private:
-    void setTag(String8 tag) {mTag = tag;}
+
+  private:
+    void setTag(String8 tag) { mTag = tag; }
 
     void onRadioStateChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
@@ -130,7 +168,8 @@ private:
     void onSimResetChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
     void resetSimParameters();
-private:
+
+  private:
     String8 mTag;
     RIL_SIM_IO_Cache_Response mIoResponse[SIM_APP_COUNT][SIM_CACHED_FILE_COUNT];
     sp<RfxMessage> mCacheSmlMsg;

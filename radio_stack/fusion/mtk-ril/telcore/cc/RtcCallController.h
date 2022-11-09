@@ -39,7 +39,7 @@ using ::android::Vector;
 
 using std::string;
 
-#define MAX_ADDRESS_LEN     40
+#define MAX_ADDRESS_LEN 40
 
 /*****************************************************************************
  * Class RfxController
@@ -52,7 +52,7 @@ class RtcCallController : public RfxController {
     // Required: declare this class
     RFX_DECLARE_CLASS(RtcCallController);
 
-public:
+  public:
     RtcCallController();
     virtual ~RtcCallController();
     void onParticipantsUpdate(vector<sp<ConferenceCallUser>> users, bool autoTerminate);
@@ -61,8 +61,8 @@ public:
 
     void notifyCallInfoUpdate(const sp<RfxMessage>& message);
 
-// Override
-protected:
+    // Override
+  protected:
     virtual void onInit();
     virtual void onDeinit();
     virtual bool onHandleRequest(const sp<RfxMessage>& message);
@@ -70,8 +70,8 @@ protected:
     virtual bool onHandleResponse(const sp<RfxMessage>& message);
     virtual bool onPreviewMessage(const sp<RfxMessage>& message);
     virtual bool onCheckIfResumeMessage(const sp<RfxMessage>& message);
-    virtual bool onCheckIfRejectMessage(
-        const sp<RfxMessage>& message, bool isModemPowerOff, int radioState);
+    virtual bool onCheckIfRejectMessage(const sp<RfxMessage>& message, bool isModemPowerOff,
+                                        int radioState);
     virtual void createRedialController();
 
     void responseDialFailed(const sp<RfxMessage>& message);
@@ -84,9 +84,9 @@ protected:
     void responseToRilJAndUpdateIsImsCallExist(const sp<RfxMessage>& msg);
     void updateIsImsCallExistToStatusManager(int slotId);
 
-    RtcRedialController *mRedialCtrl;
+    RtcRedialController* mRedialCtrl;
 
-private:
+  private:
     void onCsPhoneChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
 
     void onServiceStateChanged(RfxStatusKeyEnum key, RfxVariant oldValue, RfxVariant newValue);
@@ -131,14 +131,14 @@ private:
     void handleCdmaFlashRequest(const sp<RfxMessage>& message);
     void handleCdmaCallWait();
     void handleGetCurrentCallsResponse(const sp<RfxMessage>& message);
-    Vector<RfxPreciseCallState*>* parsePreciseCallState(RIL_Call ** pp_calls, int count);
+    Vector<RfxPreciseCallState*>* parsePreciseCallState(RIL_Call** pp_calls, int count);
     void updateDisconnecting(Vector<RfxPreciseCallState*>* origList, int hangupCallId);
     void updateDisconnecting(Vector<RfxPreciseCallState*>* origList, bool isForegnd);
-    void updateDisconnected(
-            Vector<RfxPreciseCallState*>* oldList, Vector<RfxPreciseCallState*>* newList);
+    void updateDisconnected(Vector<RfxPreciseCallState*>* oldList,
+                            Vector<RfxPreciseCallState*>* newList);
     void freePreciseCallStateList(Vector<RfxPreciseCallState*>* list);
-    void updatePreciseCallStateList(
-            RfxPreciseCallState* preciseCallState, Vector<RfxPreciseCallState*>* list);
+    void updatePreciseCallStateList(RfxPreciseCallState* preciseCallState,
+                                    Vector<RfxPreciseCallState*>* list);
 
     // error handling
     RIL_CALL_INFO_TYPE shouldRejectIncomingCall(int callMode);
@@ -176,7 +176,7 @@ private:
     void handleImsGetCurrentCalls(const sp<RfxMessage>& msg);
     void handleImsHangupWaitingOrBackground(const sp<RfxMessage>& msg);
     void handleImsHangupFgResumeBg(const sp<RfxMessage>& msg);
-    void imsCallToRilCall(int &index, RfxImsCallInfo* call, RIL_Call* p_calls);
+    void imsCallToRilCall(int& index, RfxImsCallInfo* call, RIL_Call* p_calls);
     void checkIfResumeBg(int slotId);
     void handleImsSwitchFgBg(const sp<RfxMessage>& msg);
     bool canHandleRequestDuringComboOperations(const sp<RfxMessage>& message);
@@ -267,21 +267,21 @@ private:
     TimerHandle mAutoAnswerTimerHandle;
     TimerHandle mAutoApproveTimerHandle;
     static const int AUTO_ANSWER_NONE = 0;
-    static const int AUTO_ANSWER_EM   = 1;
+    static const int AUTO_ANSWER_EM = 1;
     static const int AUTO_ANSWER_FAKE = 2;
 
     TimerHandle mSendImsCallInfoTimerHandle;
 
-    const char *PAU_NUMBER_FIELD     = "<tel:";
-    const char *PAU_NAME_FIELD       = "<name:";
-    const char *PAU_SIP_NUMBER_FIELD = "<sip:";
-    const char *PAU_END_FLAG_FIELD    = ">";
+    const char* PAU_NUMBER_FIELD = "<tel:";
+    const char* PAU_NAME_FIELD = "<name:";
+    const char* PAU_SIP_NUMBER_FIELD = "<sip:";
+    const char* PAU_END_FLAG_FIELD = ">";
 
-    const int SRVCC_STATE_NONE      = -1;
-    const int SRVCC_STATE_STARTED   = 0;
+    const int SRVCC_STATE_NONE = -1;
+    const int SRVCC_STATE_STARTED = 0;
     const int SRVCC_STATE_COMPLETED = 1;
-    const int SRVCC_STATE_FAILED    = 2;
-    const int SRVCC_STATE_CANCELED  = 3;
+    const int SRVCC_STATE_FAILED = 2;
+    const int SRVCC_STATE_CANCELED = 3;
 
     // Convert CHLD=0 to CHLD=1x for hanging up ringing call
     sp<RfxMessage> mOriginalHangupRingingMessage;

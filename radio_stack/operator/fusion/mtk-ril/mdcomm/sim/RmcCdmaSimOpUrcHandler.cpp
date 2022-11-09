@@ -34,10 +34,9 @@ using ::android::String8;
 /*****************************************************************************
  * Class RmcCdmaSimUrcHandler
  *****************************************************************************/
-RmcCdmaSimOpUrcHandler::RmcCdmaSimOpUrcHandler(int slot_id, int channel_id) :
-        RmcCdmaSimUrcHandler(slot_id, channel_id) {
+RmcCdmaSimOpUrcHandler::RmcCdmaSimOpUrcHandler(int slot_id, int channel_id)
+    : RmcCdmaSimUrcHandler(slot_id, channel_id) {
     setTag(String8("RmcCdmaSimOpUrcHandler"));
 }
 
-RmcCdmaSimOpUrcHandler::~RmcCdmaSimOpUrcHandler() {
-}
+RmcCdmaSimOpUrcHandler::~RmcCdmaSimOpUrcHandler() {}

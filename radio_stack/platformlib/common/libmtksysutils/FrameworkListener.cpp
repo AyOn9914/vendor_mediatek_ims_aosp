@@ -31,22 +31,19 @@ static const int CMD_BUF_SIZE = 1024;
 
 #define UNUSED __attribute__((unused))
 
-FrameworkListener::FrameworkListener(const char *socketName, bool withSeq) :
-                            SocketListener(socketName, true, withSeq) {
+FrameworkListener::FrameworkListener(const char* socketName, bool withSeq)
+    : SocketListener(socketName, true, withSeq) {
     init(socketName, withSeq);
 }
 
-FrameworkListener::FrameworkListener(const char *socketName) :
-                            SocketListener(socketName, true, false) {
+FrameworkListener::FrameworkListener(const char* socketName)
+    : SocketListener(socketName, true, false) {
     init(socketName, false);
 }
 
-FrameworkListener::FrameworkListener(int sock) :
-                            SocketListener(sock, true) {
-    init(NULL, false);
-}
+FrameworkListener::FrameworkListener(int sock) : SocketListener(sock, true) { init(NULL, false); }
 
-void FrameworkListener::init(const char *socketName UNUSED, bool withSeq) {
+void FrameworkListener::init(const char* socketName UNUSED, bool withSeq) {
     mCommands = new FrameworkCommandCollection();
     errorRate = 0;
     mCommandCount = 0;
@@ -54,7 +51,7 @@ void FrameworkListener::init(const char *socketName UNUSED, bool withSeq) {
     mSkipToNextNullByte = false;
 }
 
-bool FrameworkListener::onDataAvailable(SocketClient *c) {
+bool FrameworkListener::onDataAvailable(SocketClient* c) {
     char buffer[CMD_BUF_SIZE];
     int len;
 
@@ -64,9 +61,9 @@ bool FrameworkListener::onDataAvailable(SocketClient *c) {
         return false;
     } else if (!len) {
         return false;
-    } else if (buffer[len-1] != '\0') {
+    } else if (buffer[len - 1] != '\0') {
         SLOGW("String is not zero-terminated");
-        //android_errorWriteLog(0x534e4554, "29831647");
+        // android_errorWriteLog(0x534e4554, "29831647");
         c->sendMsg(500, "Command too large for buffer", false);
         mSkipToNextNullByte = true;
         return false;
@@ -91,29 +88,26 @@ bool FrameworkListener::onDataAvailable(SocketClient *c) {
     return true;
 }
 
-void FrameworkListener::registerCmd(FrameworkCommand *cmd) {
-    mCommands->push_back(cmd);
-}
+void FrameworkListener::registerCmd(FrameworkCommand* cmd) { mCommands->push_back(cmd); }
 
-void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
+void FrameworkListener::dispatchCommand(SocketClient* cli, char* data) {
     FrameworkCommandCollection::iterator i;
     int argc = 0;
-    char *argv[FrameworkListener::CMD_ARGS_MAX];
+    char* argv[FrameworkListener::CMD_ARGS_MAX];
     char tmp[CMD_BUF_SIZE];
-    char *p = data;
-    char *q = tmp;
-    char *qlimit = tmp + sizeof(tmp) - 1;
+    char* p = data;
+    char* q = tmp;
+    char* qlimit = tmp + sizeof(tmp) - 1;
     bool esc = false;
     bool quote = false;
     bool haveCmdNum = !mWithSeq;
 
     memset(argv, 0, sizeof(argv));
     memset(tmp, 0, sizeof(tmp));
-    while(*p) {
+    while (*p) {
         if (*p == '\\') {
             if (esc) {
-                if (q >= qlimit)
-                    goto overflow;
+                if (q >= qlimit) goto overflow;
                 *q++ = '\\';
                 esc = false;
             } else
@@ -122,12 +116,10 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
             continue;
         } else if (esc) {
             if (*p == '"') {
-                if (q >= qlimit)
-                    goto overflow;
+                if (q >= qlimit) goto overflow;
                 *q++ = '"';
             } else if (*p == '\\') {
-                if (q >= qlimit)
-                    goto overflow;
+                if (q >= qlimit) goto overflow;
                 *q++ = '\\';
             } else {
                 cli->sendMsg(500, "Unsupported escape sequence", false);
@@ -147,13 +139,12 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
             continue;
         }
 
-        if (q >= qlimit)
-            goto overflow;
+        if (q >= qlimit) goto overflow;
         *q = *p++;
         if (!quote && *q == ' ') {
             *q = '\0';
             if (!haveCmdNum) {
-                char *endptr;
+                char* endptr;
                 int cmdNum = (int)strtol(tmp, &endptr, 0);
                 if (endptr == NULL || *endptr != '\0') {
                     cli->sendMsg(500, "Invalid sequence number", false);
@@ -162,8 +153,7 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
                 cli->setCmdNum(cmdNum);
                 haveCmdNum = true;
             } else {
-                if (argc >= CMD_ARGS_MAX)
-                    goto overflow;
+                if (argc >= CMD_ARGS_MAX) goto overflow;
                 argv[argc++] = strdup(tmp);
             }
             memset(tmp, 0, sizeof(tmp));
@@ -174,8 +164,7 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
     }
 
     *q = '\0';
-    if (argc >= CMD_ARGS_MAX)
-        goto overflow;
+    if (argc >= CMD_ARGS_MAX) goto overflow;
     argv[argc++] = strdup(tmp);
 #if 0
     for (int k = 0; k < argc; k++) {
@@ -195,7 +184,7 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
     }
 
     for (i = mCommands->begin(); i != mCommands->end(); ++i) {
-        FrameworkCommand *c = *i;
+        FrameworkCommand* c = *i;
 
         if (!strcmp(argv[0], c->getCommand())) {
             if (c->runCommand(cli, argc, argv)) {
@@ -207,12 +196,11 @@ void FrameworkListener::dispatchCommand(SocketClient *cli, char *data) {
     cli->sendMsg(500, "Command not recognized", false);
 out:
     int j;
-    for (j = 0; j < argc; j++)
-        free(argv[j]);
+    for (j = 0; j < argc; j++) free(argv[j]);
     return;
 
 overflow:
-    //LOG_EVENT_INT(78001, cli->getUid());
+    // LOG_EVENT_INT(78001, cli->getUid());
     cli->sendMsg(500, "Command too long", false);
     goto out;
 }

@@ -18,10 +18,10 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxSsrcData);
 
-RfxSsrcData::RfxSsrcData(void *data, int length) : RfxBaseData(data, length)  {
-    RIL_SignalStrength_Reporting_Criteria* pTmp = (RIL_SignalStrength_Reporting_Criteria*) data;
-    RIL_SignalStrength_Reporting_Criteria *pData =
-        (RIL_SignalStrength_Reporting_Criteria *) calloc(1, sizeof(RIL_SignalStrength_Reporting_Criteria));
+RfxSsrcData::RfxSsrcData(void* data, int length) : RfxBaseData(data, length) {
+    RIL_SignalStrength_Reporting_Criteria* pTmp = (RIL_SignalStrength_Reporting_Criteria*)data;
+    RIL_SignalStrength_Reporting_Criteria* pData = (RIL_SignalStrength_Reporting_Criteria*)calloc(
+            1, sizeof(RIL_SignalStrength_Reporting_Criteria));
 
     if (pData != NULL) {
         memcpy(pData, pTmp, sizeof(RIL_SignalStrength_Reporting_Criteria));

@@ -49,7 +49,7 @@ extern "C" {
 #include "netagent_io.h"
 #include "ares/mtk_ares.h"
 #ifdef __cplusplus
-} // closing brace for extern "C"
+}  // closing brace for extern "C"
 #endif
 
 #include "hardware/ccci_intf.h"
@@ -61,28 +61,23 @@ extern "C" {
  * Defines
  *****************************************************************************/
 #ifndef NA_LOG_V
-#define NA_LOG_V(...) \
-    ((void)mtkLogV(NA_LOG_TAG, __VA_ARGS__))
+#define NA_LOG_V(...) ((void)mtkLogV(NA_LOG_TAG, __VA_ARGS__))
 #endif
 
 #ifndef NA_LOG_D
-#define NA_LOG_D(...) \
-    ((void)mtkLogD(NA_LOG_TAG, __VA_ARGS__))
+#define NA_LOG_D(...) ((void)mtkLogD(NA_LOG_TAG, __VA_ARGS__))
 #endif
 
 #ifndef NA_LOG_I
-#define NA_LOG_I(...) \
-    ((void)mtkLogI(NA_LOG_TAG, __VA_ARGS__))
+#define NA_LOG_I(...) ((void)mtkLogI(NA_LOG_TAG, __VA_ARGS__))
 #endif
 
 #ifndef NA_LOG_W
-#define NA_LOG_W(...) \
-    ((void)mtkLogW(NA_LOG_TAG, __VA_ARGS__))
+#define NA_LOG_W(...) ((void)mtkLogW(NA_LOG_TAG, __VA_ARGS__))
 #endif
 
 #ifndef NA_LOG_E
-#define NA_LOG_E(...) \
-    ((void)mtkLogE(NA_LOG_TAG, __VA_ARGS__))
+#define NA_LOG_E(...) ((void)mtkLogE(NA_LOG_TAG, __VA_ARGS__))
 #endif
 
 #define NA_INIT(a) a = netagent_io_init()
@@ -112,8 +107,7 @@ extern "C" {
 #define NA_CMD_RECV(a, b) b = netagent_io_recv(a)
 #define NA_CMD_FREE(a) netagent_io_cmd_free(a)
 #define NA_GET_IF_ID(a, b) netagent_io_get_if_id(a, b)
-#define NA_GET_IFST_STATE(a, b) \
-        b = (a == ENABLE) ? NETAGENT_IO_IFST_UP : NETAGENT_IO_IFST_DOWN;
+#define NA_GET_IFST_STATE(a, b) b = (a == ENABLE) ? NETAGENT_IO_IFST_UP : NETAGENT_IO_IFST_DOWN;
 #define NA_GET_MTU_SIZE(a, b) netagent_io_get_mtu_size(a, b)
 #define NA_GET_ADDR_TYPE(a, b) netagent_io_get_addr_type(a, b)
 #define NA_GET_ADDR_V4(a, b) netagent_io_get_addr_v4(a, b)
@@ -122,7 +116,7 @@ extern "C" {
 #define NA_GET_PDN_HO_INFO(a, b) netagent_io_get_pdnho_info(a, b)
 #define NA_FLUSH_IPSEC_POLICY(a, b) netagent_io_flush_ipsec_policy(a, b)
 #define NA_GET_NAPTR(a, b) netagent_io_get_naptr(a, b)
-#define NA_GET_ARP(a, b ) netagent_io_get_arp(a, b)
+#define NA_GET_ARP(a, b) netagent_io_get_arp(a, b)
 #define NA_GET_RSVN_ACTION(a, b) netagent_io_get_rsvn_action(a, b)
 #define NA_GET_RSVN_IF_ID(a, b) netagent_io_get_rsvn_if_id(a, b)
 #define NA_GET_RSVN_PORT(a, b) netagent_io_get_rsvn_port(a, b)
@@ -135,10 +129,10 @@ extern "C" {
 #define INVALID_AID -1
 #define INVALID_INTERFACE_ID -1
 #define MAX_IPV4_ADDRESS_LENGTH 17
-//xxx.xxx.xxx.xxx
+// xxx.xxx.xxx.xxx
 #define MAX_IPV6_ADDRESS_LENGTH 65
-//xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx
-//xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx
+// xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx
+// xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx.xxx
 #define MAX_MTU_SIZE_LENGTH 5
 #define IPV6_PREFIX "FE80:0000:0000:0000:"
 #define NULL_IPV6_ADDRESS "0::0"
@@ -153,13 +147,12 @@ extern "C" {
 #define WIFI_IF_NAME "wlan0"
 
 #define FREEIF(data)    \
-if (data != NULL) {     \
-    free(data);         \
-    data = NULL;        \
-}
+    if (data != NULL) { \
+        free(data);     \
+        data = NULL;    \
+    }
 
-#define _IN6_IS_ULA(a)  \
-    ((((a)->s6_addr[0] & 0xff) == 0xfc) || (((a)->s6_addr[0] & 0xff) == 0xfd))
+#define _IN6_IS_ULA(a) ((((a)->s6_addr[0] & 0xff) == 0xfc) || (((a)->s6_addr[0] & 0xff) == 0xfd))
 /*****************************************************************************
  * Class NetAgentService
  *****************************************************************************/
@@ -175,17 +168,13 @@ typedef enum {
 } REQUEST_TYPE;
 
 typedef struct NetAgentReqInfo {
-    struct NetAgentReqInfo *pNext;
-    void *pNetAgentCmdObj;
+    struct NetAgentReqInfo* pNext;
+    void* pNetAgentCmdObj;
     NA_CMD cmdType;
     REQUEST_TYPE reqType;
 } NetAgentReqInfo;
 
-typedef enum {
-    DISABLE = 0,
-    ENABLE = 1,
-    UPDATE = 2
-} STATUS;
+typedef enum { DISABLE = 0, ENABLE = 1, UPDATE = 2 } STATUS;
 
 typedef struct {
     int state;
@@ -215,7 +204,7 @@ typedef struct {
     char addressV6[MAX_IPV6_ADDRESS_LENGTH];
 } NetAgentIpInfo;
 
-typedef std::list <NetAgentIpInfo> NetAgentIpInfoList;
+typedef std::list<NetAgentIpInfo> NetAgentIpInfoList;
 
 struct nanl_handle {
     int fd;
@@ -225,149 +214,155 @@ struct nanl_handle {
 };
 
 class NetAgentService {
-    public:
-        NetAgentService();
-        virtual ~NetAgentService();
-        static bool createNetAgentService();
+  public:
+    NetAgentService();
+    virtual ~NetAgentService();
+    static bool createNetAgentService();
 
-    public:
-        static const char* getCcmniInterfaceName();
-        static const char* getCcmniInterfaceName(int rid);
-        void enqueueReqInfo(void* obj, REQUEST_TYPE reqType);
-        static const char *cmdToString(NA_CMD cmd);
-        static const char *addrTypeToString(NA_ADDR_TYPE addrType);
-        static const char *reqTypeToString(REQUEST_TYPE reqType);
-        static const char *ranTypeToString(NA_RAN_TYPE ranType);
-        static const char *hoStateToString(int state);
-        static const char *hoResultToString(int result);
-        static NetAgentService* getInstance();
-        void setNetworkTransmitState(int state, int transIntfId, const sp<NetActionBase>& action);
-        int getTransIntfId(int interfaceId);
-        void setMultiHomingFeatureSupport(int supportVersion);
-        // Test mode start.
-        void setTransactionInterfaceId(int transIntfId);
-        void removeTransactionInterfaceId(int transIntfId);
-        void removeAllTransactionInterfaceId();
-        // Test mode end.
+  public:
+    static const char* getCcmniInterfaceName();
+    static const char* getCcmniInterfaceName(int rid);
+    void enqueueReqInfo(void* obj, REQUEST_TYPE reqType);
+    static const char* cmdToString(NA_CMD cmd);
+    static const char* addrTypeToString(NA_ADDR_TYPE addrType);
+    static const char* reqTypeToString(REQUEST_TYPE reqType);
+    static const char* ranTypeToString(NA_RAN_TYPE ranType);
+    static const char* hoStateToString(int state);
+    static const char* hoResultToString(int result);
+    static NetAgentService* getInstance();
+    void setNetworkTransmitState(int state, int transIntfId, const sp<NetActionBase>& action);
+    int getTransIntfId(int interfaceId);
+    void setMultiHomingFeatureSupport(int supportVersion);
+    // Test mode start.
+    void setTransactionInterfaceId(int transIntfId);
+    void removeTransactionInterfaceId(int transIntfId);
+    void removeAllTransactionInterfaceId();
+    // Test mode end.
 
-    private:
-        void init();
-        void startEventLoop(void);
-        void startReaderLoop(void);
-        static void *eventThreadStart(void *arg);
-        static void *readerThreadStart(void *arg);
-        static void *naptrThreadStart(void *arg);
-        static void *queryArpThread(void *arp);
-        void runEventLoop();
-        void runReaderLoop();
-        void handleEvent(NetAgentReqInfo* pReqInfo);
-        NetAgentReqInfo *createNetAgentReqInfo(void* obj, REQUEST_TYPE reqType, NA_CMD cmd);
-        NetAgentReqInfo *dequeueReqInfo();
-        void setNwIntfDown(const char *interfaceName);
-        void resetNwIntfMtu(const char *interfaceName);
-        void nwIntfIoctlInit();
-        void nwIntfIoctlDeInit();
-        void nwIntfSetFlags(int s, struct ifreq *ifr, int set, int clr);
-        inline void nwIntfInitSockAddrIn(struct sockaddr_in *sin, const char *addr);
-        void nwIntfSetAddr(int s, struct ifreq *ifr, const char *addr);
-        void nwIntfSetIpv6Addr(int s, struct ifreq *ifr, const char *addr);
-        void configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATUS isUp);
-        void configureMTUSize(NetAgentReqInfo* pReqInfo);
-        void configureIpAdd(NetAgentReqInfo* pReqInfo);
-        void configureIpDel(NetAgentReqInfo* pReqInfo);
-        void updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo);
-        void confirmInterfaceState(unsigned int interfaceId, NA_IFST state, NA_ADDR_TYPE addrType);
-        void confirmIpUpdate(unsigned int interfaceId, NA_ADDR_TYPE addrType, unsigned int* addr, int ipv6PrefixLength);
-        void confirmNoRA(unsigned int interfaceId, NA_RA flag);
-        void confirmIpAddOrDel(unsigned int interfaceId, netagent_io_cmd_e cmd, int result, NA_ADDR_TYPE addrType, unsigned int* addr, int ipv6PrefixLength);
-        void syncCapabilityToModem();
-        void setCapabilityToModem(NetAgentReqInfo* pReqInfo);
-        void confirmPdnHandoverControl(unsigned int tranId);
-        void handlePdnHandoverControl(NetAgentReqInfo* pReqInfo);
-        void updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo);
-        void syncNAPTRCapabilityToModem();
-        void setNAPTRCapabilityToModem(NetAgentReqInfo* pReqInfo);
-        NetAgentPdnInfo *recordPdnHandoverInfo(unsigned int interfaceId, NA_ADDR_TYPE addrType, char *addressV4, char *addressV6);
-        NetAgentPdnInfo *getPdnHandoverInfo(unsigned int interfaceId);
-        bool clearPdnHandoverInfo(unsigned int interfaceId);
-        void clearIpsec(unsigned int interfaceId);
-        bool clearNAPTRMapInfo(unsigned int trans_id);
-        bool isNeedNotifyIPv6RemovedToModem(unsigned int interfaceId, char* delAddr);
+  private:
+    void init();
+    void startEventLoop(void);
+    void startReaderLoop(void);
+    static void* eventThreadStart(void* arg);
+    static void* readerThreadStart(void* arg);
+    static void* naptrThreadStart(void* arg);
+    static void* queryArpThread(void* arp);
+    void runEventLoop();
+    void runReaderLoop();
+    void handleEvent(NetAgentReqInfo* pReqInfo);
+    NetAgentReqInfo* createNetAgentReqInfo(void* obj, REQUEST_TYPE reqType, NA_CMD cmd);
+    NetAgentReqInfo* dequeueReqInfo();
+    void setNwIntfDown(const char* interfaceName);
+    void resetNwIntfMtu(const char* interfaceName);
+    void nwIntfIoctlInit();
+    void nwIntfIoctlDeInit();
+    void nwIntfSetFlags(int s, struct ifreq* ifr, int set, int clr);
+    inline void nwIntfInitSockAddrIn(struct sockaddr_in* sin, const char* addr);
+    void nwIntfSetAddr(int s, struct ifreq* ifr, const char* addr);
+    void nwIntfSetIpv6Addr(int s, struct ifreq* ifr, const char* addr);
+    void configureNetworkInterface(NetAgentReqInfo* pReqInfo, STATUS isUp);
+    void configureMTUSize(NetAgentReqInfo* pReqInfo);
+    void configureIpAdd(NetAgentReqInfo* pReqInfo);
+    void configureIpDel(NetAgentReqInfo* pReqInfo);
+    void updateIpv6GlobalAddress(NetAgentReqInfo* pReqInfo);
+    void confirmInterfaceState(unsigned int interfaceId, NA_IFST state, NA_ADDR_TYPE addrType);
+    void confirmIpUpdate(unsigned int interfaceId, NA_ADDR_TYPE addrType, unsigned int* addr,
+                         int ipv6PrefixLength);
+    void confirmNoRA(unsigned int interfaceId, NA_RA flag);
+    void confirmIpAddOrDel(unsigned int interfaceId, netagent_io_cmd_e cmd, int result,
+                           NA_ADDR_TYPE addrType, unsigned int* addr, int ipv6PrefixLength);
+    void syncCapabilityToModem();
+    void setCapabilityToModem(NetAgentReqInfo* pReqInfo);
+    void confirmPdnHandoverControl(unsigned int tranId);
+    void handlePdnHandoverControl(NetAgentReqInfo* pReqInfo);
+    void updatePdnHandoverAddr(NetAgentReqInfo* pReqInfo);
+    void syncNAPTRCapabilityToModem();
+    void setNAPTRCapabilityToModem(NetAgentReqInfo* pReqInfo);
+    NetAgentPdnInfo* recordPdnHandoverInfo(unsigned int interfaceId, NA_ADDR_TYPE addrType,
+                                           char* addressV4, char* addressV6);
+    NetAgentPdnInfo* getPdnHandoverInfo(unsigned int interfaceId);
+    bool clearPdnHandoverInfo(unsigned int interfaceId);
+    void clearIpsec(unsigned int interfaceId);
+    bool clearNAPTRMapInfo(unsigned int trans_id);
+    bool isNeedNotifyIPv6RemovedToModem(unsigned int interfaceId, char* delAddr);
 
-        void startNetlinkEventHandler(void);
-        NetlinkEventHandler *setupSocket(int *sock, int netlinkFamily, int groups, int format);
-        bool isIpv6Global(const char *ipv6Addr);
-        int getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD *cmd);
-        void getIpv4Address(void *obj, char *addressV4);
-        void getIpv6Address(void *obj, char *addressV6);
-        void getIpv4v6Address(void *obj, char *addressV4, char *addressV6);
-        int convertIpv6ToBinary(unsigned int *output, char *input);
-        int convertIpv4ToString(char *output, unsigned int *input);
-        int convertIpv6ToString(char *output, unsigned int *input);
-        void freeNetAgentCmdObj(NetAgentReqInfo *pReqInfo);
-        void configureNetworkTransmitState(NetAgentReqInfo* pReqInfo);
-        void setNwTxqState(int interfaceId, int state);
-        char* getNetworkInterfaceName(int interfaceId);
-        bool isTransIntfIdMatched(int transIntfId);
-        void configureRSTimes(int interfaceId);
-        void configureRSTimes(int interfaceId, int times);
-        bool isNoRA(const char *ipv6Addr, NA_RA *flag);
-        void recordPdnIpInfo(unsigned int interfaceId, NA_ADDR_TYPE addrType, char *addressV4, char *addressV6);
-        bool clearPdnIpInfo(unsigned int interfaceId);
-        bool isRemovedIPv6RequestByModem(unsigned int interfaceId, char *delAddr);
-        bool reomvePdnIpInfo(unsigned int interfaceId, char *addressV6);
-        void queryNAPTR(NetAgentReqInfo* pReqInfo);
-        void queryArp(NetAgentReqInfo* pReqInfo);
-        void sendArpResult(NetAgentReqInfo* pReqInfo);
-        void getNAPTRinfo(struct result_naptr_in_netagent* result_list);
-        void respondNAPTRinfo(netagent_io_cmd_e cmd, struct result_naptr_in_netagent* result_list);
-        void reserveTcpUdpPort(NetAgentReqInfo* pReqInfo);
-        void reserveSpi(NetAgentReqInfo* pReqInfo);
-        void confirmTcpUdpRsvn(unsigned int transactionId, NA_CMD cmd, unsigned int rsvnAction, unsigned int response);
-        void confirmSpi(unsigned int transactionId, unsigned int spiAction, unsigned int response);
-        int nanl_open(struct nanl_handle *nah, int protocol);
-        int nanl_talk(struct nanl_handle *nah, struct nlmsghdr *n, struct nlmsghdr *answer, size_t maxlen);
-        void nanl_close(struct nanl_handle *nah);
-        void configureIPv6AddrGenMode(int interfaceId);
+    void startNetlinkEventHandler(void);
+    NetlinkEventHandler* setupSocket(int* sock, int netlinkFamily, int groups, int format);
+    bool isIpv6Global(const char* ipv6Addr);
+    int getCommand(void* obj, REQUEST_TYPE reqType, NA_CMD* cmd);
+    void getIpv4Address(void* obj, char* addressV4);
+    void getIpv6Address(void* obj, char* addressV6);
+    void getIpv4v6Address(void* obj, char* addressV4, char* addressV6);
+    int convertIpv6ToBinary(unsigned int* output, char* input);
+    int convertIpv4ToString(char* output, unsigned int* input);
+    int convertIpv6ToString(char* output, unsigned int* input);
+    void freeNetAgentCmdObj(NetAgentReqInfo* pReqInfo);
+    void configureNetworkTransmitState(NetAgentReqInfo* pReqInfo);
+    void setNwTxqState(int interfaceId, int state);
+    char* getNetworkInterfaceName(int interfaceId);
+    bool isTransIntfIdMatched(int transIntfId);
+    void configureRSTimes(int interfaceId);
+    void configureRSTimes(int interfaceId, int times);
+    bool isNoRA(const char* ipv6Addr, NA_RA* flag);
+    void recordPdnIpInfo(unsigned int interfaceId, NA_ADDR_TYPE addrType, char* addressV4,
+                         char* addressV6);
+    bool clearPdnIpInfo(unsigned int interfaceId);
+    bool isRemovedIPv6RequestByModem(unsigned int interfaceId, char* delAddr);
+    bool reomvePdnIpInfo(unsigned int interfaceId, char* addressV6);
+    void queryNAPTR(NetAgentReqInfo* pReqInfo);
+    void queryArp(NetAgentReqInfo* pReqInfo);
+    void sendArpResult(NetAgentReqInfo* pReqInfo);
+    void getNAPTRinfo(struct result_naptr_in_netagent* result_list);
+    void respondNAPTRinfo(netagent_io_cmd_e cmd, struct result_naptr_in_netagent* result_list);
+    void reserveTcpUdpPort(NetAgentReqInfo* pReqInfo);
+    void reserveSpi(NetAgentReqInfo* pReqInfo);
+    void confirmTcpUdpRsvn(unsigned int transactionId, NA_CMD cmd, unsigned int rsvnAction,
+                           unsigned int response);
+    void confirmSpi(unsigned int transactionId, unsigned int spiAction, unsigned int response);
+    int nanl_open(struct nanl_handle* nah, int protocol);
+    int nanl_talk(struct nanl_handle* nah, struct nlmsghdr* n, struct nlmsghdr* answer,
+                  size_t maxlen);
+    void nanl_close(struct nanl_handle* nah);
+    void configureIPv6AddrGenMode(int interfaceId);
 
-    private:
-        static pthread_mutex_t sInitMutex;
-        static NetAgentService* sInstance;
-        pthread_t mReaderThread;
-        pthread_t mEventThread;
+  private:
+    static pthread_mutex_t sInitMutex;
+    static NetAgentService* sInstance;
+    pthread_t mReaderThread;
+    pthread_t mEventThread;
 
-        //NAPTR thread
-        pthread_condattr_t s_cond_attr;
-        pthread_cond_t s_cond;
-        pthread_mutex_t s_mutex;
+    // NAPTR thread
+    pthread_condattr_t s_cond_attr;
+    pthread_cond_t s_cond;
+    pthread_mutex_t s_mutex;
 
-        void* m_pNetAgentIoObj;
-        NetAgentReqInfo* m_pNetAgentReqInfo;
-        pthread_mutex_t mDispatchMutex;
-        pthread_cond_t mDispatchCond;
+    void* m_pNetAgentIoObj;
+    NetAgentReqInfo* m_pNetAgentReqInfo;
+    pthread_mutex_t mDispatchMutex;
+    pthread_cond_t mDispatchCond;
 
-        int sock_fd;
-        int sock6_fd;
-        NetlinkEventHandler *m_pRouteHandler;
-        int mRouteSock;
+    int sock_fd;
+    int sock6_fd;
+    NetlinkEventHandler* m_pRouteHandler;
+    int mRouteSock;
 
-        static const char* CCMNI_IFNAME_CCMNI;
+    static const char* CCMNI_IFNAME_CCMNI;
 
-        std::map<unsigned int, NA_NAPTR_INFO *> m_naptrMap;
+    std::map<unsigned int, NA_NAPTR_INFO*> m_naptrMap;
 
-        std::list<int> m_lTransIntfId; // element: tran_id * 100 + interface_id
-        // Hashmap to store handover PDN information, data: <tid, NetAgentPdnInfo>
-        std::map<int, NetAgentPdnInfo *> m_pdnHoInfoMap;
+    std::list<int> m_lTransIntfId;  // element: tran_id * 100 + interface_id
+    // Hashmap to store handover PDN information, data: <tid, NetAgentPdnInfo>
+    std::map<int, NetAgentPdnInfo*> m_pdnHoInfoMap;
 
-        NetAgentIpInfoList m_IpInfoList;
+    NetAgentIpInfoList m_IpInfoList;
 
-        // For DDM requirement: After receiving ifchg with IP address is IPV6, net agent must
-        // send ipupdate notification to DDM no matter duplicate with last cmd or not.
-        int mIfChgForIPV6Count;
+    // For DDM requirement: After receiving ifchg with IP address is IPV6, net agent must
+    // send ipupdate notification to DDM no matter duplicate with last cmd or not.
+    int mIfChgForIPV6Count;
 
-        std::map<int, int> m_rsvnFdMap;
+    std::map<int, int> m_rsvnFdMap;
 
-        bool isMultiHomingFeatureSupport;
+    bool isMultiHomingFeatureSupport;
 };
 
 #endif /* __NET_AGENT_SERVICE_H__ */

@@ -17,7 +17,6 @@
 #ifndef __RFX_CALL_STATE_H
 #define __RFX_CALL_STATE_H
 
-
 /*****************************************************************************
  * Include
  *****************************************************************************/
@@ -45,14 +44,14 @@ typedef enum {
  * Class RfxController
  *****************************************************************************/
 class RfxCallState {
-public:
+  public:
     RfxCallState();
 
     RfxCallState(CallTypeEnum callType, CallStateEnum callState, int callCount);
 
     ~RfxCallState();
 
-public:
+  public:
     CallTypeEnum getCallType();
     CallStateEnum getCallState();
     int getCallCount();
@@ -61,36 +60,31 @@ public:
     void setCallCount(int count);
     String8 toString();
 
-private:
+  private:
     CallTypeEnum mCallType;
     CallStateEnum mCallState;
     int mCallCount;
 
-public:
+  public:
     bool hasConnectedC2kCall();
     bool hasConnectedGsmCall();
     bool hasConnectedImsCall();
 
-    bool equalTo(const RfxCallState &other) const {
-        return (mCallType == other.mCallType)
-                && (mCallState == other.mCallState)
-                && (mCallCount == other.mCallCount);
+    bool equalTo(const RfxCallState& other) const {
+        return (mCallType == other.mCallType) && (mCallState == other.mCallState) &&
+               (mCallCount == other.mCallCount);
     }
 
-    RfxCallState &operator = (const RfxCallState &other) {
+    RfxCallState& operator=(const RfxCallState& other) {
         mCallType = other.mCallType;
         mCallState = other.mCallState;
         mCallCount = other.mCallCount;
         return *this;
     }
 
-    bool operator == (const RfxCallState &other) {
-        return equalTo(other);
-    }
+    bool operator==(const RfxCallState& other) { return equalTo(other); }
 
-    bool operator != (const RfxCallState &other) {
-        return !equalTo(other);
-    }
+    bool operator!=(const RfxCallState& other) { return !equalTo(other); }
 };
 
 #endif /* __RFX_NW_CALL_STATE_H */

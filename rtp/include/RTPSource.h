@@ -38,43 +38,36 @@ using android::status_t;
 
 class RxAdaptationInfo;
 
-namespace imsma
-{
-struct RTPAssembler;//ToDo: how to resolve the inter-include issue
+namespace imsma {
+struct RTPAssembler;  // ToDo: how to resolve the inter-include issue
 
-class RTPSource :public RefBase
-{
-public:
+class RTPSource : public RefBase {
+  public:
     enum {
         kWhatTimeUpdate = 'tmup',
-        kWhatSendTMMBR  = 'tmbr',
-        kWhatDropCall   = 'drop',
+        kWhatSendTMMBR = 'tmbr',
+        kWhatDropCall = 'drop',
         kWhatUpdateDebugInfo = 'upde',
-        kWhatNoRTP              = 'noda',
+        kWhatNoRTP = 'noda',
     };
-    RTPSource(uint32_t srcId,
-              rtp_rtcp_config_t* pConfigPram ,int32_t iTrackIndex,
-              sp<AMessage> &notify);
+    RTPSource(uint32_t srcId, rtp_rtcp_config_t* pConfigPram, int32_t iTrackIndex,
+              sp<AMessage>& notify);
 
-    void processRTPPacket(const sp<ABuffer> &buffer);
-    status_t processSenderInfo(const sp<ABuffer> &buffer);
-    //void timeUpdate(uint32_t rtpTime, uint64_t ntpTime);
-    //void byeReceived();
+    void processRTPPacket(const sp<ABuffer>& buffer);
+    status_t processSenderInfo(const sp<ABuffer>& buffer);
+    // void timeUpdate(uint32_t rtpTime, uint64_t ntpTime);
+    // void byeReceived();
 
-    List<sp<ABuffer> > *queue() {
-        return &mQueue;
-    }
-    void setSsrc(uint32_t newSsrc) {
-        mID = newSsrc;
-    }
+    List<sp<ABuffer> >* queue() { return &mQueue; }
+    void setSsrc(uint32_t newSsrc) { mID = newSsrc; }
 
     bool isCSD(const sp<ABuffer>& accessUnit);
-    bool GetdebugInfo(bool needNotify, int32_t *uiEncBitRate, uint32_t Operator);
+    bool GetdebugInfo(bool needNotify, int32_t* uiEncBitRate, uint32_t Operator);
     void reset();
 
-    status_t addReceiverReportBlock(const sp<ABuffer> &buffer);
-    //void addSDES(const AString& cname, const sp<ABuffer> &buffer);
-    //void addFIR(const sp<ABuffer> &buffer);
+    status_t addReceiverReportBlock(const sp<ABuffer>& buffer);
+    // void addSDES(const AString& cname, const sp<ABuffer> &buffer);
+    // void addFIR(const sp<ABuffer> &buffer);
 
     status_t peerPausedSendStream();
     status_t peerResumedSendStream();
@@ -91,20 +84,21 @@ public:
     void clearTSDelayInfo();
     /******for adaptation end********/
 
-protected:
+  protected:
     virtual ~RTPSource();
-private:
+
+  private:
     uint32_t mID;
     int32_t mTrackIndex;
-    //rtp_rtcp_config_t mConfigParam;
+    // rtp_rtcp_config_t mConfigParam;
     sp<AMessage> mNotify;
 
-    RxAdaptationInfo *mAdaInfo;
+    RxAdaptationInfo* mAdaInfo;
 
     mutable Mutex mLock;
-    //uint32_t mRRintervalUs;
+    // uint32_t mRRintervalUs;
 
-    AString mCName;//ToDo: need same with modem, need same with RTPSender?
+    AString mCName;  // ToDo: need same with modem, need same with RTPSender?
 
     uint32_t mHighestSeqNumber;
     bool mHighestSeqNumberSet;
@@ -118,13 +112,13 @@ private:
     uint32_t getLostCount();
     uint32_t getIDamageCount();
 
-    //bool mIssueFIRRequests;
-    //int64_t mLastFIRRequestUs;
-    //uint8_t mNextFIRSeqNo;
+    // bool mIssueFIRRequests;
+    // int64_t mLastFIRRequestUs;
+    // uint8_t mNextFIRSeqNo;
 
-    bool queuePacket(const sp<ABuffer> &buffer);
+    bool queuePacket(const sp<ABuffer>& buffer);
     uint32_t extendSeqNumber(uint32_t seqNum, uint32_t mHighestSeqNumber);
-    void calculateArrivalJitter(const sp<ABuffer> &buffer);
+    void calculateArrivalJitter(const sp<ABuffer>& buffer);
 
     void flushQueue();
 
@@ -138,9 +132,8 @@ private:
     bool mWaitingTMMBN;
 
     DISALLOW_EVIL_CONSTRUCTORS(RTPSource);
-
 };
 
-}  // namespace android
+}  // namespace imsma
 
 #endif  // _IMS_RTP_SOURCE_H_

@@ -22,33 +22,32 @@
 #include <cutils/properties.h>
 
 char* msgToConfigs(ConfigDef msg);
-int mtkGetFeatureByOs(ConfigDef msg, char *value);
-int mtkSetFeatureByOs(ConfigDef msg, char *value);
-int mtkGetFeatureByDefault(ConfigDef msg, char *value);
+int mtkGetFeatureByOs(ConfigDef msg, char* value);
+int mtkSetFeatureByOs(ConfigDef msg, char* value);
+int mtkGetFeatureByDefault(ConfigDef msg, char* value);
 
 static FeatureConfigInfo settings[] = {
 #include "featureconfig.h"
 };
 
-int mtkGetFeaturePorting(ConfigDef msg, FeatureValue *fv){
-
-    //Need to decide which is the proper function for your devices.
+int mtkGetFeaturePorting(ConfigDef msg, FeatureValue* fv) {
+    // Need to decide which is the proper function for your devices.
     return mtkGetFeatureByOs(msg, fv->value);
-    //return mtkGetFeatureByDefault(msg, fv->value);
+    // return mtkGetFeatureByDefault(msg, fv->value);
 }
 
-int mtkSetFeaturePorting(ConfigDef msg, FeatureValue *fv){
+int mtkSetFeaturePorting(ConfigDef msg, FeatureValue* fv) {
     return mtkSetFeatureByOs(msg, fv->value);
 }
 
-//Indicate that the OS needs to control the config settings itself. (e.g., Android)
-//In OS Controlled, do NOT call mtkGetFeatureByDefault function.
-int mtkGetFeatureByOs(ConfigDef msg, char *value){
-    switch(msg){
+// Indicate that the OS needs to control the config settings itself. (e.g., Android)
+// In OS Controlled, do NOT call mtkGetFeatureByDefault function.
+int mtkGetFeatureByOs(ConfigDef msg, char* value) {
+    switch (msg) {
         case CONFIG_SIM_MODE:
             return property_get("persist.radio.multisim.config", value, "dsds");
         case CONFIG_SS_MODE:
-            strncpy(value, "1", 10); // Android platform supports Supplementary Service by default
+            strncpy(value, "1", 10);  // Android platform supports Supplementary Service by default
             return strlen(value);
         case CONFIG_SMS: {
             char sms_config[2] = "1";
@@ -56,67 +55,66 @@ int mtkGetFeatureByOs(ConfigDef msg, char *value){
             memcpy(value, sms_config, len);
             return len;
         }
-        case CONFIG_CC:
-        {
+        case CONFIG_CC: {
             char cc_config[2] = "1";
             int len = strlen(cc_config);
             memcpy(value, cc_config, len);
             return len;
         }
         case CONFIG_VOLTE:
-            return property_get("persist.vendor.volte_support",value,"0");
+            return property_get("persist.vendor.volte_support", value, "0");
         case CONFIG_VILTE:
-            return property_get("persist.vendor.vilte_support",value,"0");
+            return property_get("persist.vendor.vilte_support", value, "0");
         case CONFIG_WFC:
-            return property_get("persist.vendor.mtk_wfc_support",value,"0");
+            return property_get("persist.vendor.mtk_wfc_support", value, "0");
         case CONFIG_VIWIFI:
-            return property_get("persist.vendor.viwifi_support",value,"0");
+            return property_get("persist.vendor.viwifi_support", value, "0");
         case CONFIG_RCSUA:
-            return property_get("persist.vendor.mtk_rcs_ua_support",value,"0");
+            return property_get("persist.vendor.mtk_rcs_ua_support", value, "0");
         default:
             break;
     }
     return 0;
 }
 
-//Indicate that the OS needs to control the config settings itself. (e.g., Android)
-int mtkSetFeatureByOs(ConfigDef msg, char *value){
-    switch(msg){
+// Indicate that the OS needs to control the config settings itself. (e.g., Android)
+int mtkSetFeatureByOs(ConfigDef msg, char* value) {
+    switch (msg) {
         case CONFIG_SIM_MODE:
             return property_set("persist.radio.multisim.config", value);
         case CONFIG_VOLTE:
-            return property_set("persist.vendor.volte_support",value);
+            return property_set("persist.vendor.volte_support", value);
         case CONFIG_VILTE:
-            return property_set("persist.vendor.vilte_support",value);
+            return property_set("persist.vendor.vilte_support", value);
         case CONFIG_WFC:
-            return property_set("persist.vendor.mtk_wfc_support",value);
+            return property_set("persist.vendor.mtk_wfc_support", value);
         case CONFIG_VIWIFI:
-            return property_set("persist.vendor.viwifi_support",value);
+            return property_set("persist.vendor.viwifi_support", value);
         case CONFIG_RCSUA:
-            return property_set("persist.vendor.mtk_rcs_ua_support",value);
+            return property_set("persist.vendor.mtk_rcs_ua_support", value);
         default:
             break;
     }
     return 0;
 }
 
-//Indicate that the OS does not need to handle the config settings. (e.g., IPCAM)
-//The settings can be read from a header file(featureconfig.h).
-int mtkGetFeatureByDefault(ConfigDef msg, char *value){
+// Indicate that the OS does not need to handle the config settings. (e.g., IPCAM)
+// The settings can be read from a header file(featureconfig.h).
+int mtkGetFeatureByDefault(ConfigDef msg, char* value) {
     char* return_value = msgToConfigs(msg);
     int len = strlen(return_value);
-    if(len >= MTK_PROPERTY_VALUE_MAX){
-        mtkLogD("mtkGetFeatureByDefault","Length exceed the limit, return");
+    if (len >= MTK_PROPERTY_VALUE_MAX) {
+        mtkLogD("mtkGetFeatureByDefault", "Length exceed the limit, return");
         return 0;
     }
     memcpy(value, return_value, len);
     return len;
 }
 
-char* msgToConfigs(ConfigDef msg){
+char* msgToConfigs(ConfigDef msg) {
     int i;
     for (i = 0; i < (int)NUM_OF_ELEMS(settings); i++) {
-        if(settings[i].requestNumber == msg){
+        if (settings[i].requestNumber == msg) {
             return settings[i].value;
         }
     }

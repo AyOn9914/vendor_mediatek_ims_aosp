@@ -31,30 +31,30 @@ class SmsMessage;
  *****************************************************************************/
 
 class PduParser {
-public:
-    PduParser(BYTE *pdu, int length);
+  public:
+    PduParser(BYTE* pdu, int length);
     virtual ~PduParser();
     string getSCAddress();
     int getByte();
-    GsmSmsAddress *getAddress();
+    GsmSmsAddress* getAddress();
     int constructUserData(bool hasUserDataHeader, bool dataInSeptets);
     int getUserDataLength();
     BYTE* getUserData();
     SmsHeader* getUserDataHeader();
     long getSCTimestampMillis();
 
-private:
-    BYTE *mPdu;
+  private:
+    BYTE* mPdu;
     int mCur;
     int mUserDataSeptetPadding;
-    SmsHeader *mUserDataHeader;
-    BYTE *mUserData;
+    SmsHeader* mUserDataHeader;
+    BYTE* mUserData;
     int mUserDataLength;
     int mPduLength;
 };
 
 class WappushPduParser {
-public:
+  public:
     WappushPduParser(BYTE* pdu, int length);
     long getValue32();
     int getDecodedDataLength();
@@ -77,20 +77,20 @@ public:
     bool decodeHeaderFieldValues(int startIndex);
     static void initWapParaMap();
 
-public:
+  public:
     static const string CONTENT_TYPE_B_PUSH_CO;
     static const int PARAMETER_ID_X_WAP_APPLICATION_ID;
     static const int PDU_TYPE_PUSH;
     static const int PDU_TYPE_CONFIRMED_PUSH;
 
-private:
+  private:
     void expandWellKnownMimeType();
     bool readContentParameters(int startIndex, int leftToRead, int accumulator);
     bool decodeNoValue(int startIndex);
     string numToHexString(int number);
     string numToString(int number);
 
-private:
+  private:
     BYTE* mWspData;
     int mDataLength;
     int mPduLength;

@@ -32,14 +32,14 @@ class RtcCardTypeReadyController : public RfxController {
     RFX_DECLARE_CLASS(RtcCardTypeReadyController);
     RFX_OBJ_DECLARE_SINGLETON_CLASS(RtcCardTypeReadyController);
 
-public:
+  public:
     RtcCardTypeReadyController();
     void onInit();
     void onDeinit();
     virtual ~RtcCardTypeReadyController();
     void setTimeoutMescForCommonSlotUT(int msec);
 
-private:
+  private:
     void onSimTaskReady(int slotId, RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
     bool isCommontSlotSupport();
     bool isVsimEnabled();
@@ -48,7 +48,7 @@ private:
     bool isAnyCardInvalid();
     void onSimSwitchChanged(RfxStatusKeyEnum key, RfxVariant old_value, RfxVariant value);
 
-private:
+  private:
     TimerHandle mTimeoutHandle;
     int* m_card_types;
     int* m_card_type_states;

@@ -20,13 +20,12 @@
 
 RFX_IMPLEMENT_DATA_CLASS(RfxGsmCbSmsCfgData);
 
-RfxGsmCbSmsCfgData::RfxGsmCbSmsCfgData(void *_data, int _length) :
-        RfxBaseData(_data, _length) {
+RfxGsmCbSmsCfgData::RfxGsmCbSmsCfgData(void* _data, int _length) : RfxBaseData(_data, _length) {
     if (_data != NULL) {
-        int num = _length / sizeof(RIL_GSM_BroadcastSmsConfigInfo *);
-        RIL_GSM_BroadcastSmsConfigInfo **pGsmBrSmsCnf = (RIL_GSM_BroadcastSmsConfigInfo**)_data;
-        RIL_GSM_BroadcastSmsConfigInfo **pData = (RIL_GSM_BroadcastSmsConfigInfo**)calloc(
-                1, sizeof(RIL_GSM_BroadcastSmsConfigInfo*)*num);
+        int num = _length / sizeof(RIL_GSM_BroadcastSmsConfigInfo*);
+        RIL_GSM_BroadcastSmsConfigInfo** pGsmBrSmsCnf = (RIL_GSM_BroadcastSmsConfigInfo**)_data;
+        RIL_GSM_BroadcastSmsConfigInfo** pData = (RIL_GSM_BroadcastSmsConfigInfo**)calloc(
+                1, sizeof(RIL_GSM_BroadcastSmsConfigInfo*) * num);
         RFX_ASSERT(pData != NULL);
 
         for (int i = 0; i < num; i++) {
@@ -47,8 +46,8 @@ RfxGsmCbSmsCfgData::RfxGsmCbSmsCfgData(void *_data, int _length) :
 RfxGsmCbSmsCfgData::~RfxGsmCbSmsCfgData() {
     // free memory
     if (m_data != NULL) {
-        RIL_GSM_BroadcastSmsConfigInfo **pData = (RIL_GSM_BroadcastSmsConfigInfo**)m_data;
-        int num = m_length / sizeof(RIL_GSM_BroadcastSmsConfigInfo *);
+        RIL_GSM_BroadcastSmsConfigInfo** pData = (RIL_GSM_BroadcastSmsConfigInfo**)m_data;
+        int num = m_length / sizeof(RIL_GSM_BroadcastSmsConfigInfo*);
         for (int i = 0; i < num; i++) {
             if (pData[i] != NULL) {
                 free(pData[i]);
