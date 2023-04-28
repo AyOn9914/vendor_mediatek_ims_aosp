@@ -1,43 +1,4 @@
-cc_prebuilt_library_shared {
-    name: "libmtk_vt_service",
-    compile_multilib: "first",
-
-    shared_libs: [
-        "libc",
-        "libandroid_runtime",
-        "libbinder",
-        "libutils",
-        "libcutils",
-        "libnativehelper",
-        "libui",
-        "libgui",
-        "libmedia",
-        "libbase",
-        "libfmq",
-        "vendor.mediatek.hardware.videotelephony@1.0",
-        "libhidlbase",
-        "libhidltransport",
-        "libimsma",
-        "libsource",
-        "libimsma_rtp",
-        "libvt_avsync",
-        "libstagefright_foundation",
-        "libvcodec_cap",
-        "liblog",
-        "libc++",
-        "libc",
-        "libm",
-        "libdl",
-    ],
-
-    arch: {
-        arm64: {
-            srcs: ["arm64/libmtk_vt_service.so"],
-        },
-    },
-}
-
-/*cc_library_shared {
+cc_library_shared {
     name: "libmtk_vt_service",
     compile_multilib: "first",
 
@@ -98,4 +59,4 @@ cc_prebuilt_library_shared {
         "libm",
         "libdl",
     ],
-}*/
+}
