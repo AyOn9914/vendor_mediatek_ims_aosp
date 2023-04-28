@@ -273,6 +273,26 @@ status_t VTClient::updateNetworkTable(bool is_add, int network_id, String8 if_na
     return c->updateNetworkTable(is_add, network_id, if_name);
 }
 
+status_t VTClient::triggerGetOperatorId() {
+    sp<IVTService> c = mVTService;
+    if (c == 0) {
+        VT_LOGI("[VTC] triggerGetOperatorId : no service");
+        return NO_INIT;
+    }
+
+    return c->triggerGetOperatorId();
+}
+
+status_t VTClient::tagSocketWithUid(int uid) {
+    sp<IVTService> c = mVTService;
+    if (c == 0) {
+        VT_LOGI("[VTC] tagSocketWithUid : no service");
+        return NO_INIT;
+    }
+
+    return c->tagSocketWithUid(uid);
+}
+
 void VTClient::notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2, int32_t arg3,
                               const String8& obj1, const String8& obj2,
                               const sp<IGraphicBufferProducer>& obj3) {

@@ -43,12 +43,15 @@ class VTMALStub : virtual public RefBase {
     status_t Pause(ma_datapath_t type, imsma_pause_resume_params_t* params);
     status_t Resume(ma_datapath_t type, imsma_pause_resume_params_t* params);
     status_t Reset(ma_datapath_t type);
+    status_t Restart(ma_datapath_t type, imsma_pause_resume_params_t* pauseInfo,
+                     imsma_pause_resume_params_t* resumeInfo);
     status_t InitMediaConfig(media_config_t* config);
     status_t UpdateMediaConfig(media_config_t* config);
     status_t UpdateCodecConfig(uint8_t id, video_codec_fmtp_t* video_fmtp);
     status_t SetCameraParameters(const String8& params);
     status_t SetCameraSensor(int32_t index);
     status_t SetPeerSurface(const sp<Surface>& peer_surface);
+    sp<VTSurface> GetPeerSurface();
     status_t getBufferQueueProducer(sp<IGraphicBufferProducer>* outBufferProducer);
     status_t SetLocalSurface(const sp<Surface>& local_surface);
     status_t setUIMode(int isFg);
@@ -68,6 +71,7 @@ class VTMALStub : virtual public RefBase {
     int getId() { return mId; };
     int getSimId() { return mSimId; };
     int getMode() { return mMode; };
+    int getCameraId() { return mCameraId; };
 
     sp<VTCoreHelper> getLogger();
 
@@ -89,6 +93,8 @@ class VTMALStub : virtual public RefBase {
     Mutex mLock;
 
     int32_t mCurDegree;
+
+    int mCameraId;
 };
 
 struct ImsMaHandler : public AHandler {

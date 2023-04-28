@@ -30,10 +30,24 @@ int VTMALStub::MA_NORMAL_MODE_3G = 2;
 int VTMALStub::MA_NORMAL_MODE_4G = 3;
 
 VTMALStub::VTMALStub(int mode, int id, int sim_id, int opid, const sp<VTCore>& core) {
-    mMode = mode;
-    mVTCore = core;
+    VT_LOGI("[SRV] [OPERATION][ID=%d] VTMALStub enter VTMALStub constructor(sim_id = %d)", id,
+            sim_id);
 
-    getLogger()->logAction("VTMALStub", "id", id, "VTMALStub", VT_SRV_LOG_I);
+    mMode = mode;
+    if (MA_INVALID_MODE != mode) {
+        mVTCore = core;
+    } else {
+        VT_LOGI("[SRV] [OPERATION][ID=%d] VTMALStub MA_INVALID_MODE", id);
+        mVTCore = core;
+        VT_LOGI("[SRV] [OPERATION][ID=%d] VTMALStub MA_INVALID_MODE, mVTCore:%p", id,
+                mVTCore.get());
+    }
+    if (getLogger() != NULL) {
+        getLogger()->logAction("VTMALStub", "id", id, "VTMALStub", VT_SRV_LOG_I);
+    } else {
+        VT_LOGI("[SRV] [OPERATION][ID=%d] VTMALStub getLogger NULL, no VTCoreHelper yet", id);
+    }
+
     VT_LOGI("[SRV] [OPERATION][ID=%d] VTMALStub (sim_id = %d)", id, sim_id);
 
     mId = id;
@@ -48,6 +62,7 @@ VTMALStub::VTMALStub(int mode, int id, int sim_id, int opid, const sp<VTCore>& c
     mPeerSurface = NULL;
     mLocalSurface = NULL;
     mCurDegree = -1;
+    mCameraId = -1;
 }
 
 status_t VTMALStub::Init(ma_datapath_t type) {
@@ -232,12 +247,60 @@ status_t VTMALStub::Reset(ma_datapath_t type) {
         mMsgHdlr = NULL;
         mImsMa.clear();
         mImsMa = NULL;
+        mCameraId = -1;
 
     } else {
         getLogger()->logAction("VTMALStub", "id", mId, "Reset (mode = pass or 3G)", VT_SRV_LOG_W);
     }
 
     getLogger()->logAction("VTMALStub", "id", mId, "Reset (Finish)", VT_SRV_LOG_W);
+    return VT_SRV_RET_OK;
+}
+
+status_t VTMALStub::Restart(ma_datapath_t type, imsma_pause_resume_params_t* pauseInfo,
+                            imsma_pause_resume_params_t* resumeInfo) {
+    getLogger()->logAction("VTMALStub", "id", mId, "Restart (Begin)", VT_SRV_LOG_W);
+
+    if (MA_INVALID_MODE == mMode) {
+        getLogger()->logAction("VTMALStub", "id", mId, "Stop (mode = invalid) (Finish)",
+                               VT_SRV_LOG_W);
+        return VT_SRV_RET_ERR_MA;
+
+    } else if (MA_NORMAL_MODE_4G == mMode) {
+        getLogger()->logAction("VTMALStub", "id", mId, "Restart (mode = 4G)", VT_SRV_LOG_W);
+
+        if (type == MA_SOURCE) {
+            getLogger()->logAction("VTMALStub", "id", mId, "Restart (SOURCE)", VT_SRV_LOG_W);
+        } else if (type == MA_SINK) {
+            getLogger()->logAction("VTMALStub", "id", mId, "Restart (SINK)", VT_SRV_LOG_W);
+        } else if (type == MA_SOURCE_SINK) {
+            getLogger()->logAction("VTMALStub", "id", mId, "Restart (SOURCE_SINK)", VT_SRV_LOG_W);
+        }
+
+        if (mImsMa->Pause(type, pauseInfo)) {
+            getLogger()->logAction("VTMALStub", "id", mId, "Restart, error in Pause (Finish)",
+                                   VT_SRV_LOG_E);
+            return VT_SRV_RET_ERR_MA;
+        }
+        if (mImsMa->Resume(type, resumeInfo)) {
+            getLogger()->logAction("VTMALStub", "id", mId, "Restart, error in Resume (Finish)",
+                                   VT_SRV_LOG_E);
+            return VT_SRV_RET_ERR_MA;
+        }
+    } else {
+        getLogger()->logAction("VTMALStub", "id", mId, "Stop (mode = pass or 3G)", VT_SRV_LOG_W);
+    }
+
+    getLogger()->logAction("VTMALStub", "id", mId, "Restart (Finish)", VT_SRV_LOG_W);
+
+    if (resumeInfo->normal_pause_resume_extra_bitControl == MA_PAUSE_PICTURE) {
+        // pause & resume for pause image, set new buffersurface as the producer of pause image
+        sp<IGraphicBufferProducer> outBufferProducer = NULL;
+        getBufferQueueProducer(&outBufferProducer);
+
+        mVTCore->notifyCallback(getId(), VT_SRV_NOTIFY_PAUSE_IMAGE_BUFFER, 0, 0, 0, String8(""),
+                                String8(""), outBufferProducer);
+    }
     return VT_SRV_RET_OK;
 }
 
@@ -302,6 +365,7 @@ status_t VTMALStub::SetCameraSensor(int32_t index) {
         return VT_SRV_RET_ERR_MA;
 
     } else if (MA_NORMAL_MODE_4G == mMode) {
+        mCameraId = index;
         if (mImsMa->setCurrentCameraId(index)) {
             getLogger()->logAction("VTMALStub", "id", mId, "setCurrentCameraId, error",
                                    VT_SRV_LOG_E);
@@ -358,6 +422,8 @@ status_t VTMALStub::SetPeerSurface(const sp<Surface>& peer_surface) {
         return VT_SRV_RET_OK;
     }
 }
+
+sp<VTSurface> VTMALStub::GetPeerSurface() { return mPeerSurface; }
 
 status_t VTMALStub::SetLocalSurface(const sp<Surface>& local_surface) {
     if (MA_INVALID_MODE == mMode) {
@@ -570,7 +636,14 @@ status_t VTMALStub::setRANEnable(bool enable) {
 #endif
 }
 
-sp<VTCoreHelper> VTMALStub::getLogger() { return mVTCore->mHelper; }
+sp<VTCoreHelper> VTMALStub::getLogger() {
+    if (mVTCore != NULL) {
+        return mVTCore->mHelper;
+    } else {
+        VT_LOGE("[SRV] getLogger, mVTCore NULL");
+        return NULL;
+    }
+}
 
 ImsMaHandler::ImsMaHandler(sp<ImsMa> owner, sp<VTCore> user, int id) {
     mUser = user;

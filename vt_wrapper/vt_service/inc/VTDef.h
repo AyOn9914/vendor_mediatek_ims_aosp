@@ -117,6 +117,8 @@ class VideoProfile;
 #define VT_INVALID_NETWORK_ID (0)
 #define VT_INVALID_INDEX (-1)
 
+#define VT_MAX_SENSOR_COUNT (256)
+
 // notify msg enum
 const int VT_SRV_NOTIFY_RECEIVE_FIRSTFRAME = 1001;
 const int VT_SRV_NOTIFY_SNAPSHOT_DONE = 1002;
@@ -157,6 +159,8 @@ const int VT_SRV_NOTIFY_GET_SENSOR_INFO = 4018;
 const int VT_SRV_NOTIFY_GET_CAP_WITH_SIM = 4019;
 const int VT_SRV_NOTIFY_PACKET_LOSS_RATE = 4020;
 
+const int VT_SRV_NOTIFY_PAUSE_IMAGE_BUFFER = 4024;
+
 const int VT_SRV_ERROR_BASE = 8000;
 const int VT_SRV_ERROR_SERVICE = 8001;
 const int VT_SRV_ERROR_SERVER_DIED = 8002;
@@ -170,12 +174,20 @@ const int VT_SRV_ERROR_BIND_PORT = 8007;
 const int VT_SRV_NOTIFY_AVPF_TMMBR_MBR_DL = 9001;
 
 const int VT_SRV_NOTIFY_SET_ANBR = 9002;
+const int VT_SRV_NOTIFY_RILD_READY = 9003;
 
 // msg between VTS and L4
 const int MSG_ID_MD_BEGIN = MSG_ID_WRAP_IMSVT_IMCB_BEGIN + 1000;
 const int MSG_ID_MD_ANBR_CONFIG_UPDATE_IND = MSG_ID_MD_BEGIN + 1;
 const int MSG_ID_MD_ANBR_REPORT_REQ = MSG_ID_MD_BEGIN + 2;
 const int MSG_ID_MD_INTER_RAT_STATUS_IND = MSG_ID_MD_BEGIN + 3;
+
+// msg between VTS and rild
+const int MSG_ID_RILD_BEGIN = MSG_ID_WRAP_IMSVT_IMCB_BEGIN + 1500;
+const int MSG_ID_RILD_VTSERVICE_STATUS = MSG_ID_RILD_BEGIN + 1;
+const int MSG_ID_RILD_RILD_STATUS = MSG_ID_RILD_BEGIN + 2;
+const int MSG_ID_RILD_GET_OP_REQ = MSG_ID_RILD_BEGIN + 3;
+const int MSG_ID_RILD_GET_OP_RSP = MSG_ID_RILD_BEGIN + 4;
 
 // log function define
 #define VT_LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "VT", __VA_ARGS__)
@@ -253,6 +265,8 @@ typedef enum {
     VT_SRV_UI_MODE_BG,
     VT_SRV_UI_MODE_FULL_SCREEN,
     VT_SRV_UI_MODE_NORMAL_SCREEN,
+    VT_SRV_UI_MODE_IMAGE_STREAM,
+    VT_SRV_UI_MODE_CAMERA_STREAM,
     VT_SRV_UI_MODE_END
 } VT_SRV_UI_MODE;
 
@@ -336,6 +350,7 @@ typedef enum {
     VT_SRV_PARAM_IS_RECV_UPDATE,
     VT_SRV_PARAM_CALL_STATE,
     VT_SRV_PARAM_IS_DURING_EARLY_MEDIA,
+    VT_SRV_PARAM_IS_MIMETYPE_CHANGED,
     VT_SRV_PARAM_END
 } VT_SRV_PARAM;
 
@@ -361,6 +376,11 @@ typedef enum {
     VT_SRV_VTCAM_STATE_RESUME_REC = 0x3,
     VT_SRV_VTCAM_STATE_STOP_REC_AND_PREVIEW = 0x4,
 } VT_SRV_VTCAM_STATE;
+
+typedef enum {
+    VT_SRV_PAUSE_MODE_NORMAL = 1,
+    VT_SRV_PAUSE_MODE_HOLD = 2,
+} VT_SRV_PAUSE_MODE;
 
 // define same to ECPI value
 typedef enum {
@@ -443,17 +463,23 @@ typedef struct {
     int mCallState;
 
     VT_BOOL mIsDuringEarlyMedia;
+
+    VT_BOOL mIsMimeTypeChanged;
 } vt_srv_call_table_entry_struct;
+
+typedef struct {
+    int mWidth;
+    int mHeight;
+} vt_srv_resolution_size_struct;
 
 typedef struct {
     int mUsedSize;
     vt_srv_call_table_entry_struct mTable[VT_SRV_MA_NR];
     int mUsed[VT_SRV_MA_NR];
-    int mDefaultLocalW;
-    int mDefaultLocalH;
+    vt_srv_resolution_size_struct mDefaultLocalSize[VT_SRV_SIM_NR];
     int mSimOpTable[VT_SRV_SIM_NR];
     int mSimHandoverTable[VT_SRV_SIM_NR];
-    bool mIsSetSensorInfo;
+    int mIsSetSensorCnt;
     Vector<vt_srv_network_info_struct> mNetworkInfoTable;
 } vt_srv_call_table_struct;
 
@@ -475,6 +501,23 @@ typedef struct {
 
 #define VT_ANBR_CONFIG vt_srv_anbr_struct
 #define VT_ANBR_REQ vt_srv_ril_msg_anbr_struct
+
+typedef struct {
+    int call_id;
+    int sim_slot_id;
+    int status;
+} vt_srv_ril_msg_status_struct;
+
+#define VT_STATUS_REQ vt_srv_ril_msg_status_struct
+#define VT_RILD_STATUS_IND vt_srv_ril_msg_status_struct
+
+typedef struct {
+    int sim_slot_id;
+    int op_id;
+} vt_srv_ril_msg_operator_struct;
+
+#define VT_GET_OP_REQ vt_srv_ril_msg_operator_struct
+#define VT_GET_OP_RSP vt_srv_ril_msg_operator_struct
 
 typedef struct {
     int sim_slot_id;

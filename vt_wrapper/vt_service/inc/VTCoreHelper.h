@@ -174,11 +174,11 @@ class VTCoreHelper : virtual public RefBase {
     int getLabOperator();
     int getCurrentOperator(int simId);
 
-    void setDefaultLocalSize(int w, int h);
-    void getDefaultLocalSize(int* w, int* h);
+    void setDefaultLocalSize(int w, int h, int simId);
+    void getDefaultLocalSize(int* w, int* h, int simId);
 
-    void setIsSetSensorInfo(bool isSet);
-    bool getIsSetSensorInfo();
+    void setIsSetSensorCnt(int sensorCnt);
+    int getIsSetSensorCnt();
 
     status_t setRequestVdoProfile(int id, sp<VideoProfile> vdo_profile);
     sp<VideoProfile> getRequestVdoProfile(int id);
@@ -228,7 +228,8 @@ class VTCoreHelper : virtual public RefBase {
                                                         "Hide me : Freeze", "Hide me : Picture"};
     const char mHideYouString[VT_SRV_HIDE_YOU_END][50] = {"Hide you : Enable",
                                                           "Hide you : Disable"};
-    const char mUIModeString[VT_SRV_UI_MODE_END][50] = {"foreground", "background"};
+    const char mUIModeString[VT_SRV_UI_MODE_END][50] = {
+            "foreground", "background", "full screen", "normal screen", "image mode", "video mode"};
     const char mSurfaceStateString[VT_SRV_SURFACE_STATE_END][50] = {
             "Surface state : Both not set", "Surface state : Set local only",
             "Surface state : Set peer only", "Surface state : Both set"};

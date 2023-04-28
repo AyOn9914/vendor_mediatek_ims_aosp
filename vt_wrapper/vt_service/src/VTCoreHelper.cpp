@@ -44,6 +44,7 @@ Mutex g_vt_SendMsgLock;
 VTCoreHelper::VTCoreHelper() {
     VT_LOGW("[SRV] [VTCoreHelper] VTCoreHelper create");
     mDummyMa = new VTMALStub(VTMALStub::MA_INVALID_MODE, 1000, 0, VT_DEFAULT_OP_ID, NULL);
+    VT_LOGW("[SRV] [VTCoreHelper] new VTMALStub done");
     mDummyRequestProfile =
             new VideoProfile(VT_SRV_VIDEO_STATE_BIDIRECTIONAL, VT_SRV_VIDEO_QTY_DEFAULT);
     mConSceFd = -1;
@@ -211,6 +212,8 @@ void VTCoreHelper::logMsg(int notify, const char* des, int id, int data1, int da
         snprintf(type, sizeof(type), "data resume");
     else if (notify == VT_SRV_NOTIFY_SET_ANBR)
         snprintf(type, sizeof(type), "set ANBR");
+    else if (notify == VT_SRV_NOTIFY_RILD_READY)
+        snprintf(type, sizeof(type), "rild ready");
     else
         snprintf(type, sizeof(type), "Unkonwn");
 
@@ -276,9 +279,12 @@ status_t VTCoreHelper::init(void) {
     VT_LOGW("[SRV] [VTCoreHelper] VTCoreHelper init");
 
     mMap.mUsedSize = 0;
-    mMap.mDefaultLocalW = 320;
-    mMap.mDefaultLocalH = 240;
-    mMap.mIsSetSensorInfo = VT_FALSE;
+    mMap.mIsSetSensorCnt = -1;
+
+    for (int i = 0; i < VT_SRV_SIM_NR; i++) {
+        mMap.mDefaultLocalSize[i].mWidth = 320;
+        mMap.mDefaultLocalSize[i].mHeight = 240;
+    }
 
     for (int i = 0; i < VT_SRV_MA_NR; i++) {
         mMap.mUsed[i] = 0;
@@ -597,6 +603,10 @@ status_t VTCoreHelper::getParam(int id, VT_SRV_PARAM type, void** param) {
                 VT_BOOL* p = &(mMap.mTable[i].mIsDuringEarlyMedia);
                 *param = reinterpret_cast<void*>(p);
                 logMap("getParam", "Is during early media", id, VT_SRV_LOG_I);
+            } else if (type == VT_SRV_PARAM_IS_MIMETYPE_CHANGED) {
+                VT_BOOL* p = &(mMap.mTable[i].mIsMimeTypeChanged);
+                *param = reinterpret_cast<void*>(p);
+                logMap("getParam", "Is mime type changed", id, VT_SRV_LOG_I);
             }
             return VT_SRV_RET_OK;
         }
@@ -663,6 +673,9 @@ status_t VTCoreHelper::setParam(int id, VT_SRV_PARAM type, void* param) {
             } else if (type == VT_SRV_PARAM_IS_DURING_EARLY_MEDIA) {
                 memcpy(&mMap.mTable[i].mIsDuringEarlyMedia, param, sizeof(VT_BOOL));
                 logMap("setParam", "Is during early media", id, VT_SRV_LOG_I);
+            } else if (type == VT_SRV_PARAM_IS_MIMETYPE_CHANGED) {
+                memcpy(&mMap.mTable[i].mIsMimeTypeChanged, param, sizeof(VT_BOOL));
+                logMap("setParam", "Is Is mime type changed", id, VT_SRV_LOG_I);
             }
 
             dump();
@@ -739,6 +752,7 @@ void VTCoreHelper::clearElement(vt_srv_call_table_entry_struct* e) {
     e->mIsRecvUpdate = VT_FALSE;
     e->mCallState = VT_CALL_STATE_UNKNOWN;
     e->mIsDuringEarlyMedia = VT_FALSE;
+    e->mIsMimeTypeChanged = VT_FALSE;
 }
 
 VT_SRV_RET VTCoreHelper::isMatch(int idx, int id) {
@@ -805,6 +819,7 @@ sp<VideoProfile> VTCoreHelper::unPackToVdoProfile(String8 flattened) {
         char value[VT_SRV_STR_LEN] = "";
 
         if (NULL == div) {
+            pch = strtok_r(NULL, ";", &internal);
             continue;
         }
 
@@ -1289,26 +1304,34 @@ int VTCoreHelper::getCurrentOperator(int simId) {
     return op;
 }
 
-void VTCoreHelper::setDefaultLocalSize(int w, int h) {
+void VTCoreHelper::setDefaultLocalSize(int w, int h, int simId) {
     Mutex::Autolock mapLock(mMapLock);
-    mMap.mDefaultLocalW = w;
-    mMap.mDefaultLocalH = h;
+    if (simId >= 0 && simId < VT_SRV_SIM_NR) {
+        mMap.mDefaultLocalSize[simId].mWidth = w;
+        mMap.mDefaultLocalSize[simId].mHeight = h;
+    } else {
+        VT_LOGE("[SRV] setDefaultLocalSize error simId");
+    }
 }
 
-void VTCoreHelper::getDefaultLocalSize(int* w, int* h) {
+void VTCoreHelper::getDefaultLocalSize(int* w, int* h, int simId) {
     Mutex::Autolock mapLock(mMapLock);
-    *w = mMap.mDefaultLocalW;
-    *h = mMap.mDefaultLocalH;
+    if (simId >= 0 && simId < VT_SRV_SIM_NR) {
+        *w = mMap.mDefaultLocalSize[simId].mWidth;
+        *h = mMap.mDefaultLocalSize[simId].mHeight;
+    } else {
+        VT_LOGE("[SRV] getDefaultLocalSize error simId");
+    }
 }
 
-void VTCoreHelper::setIsSetSensorInfo(bool isSet) {
+void VTCoreHelper::setIsSetSensorCnt(int sensorCnt) {
     Mutex::Autolock mapLock(mMapLock);
-    mMap.mIsSetSensorInfo = isSet;
+    mMap.mIsSetSensorCnt = sensorCnt;
 }
 
-bool VTCoreHelper::getIsSetSensorInfo() {
+int VTCoreHelper::getIsSetSensorCnt() {
     Mutex::Autolock mapLock(mMapLock);
-    return mMap.mIsSetSensorInfo;
+    return mMap.mIsSetSensorCnt;
 }
 
 status_t VTCoreHelper::setRequestVdoProfile(int id, sp<VideoProfile> vdo_profile) {
@@ -1597,7 +1620,7 @@ static void* VT_HIDL_Thread(void* arg) {
     sigaction(SIGUSR1, &actions, NULL);
 
     while (1) {
-        int msg_type;
+        int msg_type = MSG_ID_WRAP_IMSVT_IMCB_BEGIN;
         int recv_length = 0;
         unsigned char* outBuffer = NULL;
         bool ret;
@@ -1669,7 +1692,10 @@ static void* VT_HIDL_Thread(void* arg) {
             }
 
             free(outBuffer);
+            outBuffer = NULL;
             restartProcess();
+            status = android::hardware::EventFlag::deleteEventFlag(&efGroup);
+            continue;
         }
 
         VT_LOGI("[SRV] [VT THREAD] [VT_HIDL_Thread] outBuffer");

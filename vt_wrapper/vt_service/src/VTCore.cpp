@@ -68,7 +68,8 @@ VTCore::~VTCore() {
 }
 
 status_t VTCore::initialization(int mode, int id, int sim_id) {
-    if (!mHelper->getIsSetSensorInfo()) {
+    if (mHelper->getIsSetSensorCnt() < 0) {
+        // -1 means has not been set yet, 0 means has been set but no camera sensor from camera FW.
         mHelper->logFlow("initialization", "id", id, "not set sensor information yet",
                          VT_SRV_LOG_I);
 
@@ -119,7 +120,7 @@ status_t VTCore::open(VT_SRV_CALL_MODE mode, const int id, const int sim_id) {
 
         // Notify default local size to VTP for preview
         int defaultW, defaultH;
-        mHelper->getDefaultLocalSize(&defaultW, &defaultH);
+        mHelper->getDefaultLocalSize(&defaultW, &defaultH, sim_id);
 
         notifyCallback(id, VT_SRV_NOTIFY_DEFAULT_LOCAL_SIZE, defaultW, defaultH, 0, String8(""),
                        String8(""), NULL);
@@ -338,7 +339,7 @@ status_t VTCore::updateCallMode(const int id) {
     mHelper->logFlow("updateCallMode", "info->mIsTxInPause", id,
                      mHelper->getOnOffString(info->mIsTxInPause), VT_SRV_LOG_I);
     mHelper->logFlow("updateCallMode", "info->mIsRxInPause", id,
-                     mHelper->getOnOffString(info->mIsTxInPause), VT_SRV_LOG_I);
+                     mHelper->getOnOffString(info->mIsRxInPause), VT_SRV_LOG_I);
 
     // ====================================================================
     if (ua->setting.mode == 0) {
@@ -348,6 +349,70 @@ status_t VTCore::updateCallMode(const int id) {
 
         return VT_SRV_RET_OK;
     } else {
+        VT_BOOL* isMimeTypeChanged;
+        mHelper->getParam(id, VT_SRV_PARAM_IS_MIMETYPE_CHANGED,
+                          reinterpret_cast<void**>(&isMimeTypeChanged));
+        if ((*isMimeTypeChanged) == VT_TRUE) {
+            /*codec format change, need stop MA firstly, need to stop MA even in pause state*/
+            VT_LOGI("isMimeTypeChanged, try to stop MA");
+            VT_SRV_MA_STATE state = mHelper->getState(id);
+
+            if (state == VT_SRV_MA_STATE_START_UI) {
+                mHelper->logAction("updateCallMode", "id", id, "MA STATE UI, stop source",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_UN) {
+                mHelper->logAction("updateCallMode", "id", id,
+                                   "MA STATE UN, stop source&sink even downlink paused",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_UD) {
+                mHelper->logAction("updateCallMode", "id", id, "MA STATE UD, stop source&sink",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_ID) {
+                mHelper->logAction("updateCallMode", "id", id, "MA STATE ID, stop sink",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_IN) {
+                mHelper->logAction("updateCallMode", "id", id,
+                                   "MA STATE IN, stop sink even downlink paused", VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_ND) {
+                mHelper->logAction("updateCallMode", "id", id,
+                                   "MA STATE ND, stop source&sink even uplink paused",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_NI) {
+                mHelper->logAction("updateCallMode", "id", id,
+                                   "MA STATE NI, stop source even uplink paused", VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else if (state == VT_SRV_MA_STATE_START_NN) {
+                mHelper->logAction("updateCallMode", "id", id,
+                                   "MA STATE NN, stop source&sink even uplink&downlink paused",
+                                   VT_SRV_LOG_W);
+                mLastRet = mHelper->get(id)->Stop(MA_SOURCE_SINK);
+                mHelper->setState(id, VT_SRV_MA_STATE_INITED);
+
+            } else {
+                mHelper->logAction("updateCallMode", "id", id, "MA not started", VT_SRV_LOG_W);
+            }
+            *isMimeTypeChanged = VT_FALSE;
+        }
         // We should only set config to MA when ViLTE call
         // or the parameter may be mess and cause error.
         mLastRet = mHelper->get(id)->UpdateMediaConfig(ma_config);
@@ -493,28 +558,28 @@ status_t VTCore::updateTxRxMode(const int id, int new_mode, vt_srv_call_update_i
 
         if (oldTxIsOn && !newTxIsOn) {
             notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_PAUSE_REC,
-                           MA_PAUSE_RESUME_HOLD, 0, String8(""), String8(""), NULL);
+                           VT_SRV_PAUSE_MODE_NORMAL, 0, String8(""), String8(""), NULL);
 
             info->mIsTxInPause = VT_TRUE;
         }
 
         if (info->mIsHold) {
             notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_PAUSE_REC,
-                           MA_PAUSE_RESUME_HOLD, 0, String8(""), String8(""), NULL);
+                           VT_SRV_PAUSE_MODE_HOLD, 0, String8(""), String8(""), NULL);
 
             info->mIsTxInPause = VT_TRUE;
         }
 
         if ((!oldTxIsOn && newTxIsOn)) {
             notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_RESUME_REC,
-                           MA_PAUSE_RESUME_HOLD, 0, String8(""), String8(""), NULL);
+                           VT_SRV_PAUSE_MODE_NORMAL, 0, String8(""), String8(""), NULL);
 
             info->mIsTxInPause = VT_FALSE;
         }
 
         if (info->mIsResume) {
             notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_RESUME_REC,
-                           MA_PAUSE_RESUME_HOLD, 0, String8(""), String8(""), NULL);
+                           VT_SRV_PAUSE_MODE_HOLD, 0, String8(""), String8(""), NULL);
 
             info->mIsTxInPause = VT_FALSE;
         }
@@ -1015,6 +1080,8 @@ error:
 status_t VTCore::close(const int id, int close_mode) {
     mHelper->logFlow("close", "id", id, "start", VT_SRV_LOG_I);
 
+    Mutex::Autolock malLock(*getCallFlowLock(id));
+
     // if still blocked at update
     // use this flag to break out to prevent from dead lock
     // need to set before lock
@@ -1027,7 +1094,6 @@ status_t VTCore::close(const int id, int close_mode) {
     }
     (*isForceStop) = VT_TRUE;
 
-    Mutex::Autolock malLock(*getCallFlowLock(id));
     return close_internal(id, close_mode);
 }
 
@@ -1088,9 +1154,20 @@ status_t VTCore::close_internal(const int id, int close_mode) {
             mLastRet = mHelper->get(id)->Stop(MA_SOURCE_SINK);
             if (mLastRet) goto error;
 
-            // No need stop preview when downgrade, InCallUI will set camera null to stop preview
-            notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_STOP_REC, 0, 0,
-                           String8(""), String8(""), NULL);
+            // the reason to keep preview, is just for conner case that video call not accepted by
+            // remote(ALPS04695180). actually, after call connected, it's no need to keep preview
+            // after downgrade.
+            if (mHelper->isCallConnected(id)) {
+                VT_LOGI("[SRV] downgrade after call connected, no need to keep preview");
+                notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE,
+                               VT_SRV_VTCAM_STATE_STOP_REC_AND_PREVIEW, 0, 0, String8(""),
+                               String8(""), NULL);
+            } else {
+                // call not connected when downgrade, just keep preview here.
+                // if preview is unnecessary indeedUI will close camera finally.
+                notifyCallback(id, VT_SRV_NOTIFY_UPLINK_STATE_CHANGE, VT_SRV_VTCAM_STATE_STOP_REC,
+                               0, 0, String8(""), String8(""), NULL);
+            }
         }
 
         mHelper->logFlow("close internal", "id", id, "Stop done", VT_SRV_LOG_I);
@@ -1347,8 +1424,13 @@ status_t VTCore::setCamera(int id, int cam) {
         mHelper->logAction("setCamera", "id", id, "Call has stopped", VT_SRV_LOG_I);
         return VT_SRV_RET_OK;
     }
+    if (mHelper->getIsSetSensorCnt() > 0) {
+        mLastRet = mHelper->get(id)->SetCameraSensor(cam);
+    } else {
+        mHelper->logAction("setCamera", "id", id, "sensor count is 0", VT_SRV_LOG_E);
+        return VT_SRV_RET_OK;
+    }
 
-    mLastRet = mHelper->get(id)->SetCameraSensor(cam);
     if (mLastRet) goto error;
 
     return VT_SRV_RET_OK;
@@ -1363,6 +1445,7 @@ status_t VTCore::setPreviewSurface(int id, const sp<VTSurface>& surface) {
     VT_SRV_SURFACE_STATE pre_state;
     vt_srv_call_update_info_struct* info;
     VT_BOOL* isRecvUpdate;
+    int cameraId = mHelper->get(id)->getCameraId();
 
     mHelper->logAction("setPreviewSurface", "id", id, "", VT_SRV_LOG_I);
 
@@ -1384,6 +1467,12 @@ status_t VTCore::setPreviewSurface(int id, const sp<VTSurface>& surface) {
     pre_state = (*state);
 
     if (NULL != surface.get()) {
+        if (cameraId < 0) {
+            mHelper->logAction("setPreviewSurface", "id", id, "not set camera, return",
+                               VT_SRV_LOG_I);
+            return VT_SRV_RET_OK;
+        }
+
         // The resume and stop operation may come at the same time.
         // We need to add flow lock to guarantee the correct order.
         mMAOperationLock.lock();
@@ -1399,64 +1488,21 @@ status_t VTCore::setPreviewSurface(int id, const sp<VTSurface>& surface) {
         mHelper->logAction("setPreviewSurface", "state (after)", id,
                            mHelper->getSurfaceString((*state)), VT_SRV_LOG_I);
 
-        // We Pause MA instead od Stop MA when clear surrface
-        // Because it may happen during conference but not call end or dowgrade
-        // We want to keep use MA and keep memory of previous operation
-        // so we need to resume it when set surface
-        imsma_pause_resume_params_t updateInfo;
-        updateInfo.mode = MA_PAUSE_RESUME_HOLD;
-        updateInfo.hold.direction = MA_HOLD_BY_LOCAL;
-
-        // we skip the 1st set surface and the case set surface continuoisly
-        if (VT_SRV_MA_STATE_INITED < mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_IN != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_ID != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_PRE_STOP != mHelper->getState(id) && VT_TRUE != info->mIsTxInPause &&
-            pre_state != (*state)) {
-            mLastRet = mHelper->get(id)->Resume(MA_SOURCE, &updateInfo);
-        }
-
         mMAOperationLock.unlock();
-
-        // we don't update state here, because it is not rtp direction change
-        // if we modify state, it may cause additional operation when UA notify the direction change
-        // so we just change silencely and only need to make sure the pair of set/reset surface
-
     } else {
+        mMAOperationLock.lock();
+
+        mLastRet = mHelper->get(id)->SetLocalSurface(surface);
+        if (mLastRet) {
+            mMAOperationLock.unlock();
+            goto error;
+        }
         (*state) = (VT_SRV_SURFACE_STATE)((static_cast<int>(*state)) & ~VT_SRV_SURFACE_STATE_LOCAL);
 
         mHelper->logAction("setPreviewSurface", "state (after)", id,
                            mHelper->getSurfaceString((*state)), VT_SRV_LOG_I);
 
-        // The pause and stop operation may come at the same time.
-        // We need to add flow lock to guarantee the correct order.
-        mMAOperationLock.lock();
-
-        // We Pause MA instead od Stop MA when clear surrface
-        // Because it may happen during conference but not call end or dowgrade
-        // We want to keep use MA and keep memory of previous operation
-        //
-        // Now MTK app will not clear surface when conference call.
-        // It will clean surface only when call end
-        // We keep this to prevent 3rd app still clean surface when conference call
-        imsma_pause_resume_params_t updateInfo;
-        updateInfo.mode = MA_PAUSE_RESUME_HOLD;
-        updateInfo.hold.direction = MA_HOLD_BY_LOCAL;
-
-        // We skip the case MA has stop or hold call and set surface continuoisly
-        if (VT_SRV_MA_STATE_INITED < mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_IN != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_ID != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_PRE_STOP != mHelper->getState(id) && VT_TRUE != info->mIsTxInPause &&
-            pre_state != (*state)) {
-            mLastRet = mHelper->get(id)->Pause(MA_SOURCE, &updateInfo);
-        }
-
         mMAOperationLock.unlock();
-
-        // we don't update state here, because it is not rtp direction change
-        // if we modify state, it may cause additional operation when UA notify the direction change
-        // so we just change silencely and only need to make sure the pair of set/reset surface
     }
 
     mLastRet = mHelper->getParam(id, VT_SRV_PARAM_IS_RECV_UPDATE,
@@ -1505,10 +1551,49 @@ status_t VTCore::setDisplaySurface(int id, const sp<VTSurface>& surface) {
         // We need to add flow lock to guarantee the correct order.
         mMAOperationLock.lock();
 
-        mLastRet = mHelper->get(id)->SetPeerSurface(surface);
-        if (mLastRet) {
+        if (VT_SRV_MA_STATE_PRE_STOP == mHelper->getState(id) ||
+            VT_SRV_MA_STATE_STOPED == mHelper->getState(id)) {
+            mHelper->logAction("setDisplaySurface", "id", id, "MA has stopped", VT_SRV_LOG_I);
             mMAOperationLock.unlock();
-            goto error;
+            return VT_SRV_RET_OK;
+        }
+
+        if (VT_SRV_MA_STATE_START_ID == mHelper->getState(id) ||
+            VT_SRV_MA_STATE_START_ND == mHelper->getState(id) ||
+            VT_SRV_MA_STATE_START_UD == mHelper->getState(id)) {
+            sp<VTSurface> oldPeerSurface = mHelper->get(id)->GetPeerSurface();
+            VT_LOGI("[SRV] oldPeerSurface: %p", oldPeerSurface.get());
+            if (oldPeerSurface.get() != surface.get()) {
+                VT_LOGI("[SRV] downlink ongoing, surface changed, stop SINK firstly, %d", id);
+                mLastRet = mHelper->get(id)->Stop(MA_SINK);
+                if (mLastRet) {
+                    mMAOperationLock.unlock();
+                    goto error;
+                }
+                mLastRet = mHelper->get(id)->SetPeerSurface(surface);
+                if (mLastRet) {
+                    mMAOperationLock.unlock();
+                    goto error;
+                }
+                mLastRet = mHelper->get(id)->Start(MA_SINK);
+                if (mLastRet) {
+                    mMAOperationLock.unlock();
+                    goto error;
+                }
+            } else {
+                VT_LOGI("[SRV] downlink ongoing, surface no change, just set, %d", id);
+                mLastRet = mHelper->get(id)->SetPeerSurface(surface);
+                if (mLastRet) {
+                    mMAOperationLock.unlock();
+                    goto error;
+                }
+            }
+        } else {
+            mLastRet = mHelper->get(id)->SetPeerSurface(surface);
+            if (mLastRet) {
+                mMAOperationLock.unlock();
+                goto error;
+            }
         }
 
         (*state) = (VT_SRV_SURFACE_STATE)((static_cast<int>(*state)) | VT_SRV_SURFACE_STATE_PEER);
@@ -1516,65 +1601,23 @@ status_t VTCore::setDisplaySurface(int id, const sp<VTSurface>& surface) {
         mHelper->logAction("setDisplaySurface", "state (after)", id,
                            mHelper->getSurfaceString((*state)), VT_SRV_LOG_I);
 
-        // We Pause MA instead od Stop MA when clear surrface
-        // Because it may happen during conference but not call end or dowgrade
-        // We want to keep use MA and keep memory of previous operation
-        // so we need to resume it when set surface
-        imsma_pause_resume_params_t updateInfo;
-        updateInfo.mode = MA_PAUSE_RESUME_HOLD;
-        updateInfo.hold.direction = MA_HOLD_BY_LOCAL;
-        updateInfo.normal_pause_resume_extra_bitControl = MA_EXT_BIT_CTRL_NONE;
-
-        // we skip the 1st set surface and the case set surface continuoisly
-        if (VT_SRV_MA_STATE_INITED < mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_NI != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_UI != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_PRE_STOP != mHelper->getState(id) && VT_TRUE != info->mIsRxInPause &&
-            pre_state != (*state)) {
-            mLastRet = mHelper->get(id)->Resume(MA_SINK, &updateInfo);
-        }
-
         mMAOperationLock.unlock();
 
-        // we don't update state here, because it is not rtp direction change
-        // if we modify state, it may cause additional operation when UA notify the direction change
-        // so we just change silencely and only need to make sure the pair of set/reset surface
-
     } else {
+        mMAOperationLock.lock();
+
+        mLastRet = mHelper->get(id)->SetPeerSurface(surface);
+        if (mLastRet) {
+            mMAOperationLock.unlock();
+            goto error;
+        }
+
         (*state) = (VT_SRV_SURFACE_STATE)((static_cast<int>(*state)) & ~VT_SRV_SURFACE_STATE_PEER);
 
         mHelper->logAction("setDisplaySurface", "state (after)", id,
                            mHelper->getSurfaceString((*state)), VT_SRV_LOG_I);
 
-        // The pause and stop operation may come at the same time.
-        // We need to add flow lock to guarantee the correct order.
-        mMAOperationLock.lock();
-
-        // We Pause MA instead od Stop MA when clear surrface
-        // Because it may happen during conference but not call end or dowgrade
-        // We want to keep use MA and keep memory of previous operation
-        //
-        // Now MTK app will not clear surface when conference call.
-        // It will clean surface only when call end
-        // We keep this to prevent 3rd app still clean surface when conference call
-        imsma_pause_resume_params_t updateInfo;
-        updateInfo.mode = MA_PAUSE_RESUME_HOLD;
-        updateInfo.hold.direction = MA_HOLD_BY_LOCAL;
-
-        // We skip the case MA has stop or hold call and set surface continuoisly
-        if (VT_SRV_MA_STATE_INITED < mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_NI != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_START_UI != mHelper->getState(id) &&
-            VT_SRV_MA_STATE_PRE_STOP != mHelper->getState(id) && VT_TRUE != info->mIsRxInPause &&
-            pre_state != (*state)) {
-            mLastRet = mHelper->get(id)->Pause(MA_SINK, &updateInfo);
-        }
-
         mMAOperationLock.unlock();
-
-        // we don't update state here, because it is not rtp direction change
-        // if we modify state, it may cause additional operation when UA notify the direction change
-        // so we just change silencely and only need to make sure the pair of set/reset surface
     }
 
     mLastRet = mHelper->getParam(id, VT_SRV_PARAM_IS_RECV_UPDATE,
@@ -1604,7 +1647,7 @@ status_t VTCore::setCameraParameters(int sim_id, int sensorCnt, sensor_info_vilt
     }
 
     ImsMa::setSensorParameters(sensor, sensorCnt);
-    mHelper->setIsSetSensorInfo(VT_TRUE);
+    mHelper->setIsSetSensorCnt(sensorCnt);
 
     VT_IMCB_CAP ua;
     memset(&ua, 0, sizeof(VT_IMCB_CAP));
@@ -1650,7 +1693,7 @@ status_t VTCore::setCameraParametersWithSim(int sim_id, int major_sim_id, int se
     }
 
     ImsMa::setSensorParameters(sensor, sensorCnt);
-    mHelper->setIsSetSensorInfo(VT_TRUE);
+    mHelper->setIsSetSensorCnt(sensorCnt);
 
     VT_IMCB_CAP ua;
     memset(&ua, 0, sizeof(VT_IMCB_CAP));
@@ -1690,7 +1733,7 @@ status_t VTCore::setCameraParametersOnly(int sensorCnt, sensor_info_vilte_t* sen
     }
 
     ImsMa::setSensorParameters(sensor, sensorCnt);
-    mHelper->setIsSetSensorInfo(VT_TRUE);
+    mHelper->setIsSetSensorCnt(sensorCnt);
 
     return VT_SRV_RET_OK;
 }
@@ -1741,6 +1784,46 @@ status_t VTCore::setUIMode(int id, VT_SRV_UI_MODE mode) {
 
     } else if (mode == VT_SRV_UI_MODE_NORMAL_SCREEN) {
         ImsMa::setLowPowerMode(VT_FALSE);
+    } else if (mode == VT_SRV_UI_MODE_IMAGE_STREAM) {
+        VT_SRV_MA_STATE state = mHelper->getState(id);
+
+        if (state != VT_SRV_MA_STATE_START_UI && state != VT_SRV_MA_STATE_START_UN &&
+            state != VT_SRV_MA_STATE_START_UD) {
+            mHelper->logAction("setUIMode", "id", id, "MA source not started, ignore reset",
+                               VT_SRV_LOG_W);
+            return VT_SRV_RET_OK;
+        }
+        imsma_pause_resume_params_t pauseInfo;
+        pauseInfo.mode = MA_PAUSE_RESUME_NORMAL;
+        pauseInfo.hold.direction = MA_HOLD_BY_LOCAL;
+        pauseInfo.normal_pause_resume_extra_bitControl = MA_EXT_BIT_CTRL_NONE;
+
+        imsma_pause_resume_params_t resumeInfo;
+        resumeInfo.mode = MA_PAUSE_RESUME_NORMAL;
+        resumeInfo.hold.direction = MA_HOLD_BY_LOCAL;
+        resumeInfo.normal_pause_resume_extra_bitControl = MA_PAUSE_PICTURE;
+
+        mHelper->get(id)->Restart(MA_SOURCE, &pauseInfo, &resumeInfo);
+    } else if (mode == VT_SRV_UI_MODE_CAMERA_STREAM) {
+        VT_SRV_MA_STATE state = mHelper->getState(id);
+
+        if (state != VT_SRV_MA_STATE_START_UI && state != VT_SRV_MA_STATE_START_UN &&
+            state != VT_SRV_MA_STATE_START_UD) {
+            mHelper->logAction("setUIMode", "id", id, "MA source not started, ignore reset",
+                               VT_SRV_LOG_W);
+            return VT_SRV_RET_OK;
+        }
+
+        imsma_pause_resume_params_t pauseInfo;
+        pauseInfo.mode = MA_PAUSE_RESUME_NORMAL;
+        pauseInfo.hold.direction = MA_HOLD_BY_LOCAL;
+        pauseInfo.normal_pause_resume_extra_bitControl = MA_PAUSE_PICTURE;
+
+        imsma_pause_resume_params_t resumeInfo;
+        resumeInfo.mode = MA_PAUSE_RESUME_NORMAL;
+        resumeInfo.hold.direction = MA_HOLD_BY_LOCAL;
+        resumeInfo.normal_pause_resume_extra_bitControl = MA_EXT_BIT_CTRL_NONE;
+        mHelper->get(id)->Restart(MA_SOURCE, &pauseInfo, &resumeInfo);
     }
 
     return VT_SRV_RET_OK;
@@ -1958,6 +2041,31 @@ status_t VTCore::updateNetworkTable(bool is_add, int network_id, String8 if_name
     return VT_SRV_RET_OK;
 }
 
+status_t VTCore::tagSocketWithUid(int uid) {
+    VT_LOGI("[SRV] [OPERATION] tagSocketWithUid: %d", uid);
+    mUserID = uid;
+
+    return VT_SRV_RET_OK;
+}
+
+status_t VTCore::triggerGetOperatorId() {
+    mHelper->logAction("triggerGetOperatorId", "id", 0, "", VT_SRV_LOG_I);
+
+    int mLastRet = VT_SRV_RET_OK;
+
+    for (int i = 0; i < VT_SRV_SIM_NR; i++) {
+        VT_GET_OP_REQ vt_get_op;
+        memset(&vt_get_op, 0, sizeof(VT_GET_OP_REQ));
+
+        vt_get_op.sim_slot_id = i;
+
+        mLastRet = VT_Send(VT_SRV_CALL_4G, MSG_ID_RILD_GET_OP_REQ,
+                           reinterpret_cast<void*>(&vt_get_op), sizeof(VT_GET_OP_REQ));
+    }
+
+    return mLastRet;
+}
+
 void VTCore::notifyError(int id, const char* action) {
     if (mLastRet == VT_SRV_RET_ERR_MA || mLastRet == VT_SRV_RET_ERR_BIND_PORT) {
         if (mLastRet == VT_SRV_RET_ERR_MA) {
@@ -2066,6 +2174,8 @@ void VTCore::notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t a
     } else if (msgType == VT_SRV_NOTIFY_SET_ANBR) {
         VT_ANBR_REQ ANBR_REQ;
         VT_IMCB_CONFIG* ua;
+
+        memset(&ANBR_REQ, 0, sizeof(VT_ANBR_REQ));
 
         ANBR_REQ.call_id = GET_CALL_ID(id);
         ANBR_REQ.sim_slot_id = GET_SIM_ID(id);
@@ -2218,6 +2328,27 @@ void vt_callback(int type, void* data, int len) {
         if (opid > 0) {
             helper->setOperatorId(id, opid);
 
+            int sensorCnt = helper->getIsSetSensorCnt();
+            if (sensorCnt > 0) {
+                VT_LOGI("[SRV] GET CAP IND, has set valid sensor info before, no need get set "
+                        "again");
+
+                VT_IMCB_CAP ua;
+                memset(&ua, 0, sizeof(VT_IMCB_CAP));
+
+                ua.operator_code = opid;
+
+                int labOp = helper->getLabOperator();
+                if (0 != labOp) {
+                    opid = labOp;
+                }
+                vt_rtp_codec_2_ua(VT_SRV_CALL_4G, &ua, id, opid);
+
+                int ret = VT_Send(VT_SRV_CALL_4G, MSG_ID_WRAP_IMSVT_IMCB_GET_CAP_RSP,
+                                  reinterpret_cast<void*>(&ua), sizeof(VT_IMCB_CAP));
+                return;
+            }
+
             core->notifyCallback(id, VT_SRV_NOTIFY_GET_CAP, 0, 0, 0, String8(""), String8(""),
                                  NULL);
         } else {
@@ -2237,7 +2368,13 @@ void vt_callback(int type, void* data, int len) {
         // ================================================================
         // copy to ua config
         // ================================================================
-        memcpy(&ua, reinterpret_cast<VT_IMCB_INIT*>(data), len);
+        if (sizeof(VT_IMCB_INIT) >= len) {
+            // AP update struct but modem not
+            memcpy(&ua, reinterpret_cast<VT_IMCB_INIT*>(data), len);
+        } else {
+            // modem update struct but AP not
+            memcpy(&ua, reinterpret_cast<VT_IMCB_INIT*>(data), sizeof(VT_IMCB_INIT));
+        }
 
         id = CONSTRUCT_SIM_CALL_ID(ua.setting.sim_slot_id, ua.config.call_id);
         helper->logAction("vt_callback", "id", id, "MSG_ID_WRAP_IMSVT_IMCB_CONFIG_INIT_IND",
@@ -2306,7 +2443,14 @@ void vt_callback(int type, void* data, int len) {
         // ================================================================
         // copy to ua config
         // ================================================================
-        memcpy(&ua, reinterpret_cast<VT_IMCB_UPD*>(data), len);
+
+        if (sizeof(VT_IMCB_UPD) >= len) {
+            // AP update struct but modem not
+            memcpy(&ua, reinterpret_cast<VT_IMCB_UPD*>(data), len);
+        } else {
+            // modem update struct but AP not
+            memcpy(&ua, reinterpret_cast<VT_IMCB_UPD*>(data), sizeof(VT_IMCB_UPD));
+        }
 
         id = CONSTRUCT_SIM_CALL_ID(ua.setting.sim_slot_id, ua.config.call_id);
         helper->logAction("vt_callback", "id", id, "MSG_ID_WRAP_IMSVT_IMCB_CONFIG_UPDATE_IND",
@@ -2408,6 +2552,18 @@ void vt_callback(int type, void* data, int len) {
         // compare with old config to know what's difference
         // ================================================================
         ret = helper->getParam(id, VT_SRV_PARAM_UA_CONFIG, reinterpret_cast<void**>(&pre_ua));
+
+        VT_BOOL* isMimeTypeChanged;
+        helper->getParam(id, VT_SRV_PARAM_IS_MIMETYPE_CHANGED,
+                         reinterpret_cast<void**>(&isMimeTypeChanged));
+
+        if (pre_ua->config.mime_Type != 0 && ua.config.mime_Type != 0 &&
+            ua.config.mime_Type != pre_ua->config.mime_Type) {
+            VT_LOGI("[SRV] ua mimeType changed, need to change codec format");
+            (*isMimeTypeChanged) = VT_TRUE;
+        } else {
+            (*isMimeTypeChanged) = VT_FALSE;
+        }
 
         core->getUpdateInfo(id, pre_ua, &ua);
 
@@ -2731,6 +2887,28 @@ void vt_callback(int type, void* data, int len) {
             helper->setHandoverStateBySim(irat.sim_slot_id, VT_TRUE);
             core->setHandoverStateBySimId(irat.sim_slot_id, VT_TRUE);
         }
+
+    } else if (type == MSG_ID_RILD_RILD_STATUS) {
+        helper->logAction("vt_callback", "MSG_ID_RILD_RILD_STATUS", VT_IVD, "", VT_SRV_LOG_W);
+
+        VT_RILD_STATUS_IND rildStatus;
+        memset(&rildStatus, 0, sizeof(VT_RILD_STATUS_IND));
+        memcpy(&rildStatus, reinterpret_cast<VT_RILD_STATUS_IND*>(data), len);
+
+        VT_LOGI("[SRV] [MSG_ID_RILD_RILD_STATUS] status=%d", rildStatus.status);
+        if (rildStatus.status == 1) {
+            core->notifyCallback(0, VT_SRV_NOTIFY_RILD_READY);
+        }
+    } else if (type == MSG_ID_RILD_GET_OP_RSP) {
+        helper->logAction("vt_callback", "MSG_ID_RILD_GET_OP_RSP", VT_IVD, "", VT_SRV_LOG_W);
+        // for updating opid because vtservice maybe restarted
+        VT_GET_OP_RSP opIdRsp;
+        memset(&opIdRsp, 0, sizeof(VT_GET_OP_RSP));
+        memcpy(&opIdRsp, reinterpret_cast<VT_GET_OP_RSP*>(data), len);
+        id = opIdRsp.sim_slot_id;
+        opid = opIdRsp.op_id;
+        VT_LOGI("[SRV] [MSG_ID_RILD_GET_OP_RSP] id=%d, opid=%d", id, opid);
+        helper->setOperatorId(id, opid);
     }
 
     return;
@@ -2767,7 +2945,7 @@ void vt_rtp_codec_2_ua(int mode, VT_IMCB_CAP* ua, int ssid, int opid) {
             w = MAX(codecCap[0].width, codecCap[0].height);
             h = MIN(codecCap[0].width, codecCap[0].height);
         }
-        helper->setDefaultLocalSize(w, h);
+        helper->setDefaultLocalSize(w, h, ssid);
         VT_LOGI("[SRV] [vt_rtp_codec_2_ua] Save default local size W=%d, H=%d)", w, h);
 
         // ====================================================================
@@ -3066,6 +3244,7 @@ void vt_ua_2_rtp(int mode, VT_IMCB_CONFIG* ua, rtp_rtcp_config_t* rtp) {
         VT_LOGI("[SRV] [vt_ua_2_rtp] remote_addr_type        = %d", cap->remote_addr_type);
         VT_LOGI("[SRV] [vt_ua_2_rtp] local_rtp_port          = %d", cap->local_rtp_port);
         VT_LOGI("[SRV] [vt_ua_2_rtp] local_rtcp_port         = %d", cap->local_rtcp_port);
+        VT_LOGI("[SRV] [vt_ua_2_rtp] video_soc_priority      = %d", cap->video_soc_priority);
 
         // cap->call_id;
         // cap->camera_direction;
@@ -3197,24 +3376,7 @@ void vt_ua_2_codec(int mode, VT_IMCB_CONFIG* ua, video_codec_fmtp_t* codec) {
             VT_LOGI("[SRV] [vt_ua_2_codec] nw_assigned_ul_bw     = %d",
                     ua->setting.nw_assigned_ul_bw);
 
-            // Video over LTE case
-            if (ua->setting.video_type == 0) {
-                // if nw_assigned_ul_bw = 0, just use another one
-                if (ua->setting.nw_assigned_ul_bw != 0) {
-                    if (ua->setting.nw_assigned_ul_bw > ua->config.video_b_as) {
-                        codec->codec_fmtp.h264_codec_fmtp.video_b_as = ua->config.video_b_as;
-                    } else {
-                        codec->codec_fmtp.h264_codec_fmtp.video_b_as =
-                                ua->setting.nw_assigned_ul_bw;
-                    }
-                } else {
-                    codec->codec_fmtp.h264_codec_fmtp.video_b_as = ua->config.video_b_as;
-                }
-
-                // Video over Wifi case
-            } else {
-                codec->codec_fmtp.h264_codec_fmtp.video_b_as = ua->config.video_b_as;
-            }
+            codec->codec_fmtp.h264_codec_fmtp.video_b_as = ua->config.video_b_as;
 
         } else if (VIDEO_HEVC == codec->format) {
             VT_LOGI("[SRV] [vt_ua_2_codec] format                = H265");
@@ -3282,24 +3444,7 @@ void vt_ua_2_codec(int mode, VT_IMCB_CONFIG* ua, video_codec_fmtp_t* codec) {
             VT_LOGI("[SRV] [vt_ua_2_codec] nw_assigned_ul_bw     = %d",
                     ua->setting.nw_assigned_ul_bw);
 
-            // Video over LTE case
-            if (ua->setting.video_type == 0) {
-                // if nw_assigned_ul_bw = 0, just use another one
-                if (ua->setting.nw_assigned_ul_bw == 0) {
-                    if (ua->setting.nw_assigned_ul_bw > ua->config.video_b_as) {
-                        codec->codec_fmtp.hevc_codec_fmtp.video_b_as = ua->config.video_b_as;
-                    } else {
-                        codec->codec_fmtp.hevc_codec_fmtp.video_b_as =
-                                ua->setting.nw_assigned_ul_bw;
-                    }
-                } else {
-                    codec->codec_fmtp.hevc_codec_fmtp.video_b_as = ua->config.video_b_as;
-                }
-
-                // Video over Wifi case
-            } else {
-                codec->codec_fmtp.hevc_codec_fmtp.video_b_as = ua->config.video_b_as;
-            }
+            codec->codec_fmtp.hevc_codec_fmtp.video_b_as = ua->config.video_b_as;
         }
     }
 }

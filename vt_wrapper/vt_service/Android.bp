@@ -59,4 +59,8 @@ cc_library_shared {
         "libm",
         "libdl",
     ],
+
+    header_libs: [
+        "libmediametrics_headers",
+    ],
 }

@@ -52,6 +52,8 @@ class IVTInterface : virtual public RefBase {
 
     virtual status_t switchFeature(int id, int feature, int isOn) = 0;
     virtual status_t updateNetworkTable(bool is_add, int network_id, String8 if_name) = 0;
+    virtual status_t triggerGetOperatorId() = 0;
+    virtual status_t tagSocketWithUid(int uid) = 0;
 
     virtual ~IVTInterface(){};
     // ### You don't need a ; after a }
@@ -84,7 +86,9 @@ class IVTNotifyCallback : virtual public RefBase {
     virtual status_t snapshot(int id, VT_SRV_SNAPSHOT_TYPE type, String8 savingImgURI);           \
     virtual status_t startRecording(int id, VT_SRV_RECORD_TYPE type, String8 path, int maxSize);  \
     virtual status_t stopRecording(int id);                                                       \
-    virtual status_t updateNetworkTable(bool is_add, int network_id, String8 if_name);
+    virtual status_t updateNetworkTable(bool is_add, int network_id, String8 if_name);            \
+    virtual status_t triggerGetOperatorId();                                                      \
+    virtual status_t tagSocketWithUid(int uid);
 }  // namespace VTService
 
 #endif

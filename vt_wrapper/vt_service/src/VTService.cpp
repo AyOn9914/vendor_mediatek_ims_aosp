@@ -27,6 +27,7 @@ namespace VTService {
 
 sp<IVTClient> gVTSClient = NULL;
 sp<VTCore> VTService::mVTCore = NULL;
+bool mRildReady = false;
 
 extern void vt_callback(int type, void* data, int len);
 extern vt_srv_cntx_struct g_vt;
@@ -82,7 +83,27 @@ status_t VTService::setupVTService(const sp<IVTClient>& client) {
 
     mPhoneBinder->linkToDeath(this);
 
+    do {
+        mImsBinder = sm->getService(String16("mtkIms"));
+        if (mImsBinder != 0) {
+            VT_LOGD("[VTS] get ims service");
+            break;
+        }
+        VT_LOGD("[VTS] Cannot ims service");
+        usleep(500000);  // 0.5 s
+    } while (true);
+
+    mImsBinder->linkToDeath(this);
+
     gVTSClient = client;
+
+    VT_STATUS_REQ vt_status;
+    vt_status.call_id = 0;
+    vt_status.sim_slot_id = 0;
+    vt_status.status = 1;  // 1:Ready, 0:Not readay, 2: restarted
+
+    int ret = VT_Send(VT_SRV_CALL_4G, MSG_ID_RILD_VTSERVICE_STATUS,
+                      reinterpret_cast<void*>(&vt_status), sizeof(VT_STATUS_REQ));
 
     VT_LOGD("[VTS] setupVTService-");
     return NO_ERROR;
@@ -247,11 +268,46 @@ status_t VTService::updateNetworkTable(bool is_add, int network_id, String8 if_n
     return g_vt.core->updateNetworkTable(is_add, network_id, if_name);
 }
 
+status_t VTService::triggerGetOperatorId() {
+    if (g_vt.core.get() == NULL) {
+        VT_LOGE("[VTS] g_vt.core == NULL");
+        return NO_INIT;
+    }
+
+    return g_vt.core->triggerGetOperatorId();
+}
+
+status_t VTService::tagSocketWithUid(int uid) {
+    if (g_vt.core.get() == NULL) {
+        VT_LOGE("[VTS] g_vt.core == NULL");
+        return NO_INIT;
+    }
+
+    return g_vt.core->tagSocketWithUid(uid);
+}
+
 void VTService::notifyCallback(int32_t id, int32_t msgType, int32_t arg1, int32_t arg2,
                                int32_t arg3, const String8& obj1, const String8& obj2,
                                const sp<IGraphicBufferProducer>& obj3) {
     // Sometimes message notify before gVTSClient connected, we must wait here
     int count = 0;
+    if (VT_SRV_NOTIFY_RILD_READY == msgType) {
+        if (gVTSClient != NULL) {
+            VT_LOGD("[VTS] VTClient connected already, Send vtservice status ready");
+
+            VT_STATUS_REQ vt_status;
+            vt_status.call_id = 0;
+            vt_status.sim_slot_id = 0;
+            vt_status.status = 1;  // 1:Ready, 0:Not readay
+
+            int ret = VT_Send(VT_SRV_CALL_4G, MSG_ID_RILD_VTSERVICE_STATUS,
+                              reinterpret_cast<void*>(&vt_status), sizeof(VT_STATUS_REQ));
+        } else {
+            VT_LOGD("[VTS] VTClient not connect yet");
+            mRildReady = true;
+        }
+        return;
+    }
     while (gVTSClient == 0) {
         if ((count % 5) == 0) {
             VT_LOGI("[VTS] gVTSClient == NULL");
@@ -384,12 +440,12 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel* reply,
             CHECK_INTERFACE(IVTService, data, reply);
             int sim_id = data.readInt32();
             sensorCnt = data.readInt32();
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
                 data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParameters(sim_id, sensorCnt, sensor));
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 delete[] sensor;
             }
             return NO_ERROR;
@@ -400,12 +456,12 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel* reply,
             int sim_id = data.readInt32();
             int major_sim_id = data.readInt32();
             sensorCnt = data.readInt32();
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
                 data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParametersWithSim(sim_id, major_sim_id, sensorCnt, sensor));
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 delete[] sensor;
             }
             return NO_ERROR;
@@ -414,12 +470,12 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel* reply,
         case SET_CAMERA_PARAM_ONLY: {
             CHECK_INTERFACE(IVTService, data, reply);
             sensorCnt = data.readInt32();
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 sensor = new sensor_info_vilte_t[sensorCnt];
                 data.read(sensor, sizeof(sensor_info_vilte_t) * sensorCnt);
             }
             reply->writeInt32(setCameraParametersOnly(sensorCnt, sensor));
-            if (sensorCnt != 0) {
+            if (sensorCnt > 0 && sensorCnt < VT_MAX_SENSOR_COUNT) {
                 delete[] sensor;
             }
             return NO_ERROR;
@@ -498,6 +554,19 @@ status_t VTService::onTransact(uint32_t code, const Parcel& data, Parcel* reply,
             int network_id = data.readInt32();
             String8 if_name(data.readString8());
             reply->writeInt32(updateNetworkTable(is_add, network_id, if_name));
+            return NO_ERROR;
+        } break;
+
+        case TRIGGER_GET_OPERATOR: {
+            CHECK_INTERFACE(IVTService, data, reply);
+            reply->writeInt32(triggerGetOperatorId());
+            return NO_ERROR;
+        } break;
+
+        case TAG_SOCKET_WITH_UID: {
+            CHECK_INTERFACE(IVTService, data, reply);
+            int uid = data.readInt32();
+            reply->writeInt32(tagSocketWithUid(uid));
             return NO_ERROR;
         } break;
 

@@ -47,6 +47,7 @@ class VTService : public BnVTService, public IBinder::DeathRecipient, public IVT
     virtual void binderDied(const wp<IBinder>& who);
 
     sp<IBinder> mPhoneBinder;
+    sp<IBinder> mImsBinder;
     mutable Mutex mLock;
     wp<IVTClient> mVTClient;
 };

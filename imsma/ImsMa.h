@@ -51,6 +51,7 @@ enum ma_datapath_t { MA_SOURCE = 0x1, MA_SINK = 0x2, MA_SOURCE_SINK = MA_SOURCE 
 enum imsma_extra_bitControl_t {
     MA_EXT_BIT_CTRL_NONE = 0,
     MA_STOP_RX_PUSH_BLANK = 0x01,  // will add by bit control
+    MA_PAUSE_PICTURE = 0x02,//will send repeat picture
     MA_EXT_BIT_CTRL_MAX = MA_STOP_RX_PUSH_BLANK,
 };
 

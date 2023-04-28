@@ -46,7 +46,9 @@ class IVTService : public IInterface, public IVTInterface {
         START_RECORD,
         STOP_RECORD,
         SWITCH_FEATURE,
-        UPDATE_NETWORK_TABLE
+        UPDATE_NETWORK_TABLE,
+        TRIGGER_GET_OPERATOR,
+        TAG_SOCKET_WITH_UID
     };
     DECLARE_META_INTERFACE(VTService);
     virtual status_t setupVTService(const sp<IVTClient>& client) = 0;
